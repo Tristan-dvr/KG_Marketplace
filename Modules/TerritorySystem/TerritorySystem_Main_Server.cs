@@ -7,13 +7,12 @@ namespace Marketplace.Modules.TerritorySystem;
     new[] { "OnTerritoryConfigChange" })]
 public static class TerritorySystem_Main_Server
 {
-    
     private static void OnInit()
     {
         List<string> territories = File.ReadAllLines(Market_Paths.TerritoriesConfigPath).ToList();
         ReadServerTerritoryDatabase(territories);
     }
-    
+
     private static void OnTerritoryConfigChange()
     {
         List<string> territories = File.ReadAllLines(Market_Paths.TerritoriesConfigPath).ToList();
@@ -23,10 +22,12 @@ public static class TerritorySystem_Main_Server
         }
         catch
         {
+            // ignored
         }
+
         Utils.print("Territory Changed. Sending new info to all clients");
     }
-    
+
     private static void ReadServerTerritoryDatabase(List<string> profiles)
     {
         TerritorySystem_DataTypes.TerritoriesData.Value.Clear();
@@ -91,7 +92,8 @@ public static class TerritorySystem_Main_Server
                         newTerritory.ShowExternalWater = Convert.ToBoolean(rgb[3]);
 
                     TerritorySystem_DataTypes.TerritoryFlags flags = TerritorySystem_DataTypes.TerritoryFlags.None;
-                    TerritorySystem_DataTypes.AdditionalTerritoryFlags additionalflags = TerritorySystem_DataTypes.AdditionalTerritoryFlags.None;
+                    TerritorySystem_DataTypes.AdditionalTerritoryFlags additionalflags =
+                        TerritorySystem_DataTypes.AdditionalTerritoryFlags.None;
                     float PeriodicHealValue = 0;
                     float PeriodicDamageValue = 0;
                     float IncreasedPlayerDamageValue = 0;
@@ -185,19 +187,12 @@ public static class TerritorySystem_Main_Server
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Error loading zone line {i+1} : {ex}", ConsoleColor.Red);
+                    Utils.print($"Error loading zone line {i + 1} : {ex}", ConsoleColor.Red);
                 }
             }
         }
+
         TerritorySystem_DataTypes.TerritoriesData.Value.Sort((x, y) => y.Priority.CompareTo(x.Priority));
         TerritorySystem_DataTypes.TerritoriesData.Update();
     }
-    
-    
-    
-    
-    
-    
-  
-    
 }
