@@ -17,12 +17,12 @@ public static class Banker_Main_Server
         string bankData = Market_Paths.BankerDataJSONFile.ReadClear();
         if (!string.IsNullOrWhiteSpace(bankData))
             BankerServerSideData.AddRange(JSON.ToObject<Dictionary<string, Dictionary<int, int>>>(bankData));
-        ReadServerBankerProfiles();
         if (Global_Values.BankerIncomeTime > 0)
         {
             Marketplace._thistype.StartCoroutine(BankerIncome());
             Utils.print("Started Banker Income Coroutine");
         }
+        ReadServerBankerProfiles();
     }
 
     private static void OnBankerProfilesFileChange()

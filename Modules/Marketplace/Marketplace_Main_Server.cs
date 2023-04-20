@@ -5,7 +5,7 @@ using Marketplace.Paths;
 namespace Marketplace.Modules.Marketplace_NPC;
 
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit")]
-public static class Marketplacec_Main_Server
+public static class Marketplace_Main_Server
 {
     public static ConfigEntry<int> LastIDConfig;
     private static Dictionary<string, int> PlayersIncome = new();

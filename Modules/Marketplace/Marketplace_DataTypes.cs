@@ -41,8 +41,8 @@ public static class Marketplace_DataTypes
             CUSTOMdata = other.CUSTOMdata;
             CrafterName = other.CrafterName;
             CrafterID = other.CrafterID;
-            UID = Marketplacec_Main_Server.LastIDConfig.Value;
-            Marketplacec_Main_Server.LastIDConfig.Value++;
+            UID = Marketplace_Main_Server.LastIDConfig.Value;
+            Marketplace_Main_Server.LastIDConfig.Value++;
             Marketplace._thistype.Config.Save();
         }
         

@@ -191,8 +191,8 @@ public static class Marketplace_Messages
                     PlayerMessages[buyer] =
                         $"[{DateTime.Now}] You cancelled <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>price: {data.Price * howMany} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>";
             }
-            Marketplacec_Main_Server.SendMessagesToClient(buyer);
-            Marketplacec_Main_Server.SendMessagesToClient(seller);
+            Marketplace_Main_Server.SendMessagesToClient(buyer);
+            Marketplace_Main_Server.SendMessagesToClient(seller);
             SaveMsgAsync();
         }
 
@@ -206,7 +206,7 @@ public static class Marketplace_Messages
                 PlayerMessages[seller] =
                     $"[{DateTime.Now}] You placed <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{data.Count}</color> | <color=yellow>price:{data.Price * data.Count}</color>";
 
-            Marketplacec_Main_Server.SendMessagesToClient(seller);
+            Marketplace_Main_Server.SendMessagesToClient(seller);
             SaveMsgAsync();
         }
 

@@ -333,7 +333,7 @@
         <Compile Include="Modules\Global_Options\Global_Options.cs" />
         <Compile Include="Modules\Global_Options\Global_Options_Client.cs" />
         <Compile Include="Modules\Marketplace\JC_API.cs" />
-        <Compile Include="Modules\Marketplace\Marketplacec_Main_Server.cs" />
+        <Compile Include="Modules\Marketplace\Marketplace_Main_Server.cs" />
         <Compile Include="Modules\Marketplace\Marketplace_DataTypes.cs" />
         <Compile Include="Modules\Marketplace\Marketplace_Main_Client.cs" />
         <Compile Include="Modules\Marketplace\Marketplace_Messages.cs" />
