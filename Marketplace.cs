@@ -36,7 +36,6 @@ namespace Marketplace
             Localizer.Load();
             TempJewelcraftingType = Type.GetType("Jewelcrafting.Jewelcrafting, Jewelcrafting");
             TempProfessionsType = Type.GetType("Professions.Professions, Professions");
-            Utils.print($"Professions: {TempProfessionsType}");
             JSON.Parameters = new JSONParameters
             {
                 UseExtensions = false,
