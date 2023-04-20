@@ -129,8 +129,8 @@ public static class Global_Values
         EnableTransmogLog = SearchOption( "EnableTransmogLog",  false, "Enable/Disable Transmog Log");
         EnableTraderLog = SearchOption( "EnableTraderLog",  false, "Enable/Disable Trader Log");
         BankerIncomeTime = SearchOption( "BankerIncomeTime", 1,"Banker Income Time (hours)");
-        BankerIncomeMultiplier = SearchOption( "BankerIncomeMultiplier",  0, "Banker Income Multiplier (per time)");
-        BankerVIPIncomeMultiplier = SearchOption( "BankerVIPIncomeMultiplier",  0, "VIP Banker Income Multiplier");
+        BankerIncomeMultiplier = SearchOption( "BankerIncomeMultiplier",  0f, "Banker Income Multiplier (per time)");
+        BankerVIPIncomeMultiplier = SearchOption( "BankerVIPIncomeMultiplier",  0f, "VIP Banker Income Multiplier");
         WebHookLink = SearchOption( "FeedbackWebhookLink","webhook link","Feedback Webhook Link");
 
         _container.Value._itemMarketLimit = SearchOption( "ItemMarketLimit", 15, "Limit amount of slots player can sell in marketpalce");
