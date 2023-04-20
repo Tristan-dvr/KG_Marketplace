@@ -9,12 +9,13 @@ public static class Quests_DataTypes
 {
     internal static readonly CustomSyncedValue<Dictionary<int, Quest>> SyncedQuestData =
         new(Marketplace.configSync, "questData", new());
-    internal static readonly CustomSyncedValue<Dictionary<string, List<int>>> SyncedQuestProfiles = 
+
+    internal static readonly CustomSyncedValue<Dictionary<string, List<int>>> SyncedQuestProfiles =
         new(Marketplace.configSync, "questProfiles", new());
 
-    internal static readonly CustomSyncedValue<Dictionary<int, List<QuestEvent>>> SyncedQuestsEvents = 
+    internal static readonly CustomSyncedValue<Dictionary<int, List<QuestEvent>>> SyncedQuestsEvents =
         new(Marketplace.configSync, "questEvents", new());
-    
+
     public static readonly Dictionary<int, Quest> AllQuests = new();
     public static readonly Dictionary<int, Quest> AcceptedQuests = new(20);
 
@@ -77,8 +78,8 @@ public static class Quests_DataTypes
         Battlepass_EXP,
         MH_EXP
     }
-    
-    
+
+
     public class QuestEvent : ISerializableParameter
     {
         public QuestEventCondition cond;
@@ -127,6 +128,7 @@ public static class Quests_DataTypes
                 pkg.Write(TargetCount[i]);
                 pkg.Write(TargetLevel[i]);
             }
+
             pkg.Write(RewardsAMOUNT);
             for (int i = 0; i < RewardsAMOUNT; i++)
             {
@@ -135,6 +137,7 @@ public static class Quests_DataTypes
                 pkg.Write(RewardCount[i]);
                 pkg.Write(RewardLevel[i]);
             }
+
             pkg.Write(RequirementsAMOUNT);
             for (int i = 0; i < RequirementsAMOUNT; i++)
             {
@@ -142,6 +145,7 @@ public static class Quests_DataTypes
                 pkg.Write(QuestRequirementPrefab[i] ?? "");
                 pkg.Write(QuestRequirementLevel[i]);
             }
+
             pkg.Write(PreviewImage ?? "");
             pkg.Write(ResetTime);
         }
@@ -163,6 +167,7 @@ public static class Quests_DataTypes
                 TargetCount[i] = pkg.ReadInt();
                 TargetLevel[i] = pkg.ReadInt();
             }
+
             RewardsAMOUNT = pkg.ReadInt();
             RewardType = new QuestRewardType[RewardsAMOUNT];
             RewardPrefab = new string[RewardsAMOUNT];
@@ -175,6 +180,7 @@ public static class Quests_DataTypes
                 RewardCount[i] = pkg.ReadInt();
                 RewardLevel[i] = pkg.ReadInt();
             }
+
             RequirementsAMOUNT = pkg.ReadInt();
             RequirementType = new QuestRequirementType[RequirementsAMOUNT];
             QuestRequirementPrefab = new string[RequirementsAMOUNT];
@@ -185,11 +191,12 @@ public static class Quests_DataTypes
                 QuestRequirementPrefab[i] = pkg.ReadString();
                 QuestRequirementLevel[i] = pkg.ReadInt();
             }
+
             PreviewImage = pkg.ReadString();
             ResetTime = pkg.ReadInt();
         }
     }
-    
+
     //main data part
     public partial class Quest
     {
@@ -639,11 +646,11 @@ public static class Quests_DataTypes
                 AcceptedQuests.Remove(UID);
             }
 
-            for (int i = 0; i < quest.RewardsAMOUNT; ++i) 
+            for (int i = 0; i < quest.RewardsAMOUNT; ++i)
             {
                 if (quest.RewardType[i] is QuestRewardType.EpicMMO_EXP)
                 {
-                    OtherModsAPI.EpicMMOSystem_API.AddExp(quest.RewardCount[i]); 
+                    OtherModsAPI.EpicMMOSystem_API.AddExp(quest.RewardCount[i]);
                     continue;
                 }
 
@@ -667,14 +674,16 @@ public static class Quests_DataTypes
 
                 if (quest.RewardType[i] is QuestRewardType.Skill)
                 {
-                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) > (Marketplace.TempProfessionsType != null ? 0 : -1))
+                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) >
+                        (Marketplace.TempProfessionsType != null ? 0 : -1))
                         Player.m_localPlayer.GetSkills().CheatRaiseSkill(quest.RewardPrefab[i],
                             quest.RewardCount[i]);
                 }
 
                 if (quest.RewardType[i] is QuestRewardType.Skill_EXP)
                 {
-                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) > (Marketplace.TempProfessionsType != null ? 0 : -1))
+                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) >
+                        (Marketplace.TempProfessionsType != null ? 0 : -1))
                     {
                         Skills.Skill skill;
                         if (!Enum.TryParse(quest.RewardPrefab[i], out Skills.SkillType found))
@@ -907,6 +916,7 @@ public static class Quests_DataTypes
                 {
                     continue;
                 }
+
                 c.transform.Find("MPASNquest").gameObject.SetActive(IsQuestTarget(c));
             }
         }
@@ -1116,7 +1126,7 @@ public static class Quests_DataTypes
             }
         }
     }
-    
+
     private static void HandleQuestEvent(int UID, QuestEventCondition type)
     {
         if (!SyncedQuestsEvents.Value.TryGetValue(UID, out List<QuestEvent> events)) return;
@@ -1134,7 +1144,8 @@ public static class Quests_DataTypes
                         string itemPrefab = split[0];
                         GameObject prefab = ZNetScene.instance.GetPrefab(itemPrefab);
                         if (!prefab || !prefab.GetComponent<ItemDrop>()) continue;
-                        GameObject newItem = UnityEngine.Object.Instantiate(prefab, Player.m_localPlayer.transform.position,
+                        GameObject newItem = UnityEngine.Object.Instantiate(prefab,
+                            Player.m_localPlayer.transform.position,
                             Quaternion.identity);
                         int amount = int.Parse(split[1]);
                         int level = int.Parse(split[2]);
@@ -1152,7 +1163,7 @@ public static class Quests_DataTypes
                         GameObject spawn = ZNetScene.instance.GetPrefab(spawnPrefab);
                         if (!spawn || !spawn.GetComponent<Character>()) continue;
                         int spawnAmount = int.Parse(split[1]);
-                        int spawnLevel = int.Parse(split[2]);
+                        int spawnLevel = Mathf.Max(1, int.Parse(split[2]) + 1);
                         for (int i = 0; i < spawnAmount; i++)
                         {
                             float randomX = UnityEngine.Random.Range(-15f, 15f);
@@ -1164,6 +1175,7 @@ public static class Quests_DataTypes
                                 Quaternion.identity);
                             newSpawn.GetComponent<Character>().SetLevel(spawnLevel);
                         }
+
                         Quests_UIs.QuestUI.Hide();
                         break;
                     case QuestEventAction.Teleport:
@@ -1203,6 +1215,4 @@ public static class Quests_DataTypes
             }
         }
     }
-
-
 }

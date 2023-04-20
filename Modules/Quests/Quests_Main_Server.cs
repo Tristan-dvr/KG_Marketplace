@@ -176,9 +176,10 @@ public static class Quests_Main_Server
                         TargetPrefabs[t] = TargetSplit[0];
                         TargetLevels[t] = 1;
                         TargetCounts[t] = 1;
+                        
                         if (type is Quests_DataTypes.QuestType.Kill && TargetSplit.Length >= 3)
                         {
-                            TargetLevels[t] = Convert.ToInt32(TargetSplit[2]) + 1;
+                            TargetLevels[t] = Mathf.Max(1, Convert.ToInt32(TargetSplit[2]) + 1);
                         }
 
                         if (type is Quests_DataTypes.QuestType.Craft or Quests_DataTypes.QuestType.Collect && TargetSplit.Length >= 3)
