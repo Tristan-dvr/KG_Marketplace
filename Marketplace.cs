@@ -9,8 +9,8 @@ namespace Marketplace
     [VerifyKey("KGvalheim/Marketplace", LicenseMode.DedicatedServer)]
     public class Marketplace : BaseUnityPlugin
     {
-        private const string GUID = "kg.Marketplace";
-        private const string PluginName = "kg.Marketplace";
+        private const string GUID = "MarketplaceAndServerNPCs";
+        private const string PluginName = "MarketplaceAndServerNPCs";
         private const string PluginVersion = "8.3.5";
         internal static Marketplace _thistype;
         private static readonly Harmony _harmony = new(GUID);

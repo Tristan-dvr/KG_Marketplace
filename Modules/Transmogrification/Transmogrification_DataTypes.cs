@@ -5,7 +5,7 @@ namespace Marketplace.Modules.Transmogrification;
 
 public static class Transmogrification_DataTypes
 {
-    internal static readonly CustomSyncedValue<Dictionary<string, List<TransmogItem_Data>>>
+    public static readonly CustomSyncedValue<Dictionary<string, List<TransmogItem_Data>>>
         TransmogData = new(Marketplace.configSync, "transmogData", new());
     
     
