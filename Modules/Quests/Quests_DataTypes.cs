@@ -1,0 +1,1208 @@
+﻿using System.Text;
+using Marketplace.Modules.Battlepass;
+using Marketplace.Modules.NPC;
+using ServerSync;
+
+namespace Marketplace.Modules.Quests;
+
+public static class Quests_DataTypes
+{
+    internal static readonly CustomSyncedValue<Dictionary<int, Quest>> SyncedQuestData =
+        new(Marketplace.configSync, "questData", new());
+    internal static readonly CustomSyncedValue<Dictionary<string, List<int>>> SyncedQuestProfiles = 
+        new(Marketplace.configSync, "questProfiles", new());
+
+    internal static readonly CustomSyncedValue<Dictionary<int, List<QuestEvent>>> SyncedQuestsEvents = 
+        new(Marketplace.configSync, "questEvents", new());
+    
+    public static readonly Dictionary<int, Quest> AllQuests = new();
+    public static readonly Dictionary<int, Quest> AcceptedQuests = new(20);
+
+    public enum QuestEventCondition
+    {
+        OnAcceptQuest,
+        OnCancelQuest,
+        OnCompleteQuest
+    }
+
+    [Flags]
+    public enum SpecialQuestTag
+    {
+        None = 0,
+        Autocomplete = 1
+    }
+
+    public enum QuestEventAction
+    {
+        GiveItem,
+        GiveQuest,
+        RemoveQuest,
+        Spawn,
+        Teleport,
+        Damage,
+        Heal,
+        PlaySound,
+    }
+
+    public enum QuestRequirementType
+    {
+        None,
+        Skill,
+        OtherQuest,
+        NotFinished,
+        GlobalKey,
+        EpicMMO_Level,
+        MH_Level,
+        HasItem,
+        IsVIP,
+    }
+
+    public enum QuestType
+    {
+        Kill,
+        Collect,
+        Harvest,
+        Craft,
+        Talk,
+        Build
+    }
+
+    public enum QuestRewardType
+    {
+        Item,
+        Skill,
+        Skill_EXP,
+        Pet,
+        EpicMMO_EXP,
+        Battlepass_EXP,
+        MH_EXP
+    }
+    
+    
+    public class QuestEvent : ISerializableParameter
+    {
+        public QuestEventCondition cond;
+        public QuestEventAction action;
+        public string args;
+
+        public QuestEvent()
+        {
+        }
+
+        public QuestEvent(QuestEventCondition cond, QuestEventAction action, string args)
+        {
+            this.cond = cond;
+            this.action = action;
+            this.args = args;
+        }
+
+        public void Serialize(ref ZPackage pkg)
+        {
+            pkg.Write((int)cond);
+            pkg.Write((int)action);
+            pkg.Write(args ?? "");
+        }
+
+        public void Deserialize(ref ZPackage pkg)
+        {
+            cond = (QuestEventCondition)pkg.ReadInt();
+            action = (QuestEventAction)pkg.ReadInt();
+            args = pkg.ReadString();
+        }
+    }
+
+    //serialization part
+    public partial class Quest : ISerializableParameter
+    {
+        public void Serialize(ref ZPackage pkg)
+        {
+            pkg.Write((int)Type);
+            pkg.Write((int)SpecialTag);
+            pkg.Write(Name ?? "");
+            pkg.Write(Description ?? "");
+            pkg.Write(TargetAMOUNT);
+            for (int i = 0; i < TargetAMOUNT; i++)
+            {
+                pkg.Write(TargetPrefab[i] ?? "");
+                pkg.Write(TargetCount[i]);
+                pkg.Write(TargetLevel[i]);
+            }
+            pkg.Write(RewardsAMOUNT);
+            for (int i = 0; i < RewardsAMOUNT; i++)
+            {
+                pkg.Write((int)RewardType[i]);
+                pkg.Write(RewardPrefab[i] ?? "");
+                pkg.Write(RewardCount[i]);
+                pkg.Write(RewardLevel[i]);
+            }
+            pkg.Write(RequirementsAMOUNT);
+            for (int i = 0; i < RequirementsAMOUNT; i++)
+            {
+                pkg.Write((int)RequirementType[i]);
+                pkg.Write(QuestRequirementPrefab[i] ?? "");
+                pkg.Write(QuestRequirementLevel[i]);
+            }
+            pkg.Write(PreviewImage ?? "");
+            pkg.Write(ResetTime);
+        }
+
+
+        public void Deserialize(ref ZPackage pkg)
+        {
+            Type = (QuestType)pkg.ReadInt();
+            SpecialTag = (SpecialQuestTag)pkg.ReadInt();
+            Name = pkg.ReadString();
+            Description = pkg.ReadString();
+            TargetAMOUNT = pkg.ReadInt();
+            TargetPrefab = new string[TargetAMOUNT];
+            TargetCount = new int[TargetAMOUNT];
+            TargetLevel = new int[TargetAMOUNT];
+            for (int i = 0; i < TargetAMOUNT; i++)
+            {
+                TargetPrefab[i] = pkg.ReadString();
+                TargetCount[i] = pkg.ReadInt();
+                TargetLevel[i] = pkg.ReadInt();
+            }
+            RewardsAMOUNT = pkg.ReadInt();
+            RewardType = new QuestRewardType[RewardsAMOUNT];
+            RewardPrefab = new string[RewardsAMOUNT];
+            RewardCount = new int[RewardsAMOUNT];
+            RewardLevel = new int[RewardsAMOUNT];
+            for (int i = 0; i < RewardsAMOUNT; i++)
+            {
+                RewardType[i] = (QuestRewardType)pkg.ReadInt();
+                RewardPrefab[i] = pkg.ReadString();
+                RewardCount[i] = pkg.ReadInt();
+                RewardLevel[i] = pkg.ReadInt();
+            }
+            RequirementsAMOUNT = pkg.ReadInt();
+            RequirementType = new QuestRequirementType[RequirementsAMOUNT];
+            QuestRequirementPrefab = new string[RequirementsAMOUNT];
+            QuestRequirementLevel = new int[RequirementsAMOUNT];
+            for (int i = 0; i < RequirementsAMOUNT; i++)
+            {
+                RequirementType[i] = (QuestRequirementType)pkg.ReadInt();
+                QuestRequirementPrefab[i] = pkg.ReadString();
+                QuestRequirementLevel[i] = pkg.ReadInt();
+            }
+            PreviewImage = pkg.ReadString();
+            ResetTime = pkg.ReadInt();
+        }
+    }
+    
+    //main data part
+    public partial class Quest
+    {
+        public QuestType Type;
+        public SpecialQuestTag SpecialTag;
+        public string Name;
+        public string Description;
+        public int TargetAMOUNT;
+        public string[] TargetPrefab;
+        public int[] TargetCount;
+        public int[] TargetLevel;
+        public int RewardsAMOUNT;
+        public QuestRewardType[] RewardType;
+        public string[] RewardPrefab;
+        public int[] RewardCount;
+        public int[] RewardLevel;
+        public int RequirementsAMOUNT;
+        public QuestRequirementType[] RequirementType;
+        public string[] QuestRequirementPrefab;
+        public int[] QuestRequirementLevel;
+        public string PreviewImage;
+        public int ResetTime;
+
+
+        private Sprite PreviewSprite;
+        private int[] CurrentScore;
+        private string[] LocalizedReward;
+        private string[] LocalizedTarget;
+
+        public Sprite GetPreviewSprite => PreviewSprite;
+        public void SetPreviewSprite(Sprite sprite) => PreviewSprite = sprite;
+
+        public int[] ScoreArray => CurrentScore;
+
+        public override string ToString()
+        {
+            return "";
+            StringBuilder result = new();
+            result.AppendLine($"\nQuest Name: {Name}");
+            result.AppendLine($"Quest Description: {Description}");
+            result.AppendLine($"Quest Type: {Type}");
+            result.AppendLine($"Quest Target: {TargetPrefab}");
+            result.AppendLine($"Quest Target Amount: {TargetCount}");
+            result.AppendLine($"Quest Target Level: {TargetLevel}");
+            result.AppendLine($"Quest Cooldown (Ingame Days): {ResetTime}");
+            result.AppendLine("Quest Rewards:");
+            for (int i = 0; i < RewardsAMOUNT; i++)
+            {
+                result.AppendLine(
+                    $"{i + 1}) Quest Reward Type: {RewardType[i]} | Quest Reward Prefab: {RewardPrefab[i]} | Quest Reward Amount: {RewardCount[i]} | Quest Reward Level: {RewardLevel[i]}");
+            }
+
+            result.AppendLine($"Quest Requirements:");
+            for (int i = 0; i < RequirementsAMOUNT; i++)
+            {
+                result.AppendLine(
+                    $"{i + 1}) Quest Requirement Type: {RequirementType[i]} | Quest Requirement Prefab: {QuestRequirementPrefab[i]} | Quest Requirement Level: {QuestRequirementLevel[i]}");
+            }
+
+            return result.ToString();
+        }
+
+        public int GetScore(int index) => CurrentScore[index];
+
+        public bool IsComplete()
+        {
+            for (int i = 0; i < TargetAMOUNT; ++i)
+                if (CurrentScore[i] < TargetCount[i])
+                    return false;
+            return true;
+        }
+
+
+        public bool IsComplete(int index) => CurrentScore[index] >= TargetCount[index];
+
+
+        public bool Init()
+        {
+            bool STOP = false;
+            for (int i = 0; i < RewardsAMOUNT; ++i)
+            {
+                GameObject rewardPrefab = ZNetScene.instance.GetPrefab(RewardPrefab[i]);
+                if (!rewardPrefab && RewardType[i] is not QuestRewardType.Skill and not QuestRewardType.Skill_EXP
+                        and not QuestRewardType.EpicMMO_EXP and not QuestRewardType.Battlepass_EXP
+                        and not QuestRewardType.MH_EXP)
+                {
+                    STOP = true;
+                }
+            }
+
+            if (Type != QuestType.Talk)
+            {
+                for (int i = 0; i < TargetAMOUNT; ++i)
+                {
+                    GameObject targetPrefab = ZNetScene.instance.GetPrefab(TargetPrefab[i]);
+                    if (!targetPrefab)
+                    {
+                        STOP = true;
+                        break;
+                    }
+                }
+            }
+
+
+            if (STOP) return false;
+            LocalizedReward = new string[RewardsAMOUNT];
+            LocalizedTarget = new string[TargetAMOUNT];
+            for (int i = 0; i < RewardsAMOUNT; ++i)
+            {
+                GameObject rewardPrefab = ZNetScene.instance.GetPrefab(RewardPrefab[i]);
+                switch (RewardType[i])
+                {
+                    case QuestRewardType.Pet:
+                        if (!rewardPrefab.GetComponent<Character>()) return false;
+                        PhotoManager.__instance.MakeSprite(rewardPrefab, 0.6f, 0.25f, RewardLevel[i]);
+                        LocalizedReward[i] =
+                            Localization.instance.Localize(rewardPrefab.GetComponent<Character>().m_name);
+                        break;
+                    case QuestRewardType.Item:
+                        if (!rewardPrefab.GetComponent<ItemDrop>()) return false;
+                        LocalizedReward[i] = Localization.instance.Localize(rewardPrefab.GetComponent<ItemDrop>()
+                            .m_itemData.m_shared
+                            .m_name);
+                        break;
+                    case QuestRewardType.Skill or QuestRewardType.Skill_EXP:
+                        LocalizedReward[i] = Enum.TryParse(RewardPrefab[i], out Skills.SkillType _)
+                            ? Localization.instance.Localize("$skill_" + RewardPrefab[i].ToLower())
+                            : Localization.instance.Localize(
+                                $"$skill_" + Mathf.Abs(RewardPrefab[i].GetStableHashCode()));
+                        break;
+                    case QuestRewardType.EpicMMO_EXP or QuestRewardType.Battlepass_EXP or QuestRewardType.MH_EXP:
+                        LocalizedReward[i] = "";
+                        break;
+                }
+            }
+
+            if (Type is QuestType.Talk)
+            {
+                for (int i = 0; i < TargetAMOUNT; ++i)
+                {
+                    LocalizedTarget[i] = Utils.RichTextFormatting(TargetPrefab[i]);
+                }
+
+                return true;
+            }
+
+
+            if (Type is QuestType.Collect or QuestType.Craft)
+            {
+                for (int i = 0; i < TargetAMOUNT; ++i)
+                {
+                    GameObject targetPrefab = ZNetScene.instance.GetPrefab(TargetPrefab[i]);
+                    if (!targetPrefab.GetComponent<ItemDrop>()) return false;
+                    LocalizedTarget[i] =
+                        Localization.instance.Localize(targetPrefab.GetComponent<ItemDrop>().m_itemData.m_shared
+                            .m_name);
+                }
+
+                return true;
+            }
+
+            if (Type == QuestType.Kill)
+            {
+                for (int i = 0; i < TargetAMOUNT; ++i)
+                {
+                    GameObject targetPrefab = ZNetScene.instance.GetPrefab(TargetPrefab[i]);
+                    if (!targetPrefab.GetComponent<Character>()) return false;
+                    PhotoManager.__instance.MakeSprite(targetPrefab, 0.6f, 0.25f, TargetLevel[i]);
+                    LocalizedTarget[i] = Localization.instance.Localize(targetPrefab.GetComponent<Character>().m_name);
+                }
+
+                return true;
+            }
+
+            if (Type == QuestType.Harvest)
+            {
+                for (int i = 0; i < TargetAMOUNT; ++i)
+                {
+                    GameObject targetPrefab = ZNetScene.instance.GetPrefab(TargetPrefab[i]);
+                    if (!targetPrefab.GetComponent<Pickable>()) return false;
+                    PhotoManager.__instance.MakeSprite(targetPrefab, 0.9f, 0f);
+                    LocalizedTarget[i] =
+                        Localization.instance.Localize(targetPrefab.GetComponent<Pickable>().GetHoverName());
+                }
+
+                return true;
+            }
+
+            if (Type == QuestType.Build)
+            {
+                for (int i = 0; i < TargetAMOUNT; ++i)
+                {
+                    GameObject targetPrefab = ZNetScene.instance.GetPrefab(TargetPrefab[i]);
+                    if (!targetPrefab.GetComponent<Piece>()) return false;
+                    LocalizedTarget[i] = Localization.instance.Localize(targetPrefab.GetComponent<Piece>().m_name);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public string GetLocalizedReward(int index) => LocalizedReward[index];
+        public string GetLocalizedTarget(int index) => LocalizedTarget[index];
+
+        public static float GetPlayerSkillLevelCustom(string skillName)
+        {
+            if (!Enum.TryParse(skillName, out Skills.SkillType skill))
+            {
+                Skills.SkillDef SkillDef =
+                    Player.m_localPlayer.m_skills.GetSkillDef(
+                        (Skills.SkillType)Mathf.Abs(skillName.GetStableHashCode()));
+                if (SkillDef == null)
+                {
+                    return -1;
+                }
+
+                skill = SkillDef.m_skill;
+            }
+
+            return Player.m_localPlayer.m_skills.GetSkillLevel(skill);
+        }
+
+
+        public static bool CanTake(int UID, out string message, out QuestRequirementType type)
+        {
+            message = "";
+            type = QuestRequirementType.None;
+            if (!AllQuests.ContainsKey(UID) || !Player.m_localPlayer) return false;
+            Quest CheckQuest = AllQuests[UID];
+            if (CheckQuest.RequirementsAMOUNT <= 0) return true;
+            for (int i = 0; i < CheckQuest.RequirementsAMOUNT; i++)
+            {
+                if (string.IsNullOrEmpty(CheckQuest.QuestRequirementPrefab[i]) ||
+                    CheckQuest.RequirementType[i] is QuestRequirementType.None) continue;
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.Skill)
+                {
+                    string localizedSkill = Enum.TryParse(CheckQuest.QuestRequirementPrefab[i], out Skills.SkillType _)
+                        ? Localization.instance.Localize("$skill_" + CheckQuest.QuestRequirementPrefab[i].ToLower())
+                        : Localization.instance.Localize($"$skill_" +
+                                                         Mathf.Abs(CheckQuest.QuestRequirementPrefab[i]
+                                                             .GetStableHashCode()));
+                    message =
+                        $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{localizedSkill} {CheckQuest.QuestRequirementLevel[i]}</color>";
+                    type = QuestRequirementType.Skill;
+                    float skillLevel = GetPlayerSkillLevelCustom(CheckQuest.QuestRequirementPrefab[i]);
+                    bool result = skillLevel >= CheckQuest.QuestRequirementLevel[i];
+                    if (result)
+                    {
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.NotFinished)
+                {
+                    int reqID = CheckQuest.QuestRequirementPrefab[i].ToLower().GetStableHashCode();
+                    type = QuestRequirementType.NotFinished;
+                    if (AcceptedQuests.TryGetValue(reqID, out var quest))
+                    {
+                        message =
+                            $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{quest.Name}</color>";
+                        return false;
+                    }
+
+                    if (AllQuests.TryGetValue(reqID, out var reqQuest))
+                    {
+                        if (IsOnCooldown(reqID, out _))
+                        {
+                            message =
+                                $"{Localization.instance.Localize("$mpasn_questfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
+                            return false;
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.OtherQuest)
+                {
+                    int reqID = CheckQuest.QuestRequirementPrefab[i].ToLower().GetStableHashCode();
+                    if (!AllQuests.ContainsKey(reqID)) return true;
+                    message =
+                        $"{Localization.instance.Localize("$mpasn_needtofinishquest")}: <color=#00ff00>{AllQuests[reqID].Name}</color>";
+                    type = QuestRequirementType.OtherQuest;
+                    bool result = IsOnCooldown(reqID, out _);
+
+                    if (result)
+                    {
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.GlobalKey)
+                {
+                    message =
+                        $"{Localization.instance.Localize("$mpasn_needglobalkey")}: <color=#00ff00>{CheckQuest.QuestRequirementPrefab[i]}</color>";
+                    type = QuestRequirementType.GlobalKey;
+                    bool result = ZoneSystem.instance.m_globalKeys.Contains(CheckQuest.QuestRequirementPrefab[i]);
+                    if (result)
+                    {
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.IsVIP)
+                {
+                    message = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
+                    type = QuestRequirementType.IsVIP;
+                    bool result = Global_Values._container.Value._vipPlayerList.Contains(Global_Values._localUserID);
+                    if (result)
+                    {
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.EpicMMO_Level)
+                {
+                    if (!int.TryParse(CheckQuest.QuestRequirementPrefab[i], out int requiredLevel_EpicMMO)) continue;
+                    message =
+                        $"{Localization.instance.Localize("$mpasn_needepicmmolevel")}: <color=#00ff00>{requiredLevel_EpicMMO}</color>";
+                    type = QuestRequirementType.EpicMMO_Level;
+                    bool result = OtherModsAPI.EpicMMOSystem_API.GetLevel() >= requiredLevel_EpicMMO;
+                    if (result)
+                    {
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.MH_Level)
+                {
+                    if (!int.TryParse(CheckQuest.QuestRequirementPrefab[i], out int requiredLevel_MH)) continue;
+                    message =
+                        $"{Localization.instance.Localize("$mpasn_needmhlevel")}: <color=#00ff00>{requiredLevel_MH}</color>";
+                    type = QuestRequirementType.MH_Level;
+                    bool result = OtherModsAPI.MH_API.GetLevel() >= requiredLevel_MH;
+                    if (result)
+                    {
+                        continue;
+                    }
+
+                    return false;
+                }
+
+
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.HasItem)
+                {
+                    GameObject prefab = ZNetScene.instance.GetPrefab(CheckQuest.QuestRequirementPrefab[i]);
+                    if (!prefab || !prefab.GetComponent<ItemDrop>()) continue;
+
+                    message =
+                        $"{Localization.instance.Localize("$mpasn_needhasitem")}: <color=#00ff00>{Localization.instance.Localize(prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_name)} x{CheckQuest.QuestRequirementLevel[i]}</color>";
+                    type = QuestRequirementType.HasItem;
+                    bool result = Utils.CustomCountItems(CheckQuest.QuestRequirementPrefab[i], 1) >=
+                                  CheckQuest.QuestRequirementLevel[i];
+                    if (result)
+                    {
+                        continue;
+                    }
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
+        public static bool IsAccepted(int UID)
+        {
+            return AcceptedQuests.ContainsKey(UID);
+        }
+
+        public static bool IsOnCooldown(int UID, out int left)
+        {
+            left = 0;
+            if (!Player.m_localPlayer) return true;
+            string cooldown = "[MPASN]questCD=" + UID;
+            if (!Player.m_localPlayer.m_customData.ContainsKey(cooldown)) return false;
+            int day = Convert.ToInt32(Player.m_localPlayer.m_customData[cooldown]);
+            left = (day + AllQuests[UID].ResetTime) - EnvMan.instance.GetCurrentDay();
+            return left > 0;
+        }
+
+        public static void AcceptQuest(int UID, string score = "0", bool handleEvent = true)
+        {
+            if (!Player.m_localPlayer) return;
+            if (AcceptedQuests.ContainsKey(UID) || !AllQuests.ContainsKey(UID)) return;
+            AcceptedQuests[UID] = AllQuests[UID];
+            AcceptedQuests[UID].CurrentScore = new int[AcceptedQuests[UID].TargetAMOUNT];
+
+            string[] split = score.Split(',');
+            for (int i = 0; i < split.Length; i++)
+            {
+                AcceptedQuests[UID].CurrentScore[i] = Convert.ToInt32(split[i]);
+            }
+
+            if (handleEvent) HandleQuestEvent(UID, QuestEventCondition.OnAcceptQuest);
+            InventoryChanged();
+            SaveScore(UID);
+        }
+
+        private static void SaveScore(int UID)
+        {
+            if (!Player.m_localPlayer || !AcceptedQuests.ContainsKey(UID)) return;
+            string save = "[MPASN]quest=" + UID;
+
+            string scoreSave = AcceptedQuests[UID].CurrentScore.Aggregate("", (current, i) => current + (i + ","));
+            scoreSave = scoreSave.Substring(0, scoreSave.Length - 1);
+            Player.m_localPlayer.m_customData[save] = scoreSave;
+            Quests_UIs.AcceptedQuestsUI.UpdateStatus(AcceptedQuests[UID]);
+        }
+
+        private static void RemoveQuestComplete(int UID)
+        {
+            if (!Player.m_localPlayer) return;
+            if (!AcceptedQuests.ContainsKey(UID)) return;
+            Quest quest = AcceptedQuests[UID];
+            if (quest.Type is QuestType.Collect)
+            {
+                for (int i = 0; i < quest.TargetAMOUNT; ++i)
+                {
+                    GameObject prefab = ZNetScene.instance.GetPrefab(quest.TargetPrefab[i]);
+                    if (Utils.CustomCountItems(prefab.name, quest.TargetLevel[i]) < quest.TargetCount[i]) return;
+                }
+
+                AcceptedQuests.Remove(UID);
+
+                for (int i = 0; i < quest.TargetAMOUNT; ++i)
+                {
+                    GameObject prefab = ZNetScene.instance.GetPrefab(quest.TargetPrefab[i]);
+                    Utils.CustomRemoveItems(prefab.name, quest.TargetCount[i], quest.TargetLevel[i]);
+                }
+            }
+            else
+            {
+                AcceptedQuests.Remove(UID);
+            }
+
+            for (int i = 0; i < quest.RewardsAMOUNT; ++i) 
+            {
+                if (quest.RewardType[i] is QuestRewardType.EpicMMO_EXP)
+                {
+                    OtherModsAPI.EpicMMOSystem_API.AddExp(quest.RewardCount[i]); 
+                    continue;
+                }
+
+                if (quest.RewardType[i] is QuestRewardType.MH_EXP)
+                {
+                    OtherModsAPI.MH_API.AddEXP(quest.RewardCount[i]);
+                    continue;
+                }
+
+                if (quest.RewardType[i] is QuestRewardType.Battlepass_EXP)
+                {
+                    Battlepass_Main_Client.AddExp(quest.RewardCount[i]);
+                    continue;
+                }
+
+                if (quest.RewardType[i] is QuestRewardType.Item or QuestRewardType.Pet)
+                {
+                    Utils.InstantiateItem(ZNetScene.instance.GetPrefab(quest.RewardPrefab[i]),
+                        quest.RewardCount[i], quest.RewardLevel[i]);
+                }
+
+                if (quest.RewardType[i] is QuestRewardType.Skill)
+                {
+                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) > 0)
+                        Player.m_localPlayer.GetSkills().CheatRaiseSkill(quest.RewardPrefab[i],
+                            quest.RewardCount[i]);
+                }
+
+                if (quest.RewardType[i] is QuestRewardType.Skill_EXP)
+                {
+                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) > 0)
+                    {
+                        Skills.Skill skill;
+                        if (!Enum.TryParse(quest.RewardPrefab[i], out Skills.SkillType found))
+                        {
+                            skill = Player.m_localPlayer.m_skills.GetSkill(
+                                (Skills.SkillType)Mathf.Abs(quest.RewardPrefab[i].GetStableHashCode()));
+                        }
+                        else
+                        {
+                            skill = Player.m_localPlayer.m_skills.GetSkill(found);
+                        }
+
+                        if (skill != null)
+                        {
+                            float expToAdd = quest.RewardCount[i];
+                            while (expToAdd > 0)
+                            {
+                                float nextLevelRequirement = skill.GetNextLevelRequirement();
+                                if (skill.m_accumulator + expToAdd >= nextLevelRequirement)
+                                {
+                                    expToAdd -= nextLevelRequirement - skill.m_accumulator;
+                                    skill.m_accumulator = 0;
+                                    skill.m_level++;
+                                    skill.m_level = Mathf.Clamp(skill.m_level, 0f, 100f);
+                                }
+                                else
+                                {
+                                    skill.m_accumulator += expToAdd;
+                                    expToAdd = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            string save = "[MPASN]quest=" + UID;
+            if (Player.m_localPlayer.m_customData.ContainsKey(save))
+            {
+                Player.m_localPlayer.m_customData.Remove(save);
+            }
+
+            string cooldown = "[MPASN]questCD=" + UID;
+            Player.m_localPlayer.m_customData[cooldown] = EnvMan.instance.GetCurrentDay().ToString();
+            MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
+                $"<color=#00ff00>{Localization.instance.Localize("$mpasn_youfinishedquest")}: <color=#00FFFF>{AllQuests[UID].Name}</color></color>");
+            ZPackage pkg = new();
+            pkg.Write((int)DiscordStuff.Webhooks.Quest);
+            pkg.Write(Player.m_localPlayer?.GetPlayerName() ?? "LocalPlayer");
+            pkg.Write(AllQuests[UID].Name);
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks", pkg);
+            HandleQuestEvent(UID, QuestEventCondition.OnCompleteQuest);
+        }
+
+        public static void RemoveQuestFailed(int UID, bool handleEvent = true)
+        {
+            if (!Player.m_localPlayer) return;
+            if (!AcceptedQuests.ContainsKey(UID)) return;
+            AcceptedQuests.Remove(UID);
+            string save = "[MPASN]quest=" + UID;
+            if (Player.m_localPlayer.m_customData.ContainsKey(save))
+            {
+                Player.m_localPlayer.m_customData.Remove(save);
+            }
+
+            if (handleEvent) HandleQuestEvent(UID, QuestEventCondition.OnCancelQuest);
+        }
+
+        public static void ClickQuestButton(int UID)
+        {
+            if (!Player.m_localPlayer || !AllQuests.ContainsKey(UID)) return;
+            AssetStorage.AssetStorage.AUsrc.Play();
+            if (IsOnCooldown(UID, out int left))
+            {
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
+                    $"<color=#00ff00>{left}</color> {Localization.instance.Localize("$mpasn_daysleft")}");
+                return;
+            }
+
+            if (!IsAccepted(UID))
+            {
+                if (AcceptedQuests.Count >= Global_Values._container.Value._maxAcceptedQuests)
+                {
+                    return;
+                }
+
+                if (!CanTake(UID, out string msg, out _))
+                {
+                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, msg);
+                    Quests_UIs.QuestUI.Hide();
+                    return;
+                }
+
+                AcceptQuest(UID);
+                Quests_UIs.AcceptedQuestsUI.CheckQuests();
+                return;
+            }
+
+            if (AcceptedQuests[UID].IsComplete())
+            {
+                RemoveQuestComplete(UID);
+                Quests_UIs.AcceptedQuestsUI.CheckQuests();
+                return;
+            }
+
+            RemoveQuestFailed(UID);
+            Quests_UIs.AcceptedQuestsUI.CheckQuests();
+        }
+
+        public static void TryAddRewardKill(string prefab, int level)
+        {
+            List<int> ToAutocomplete = new();
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Kill && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == prefab && level >= quest.Value.TargetLevel[i])
+                    {
+                        quest.Value.CurrentScore[i]++;
+                        SaveScore(quest.Key);
+                        CheckCharacterTargets();
+
+                        if (quest.Value.SpecialTag.HasFlagFast(SpecialQuestTag.Autocomplete) &&
+                            quest.Value.IsComplete())
+                        {
+                            ToAutocomplete.Add(quest.Key);
+                        }
+
+                        if (!Global_Values._container.Value._allowMultipleQuestScore)
+                            break;
+                    }
+                }
+            }
+
+            foreach (int quest in ToAutocomplete)
+            {
+                RemoveQuestComplete(quest);
+                Quests_UIs.AcceptedQuestsUI.CheckQuests();
+            }
+        }
+
+        public static bool IsQuestTarget(string NPCName)
+        {
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Talk && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == NPCName)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsQuestTarget(Character c)
+        {
+            string prefab = global::Utils.GetPrefabName(c.gameObject);
+            int level = c.GetLevel();
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Kill && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == prefab && level >= quest.Value.TargetLevel[i])
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsQuestTarget(Recipe c, int level)
+        {
+            string prefab = c.m_item.gameObject.name;
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Craft && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == prefab && level == quest.Value.TargetLevel[i])
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static void CheckCharacterTargets()
+        {
+            foreach (Character c in Character.GetAllCharacters())
+            {
+                c.transform.Find("MPASNquest")?.gameObject.SetActive(IsQuestTarget(c));
+            }
+        }
+
+        public static void CheckItemDropsTargets()
+        {
+            foreach (ItemDrop c in ItemDrop.m_instances)
+            {
+                c.transform.Find("MPASNquest").gameObject.SetActive(IsQuestTarget(c));
+            }
+        }
+
+        public static void CheckTalkTargets()
+        {
+            foreach (Market_NPC.NPCcomponent c in Market_NPC.NPCcomponent.ALL)
+            {
+                c.transform.Find("MPASNquest").gameObject.SetActive(IsQuestTarget(c.GetNPCName()));
+            }
+        }
+
+        public static void CheckPickableTargets()
+        {
+            foreach (Pickable c in Quest_ProgressionHook.Pickable_Hook.GetPickables())
+            {
+                if (!c)
+                {
+                    continue;
+                }
+                c.transform.Find("MPASNquest").gameObject.SetActive(IsQuestTarget(c));
+            }
+        }
+
+
+        public static bool IsQuestTarget(Pickable itemDrop)
+        {
+            string prefab = global::Utils.GetPrefabName(itemDrop.gameObject);
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Harvest && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == prefab)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsQuestTarget(ItemDrop itemDrop)
+        {
+            string prefab = global::Utils.GetPrefabName(itemDrop.gameObject);
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Collect && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == prefab &&
+                        itemDrop.m_itemData.m_quality == quest.Value.TargetLevel[i])
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsQuestTarget(Piece piece)
+        {
+            string prefab = piece.gameObject.name;
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Build && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == prefab)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static void TryAddRewardCraft(string prefab, int level)
+        {
+            List<int> ToAutocomplete = new();
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Craft && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == prefab && level == quest.Value.TargetLevel[i])
+                    {
+                        quest.Value.CurrentScore[i]++;
+                        SaveScore(quest.Key);
+
+                        if (quest.Value.SpecialTag.HasFlagFast(SpecialQuestTag.Autocomplete) &&
+                            quest.Value.IsComplete())
+                        {
+                            ToAutocomplete.Add(quest.Key);
+                        }
+
+                        if (!Global_Values._container.Value._allowMultipleQuestScore)
+                            break;
+                    }
+                }
+            }
+
+            foreach (int quest in ToAutocomplete)
+            {
+                RemoveQuestComplete(quest);
+                Quests_UIs.AcceptedQuestsUI.CheckQuests();
+            }
+        }
+
+        public static bool TryAddRewardBuild(string prefab)
+        {
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Build && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == prefab)
+                    {
+                        quest.Value.CurrentScore[i]++;
+                        SaveScore(quest.Key);
+
+                        if (quest.Value.SpecialTag.HasFlagFast(SpecialQuestTag.Autocomplete) &&
+                            quest.Value.IsComplete())
+                        {
+                            RemoveQuestComplete(quest.Key);
+                            Quests_UIs.AcceptedQuestsUI.CheckQuests();
+                        }
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static bool TryAddRewardTalk(string name)
+        {
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Talk && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == name)
+                    {
+                        quest.Value.CurrentScore[i] = 1;
+                        if (quest.Value.IsComplete())
+                        {
+                            RemoveQuestComplete(quest.Key);
+                        }
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static void TryAddRewardPickup(string prefab)
+        {
+            List<int> ToAutocomplete = new();
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
+                         q.Value.Type == QuestType.Harvest && !q.Value.IsComplete()))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    if (quest.Value.IsComplete(i)) continue;
+                    if (quest.Value.TargetPrefab[i] == prefab)
+                    {
+                        quest.Value.CurrentScore[i]++;
+                        SaveScore(quest.Key);
+                        CheckPickableTargets();
+
+                        if (quest.Value.SpecialTag.HasFlagFast(SpecialQuestTag.Autocomplete) &&
+                            quest.Value.IsComplete())
+                        {
+                            ToAutocomplete.Add(quest.Key);
+                        }
+
+                        if (!Global_Values._container.Value._allowMultipleQuestScore)
+                            break;
+                    }
+                }
+            }
+
+            foreach (int quest in ToAutocomplete)
+            {
+                RemoveQuestComplete(quest);
+                Quests_UIs.AcceptedQuestsUI.CheckQuests();
+            }
+        }
+
+
+        public static void InventoryChanged()
+        {
+            List<int> ToAutocomplete = new();
+            foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(t => t.Value.Type == QuestType.Collect))
+            {
+                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                {
+                    quest.Value.CurrentScore[i] =
+                        Utils.CustomCountItems(quest.Value.TargetPrefab[i], quest.Value.TargetLevel[i]);
+                    SaveScore(quest.Key);
+                    CheckItemDropsTargets();
+
+                    if (quest.Value.SpecialTag.HasFlagFast(SpecialQuestTag.Autocomplete) && quest.Value.IsComplete())
+                    {
+                        ToAutocomplete.Add(quest.Key);
+                    }
+                }
+            }
+
+            foreach (int quest in ToAutocomplete)
+            {
+                RemoveQuestComplete(quest);
+                Quests_UIs.AcceptedQuestsUI.CheckQuests();
+            }
+        }
+    }
+    
+    private static void HandleQuestEvent(int UID, QuestEventCondition type)
+    {
+        if (!SyncedQuestsEvents.Value.TryGetValue(UID, out List<QuestEvent> events)) return;
+        IEnumerable<QuestEvent> search = events.Where(x => x.cond == type);
+        if (!search.Any()) return;
+        foreach (QuestEvent quest in search)
+        {
+            QuestEventAction action = quest.action;
+            string[] split = quest.args.Split(',');
+            try
+            {
+                switch (action)
+                {
+                    case QuestEventAction.GiveItem:
+                        string itemPrefab = split[0];
+                        GameObject prefab = ZNetScene.instance.GetPrefab(itemPrefab);
+                        if (!prefab || !prefab.GetComponent<ItemDrop>()) continue;
+                        GameObject newItem = UnityEngine.Object.Instantiate(prefab, Player.m_localPlayer.transform.position,
+                            Quaternion.identity);
+                        int amount = int.Parse(split[1]);
+                        int level = int.Parse(split[2]);
+                        newItem.GetComponent<ItemDrop>().m_itemData.m_stack = amount;
+                        newItem.GetComponent<ItemDrop>().m_itemData.m_quality = level;
+                        newItem.GetComponent<ItemDrop>().Save();
+                        break;
+                    case QuestEventAction.GiveQuest:
+                        string questName = split[0].ToLower();
+                        Quest.AcceptQuest(questName.GetStableHashCode(), handleEvent: false);
+                        break;
+                    case QuestEventAction.Spawn:
+                        string spawnPrefab = split[0];
+                        Vector3 spawnPos = Player.m_localPlayer.transform.position;
+                        GameObject spawn = ZNetScene.instance.GetPrefab(spawnPrefab);
+                        if (!spawn || !spawn.GetComponent<Character>()) continue;
+                        int spawnAmount = int.Parse(split[1]);
+                        int spawnLevel = int.Parse(split[2]);
+                        for (int i = 0; i < spawnAmount; i++)
+                        {
+                            float randomX = UnityEngine.Random.Range(-15f, 15f);
+                            float randomZ = UnityEngine.Random.Range(-15f, 15f);
+                            Vector3 randomPos = new Vector3(spawnPos.x + randomX, spawnPos.y, spawnPos.z + randomZ);
+                            float height = ZoneSystem.instance.GetSolidHeight(randomPos);
+                            randomPos.y = height;
+                            GameObject newSpawn = UnityEngine.Object.Instantiate(spawn, randomPos,
+                                Quaternion.identity);
+                            newSpawn.GetComponent<Character>().SetLevel(spawnLevel);
+                        }
+                        Quests_UIs.QuestUI.Hide();
+                        break;
+                    case QuestEventAction.Teleport:
+                        int x = int.Parse(split[0]);
+                        int y = int.Parse(split[1]);
+                        int z = int.Parse(split[2]);
+                        Player.m_localPlayer.TeleportTo(new Vector3(x, y, z), Player.m_localPlayer.transform.rotation,
+                            true);
+                        Quests_UIs.QuestUI.Hide();
+                        break;
+                    case QuestEventAction.Damage:
+                        int damage = int.Parse(split[0]);
+                        HitData hitData = new HitData();
+                        hitData.m_damage.m_damage = damage;
+                        Player.m_localPlayer.Damage(hitData);
+                        break;
+                    case QuestEventAction.Heal:
+                        int heal = int.Parse(split[0]);
+                        Player.m_localPlayer.Heal(heal);
+                        break;
+                    case QuestEventAction.RemoveQuest:
+                        string removeQuestName = split[0].ToLower();
+                        Quest.RemoveQuestFailed(removeQuestName.GetStableHashCode(), false);
+                        break;
+                    case QuestEventAction.PlaySound:
+                        string sound = split[0];
+                        if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(sound, out AudioClip clip))
+                            AssetStorage.AssetStorage.AUsrc.PlayOneShot(clip);
+                        break;
+                    default:
+                        continue;
+                }
+            }
+            catch
+            {
+                // 
+            }
+        }
+    }
+
+
+}

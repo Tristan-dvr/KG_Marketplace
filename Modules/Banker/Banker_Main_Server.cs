@@ -1,0 +1,183 @@
+﻿using System.Threading.Tasks;
+using Marketplace.Paths;
+using Marketplace.Modules.Marketplace_NPC;
+
+namespace Marketplace.Modules.Banker;
+
+[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "BankerProfiles.cfg" },
+    new[] { "OnBankerProfilesFileChange" })]
+public static class Banker_Main_Server
+{
+    private static readonly Dictionary<string, Dictionary<int, int>> BankerServerSideData = new();
+    private static readonly Dictionary<string, Dictionary<int, DateTime>> BankerTimeStamp = new();
+
+    private static void OnInit()
+    {
+        Market_Paths.BankerDataJSONFile.DecryptOldData();
+        string bankData = Market_Paths.BankerDataJSONFile.ReadClear();
+        if (!string.IsNullOrWhiteSpace(bankData))
+            BankerServerSideData.AddRange(JSON.ToObject<Dictionary<string, Dictionary<int, int>>>(bankData));
+        ReadServerBankerProfiles();
+        if (Global_Values.BankerIncomeTime > 0)
+        {
+            Marketplace._thistype.StartCoroutine(BankerIncome());
+            Utils.print("Started Banker Income Coroutine");
+        }
+    }
+
+    private static void OnBankerProfilesFileChange()
+    {
+        ReadServerBankerProfiles();
+        Utils.print("Banker Changed. Sending new info to all clients");
+    }
+
+    private static void ReadServerBankerProfiles()
+    {
+        List<string> profiles = File.ReadAllLines(Market_Paths.BankerFile).ToList();
+        Banker_DataTypes.SyncedBankerProfiles.Value.Clear();
+        string splitProfile = "default";
+        for (int i = 0; i < profiles.Count; i++)
+        {
+            if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
+            if (profiles[i].StartsWith("["))
+            {
+                splitProfile = profiles[i].Replace("[", "").Replace("]", "").ToLower();
+            }
+            else
+            {
+                int test = profiles[i].Replace(" ", "").GetStableHashCode();
+                if (Banker_DataTypes.SyncedBankerProfiles.Value.TryGetValue(splitProfile, out var value))
+                {
+                    value.Add(test);
+                }
+                else
+                {
+                    Banker_DataTypes.SyncedBankerProfiles.Value[splitProfile] = new List<int> { test };
+                }
+            }
+        }
+
+        Banker_DataTypes.SyncedBankerProfiles.Update();
+    }
+
+    private static IEnumerator BankerIncome()
+    {
+        while (true)
+        {
+            yield return new WaitForSecondsRealtime(Global_Values.BankerIncomeTime * 3600);
+            Utils.print("Adding Banker Income");
+            Task task = Task.Run(() =>
+            {
+                foreach (string id in BankerServerSideData.Keys)
+                {
+                    float multiplier = Global_Values._container.Value._vipPlayerList.Contains(id)
+                        ? Global_Values.BankerVIPIncomeMultiplier
+                        : Global_Values.BankerIncomeMultiplier;
+                    if (multiplier > 0)
+                    {
+                        foreach (int item in new List<int>(BankerServerSideData[id].Keys))
+                        {
+                            if (!BankerTimeStamp.ContainsKey(id) || !BankerTimeStamp[id].ContainsKey(item) ||
+                                (DateTime.Now - BankerTimeStamp[id][item]).TotalHours >=
+                                Global_Values.BankerIncomeTime)
+                            {
+                                BankerServerSideData[id][item] +=
+                                    Mathf.CeilToInt(BankerServerSideData[id][item] * multiplier);
+                            }
+                        }
+                    }
+                }
+            });
+            yield return new WaitUntil(() => task.IsCompleted);
+            SaveBankerData();
+            foreach (string userID in BankerServerSideData.Keys)
+            {
+                ZNetPeer peer = ZNet.instance.GetPeerByHostName(userID);
+                if (peer != null) SendBankerDataToClient(peer);
+            }
+        }
+    }
+
+    private static void SendBankerDataToClient(ZNetPeer peer)
+    {
+        string userID = peer.m_socket.GetHostName();
+
+        if (userID == "0") return;
+        if (BankerServerSideData.TryGetValue(userID, out var value))
+        {
+            string data = JSON.ToJSON(value);
+            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, "KGmarket GetBankerClientData", data);
+        }
+    }
+
+    private static void SaveBankerData()
+    {
+        Market_Paths.BankerDataJSONFile.WriteClear(JSON.ToNiceJSON(BankerServerSideData));
+    }
+
+    [HarmonyPatch(typeof(ZNet), "RPC_PeerInfo")]
+    [ServerOnlyPatch]
+    private static class ZnetSyncBankerProfiles
+    {
+        private static void Postfix(ZRpc rpc)
+        {
+            if (!(ZNet.instance.IsServer() && ZNet.instance.IsDedicated())) return;
+            if (!BankerTimeStamp.ContainsKey(rpc.m_socket.GetHostName()))
+                BankerTimeStamp[rpc.m_socket.GetHostName()] = new Dictionary<int, DateTime>();
+            ZNetPeer peer = ZNet.instance.GetPeer(rpc);
+            if (peer == null) return;
+            SendBankerDataToClient(peer);
+        }
+    }
+
+    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
+    [ServerOnlyPatch]
+    private static class ZrouteMethodsServerBanker
+    {
+        private static void Postfix()
+        {
+            ZRoutedRpc.instance.Register("KGmarket BankerDeposit",
+                new Action<long, string, int>(MethodBankerDeposit));
+            ZRoutedRpc.instance.Register("KGmarket BankerWithdraw",
+                new Action<long, string, int>(MethodBankerWithdraw));
+        }
+    }
+
+    public static void MethodBankerDeposit(long sender, string item, int value)
+    {
+        ZNetPeer peer = ZNet.instance.GetPeer(sender);
+        if (peer is null) return;
+        int hash = item.GetStableHashCode();
+        string userID = peer.m_socket.GetHostName();
+        if (!BankerServerSideData.ContainsKey(userID)) BankerServerSideData[userID] = new Dictionary<int, int>();
+        if (!BankerServerSideData[userID].ContainsKey(hash)) BankerServerSideData[userID][hash] = 0;
+        BankerTimeStamp[userID][hash] = DateTime.Now;
+        BankerServerSideData[userID][hash] += value;
+        SendBankerDataToClient(peer);
+        SaveBankerData();
+        Market_Logger.Log(Market_Logger.LogType.Banker,
+            $"Player User ID: {userID} Deposit an item {item} with quantity: {value}. Current quantity: {BankerServerSideData[userID][hash]}");
+    }
+
+
+    private static void MethodBankerWithdraw(long sender, string item, int value)
+    {
+        ZNetPeer peer = ZNet.instance.GetPeer(sender);
+        if (peer is null) return;
+        string userID = peer.m_socket.GetHostName();
+        if (!BankerServerSideData.ContainsKey(userID)) return;
+        int hash = item.GetStableHashCode();
+        if (!BankerServerSideData[userID].ContainsKey(hash) || BankerServerSideData[userID][hash] <= 0) return;
+        int fixedValue = Mathf.Min(BankerServerSideData[userID][hash], value);
+        BankerTimeStamp[userID][hash] = DateTime.Now;
+        BankerServerSideData[userID][hash] -= fixedValue;
+        Marketplace_DataTypes.ServerMarketSendData mockData = new Marketplace_DataTypes.ServerMarketSendData
+            { Count = fixedValue, ItemPrefab = item, Quality = 1 };
+        string json = JSON.ToJSON(mockData);
+        ZRoutedRpc.instance.InvokeRoutedRPC(sender, "KGmarket BuyItemAnswer", json);
+        SendBankerDataToClient(peer);
+        SaveBankerData();
+        Market_Logger.Log(Market_Logger.LogType.Banker,
+            $"Player User ID: {userID} Withdraw an item {item} with quantity: {value}");
+    }
+}

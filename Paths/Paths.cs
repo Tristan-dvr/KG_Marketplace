@@ -1,0 +1,96 @@
+﻿namespace Marketplace.Paths;
+
+[Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Init, "OnInit")]
+public static class Market_Paths
+{
+    public static string MainPath => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceKG");
+    public static string NPC_SoundsPath => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceNPC_Sounds");
+    public static string CachedImagesFolder => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceCachedImages");
+    public static string DiscordStuffFolder => Path.Combine(MainPath, "DiscordWebhooks");
+
+    public static string QuestProfilesPath => Path.Combine(MainPath, "QuestsProfiles.cfg");
+    public static string QuestDatabasePath => Path.Combine(MainPath, "QuestsDatabase.cfg");
+    public static string QuestEventsPath => Path.Combine(MainPath, "QuestsEvents.cfg");
+
+    private static string BattlepassPath => Path.Combine(MainPath, "Battlepass");
+    public static string BattlepassConfigPath => Path.Combine(BattlepassPath, "BattlepassConfig.cfg");
+    public static string BattlepassFreeRewardsPath => Path.Combine(BattlepassPath, "BattlepassFreeRewards.cfg");
+    public static string BattlepassPremiumRewardsPath => Path.Combine(BattlepassPath, "BattlepassPremiumRewards.cfg");
+
+    private static string DataFolder => Path.Combine(MainPath, "DO NOT TOUCH");
+
+    public static string BankerDataJSONFile => Path.Combine(DataFolder, "BankerData.json");
+    public static string BankerFile => Path.Combine(MainPath, "BankerProfiles.cfg");
+
+    public static string LoggerPath => Path.Combine(MainPath, "Logger.log");
+
+    public static string ServerMarketDataJSON => Path.Combine(DataFolder, "MarketplaceData.json");
+    public static string MarketPlayersIncomeJSON => Path.Combine(DataFolder, "PlayersIncome.json");
+    public static string MarketPlayerMessagesJSON => Path.Combine(DataFolder, "PlayerMessages.json");
+
+    public static string TeleporterPinsFolder => Path.Combine(MainPath, "MapPinsIcons");
+    public static string TeleporterPinsConfig => Path.Combine(MainPath, "TeleportHubProfiles.cfg");
+
+    public static string TraderConfig => Path.Combine(MainPath, "TraderProfiles.cfg");
+
+    public static string ServerInfoConfig => Path.Combine(MainPath, "ServerInfoProfiles.cfg");
+
+    public static string TerritoriesConfigPath => Path.Combine(MainPath, "TerritoryDatabase.cfg");
+
+    private static string DistancedUIFolder => Path.Combine(MainPath, "DistancedUI");
+    public static string DistancedUIConfig => Path.Combine(DistancedUIFolder, "DistancedUI.cfg");
+    
+    public static string GamblerConfig => Path.Combine(MainPath, "GamblerProfiles.cfg");
+    
+    public static string BufferProfilesConfig => Path.Combine(MainPath, "BufferProfiles.cfg");
+    public static string BufferDatabaseConfig => Path.Combine(MainPath, "BufferDatabase.cfg");
+    
+    public static string MainConfig => Path.Combine(MainPath, "MarketPlace.cfg");
+
+    private static void OnInit()
+    {
+        if (Utils.IsServer)
+        {
+            if (!Directory.Exists(MainPath))
+                Directory.CreateDirectory(MainPath);
+            if (!Directory.Exists(DataFolder))
+                Directory.CreateDirectory(DataFolder);
+            if (!Directory.Exists(DiscordStuffFolder))
+                Directory.CreateDirectory(DiscordStuffFolder);
+            if (!Directory.Exists(BattlepassPath))
+                Directory.CreateDirectory(BattlepassPath);
+            if (!Directory.Exists(TeleporterPinsFolder))
+                Directory.CreateDirectory(TeleporterPinsFolder);
+            if (!Directory.Exists(DistancedUIFolder))
+                Directory.CreateDirectory(DistancedUIFolder);
+
+
+            if (!File.Exists(QuestProfilesPath)) File.Create(QuestProfilesPath).Dispose();
+            if (!File.Exists(QuestEventsPath)) File.Create(QuestEventsPath).Dispose();
+            if (File.Exists(Path.Combine(MainPath, "QuestsDATABASE.cfg")))
+                File.Move(Path.Combine(MainPath, "QuestsDATABASE.cfg"), QuestDatabasePath);
+            if(File.Exists(Path.Combine(MainPath, "BufferDATABASE.cfg")))
+                File.Move(Path.Combine(MainPath, "BufferDATABASE.cfg"), BufferDatabaseConfig);
+            if (!File.Exists(QuestDatabasePath)) File.Create(QuestDatabasePath).Dispose();
+            if (!File.Exists(BattlepassConfigPath)) File.Create(BattlepassConfigPath).Dispose();
+            if (!File.Exists(BattlepassFreeRewardsPath)) File.Create(BattlepassFreeRewardsPath).Dispose();
+            if (!File.Exists(BattlepassPremiumRewardsPath)) File.Create(BattlepassPremiumRewardsPath).Dispose();
+            if (!File.Exists(BankerFile)) File.Create(BankerFile).Dispose();
+            if (!File.Exists(BankerDataJSONFile)) File.Create(BankerDataJSONFile).Dispose();
+            if (!File.Exists(TeleporterPinsConfig)) File.Create(TeleporterPinsConfig).Dispose();
+            if (!File.Exists(TraderConfig)) File.Create(TraderConfig).Dispose();
+            if (!File.Exists(ServerInfoConfig)) File.Create(ServerInfoConfig).Dispose();
+            if (!File.Exists(TerritoriesConfigPath)) File.Create(TerritoriesConfigPath).Dispose();
+            if (!File.Exists(BufferProfilesConfig)) File.Create(BufferProfilesConfig).Dispose();
+            if (!File.Exists(BufferDatabaseConfig)) File.Create(BufferDatabaseConfig).Dispose();
+            if(!File.Exists(GamblerConfig)) File.Create(GamblerConfig).Dispose();
+        }
+        else
+        {
+            if (!Directory.Exists(NPC_SoundsPath))
+                Directory.CreateDirectory(NPC_SoundsPath);
+            if (!Directory.Exists(CachedImagesFolder))
+                Directory.CreateDirectory(CachedImagesFolder);
+        }
+    }
+}
