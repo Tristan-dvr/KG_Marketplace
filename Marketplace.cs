@@ -6,12 +6,13 @@ namespace Marketplace
 {
     [BepInPlugin(GUID, PluginName, PluginVersion)]
     [BepInDependency("org.bepinex.plugins.groups", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInIncompatibility("org.bepinex.plugins.valheim_plus")]
     [VerifyKey("KGvalheim/Marketplace", LicenseMode.DedicatedServer)]
     public class Marketplace : BaseUnityPlugin
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        private const string PluginVersion = "8.3.5";
+        private const string PluginVersion = "8.4.0";
         internal static Marketplace _thistype;
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW;
