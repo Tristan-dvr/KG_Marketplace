@@ -62,16 +62,16 @@ public abstract class CustomSyncedValueBase
         get => boxedValue;
         set
         {
-            boxedValue = value; 
+            boxedValue = value;
             ValueChanged?.Invoke();
         }
-    } 
+    }
 
     protected bool localIsOwner;
 
     protected CustomSyncedValueBase(ConfigSync configSync, string identifier, Type type)
     {
-        Identifier = identifier;
+        Identifier = "kg.Marketplace" + identifier;
         Type = type;
         configSync.AddCustomValue(this);
         localIsOwner = configSync.IsSourceOfTruth;
