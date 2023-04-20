@@ -22,12 +22,12 @@ public static class Utils
         if (Application.platform == RuntimePlatform.WindowsPlayer)
         {
             ConsoleManager.SetConsoleColor(color);
-            ConsoleManager.StandardOutStream.WriteLine($"[{DateTime.Now}] [MPASN] {obj}");
+            ConsoleManager.StandardOutStream.WriteLine($"[{DateTime.Now}] [kg.Marketplace] {obj}");
             ConsoleManager.SetConsoleColor(ConsoleColor.White);
         }
         else
         {
-            MonoBehaviour.print($"[{DateTime.Now}] [MPASN] " + obj);
+            MonoBehaviour.print($"[{DateTime.Now}] [kg.Marketplace] " + obj);
         }
     }
     

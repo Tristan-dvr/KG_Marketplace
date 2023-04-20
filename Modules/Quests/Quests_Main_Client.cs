@@ -182,7 +182,7 @@ public static class Quests_Main_Client
         }
         
         public static void Postfix()
-        {
+        { 
             InitRawQuests();
             ClearEmptyQuestCooldowns();
             LoadQuests();

@@ -22,7 +22,7 @@
         <OutputPath>bin\Debug\</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>2</WarningLevel>
+        <WarningLevel>0</WarningLevel>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -32,7 +32,7 @@
         <OutputPath>bin\Release\</OutputPath>
         <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>2</WarningLevel>
+        <WarningLevel>0</WarningLevel>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
@@ -78,6 +78,9 @@
         </Reference>
         <Reference Include="LocalizationManager">
           <HintPath>Libs\LocalizationManager.dll</HintPath>
+        </Reference>
+        <Reference Include="MagicHeimUnityCode">
+          <HintPath>Resources\Marketplace_TransmogCode.dll</HintPath>
         </Reference>
         <Reference Include="Mono.Cecil">
           <HintPath>Libs\Mono.Cecil.dll</HintPath>
@@ -356,6 +359,9 @@
         <Compile Include="Modules\Trader\Trader_Main_Client.cs" />
         <Compile Include="Modules\Trader\Trader_Main_Server.cs" />
         <Compile Include="Modules\Trader\Trader_UI.cs" />
+        <Compile Include="Modules\Transmogrification\Transmogrification_Client_Main.cs" />
+        <Compile Include="Modules\Transmogrification\Transmogrification_DataTypes.cs" />
+        <Compile Include="Modules\Transmogrification\Transmogrification_UI.cs" />
         <Compile Include="OtherModsAPI.cs" />
         <Compile Include="Paths\Paths.cs" />
         <Compile Include="PrefabPhotoManager.cs" />

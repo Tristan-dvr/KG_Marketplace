@@ -7,6 +7,7 @@ using Marketplace.Modules.Quests;
 using Marketplace.Modules.ServerInfo;
 using Marketplace.Modules.Teleporter;
 using Marketplace.Modules.Trader;
+using Marketplace.Modules.Transmogrification;
 using UnityEngine.EventSystems;
 using Image = UnityEngine.UI.Image;
 using Object = UnityEngine.Object;
@@ -282,7 +283,7 @@ public static class Market_NPC
             _tt.gameObject.SetActive(false);
         }
     }
-    
+
     private class CustomLookAt : MonoBehaviour
     {
         private Animator animator;
@@ -443,6 +444,7 @@ public static class Market_NPC
                 }
             }
         }
+
         private void FixedUpdate()
         {
             if (!znv || znv.m_zdo == null) return;
@@ -542,6 +544,7 @@ public static class Market_NPC
                 znv.Register("KGmarket GetDamage", PlayStaggerAnimation);
                 znv.Register("KGmarket GetPatrolData", new Action<long, string>(GetPatrolData));
             }
+
             OverrideModel(0, znv.m_zdo.GetString("KGnpcModelOverride"));
             GameObject go = Instantiate(AssetStorage.AssetStorage.MarketplaceQuestQuestionIcon, transform);
             go.transform.position += Vector3.up * 4.5f;
@@ -549,8 +552,7 @@ public static class Market_NPC
             go.SetActive(Quests_DataTypes.Quest.IsQuestTarget(GetNPCName()));
             InitPatrolData(znv.m_zdo.GetString(PatrolData));
         }
-        
-        
+
 
         private void GetPatrolData(long sender, string data)
         {
@@ -696,10 +698,10 @@ public static class Market_NPC
                     Buffer_UI.Show(znv.m_zdo.GetString("KGnpcProfile", "default"),
                         znv.m_zdo.GetString("KGnpcNameOverride"));
                     break;
-                // case NPCType.Transmog:
-                //     Transmog_UI.Show(znv.m_zdo.GetString("KGnpcProfile", "default"),
-                //         znv.m_zdo.GetString("KGnpcNameOverride"));
-                //     break;
+                case NPCType.Transmog:
+                    Transmogrification_UI.Show(znv.m_zdo.GetString("KGnpcProfile", "default"),
+                        znv.m_zdo.GetString("KGnpcNameOverride"));
+                    break;
                 default:
                     return false;
             }
@@ -1100,7 +1102,7 @@ public static class Market_NPC
         }
 
         private bool _isPlayerModel;
-        
+
         private bool TryOverrideModel(ref string prefab, out bool isFemale, bool EquipItems = true)
         {
             bool overrideHumanoid = false;
@@ -1356,7 +1358,8 @@ public static class Market_NPC
                     if (prefab.GetComponent<Character>())
                     {
                         PhotoManager.__instance.MakeSprite(prefab, 0.6f, 0.25f);
-                        icon.sprite = PhotoManager.__instance.GetSprite(prefab.name, AssetStorage.AssetStorage.PlaceholderMonsterIcon, 1);
+                        icon.sprite = PhotoManager.__instance.GetSprite(prefab.name,
+                            AssetStorage.AssetStorage.PlaceholderMonsterIcon, 1);
                         icon.gameObject.SetActive(true);
                     }
                 }

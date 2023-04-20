@@ -33,7 +33,7 @@ public static class Gambler_UI
     private static GameObject CircleEffect;
     private static AudioClip SOUNDEFFECT;
     private static AudioClip SOUNDEFFECT2;
-    private static AudioClip SOUNDEFFECT3;
+    public static AudioClip SOUNDEFFECT3;
 
     public enum Status
     {
