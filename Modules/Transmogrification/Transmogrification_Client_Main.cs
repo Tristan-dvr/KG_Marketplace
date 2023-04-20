@@ -84,7 +84,7 @@ public static class Transmogrification_Client_Main
     }
 
 
-    public static string AddTooltipTransmog(ItemDrop.ItemData item)
+    private static string AddTooltipTransmog(ItemDrop.ItemData item)
     {
         TempItem transmog = item.T_Data();
         string go = ZNetScene.instance.GetPrefab(transmog.ReplacedPrefab)?.GetComponent<ItemDrop>()?.m_itemData
