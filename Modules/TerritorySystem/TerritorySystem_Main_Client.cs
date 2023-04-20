@@ -49,16 +49,20 @@ public static class TerritorySystem_Main_Client
         CurrentTerritory = TerritorySystem_DataTypes.Territory.GetCurrentTerritory(vec);
         if (CurrentTerritory == null) return;
 
-        if (CurrentTerritory.AdditionalFlags.HasFlagFast(TerritorySystem_DataTypes.AdditionalTerritoryFlags.NoMist))
+        if (ParticleMist.instance && ParticleMist.instance.m_ps)
         {
-            if (ParticleMist.instance.m_ps.emission.enabled)
-                ParticleMist.instance.m_ps.enableEmission = false;
+            if (CurrentTerritory.AdditionalFlags.HasFlagFast(TerritorySystem_DataTypes.AdditionalTerritoryFlags.NoMist))
+            {
+                if (ParticleMist.instance.m_ps.emission.enabled)
+                    ParticleMist.instance.m_ps.enableEmission = false;
+            }
+            else
+            {
+                if (!ParticleMist.instance.m_ps.emission.enabled)
+                    ParticleMist.instance.m_ps.enableEmission = true;
+            }
         }
-        else
-        {
-            if (!ParticleMist.instance.m_ps.emission.enabled)
-                ParticleMist.instance.m_ps.enableEmission = true;
-        }
+    
 
         if (CurrentTerritory.Flags.HasFlagFast(TerritorySystem_DataTypes.TerritoryFlags.PushAway) &&
             !CurrentTerritory.IsOwner())

@@ -20,6 +20,7 @@ namespace Marketplace
         public static Action Global_FixedUpdator;
         public static Action Global_OnGUI_Updator;
         public static Type TempJewelcraftingType;
+        public static Type TempProfessionsType;
 
         public static readonly ConfigSync configSync = new(GUID)
         {
@@ -34,6 +35,8 @@ namespace Marketplace
             HarmonyLib.Tools.Logger.ChannelFilter = HarmonyLib.Tools.Logger.LogChannel.Error;
             Localizer.Load();
             TempJewelcraftingType = Type.GetType("Jewelcrafting.Jewelcrafting, Jewelcrafting");
+            TempProfessionsType = Type.GetType("Professions.Professions, Professions");
+            Utils.print($"Professions: {TempProfessionsType}");
             JSON.Parameters = new JSONParameters
             {
                 UseExtensions = false,

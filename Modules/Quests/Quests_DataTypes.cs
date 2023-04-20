@@ -667,14 +667,14 @@ public static class Quests_DataTypes
 
                 if (quest.RewardType[i] is QuestRewardType.Skill)
                 {
-                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) > 0)
+                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) > (Marketplace.TempProfessionsType != null ? 0 : -1))
                         Player.m_localPlayer.GetSkills().CheatRaiseSkill(quest.RewardPrefab[i],
                             quest.RewardCount[i]);
                 }
 
                 if (quest.RewardType[i] is QuestRewardType.Skill_EXP)
                 {
-                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) > 0)
+                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) > (Marketplace.TempProfessionsType != null ? 0 : -1))
                     {
                         Skills.Skill skill;
                         if (!Enum.TryParse(quest.RewardPrefab[i], out Skills.SkillType found))
