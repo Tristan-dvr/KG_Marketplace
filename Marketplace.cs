@@ -25,7 +25,7 @@ namespace Marketplace
             DisplayName = GUID, ModRequired = true, MinimumRequiredVersion = PluginVersion,
             CurrentVersion = PluginVersion
         };
-        
+
         private void Awake()
         {
             _thistype = this;
@@ -68,17 +68,25 @@ namespace Marketplace
                     }
                 }
 
-                MethodInfo method = autoload.Value.GetMethod(autoload.Key.InitMethod ?? "None", BindingFlags.NonPublic | BindingFlags.Static);
-                if (method == null) 
+                MethodInfo method = autoload.Value.GetMethod(autoload.Key.InitMethod ?? "None",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                if (method == null)
                 {
                     Utils.print(
                         $"Error loading {autoload.Value.Name} class, method {autoload.Key.InitMethod} not found",
                         ConsoleColor.Red);
                     continue;
                 }
-
-                method.Invoke(null, null);
+                try
+                {
+                    method.Invoke(null, null);
+                }
+                catch (Exception ex)
+                {
+                    Utils.print($"Autoload exception on method {method}\n:{ex}", ConsoleColor.Red);
+                }
             }
+
             InitFSW(Market_Paths.MainPath);
             AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())
                 .Where(t => Utils.IsServer
@@ -90,7 +98,7 @@ namespace Marketplace
         private void Update() => Global_Updator?.Invoke();
         private void OnGUI() => Global_OnGUI_Updator?.Invoke();
         private void FixedUpdate() => Global_FixedUpdator?.Invoke();
-        
+
         private void InitFSW(string folderPath)
         {
             if (!Utils.IsServer) return;
