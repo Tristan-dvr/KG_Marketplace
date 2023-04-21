@@ -43,7 +43,6 @@ public static class TerritorySystem_DataTypes
             pkg.Write(OverridenHeight);
             pkg.Write(OverridenBiome);
             pkg.Write(AddMonsterLevel);
-            pkg.Write(CreatorID ?? "");
             pkg.Write((int)PaintGround);
             pkg.Write(DrawOnMap);
         }
@@ -74,7 +73,6 @@ public static class TerritorySystem_DataTypes
             OverridenHeight = pkg.ReadSingle();
             OverridenBiome = pkg.ReadInt();
             AddMonsterLevel = pkg.ReadInt();
-            CreatorID = pkg.ReadString();
             PaintGround = (PaintType)pkg.ReadInt();
             DrawOnMap = pkg.ReadBool();
         }
@@ -108,7 +106,6 @@ public static class TerritorySystem_DataTypes
         public float OverridenHeight;
         public int OverridenBiome;
         public int AddMonsterLevel;
-        public string CreatorID = "";
         public PaintType PaintGround;
         public bool DrawOnMap;
 
@@ -158,11 +155,9 @@ public static class TerritorySystem_DataTypes
         public bool IsOwner()
         {
             if (Player.m_debugMode) return true;
-            IsOwnerCached ??= Owners.Contains(Global_Values._localUserID) || Owners.Contains("ALL") || IsCreator();
+            IsOwnerCached ??= Owners.Contains(Global_Values._localUserID) || Owners.Contains("ALL");
             return IsOwnerCached.Value;
         }
-
-        public bool IsCreator() => Global_Values._localUserID == CreatorID;
 
         public bool IsInside(Vector2 mouse)
         {
