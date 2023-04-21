@@ -42,7 +42,7 @@ namespace Marketplace
                 SerializeNullValues = false,
                 DateTimeMilliseconds = false,
                 UseUTCDateTime = true,
-                UseOptimizedDatasetSchema = true,
+                UseOptimizedDatasetSchema = true, 
                 UseValuesOfEnums = true,
             };
             IEnumerable<KeyValuePair<Market_Autoload, Type>> toAutoload = Assembly.GetExecutingAssembly().GetTypes()

@@ -45,12 +45,12 @@ public static class Global_Values
     {
         public string _blockedPrefabsServer = "";
         public string _blockedPlayerList = "";
+        public string _vipPlayerList = "";
+        public string _serverCurrency = "Coins";
         public int _itemMarketLimit;
         public int _marketTaxes;
         public bool _canTeleportWithOre;
         public int _vipmarketTaxes;
-        public string _vipPlayerList;
-        public string _serverCurrency = "Coins";
         public bool _gamblerEnableNotifications;
         public bool _allowMultipleQuestScore;
         public int _maxAcceptedQuests;
