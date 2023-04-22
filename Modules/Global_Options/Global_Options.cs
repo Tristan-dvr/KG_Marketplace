@@ -74,7 +74,7 @@ public static class Global_Values
             pkg.Write(_maxAcceptedQuests);
             pkg.Write(_hideOtherQuestRequirementQuests);
             pkg.Write(_allowKillQuestsInParty);
-             pkg.Write(_enableKGChat);
+            pkg.Write(_enableKGChat);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -135,7 +135,8 @@ public static class Global_Values
         BankerIncomeMultiplier = SearchOption( "BankerIncomeMultiplier",  0f, "Banker Income Multiplier (per time)");
         BankerVIPIncomeMultiplier = SearchOption( "BankerVIPIncomeMultiplier",  0f, "VIP Banker Income Multiplier");
         WebHookLink = SearchOption( "FeedbackWebhookLink","webhook link","Feedback Webhook Link");
-
+  
+        
         _container.Value._itemMarketLimit = SearchOption( "ItemMarketLimit", 15, "Limit amount of slots player can sell in marketpalce");
         _container.Value._blockedPlayerList = SearchOption( "BlockedPlayers",  "User IDs", "Marketplace Blocked Players");
         _container.Value._vipPlayerList = SearchOption( "VIPplayersList",  "User IDs", "Marketplace VIP Players List ");
@@ -151,8 +152,9 @@ public static class Global_Values
         _container.Value._maxAcceptedQuests = SearchOption("MaxAcceptedQuests", 7, "Max Amount Of Accpeted Quests");
         _container.Value._hideOtherQuestRequirementQuests = SearchOption("HideOtherQuestRequirementQuests", false, "Hide Quest in UI if they have OtherQuest as requirement");
         _container.Value._allowKillQuestsInParty = SearchOption("AllowKillQuestsInParty", true, "Allow Kill Quests In Party");
+        _container.Value._enableKGChat = SearchOption("EnableKGChat", true, "Enable KGChat");
         _container.Update();
-    }
+    } 
 
 
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]

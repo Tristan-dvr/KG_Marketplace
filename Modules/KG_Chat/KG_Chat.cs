@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using UnityEngine.EventSystems;
-using UnityEngine.Scripting;
 using Object = UnityEngine.Object;
 
 namespace Marketplace.Modules.KG_Chat;
@@ -13,6 +12,8 @@ public static class KG_Chat
     private static GameObject original_KG_Chat;
     private static readonly GameObject[] origStuff = new GameObject[3];
     private static ConfigEntry<int> kgchat_Fontsize;
+    private static Chat kgChat;
+    private static Scrollbar kgChat_Scrollbar;
 
     private static void OnInit()
     {
@@ -20,6 +21,7 @@ public static class KG_Chat
         original_KG_Chat = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_KGChat");
         original_KG_Chat.transform.Find("CHATWINDOW/Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text")
             .GetComponent<TextMeshProUGUI>().fontSize = kgchat_Fontsize.Value;
+        Global_Values._container.ValueChanged += ApplyKGChat;
     }
 
     private static Coroutine _corout;
@@ -34,8 +36,8 @@ public static class KG_Chat
     {
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
-        if (Chat_Awake_Patch.kgChat_Scrollbar)
-            Chat_Awake_Patch.kgChat_Scrollbar.value = 0f;
+        if (kgChat_Scrollbar)
+            kgChat_Scrollbar.value = 0f;
     }
 
     public class ResizeUI : MonoBehaviour, IDragHandler, IEndDragHandler
@@ -147,16 +149,60 @@ public static class KG_Chat
         }
     }
 
+    private static void ApplyKGChat()
+    {
+        if (!Global_Values._container.Value._enableKGChat || kgChat) return;
+        Utils.print($"Switching to KG Chat", ConsoleColor.Cyan);
+        ZRoutedRpc.instance.m_functions.Remove("ChatMessage".GetStableHashCode());
+        ZRoutedRpc.instance.m_functions.Remove("RPC_TeleportPlayer".GetStableHashCode());
+        Transform parent = Chat.instance.transform.parent;
+        Object.DestroyImmediate(Chat.instance);
+        kgChat = Object.Instantiate(original_KG_Chat, parent).GetComponent<Chat>();
+        kgChat.gameObject.AddComponent<ModeController>().Setup();
+        kgChat.transform.Find("CHATWINDOW/Input Field/Resize").gameObject.AddComponent<ResizeUI>().Setup();
+        kgChat.transform.Find("CHATWINDOW/Input Field/Move").gameObject.AddComponent<DragUI>().Setup();
+        kgChat.transform.Find("CHATWINDOW/Input Field/Reset").gameObject.GetComponent<Button>().onClick
+            .AddListener(
+                () =>
+                {
+                    DragUI.Default();
+                    ResizeUI.Default();
+                    AssetStorage.AssetStorage.AUsrc.Play();
+                });
+        kgChat.GetComponentInChildren<InputField>(true).onValueChanged.AddListener(IF_OnValueChanged);
+        kgChat_Scrollbar = kgChat.GetComponentInChildren<Scrollbar>(true);
+    }
+
+    private static void IF_OnValueChanged(string value)
+    {
+        switch (value)
+        {
+            case "/shout":
+                kgChat.m_input.text = "";
+                ModeController.Instance.ButtonClick(ModeController.SendMode.Shout);
+                break;
+            case "/say":
+                kgChat.m_input.text = "";
+                ModeController.Instance.ButtonClick(ModeController.SendMode.Say);
+                break;
+            case "/group" or "/party" when Groups.API.IsLoaded():
+                kgChat.m_input.text = "";
+                ModeController.Instance.ButtonClick(ModeController.SendMode.Group);
+                break;
+            case "/whisper":
+                kgChat.m_input.text = "";
+                ModeController.Instance.ButtonClick(ModeController.SendMode.Whisper);
+                break;
+        }
+    }
+
     [HarmonyPatch(typeof(Chat), nameof(Chat.Awake))]
     [ClientOnlyPatch]
     private static class Chat_Awake_Patch
     {
-        public static Chat kgChat;
-        public static Scrollbar kgChat_Scrollbar;
-
         private static bool isKGChat(GameObject go) => go.name.Replace("(Clone)", "") == original_KG_Chat.name;
 
-        private static bool Prefix(Chat __instance)
+        private static void Prefix(Chat __instance)
         {
             if (!isKGChat(__instance.gameObject))
             {
@@ -170,53 +216,6 @@ public static class KG_Chat
                 __instance.m_npcTextBase = origStuff[1];
                 __instance.m_npcTextBaseLarge = origStuff[2];
             }
-
-            if (!Global_Values._container.Value._enableKGChat) return true;
-            if (!isKGChat(__instance.gameObject))
-            {
-                Transform parent = __instance.transform.parent;
-                Object.DestroyImmediate(__instance);
-                kgChat = Object.Instantiate(original_KG_Chat, parent).GetComponent<Chat>();
-                kgChat.gameObject.AddComponent<ModeController>().Setup();
-                kgChat.transform.Find("CHATWINDOW/Input Field/Resize").gameObject.AddComponent<ResizeUI>().Setup();
-                kgChat.transform.Find("CHATWINDOW/Input Field/Move").gameObject.AddComponent<DragUI>().Setup();
-                kgChat.transform.Find("CHATWINDOW/Input Field/Reset").gameObject.GetComponent<Button>().onClick
-                    .AddListener(
-                        () =>
-                        {
-                            DragUI.Default();
-                            ResizeUI.Default();
-                            AssetStorage.AssetStorage.AUsrc.Play();
-                        });
-                kgChat.GetComponentInChildren<InputField>(true).onValueChanged.AddListener(IF_OnValueChanged);
-                kgChat_Scrollbar = kgChat.GetComponentInChildren<Scrollbar>(true);
-                return false;
-            }
-
-            return true;
-        }
-
-        private static void IF_OnValueChanged(string value)
-        {
-            switch (value)
-            {
-                case "/shout":
-                    kgChat.m_input.text = "";
-                    ModeController.Instance.ButtonClick(ModeController.SendMode.Shout);
-                    break;
-                case "/say":
-                    kgChat.m_input.text = "";
-                    ModeController.Instance.ButtonClick(ModeController.SendMode.Say);
-                    break;
-                case "/group" or "/party" when Groups.API.IsLoaded():
-                    kgChat.m_input.text = "";
-                    ModeController.Instance.ButtonClick(ModeController.SendMode.Group);
-                    break;
-                case "/whisper":
-                    kgChat.m_input.text = "";
-                    ModeController.Instance.ButtonClick(ModeController.SendMode.Whisper);
-                    break;
-            }
         }
     }
 
@@ -226,7 +225,7 @@ public static class KG_Chat
     {
         private static void Postfix(ref bool __result)
         {
-            if (!Chat_Awake_Patch.kgChat) return;
+            if (!kgChat) return;
             __result |= Chat.instance.m_input.gameObject.activeInHierarchy;
         }
     }
@@ -282,52 +281,52 @@ public static class KG_Chat
     {
         private static void Prefix(Terminal __instance)
         {
-             if (__instance == Chat_Awake_Patch.kgChat)
-                 __instance.m_scrollHeight = 0;
+            if (__instance == kgChat)
+                __instance.m_scrollHeight = 0;
         }
 
         private static void Postfix(Terminal __instance)
         {
-            if (__instance == Chat_Awake_Patch.kgChat && !__instance.m_input.isFocused)
+            if (__instance == kgChat && !__instance.m_input.isFocused)
                 ResetScroll();
         }
     }
-    
+
     private static readonly Dictionary<string, string> Emoji_Map = new()
     {
-        {":angry:", "<sprite=0>"},
-        {":salute:","<sprite=1>"},
-        {":business:","<sprite=2>"},
-        {":cozy:","<sprite=3>"},
-        {":speedy:","<sprite=4>"},
-        {":cry:","<sprite=5>"},
-        {":no:","<sprite=6>"},
-        {":sip:","<sprite=7>"},
-        {":cool:","<sprite=8>"},
-        {":laugh:","<sprite=9>"},
-        {":sadge:","<sprite=10>"},
-        {":monkagun:","<sprite=11>"},
-        {":copium:","<sprite=12>"},
-        {":hmm:","<sprite=13>"},
-        {":happy:","<sprite=14>"},
-        {":yes:","<sprite=15>"},
-        {":ak47:","<sprite=16>"},
-        {":simp:","<sprite=17>"},
-        {":screwyou:","<sprite=18>"},
-        {":angrysword:","<sprite=19>"},
-        {":happygun:","<sprite=20>"},
-        {":clown:","<sprite=21>"},
-        {":cringe:","<sprite=22>"},
-        {":monkas:","<sprite=23>"},
-        {":pepedie:","<sprite=24>"}
+        { ":angry:", "<sprite=0>" },
+        { ":salute:", "<sprite=1>" },
+        { ":business:", "<sprite=2>" },
+        { ":cozy:", "<sprite=3>" },
+        { ":speedy:", "<sprite=4>" },
+        { ":cry:", "<sprite=5>" },
+        { ":no:", "<sprite=6>" },
+        { ":sip:", "<sprite=7>" },
+        { ":cool:", "<sprite=8>" },
+        { ":laugh:", "<sprite=9>" },
+        { ":sadge:", "<sprite=10>" },
+        { ":monkagun:", "<sprite=11>" },
+        { ":copium:", "<sprite=12>" },
+        { ":hmm:", "<sprite=13>" },
+        { ":happy:", "<sprite=14>" },
+        { ":yes:", "<sprite=15>" },
+        { ":ak47:", "<sprite=16>" },
+        { ":simp:", "<sprite=17>" },
+        { ":screwyou:", "<sprite=18>" },
+        { ":angrysword:", "<sprite=19>" },
+        { ":happygun:", "<sprite=20>" },
+        { ":clown:", "<sprite=21>" },
+        { ":cringe:", "<sprite=22>" },
+        { ":monkas:", "<sprite=23>" },
+        { ":pepedie:", "<sprite=24>" }
     };
-    
+
     public class ModeController : MonoBehaviour
     {
         public static ModeController Instance;
         public SendMode mode;
         private Transform Emojis_Tab;
-        
+
         public void Setup()
         {
             Instance = this;
@@ -349,9 +348,11 @@ public static class KG_Chat
             {
                 _groupButton.gameObject.SetActive(false);
             }
+
             Emojis_Tab = transform.Find("CHATWINDOW/Input Field/Emoji_Tab");
             FillEmojis();
-            transform.Find("CHATWINDOW/Input Field/Emojis").GetComponent<Button>().onClick.AddListener(() => Emojis_Tab.gameObject.SetActive(!Emojis_Tab.gameObject.activeSelf));
+            transform.Find("CHATWINDOW/Input Field/Emojis").GetComponent<Button>().onClick.AddListener(() =>
+                Emojis_Tab.gameObject.SetActive(!Emojis_Tab.gameObject.activeSelf));
         }
 
         private void FillEmojis()
@@ -368,7 +369,7 @@ public static class KG_Chat
 
         private void EmojiClick(string key)
         {
-            if(!Chat.instance) return;
+            if (!Chat.instance) return;
             Chat.instance.m_input.text += " " + key + " ";
             Chat.instance.m_input.MoveTextEnd(false);
         }
@@ -403,7 +404,7 @@ public static class KG_Chat
     {
         private static void ModifyInput(ref string text)
         {
-            if (!Chat_Awake_Patch.kgChat) return;
+            if (!kgChat) return;
             if (text.Length == 0 || text[0] == '/') return;
             text = ModeController.Instance.mode switch
             {
@@ -413,7 +414,7 @@ public static class KG_Chat
                 ModeController.SendMode.Group => "/p " + text
             };
         }
-        
+
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             bool isdone = false;
@@ -429,7 +430,7 @@ public static class KG_Chat
                 }
             }
         }
-        
+
         [HarmonyPatch]
         [ClientOnlyPatch]
         private static class EmojiPatch
@@ -460,29 +461,25 @@ public static class KG_Chat
                 foreach (var instruction in code)
                 {
                     yield return instruction;
-                    if( instruction.opcode == OpCodes.Stfld && instruction.operand == targetField)
+                    if (instruction.opcode == OpCodes.Stfld && instruction.operand == targetField)
                     {
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(EmojiPatch), nameof(StringReplacer)));
+                        yield return new CodeInstruction(OpCodes.Call,
+                            AccessTools.Method(typeof(EmojiPatch), nameof(StringReplacer)));
                     }
                 }
             }
         }
     }
-    
-    [HarmonyPatch(typeof(Chat),nameof(Chat.AddInworldText))]
+
+    [HarmonyPatch(typeof(Chat), nameof(Chat.AddInworldText))]
     [ClientOnlyPatch]
     private static class Chat_AddInworldText_Patch
     {
         private static void Prefix(ref string text)
         {
-            if (!Chat_Awake_Patch.kgChat) return;
+            if (!kgChat) return;
             text = Regex.Replace(text, @"<sprite=\d+>", "");
         }
     }
-    
-    
-    
-    
-    
 }
