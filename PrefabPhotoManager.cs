@@ -16,7 +16,7 @@ public static class PhotoManager
         private readonly Camera rendererCamera;
         private readonly Light Light;
         private readonly Dictionary<long, Sprite> CachedSprites = new();
-        private static readonly Vector3 SpawnPoint = new Vector3(10000f, 10000f, 10000f);
+        private static readonly Vector3 SpawnPoint = new(10000f, 10000f, 10000f);
 
 
         public Sprite GetSprite(string prefab, Sprite defaultValue, int level)

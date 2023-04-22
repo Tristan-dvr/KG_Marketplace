@@ -56,6 +56,7 @@ public static class Global_Values
         public int _maxAcceptedQuests;
         public bool _hideOtherQuestRequirementQuests;
         public bool _allowKillQuestsInParty;
+        public bool _enableKGChat;
 
 
         public void Serialize(ref ZPackage pkg)
@@ -73,6 +74,7 @@ public static class Global_Values
             pkg.Write(_maxAcceptedQuests);
             pkg.Write(_hideOtherQuestRequirementQuests);
             pkg.Write(_allowKillQuestsInParty);
+             pkg.Write(_enableKGChat);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -90,6 +92,7 @@ public static class Global_Values
             _maxAcceptedQuests = pkg.ReadInt();
             _hideOtherQuestRequirementQuests = pkg.ReadBool();
             _allowKillQuestsInParty = pkg.ReadBool();
+            _enableKGChat = pkg.ReadBool();
         }
     }
 

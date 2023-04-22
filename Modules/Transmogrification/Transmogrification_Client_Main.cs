@@ -123,7 +123,7 @@ public static class Transmogrification_Client_Main
 
     [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.SetupVisEquipment))]
     [ClientOnlyPatch]
-    static class Humanoid_SetupVisEquipment_Patch_TRANSMOG
+    private static class Humanoid_SetupVisEquipment_Patch_TRANSMOG
     {
         [HarmonyPriority(-6000)]
         public static bool Prefix(Humanoid __instance, VisEquipment visEq, bool isRagdoll)
@@ -207,9 +207,9 @@ public static class Transmogrification_Client_Main
 
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     [ClientOnlyPatch]
-    static class Game_Awake_Patch_Transmog
+    private static class Game_Awake_Patch_Transmog
     {
-        static void Postfix()
+        private static void Postfix()
         {
             HotkeyBar_UpdateIcons_Patch.FirstInit = false;
         }
@@ -217,7 +217,7 @@ public static class Transmogrification_Client_Main
 
     [HarmonyPatch(typeof(HotkeyBar), nameof(HotkeyBar.UpdateIcons))]
     [ClientOnlyPatch]
-    static class HotkeyBar_UpdateIcons_Patch
+    private static class HotkeyBar_UpdateIcons_Patch
     {
         public static bool FirstInit;
 
@@ -253,7 +253,7 @@ public static class Transmogrification_Client_Main
 
     [HarmonyPatch(typeof(InventoryGrid), nameof(InventoryGrid.UpdateGui))]
     [ClientOnlyPatch]
-    static class InventoryGrid_UpdateGui_Patch
+    private static class InventoryGrid_UpdateGui_Patch
     {
         public static void Postfix(InventoryGrid __instance)
         {
@@ -276,7 +276,7 @@ public static class Transmogrification_Client_Main
     [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData),
         typeof(int), typeof(bool))]
     [ClientOnlyPatch]
-    static class ItemDrop_ItemData_Tooltip__Patch_TRANSMOG
+    private static class ItemDrop_ItemData_Tooltip__Patch_TRANSMOG
     {
         public static void Postfix(ItemDrop.ItemData item, ref string __result)
         {
@@ -300,7 +300,7 @@ public static class Transmogrification_Client_Main
     {
         private static bool Transfer;
 
-        static void Prefix(VisEquipment __instance, int hash)
+        private static void Prefix(VisEquipment __instance, int hash)
         {
             if (__instance.m_currentRightItemHash != hash)
             {
@@ -335,7 +335,7 @@ public static class Transmogrification_Client_Main
     {
         private static bool Transfer;
 
-        static void Prefix(VisEquipment __instance, int hash)
+        private static void Prefix(VisEquipment __instance, int hash)
         {
             if (__instance.m_currentLeftItemHash != hash)
             {
@@ -369,7 +369,7 @@ public static class Transmogrification_Client_Main
     {
         private static bool Transfer;
 
-        static void Prefix(VisEquipment __instance, int hash)
+        private static void Prefix(VisEquipment __instance, int hash)
         {
             if (__instance.m_currentHelmetItemHash != hash)
             {
@@ -408,7 +408,7 @@ public static class Transmogrification_Client_Main
     {
         private static bool Transfer;
 
-        static void Prefix(VisEquipment __instance, int hash)
+        private static void Prefix(VisEquipment __instance, int hash)
         {
             if (__instance.m_currentShoulderItemHash != hash)
             {
@@ -449,7 +449,7 @@ public static class Transmogrification_Client_Main
     {
         private static bool Transfer;
 
-        static void Prefix(VisEquipment __instance, int hash)
+        private static void Prefix(VisEquipment __instance, int hash)
         {
             if (__instance.m_currentLegItemHash != hash)
             {
@@ -490,7 +490,7 @@ public static class Transmogrification_Client_Main
     {
         private static bool Transfer;
 
-        static void Prefix(VisEquipment __instance, int leftItem, int rightItem, int leftVariant)
+        private static void Prefix(VisEquipment __instance, int leftItem, int rightItem, int leftVariant)
         {
             if (__instance.m_currentLeftBackItemHash != leftItem ||
                 __instance.m_currentRightBackItemHash != rightItem ||
@@ -539,7 +539,7 @@ public static class Transmogrification_Client_Main
     {
         private static bool Transfer;
 
-        static void Prefix(VisEquipment __instance, int hash)
+        private static void Prefix(VisEquipment __instance, int hash)
         {
             if (__instance.m_currentChestItemHash != hash)
             {
