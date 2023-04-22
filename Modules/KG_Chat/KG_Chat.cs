@@ -22,6 +22,29 @@ public static class KG_Chat
         original_KG_Chat.transform.Find("CHATWINDOW/Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text")
             .GetComponent<TextMeshProUGUI>().fontSize = kgchat_Fontsize.Value;
         Global_Values._container.ValueChanged += ApplyKGChat;
+        
+        string spritesheetPath_Original = Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet_original.png");
+        string spritesheetPath_New = Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet.png");
+        if(!Directory.Exists(Path.GetDirectoryName(spritesheetPath_Original)))
+            Directory.CreateDirectory(Path.GetDirectoryName(spritesheetPath_Original));
+        
+        if (!File.Exists(spritesheetPath_Original))
+        {
+            Texture2D tex = (Texture2D)original_KG_Chat.GetComponentInChildren<TextMeshProUGUI>(true).spriteAsset.spriteSheet;
+            byte[] bytes = tex.EncodeToPNG();
+            File.WriteAllBytes(spritesheetPath_Original, bytes);
+        }
+        
+        if (File.Exists(spritesheetPath_New))
+        {
+            Texture2D tex = new Texture2D(2, 2);
+            tex.LoadImage(File.ReadAllBytes(spritesheetPath_New));
+            foreach (var ugui in original_KG_Chat.GetComponentsInChildren<TextMeshProUGUI>(true))
+            {
+                ugui.spriteAsset.spriteSheet = tex;
+                ugui.spriteAsset.material.SetTexture(ShaderUtilities.ID_MainTex, tex);
+            }
+        }
     }
 
     private static Coroutine _corout;
