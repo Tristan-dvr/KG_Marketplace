@@ -17,7 +17,7 @@ public static class KG_Chat
 
     private static void OnInit()
     {
-        kgchat_Fontsize = Marketplace._thistype.Config.Bind("KG Chat", "Font Size", 16, "KG Chat Font Size");
+        kgchat_Fontsize = Marketplace._thistype.Config.Bind("KG Chat", "Font Size", 18, "KG Chat Font Size");
         original_KG_Chat = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_KGChat");
         original_KG_Chat.transform.Find("CHATWINDOW/Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text")
             .GetComponent<TextMeshProUGUI>().fontSize = kgchat_Fontsize.Value;
@@ -66,6 +66,7 @@ public static class KG_Chat
             UI_X = Marketplace._thistype.Config.Bind("KG Chat", "UI_sizeX", 1f, "UI X size");
             UI_Y = Marketplace._thistype.Config.Bind("KG Chat", "UI_sizeY", 1f, "UI Y size");
             dragRect.localScale = new Vector3(UI_X.Value, UI_Y.Value, 1f);
+            text.fontSize = (int)(kgchat_Fontsize.Value + kgchat_Fontsize.Value * (1f - UI_X.Value));
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -75,10 +76,10 @@ public static class KG_Chat
             vec.x /= sizeDelta.x;
             var resized = dragRect.localScale + new Vector3(vec.x, vec.x, 0);
             resized.x = Mathf.Clamp(resized.x, 0.75f, 1.25f);
-            resized.y = Mathf.Clamp(resized.y, 0.75f, 1.25f);
+            resized.y = Mathf.Clamp(resized.y, 0.75f, 1.25f); 
             resized.z = 1f;
             dragRect.localScale = resized;
-            text.fontSize = (int)(kgchat_Fontsize.Value + kgchat_Fontsize.Value * (1f - resized.x));
+            text.fontSize = (int)(kgchat_Fontsize.Value + 16 * Mathf.Abs(1f - resized.x));
         }
 
         public void OnEndDrag(PointerEventData data)
@@ -294,31 +295,31 @@ public static class KG_Chat
 
     private static readonly Dictionary<string, string> Emoji_Map = new()
     {
-        { ":angry:", "<sprite=0>" },
-        { ":salute:", "<sprite=1>" },
-        { ":business:", "<sprite=2>" },
-        { ":cozy:", "<sprite=3>" },
-        { ":speedy:", "<sprite=4>" },
-        { ":cry:", "<sprite=5>" },
-        { ":no:", "<sprite=6>" },
-        { ":sip:", "<sprite=7>" },
-        { ":cool:", "<sprite=8>" },
-        { ":laugh:", "<sprite=9>" },
-        { ":sadge:", "<sprite=10>" },
-        { ":monkagun:", "<sprite=11>" },
-        { ":copium:", "<sprite=12>" },
-        { ":hmm:", "<sprite=13>" },
-        { ":happy:", "<sprite=14>" },
-        { ":yes:", "<sprite=15>" },
-        { ":ak47:", "<sprite=16>" },
-        { ":simp:", "<sprite=17>" },
-        { ":screwyou:", "<sprite=18>" },
-        { ":angrysword:", "<sprite=19>" },
-        { ":happygun:", "<sprite=20>" },
-        { ":clown:", "<sprite=21>" },
-        { ":cringe:", "<sprite=22>" },
-        { ":monkas:", "<sprite=23>" },
-        { ":pepedie:", "<sprite=24>" }
+        { ":moji0:", "<sprite=0>" },
+        { ":moji1:", "<sprite=1>"},
+        { ":moji2:", "<sprite=2>"},
+        { ":moji3:", "<sprite=3>"},
+        { ":moji4:", "<sprite=4>"},
+        { ":moji5:", "<sprite=5>"},
+        { ":moji6:", "<sprite=6>"},
+        { ":moji7:", "<sprite=7>"},
+        { ":moji8:", "<sprite=8>"},
+        { ":moji9:", "<sprite=9>"},
+        { ":moji10:", "<sprite=10>"},
+        { ":moji11:", "<sprite=11>"},
+        { ":moji12:", "<sprite=12>"},
+        { ":moji13:", "<sprite=13>"},
+        { ":moji14:", "<sprite=14>"},
+        { ":moji15:", "<sprite=15>"},
+        { ":moji16:", "<sprite=16>"},
+        { ":moji17:", "<sprite=17>"},
+        { ":moji18:", "<sprite=18>"},
+        { ":moji19:", "<sprite=19>"},
+        { ":moji20:", "<sprite=20>"},
+        { ":moji21:", "<sprite=21>"},
+        { ":moji22:", "<sprite=22>"},
+        { ":moji23:", "<sprite=23>"},
+        { ":moji24:", "<sprite=24>"},
     };
 
     public class ModeController : MonoBehaviour
@@ -352,7 +353,10 @@ public static class KG_Chat
             Emojis_Tab = transform.Find("CHATWINDOW/Input Field/Emoji_Tab");
             FillEmojis();
             transform.Find("CHATWINDOW/Input Field/Emojis").GetComponent<Button>().onClick.AddListener(() =>
-                Emojis_Tab.gameObject.SetActive(!Emojis_Tab.gameObject.activeSelf));
+            {
+                Emojis_Tab.gameObject.SetActive(!Emojis_Tab.gameObject.activeSelf);
+                AssetStorage.AssetStorage.AUsrc.Play();
+            });
         }
 
         private void FillEmojis()
@@ -367,9 +371,10 @@ public static class KG_Chat
             }
         }
 
-        private void EmojiClick(string key)
+        private void EmojiClick(string key) 
         {
             if (!Chat.instance) return;
+            AssetStorage.AssetStorage.AUsrc.Play();
             Chat.instance.m_input.text += " " + key + " ";
             Chat.instance.m_input.MoveTextEnd(false);
         }
