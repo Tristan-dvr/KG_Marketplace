@@ -175,8 +175,9 @@ public static class Quests_Main_Client
                 if (!request.isNetworkError && !request.isHttpError)
                 {
                     Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                    url.Key.SetPreviewSprite(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                        Vector2.zero));
+                    if(texture == null || texture.width == 0 || texture.height == 0) continue;
+                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+                    url.Key.SetPreviewSprite(sprite);
                 }
             }
         }
