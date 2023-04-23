@@ -206,6 +206,10 @@ public static class KG_Chat
                 });
         kgChat.GetComponentInChildren<InputField>(true).onValueChanged.AddListener(IF_OnValueChanged);
         kgChat_Scrollbar = kgChat.GetComponentInChildren<Scrollbar>(true);
+        Chat.instance.AddString("<color=green>KG Chat Loaded</color>");
+        Chat.instance.AddString("<color=green>/say | /shout | /whisper to switch chat mode</color>");
+        if (Groups.API.IsLoaded())
+            Chat.instance.AddString("<color=green>/group | /party to switch to groups chat mode</color>");
     }
 
 
@@ -419,9 +423,10 @@ public static class KG_Chat
                 kgchat_Transparency.Value = (Transparency)(((int)kgchat_Transparency.Value + 1) % 6);
                 bgone.GetComponent<Image>().color = new Color(0, 0, 0, Transparency_Map[kgchat_Transparency.Value]);
                 bgtwo.GetComponent<Image>().color = new Color(0, 0, 0, Transparency_Map[kgchat_Transparency.Value]);
-                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, $"<color=green>{Transparency_Map[kgchat_Transparency.Value]* 100f}%</color>");
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
+                    $"<color=green>{Transparency_Map[kgchat_Transparency.Value] * 100f}%</color>");
                 Marketplace._thistype.Config.Save();
-            }); 
+            });
         }
 
         public enum Transparency
