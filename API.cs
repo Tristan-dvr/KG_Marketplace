@@ -47,6 +47,7 @@ public static class Marketplace_API
         CustomPaint = 1 << 30,
         LimitZoneHeight = 1 << 31,
     }
+
     [Flags]
     public enum AdditionalTerritoryFlags
     {
@@ -89,7 +90,15 @@ public static class Marketplace_API
         return result;
     }
 
-    public static bool IsObjectInsideTerritoryWithFlag(GameObject obj, TerritoryFlags flag, out string name,
+    public static bool IsObjectInsideTerritoryWithFlag(GameObject go, TerritoryFlags flag, out string name,
+        out TerritoryFlags flags, out AdditionalTerritoryFlags additionalFlags) =>
+        IsPointInsideTerritoryWithFlag(go.transform.position, flag, out name, out flags, out additionalFlags);
+
+    public static bool IsObjectInsideTerritoryWithFlag(GameObject go, AdditionalTerritoryFlags flag, out string name,
+        out TerritoryFlags flags, out AdditionalTerritoryFlags additionalFlags) =>
+        IsPointInsideTerritoryWithFlag(go.transform.position, flag, out name, out flags, out additionalFlags);
+
+    public static bool IsPointInsideTerritoryWithFlag(Vector3 pos, TerritoryFlags flag, out string name,
         out TerritoryFlags flags, out AdditionalTerritoryFlags additionalFlags)
     {
         name = "";
@@ -98,7 +107,6 @@ public static class Marketplace_API
         if (!_IsInstalled || MI_IsObjectInsideTerritoryWithFlag == null)
             return false;
 
-        Vector3 pos = obj.transform.position;
         object[] args = { pos, (int)flag, "", 0, 0 };
         bool result = (bool)MI_IsObjectInsideTerritoryWithFlag.Invoke(null, args);
         name = (string)args[2];
@@ -107,7 +115,7 @@ public static class Marketplace_API
         return result;
     }
 
-    public static bool IsObjectInsideTerritoryWithFlag(GameObject obj, AdditionalTerritoryFlags flag, out string name,
+    public static bool IsPointInsideTerritoryWithFlag(Vector3 pos, AdditionalTerritoryFlags flag, out string name,
         out TerritoryFlags flags, out AdditionalTerritoryFlags additionalFlags)
     {
         name = "";
@@ -116,7 +124,6 @@ public static class Marketplace_API
         if (!_IsInstalled || MI_IsObjectInsideTerritoryWithFlag_Additional == null)
             return false;
 
-        Vector3 pos = obj.transform.position;
         object[] args = { pos, (int)flag, "", 0, 0 };
         bool result = (bool)MI_IsObjectInsideTerritoryWithFlag_Additional.Invoke(null, args);
         name = (string)args[2];
@@ -132,13 +139,14 @@ public static class Marketplace_API
             _IsInstalled = false;
             return;
         }
-        
+
         _IsInstalled = true;
         MI_IsPlayerInsideTerritory = marketplaceAPI.GetMethod("IsPlayerInsideTerritory",
             BindingFlags.Public | BindingFlags.Static);
         MI_IsObjectInsideTerritoryWithFlag = marketplaceAPI.GetMethod("IsObjectInsideTerritoryWithFlag",
             BindingFlags.Public | BindingFlags.Static);
-        MI_IsObjectInsideTerritoryWithFlag_Additional = marketplaceAPI.GetMethod("IsObjectInsideTerritoryWithFlag_Additional",
+        MI_IsObjectInsideTerritoryWithFlag_Additional = marketplaceAPI.GetMethod(
+            "IsObjectInsideTerritoryWithFlag_Additional",
             BindingFlags.Public | BindingFlags.Static);
     }
 }

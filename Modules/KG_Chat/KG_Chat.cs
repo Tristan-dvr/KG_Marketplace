@@ -24,8 +24,6 @@ public static class KG_Chat
         kgchat_Transparency = Marketplace._thistype.Config.Bind("KG Chat", "Transparency",
             ChatController.Transparency.Two, "KG Chat Transparency");
         original_KG_Chat = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_KGChat");
-        original_KG_Chat.transform.Find("CHATWINDOW/Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text")
-            .GetComponent<TextMeshProUGUI>().fontSize = kgchat_Fontsize.Value;
 
         Global_Values._container.ValueChanged += ApplyKGChat;
 
@@ -91,8 +89,7 @@ public static class KG_Chat
 
         public void Setup()
         {
-            text = transform.parent.parent.Find("Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text")
-                .GetComponent<TextMeshProUGUI>();
+            text = transform.parent.parent.Find("Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text").GetComponent<TextMeshProUGUI>();
             dragRect = transform.parent.parent.parent.GetComponent<RectTransform>();
             UI_X = Marketplace._thistype.Config.Bind("KG Chat", "UI_sizeX", 1f, "UI X size");
             UI_Y = Marketplace._thistype.Config.Bind("KG Chat", "UI_sizeY", 1f, "UI Y size");
