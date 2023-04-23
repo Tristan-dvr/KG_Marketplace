@@ -45,6 +45,7 @@ namespace Marketplace
                 UseOptimizedDatasetSchema = true, 
                 UseValuesOfEnums = true,
             };
+            Utils.print($"Marketplace: {(Utils.IsServer ? "Server" : "Client")}");
             IEnumerable<KeyValuePair<Market_Autoload, Type>> toAutoload = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => t.GetCustomAttribute<Market_Autoload>() != null)
                 .Select(x => new KeyValuePair<Market_Autoload, Type>(x.GetCustomAttribute<Market_Autoload>(), x))
