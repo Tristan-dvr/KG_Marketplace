@@ -188,6 +188,9 @@ public static class KG_Chat
         ZRoutedRpc.instance.m_functions.Remove("ChatMessage".GetStableHashCode());
         ZRoutedRpc.instance.m_functions.Remove("RPC_TeleportPlayer".GetStableHashCode());
         Transform parent = Chat.instance.transform.parent;
+        Chat.instance.m_chatWindow.gameObject.SetActive(false);
+        Chat.instance.m_input.gameObject.SetActive(false);
+        Chat.instance.m_output.gameObject.SetActive(false);
         Object.DestroyImmediate(Chat.instance);
         kgChat = Object.Instantiate(original_KG_Chat, parent).GetComponent<Chat>();
         kgChat.gameObject.AddComponent<ChatController>().Setup();
