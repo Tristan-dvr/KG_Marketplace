@@ -33,7 +33,7 @@ public static class KG_Chat
             Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet_original.png");
         string spritesheetPath_New = Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet.png");
         if (!Directory.Exists(Path.GetDirectoryName(spritesheetPath_Original)))
-            Directory.CreateDirectory(Path.GetDirectoryName(spritesheetPath_Original));
+            Directory.CreateDirectory(Path.GetDirectoryName(spritesheetPath_Original)!);
 
         if (!File.Exists(spritesheetPath_Original))
         {
@@ -318,8 +318,9 @@ public static class KG_Chat
     {
         private static void Prefix(Terminal __instance)
         {
-            if (__instance == kgChat)
-                __instance.m_scrollHeight = 0;
+            if (__instance != kgChat) return;
+            __instance.m_scrollHeight = 0;
+            __instance.m_maxVisibleBufferLength = 45;
         }
 
         private static void Postfix(Terminal __instance)
