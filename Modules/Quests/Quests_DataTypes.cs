@@ -795,7 +795,7 @@ public static class Quests_DataTypes
 
         public static void TryAddRewardKill(string prefab, int level)
         {
-            List<int> ToAutocomplete = new();
+            HashSet<int> ToAutocomplete = new();
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Kill && !q.Value.IsComplete()))
             {
@@ -820,11 +820,12 @@ public static class Quests_DataTypes
                 }
             }
 
+            if (ToAutocomplete.Count <= 0) return;
             foreach (int quest in ToAutocomplete)
             {
                 RemoveQuestComplete(quest);
-                Quests_UIs.AcceptedQuestsUI.CheckQuests();
             }
+            Quests_UIs.AcceptedQuestsUI.CheckQuests();
         }
 
         public static bool IsQuestTarget(string NPCName)
@@ -982,7 +983,7 @@ public static class Quests_DataTypes
 
         public static void TryAddRewardCraft(string prefab, int level)
         {
-            List<int> ToAutocomplete = new();
+            HashSet<int> ToAutocomplete = new();
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Craft && !q.Value.IsComplete()))
             {
@@ -1006,11 +1007,12 @@ public static class Quests_DataTypes
                 }
             }
 
+            if (ToAutocomplete.Count <= 0) return;
             foreach (int quest in ToAutocomplete)
             {
                 RemoveQuestComplete(quest);
-                Quests_UIs.AcceptedQuestsUI.CheckQuests();
             }
+            Quests_UIs.AcceptedQuestsUI.CheckQuests();
         }
 
         public static bool TryAddRewardBuild(string prefab)
@@ -1067,7 +1069,7 @@ public static class Quests_DataTypes
 
         public static void TryAddRewardPickup(string prefab)
         {
-            List<int> ToAutocomplete = new();
+            HashSet<int> ToAutocomplete = new();
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Harvest && !q.Value.IsComplete()))
             {
@@ -1092,17 +1094,18 @@ public static class Quests_DataTypes
                 }
             }
 
+            if (ToAutocomplete.Count <= 0) return;
             foreach (int quest in ToAutocomplete)
             {
                 RemoveQuestComplete(quest);
-                Quests_UIs.AcceptedQuestsUI.CheckQuests();
             }
+            Quests_UIs.AcceptedQuestsUI.CheckQuests();
         }
 
 
         public static void InventoryChanged()
         {
-            List<int> ToAutocomplete = new();
+            HashSet<int> ToAutocomplete = new();
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(t => t.Value.Type == QuestType.Collect))
             {
                 for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
@@ -1119,11 +1122,12 @@ public static class Quests_DataTypes
                 }
             }
 
+            if (ToAutocomplete.Count <= 0) return;
             foreach (int quest in ToAutocomplete)
             {
                 RemoveQuestComplete(quest);
-                Quests_UIs.AcceptedQuestsUI.CheckQuests();
             }
+            Quests_UIs.AcceptedQuestsUI.CheckQuests();
         }
     }
 

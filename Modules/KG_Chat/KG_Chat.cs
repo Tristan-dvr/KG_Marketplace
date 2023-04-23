@@ -11,6 +11,8 @@ public static class KG_Chat
 {
     private static GameObject original_KG_Chat;
     private static readonly GameObject[] origStuff = new GameObject[3];
+    private static TMP_FontAsset origFont;
+    private static Font origFont2;
     private static ConfigEntry<int> kgchat_Fontsize;
     private static ConfigEntry<bool> useTypeSound;
     private static ConfigEntry<ChatController.Transparency> kgchat_Transparency;
@@ -89,7 +91,8 @@ public static class KG_Chat
 
         public void Setup()
         {
-            text = transform.parent.parent.Find("Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text").GetComponent<TextMeshProUGUI>();
+            text = transform.parent.parent.Find("Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text")
+                .GetComponent<TextMeshProUGUI>();
             dragRect = transform.parent.parent.parent.GetComponent<RectTransform>();
             UI_X = Marketplace._thistype.Config.Bind("KG Chat", "UI_sizeX", 1f, "UI X size");
             UI_Y = Marketplace._thistype.Config.Bind("KG Chat", "UI_sizeY", 1f, "UI Y size");
@@ -249,12 +252,19 @@ public static class KG_Chat
                 origStuff[0] = __instance.m_worldTextBase;
                 origStuff[1] = __instance.m_npcTextBase;
                 origStuff[2] = __instance.m_npcTextBaseLarge;
+                origFont = __instance.m_output.font;
+                origFont2 = __instance.m_input.textComponent.font;
             }
             else
             {
                 __instance.m_worldTextBase = origStuff[0];
                 __instance.m_npcTextBase = origStuff[1];
                 __instance.m_npcTextBaseLarge = origStuff[2];
+                __instance.m_output.font = origFont;
+                __instance.m_input.textComponent.font = origFont2;
+                __instance.m_input.placeholder.GetComponent<Text>().font = origFont2;
+                if (__instance.m_search)
+                    __instance.m_search.font = origFont2;
             }
         }
     }
