@@ -7,7 +7,7 @@ public static class Marketplace_DataTypes
     internal static readonly CustomSyncedValue<List<ServerMarketSendData>> ServerMarketPlaceData = 
         new(Marketplace.configSync, "marketplaceData", new());
     
-    [Serializable]
+    
     public class ServerMarketSendData : ISerializableParameter
     {
         public int UID;
@@ -81,7 +81,7 @@ public static class Marketplace_DataTypes
         }
     }
     
-    [Serializable]
+    
     public class ClientMarketSendData
     {
         public string ItemPrefab;

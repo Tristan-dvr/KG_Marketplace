@@ -7,16 +7,16 @@ namespace Marketplace.Modules.TerritorySystem;
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class TerritorySystem_Main_Client
 {
-    private static TerritorySystem_DataTypes.Territory CurrentTerritory;
+    public static TerritorySystem_DataTypes.Territory CurrentTerritory;
     private static Color[] originalMapColors = null!;
     private static Color[] originalHeightColors = null!;
     private static readonly int Pulse = Animator.StringToHash("pulse");
 
-    private static readonly
+    public static readonly
         Dictionary<TerritorySystem_DataTypes.TerritoryFlags, List<TerritorySystem_DataTypes.Territory>>
         TerritoriesByFlags = new();
 
-    private static readonly Dictionary<TerritorySystem_DataTypes.AdditionalTerritoryFlags,
+    public static readonly Dictionary<TerritorySystem_DataTypes.AdditionalTerritoryFlags,
             List<TerritorySystem_DataTypes.Territory>>
         TerritoriesByFlags_Additional = new();
 

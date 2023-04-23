@@ -14,7 +14,7 @@ public static class TerritorySystem_DataTypes
         (AdditionalTerritoryFlags[])Enum.GetValues(typeof(AdditionalTerritoryFlags));
     
     //serialization part
-    [Serializable]
+    
     public partial class Territory : ISerializableParameter
     {
         public void Serialize(ref ZPackage pkg)

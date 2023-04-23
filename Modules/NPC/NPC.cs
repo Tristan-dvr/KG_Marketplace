@@ -1386,7 +1386,7 @@ public static class Market_NPC
         }
     }
 
-    [Serializable]
+    
     public class NpcData
     {
         public string PrefabOverride;

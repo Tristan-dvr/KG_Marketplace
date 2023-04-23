@@ -7,7 +7,7 @@ public static class Trader_DataTypes
     internal static readonly CustomSyncedValue<Dictionary<string, List<TraderData>>>
         TraderItemList = new(Marketplace.configSync, "traderItemList", new());
 
-    [Serializable]
+    
     public class TraderData : ISerializableParameter
     {
         public bool NeedToKnow;
@@ -66,7 +66,7 @@ public static class Trader_DataTypes
         }
     }
 
-    [Serializable]
+    
     public class TraderItem
     {
         public int Count;

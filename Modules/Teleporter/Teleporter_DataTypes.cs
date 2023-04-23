@@ -24,7 +24,7 @@ public static class Teleporter_DataTypes
          
     }
     
-    [Serializable]
+    
     public class TeleporterData : ISerializableParameter
     {
         public string name;
