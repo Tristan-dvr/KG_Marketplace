@@ -457,7 +457,7 @@ public static class KG_Chat
         {
             if (!Chat.instance) return;
             AssetStorage.AssetStorage.AUsrc.Play();
-            Chat.instance.m_input.text += key;
+            Chat.instance.m_input.text += key + " ";
             Chat.instance.m_input.MoveTextEnd(false);
         }
 
