@@ -12,29 +12,37 @@ public static class KG_Chat
     private static GameObject original_KG_Chat;
     private static readonly GameObject[] origStuff = new GameObject[3];
     private static ConfigEntry<int> kgchat_Fontsize;
+    private static ConfigEntry<bool> useTypeSound;
+    private static ConfigEntry<ChatController.Transparency> kgchat_Transparency;
     private static Chat kgChat;
     private static Scrollbar kgChat_Scrollbar;
 
     private static void OnInit()
     {
         kgchat_Fontsize = Marketplace._thistype.Config.Bind("KG Chat", "Font Size", 18, "KG Chat Font Size");
+        useTypeSound = Marketplace._thistype.Config.Bind("KG Chat", "Use Type Sound", false, "Use KG Chat Type Sound");
+        kgchat_Transparency = Marketplace._thistype.Config.Bind("KG Chat", "Transparency",
+            ChatController.Transparency.Two, "KG Chat Transparency");
         original_KG_Chat = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_KGChat");
         original_KG_Chat.transform.Find("CHATWINDOW/Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text")
             .GetComponent<TextMeshProUGUI>().fontSize = kgchat_Fontsize.Value;
+
         Global_Values._container.ValueChanged += ApplyKGChat;
-        
-        string spritesheetPath_Original = Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet_original.png");
+
+        string spritesheetPath_Original =
+            Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet_original.png");
         string spritesheetPath_New = Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet.png");
-        if(!Directory.Exists(Path.GetDirectoryName(spritesheetPath_Original)))
+        if (!Directory.Exists(Path.GetDirectoryName(spritesheetPath_Original)))
             Directory.CreateDirectory(Path.GetDirectoryName(spritesheetPath_Original));
-        
+
         if (!File.Exists(spritesheetPath_Original))
         {
-            Texture2D tex = (Texture2D)original_KG_Chat.GetComponentInChildren<TextMeshProUGUI>(true).spriteAsset.spriteSheet;
+            Texture2D tex = (Texture2D)original_KG_Chat.GetComponentInChildren<TextMeshProUGUI>(true).spriteAsset
+                .spriteSheet;
             byte[] bytes = tex.EncodeToPNG();
             File.WriteAllBytes(spritesheetPath_Original, bytes);
         }
-        
+
         if (File.Exists(spritesheetPath_New))
         {
             Texture2D tex = new Texture2D(2, 2);
@@ -99,7 +107,7 @@ public static class KG_Chat
             vec.x /= sizeDelta.x;
             var resized = dragRect.localScale + new Vector3(vec.x, vec.x, 0);
             resized.x = Mathf.Clamp(resized.x, 0.75f, 1.25f);
-            resized.y = Mathf.Clamp(resized.y, 0.75f, 1.25f); 
+            resized.y = Mathf.Clamp(resized.y, 0.75f, 1.25f);
             resized.z = 1f;
             dragRect.localScale = resized;
             text.fontSize = (int)(kgchat_Fontsize.Value + 16 * Mathf.Abs(1f - resized.x));
@@ -182,7 +190,7 @@ public static class KG_Chat
         Transform parent = Chat.instance.transform.parent;
         Object.DestroyImmediate(Chat.instance);
         kgChat = Object.Instantiate(original_KG_Chat, parent).GetComponent<Chat>();
-        kgChat.gameObject.AddComponent<ModeController>().Setup();
+        kgChat.gameObject.AddComponent<ChatController>().Setup();
         kgChat.transform.Find("CHATWINDOW/Input Field/Resize").gameObject.AddComponent<ResizeUI>().Setup();
         kgChat.transform.Find("CHATWINDOW/Input Field/Move").gameObject.AddComponent<DragUI>().Setup();
         kgChat.transform.Find("CHATWINDOW/Input Field/Reset").gameObject.GetComponent<Button>().onClick
@@ -197,25 +205,29 @@ public static class KG_Chat
         kgChat_Scrollbar = kgChat.GetComponentInChildren<Scrollbar>(true);
     }
 
+
     private static void IF_OnValueChanged(string value)
     {
+        if (useTypeSound.Value && !string.IsNullOrEmpty(value))
+            AssetStorage.AssetStorage.AUsrc.PlayOneShot(AssetStorage.AssetStorage.TypeClip,
+                UnityEngine.Random.Range(0.65f, 0.75f));
         switch (value)
         {
             case "/shout":
                 kgChat.m_input.text = "";
-                ModeController.Instance.ButtonClick(ModeController.SendMode.Shout);
+                ChatController.Instance.ButtonClick(ChatController.SendMode.Shout);
                 break;
             case "/say":
                 kgChat.m_input.text = "";
-                ModeController.Instance.ButtonClick(ModeController.SendMode.Say);
+                ChatController.Instance.ButtonClick(ChatController.SendMode.Say);
                 break;
             case "/group" or "/party" when Groups.API.IsLoaded():
                 kgChat.m_input.text = "";
-                ModeController.Instance.ButtonClick(ModeController.SendMode.Group);
+                ChatController.Instance.ButtonClick(ChatController.SendMode.Group);
                 break;
             case "/whisper":
                 kgChat.m_input.text = "";
-                ModeController.Instance.ButtonClick(ModeController.SendMode.Whisper);
+                ChatController.Instance.ButtonClick(ChatController.SendMode.Whisper);
                 break;
         }
     }
@@ -275,7 +287,8 @@ public static class KG_Chat
         }
     }
 
-    [HarmonyPatch(typeof(Terminal), nameof(Terminal.AddString), typeof(string), typeof(string), typeof(Talker.Type), typeof(bool))]
+    [HarmonyPatch(typeof(Terminal), nameof(Terminal.AddString), typeof(string), typeof(string), typeof(Talker.Type),
+        typeof(bool))]
     [ClientOnlyPatch]
     private static class Chat_Patches2
     {
@@ -319,35 +332,35 @@ public static class KG_Chat
     private static readonly Dictionary<string, string> Emoji_Map = new()
     {
         { ":moji0:", "<sprite=0>" },
-        { ":moji1:", "<sprite=1>"},
-        { ":moji2:", "<sprite=2>"},
-        { ":moji3:", "<sprite=3>"},
-        { ":moji4:", "<sprite=4>"},
-        { ":moji5:", "<sprite=5>"},
-        { ":moji6:", "<sprite=6>"},
-        { ":moji7:", "<sprite=7>"},
-        { ":moji8:", "<sprite=8>"},
-        { ":moji9:", "<sprite=9>"},
-        { ":moji10:", "<sprite=10>"},
-        { ":moji11:", "<sprite=11>"},
-        { ":moji12:", "<sprite=12>"},
-        { ":moji13:", "<sprite=13>"},
-        { ":moji14:", "<sprite=14>"},
-        { ":moji15:", "<sprite=15>"},
-        { ":moji16:", "<sprite=16>"},
-        { ":moji17:", "<sprite=17>"},
-        { ":moji18:", "<sprite=18>"},
-        { ":moji19:", "<sprite=19>"},
-        { ":moji20:", "<sprite=20>"},
-        { ":moji21:", "<sprite=21>"},
-        { ":moji22:", "<sprite=22>"},
-        { ":moji23:", "<sprite=23>"},
-        { ":moji24:", "<sprite=24>"},
+        { ":moji1:", "<sprite=1>" },
+        { ":moji2:", "<sprite=2>" },
+        { ":moji3:", "<sprite=3>" },
+        { ":moji4:", "<sprite=4>" },
+        { ":moji5:", "<sprite=5>" },
+        { ":moji6:", "<sprite=6>" },
+        { ":moji7:", "<sprite=7>" },
+        { ":moji8:", "<sprite=8>" },
+        { ":moji9:", "<sprite=9>" },
+        { ":moji10:", "<sprite=10>" },
+        { ":moji11:", "<sprite=11>" },
+        { ":moji12:", "<sprite=12>" },
+        { ":moji13:", "<sprite=13>" },
+        { ":moji14:", "<sprite=14>" },
+        { ":moji15:", "<sprite=15>" },
+        { ":moji16:", "<sprite=16>" },
+        { ":moji17:", "<sprite=17>" },
+        { ":moji18:", "<sprite=18>" },
+        { ":moji19:", "<sprite=19>" },
+        { ":moji20:", "<sprite=20>" },
+        { ":moji21:", "<sprite=21>" },
+        { ":moji22:", "<sprite=22>" },
+        { ":moji23:", "<sprite=23>" },
+        { ":moji24:", "<sprite=24>" },
     };
 
-    public class ModeController : MonoBehaviour
+    public class ChatController : MonoBehaviour
     {
-        public static ModeController Instance;
+        public static ChatController Instance;
         public SendMode mode;
         private Transform Emojis_Tab;
 
@@ -359,6 +372,7 @@ public static class KG_Chat
             Button _shoutButton = transform.Find("CHATWINDOW/Input Field/Shout").GetComponent<Button>();
             Button _whisperButton = transform.Find("CHATWINDOW/Input Field/Whisper").GetComponent<Button>();
             Button _groupButton = transform.Find("CHATWINDOW/Input Field/Groups").GetComponent<Button>();
+            Button _muteSoundsButton = transform.Find("CHATWINDOW/Input Field/MuteSounds").GetComponent<Button>();
             _sayButton.onClick.AddListener(delegate { ButtonClick(SendMode.Say); });
             _shoutButton.onClick.AddListener(delegate { ButtonClick(SendMode.Shout); });
             _whisperButton.onClick.AddListener(delegate { ButtonClick(SendMode.Whisper); });
@@ -380,7 +394,52 @@ public static class KG_Chat
                 Emojis_Tab.gameObject.SetActive(!Emojis_Tab.gameObject.activeSelf);
                 AssetStorage.AssetStorage.AUsrc.Play();
             });
+            _muteSoundsButton.transform.Find("TF").gameObject.SetActive(!useTypeSound.Value);
+            _muteSoundsButton.onClick.AddListener(() =>
+            {
+                AssetStorage.AssetStorage.AUsrc.Play();
+                useTypeSound.Value = !useTypeSound.Value;
+                Marketplace._thistype.Config.Save();
+                _muteSoundsButton.transform.Find("TF").gameObject.SetActive(!useTypeSound.Value);
+            });
+
+            var bgone = transform.Find("CHATWINDOW/Background/Upper Background");
+            var bgtwo = transform.Find("CHATWINDOW/Input Field/Lower Background");
+            bgone.GetComponent<Image>().color = new Color(0, 0, 0, Transparency_Map[kgchat_Transparency.Value]);
+            bgtwo.GetComponent<Image>().color = new Color(0, 0, 0, Transparency_Map[kgchat_Transparency.Value]);
+
+            Button _transparencyButton = transform.Find("CHATWINDOW/Input Field/Transparency").GetComponent<Button>();
+            _transparencyButton.onClick.AddListener(() =>
+            {
+                AssetStorage.AssetStorage.AUsrc.Play();
+                kgchat_Transparency.Value = (Transparency)(((int)kgchat_Transparency.Value + 1) % 6);
+                bgone.GetComponent<Image>().color = new Color(0, 0, 0, Transparency_Map[kgchat_Transparency.Value]);
+                bgtwo.GetComponent<Image>().color = new Color(0, 0, 0, Transparency_Map[kgchat_Transparency.Value]);
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, $"<color=green>{Transparency_Map[kgchat_Transparency.Value]* 100f}%</color>");
+                Marketplace._thistype.Config.Save();
+            }); 
         }
+
+        public enum Transparency
+        {
+            None,
+            One,
+            Two,
+            Three,
+            Four,
+            Five
+        }
+
+        private static readonly Dictionary<Transparency, float> Transparency_Map = new()
+        {
+            { Transparency.None, 0f },
+            { Transparency.One, 0.2f },
+            { Transparency.Two, 0.4f },
+            { Transparency.Three, 0.6f },
+            { Transparency.Four, 0.8f },
+            { Transparency.Five, 0.95f }
+        };
+
 
         private void FillEmojis()
         {
@@ -394,11 +453,11 @@ public static class KG_Chat
             }
         }
 
-        private void EmojiClick(string key) 
+        private void EmojiClick(string key)
         {
             if (!Chat.instance) return;
             AssetStorage.AssetStorage.AUsrc.Play();
-            Chat.instance.m_input.text += " " + key + " ";
+            Chat.instance.m_input.text += key;
             Chat.instance.m_input.MoveTextEnd(false);
         }
 
@@ -434,12 +493,12 @@ public static class KG_Chat
         {
             if (!kgChat) return;
             if (text.Length == 0 || text[0] == '/') return;
-            text = ModeController.Instance.mode switch
+            text = ChatController.Instance.mode switch
             {
-                ModeController.SendMode.Say => "/say " + text,
-                ModeController.SendMode.Shout => "/s " + text,
-                ModeController.SendMode.Whisper => "/w " + text,
-                ModeController.SendMode.Group => "/p " + text
+                ChatController.SendMode.Say => "/say " + text,
+                ChatController.SendMode.Shout => "/s " + text,
+                ChatController.SendMode.Whisper => "/w " + text,
+                ChatController.SendMode.Group => "/p " + text
             };
         }
 
