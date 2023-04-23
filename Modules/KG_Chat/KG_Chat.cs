@@ -149,7 +149,7 @@ public static class KG_Chat
         {
             var vec = dragRect.anchoredPosition + eventData.delta;
             Vector2 sizeDelta = dragRect.sizeDelta * dragRect.localScale + new Vector2(34f * dragRect.localScale.x, 0f);
-            var ScreenSize = new Vector2(Screen.width, Screen.height);
+            var ScreenSize = new Vector2(1920, 1080);
             if (vec.x < sizeDelta.x / 2f)
             {
                 vec.x = sizeDelta.x / 2f;
