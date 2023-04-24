@@ -1914,8 +1914,4 @@ public static class Market_NPC
         }
     }
     
-    
-    
-    
-
 }

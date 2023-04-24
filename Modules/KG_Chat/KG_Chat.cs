@@ -163,7 +163,7 @@ public static class KG_Chat
             if (CheckMarkersOutsideScreen(screenSize))
                 dragRect.anchoredPosition = lastPos;
         }
-        
+
         private bool CheckMarkersOutsideScreen(Vector2 screen)
         {
             foreach (var marker in Markers)
@@ -173,6 +173,7 @@ public static class KG_Chat
                 if (markerX < 0 || markerX > screen.x || markerY < 0 || markerY > screen.y)
                     return true;
             }
+
             return false;
         }
 
@@ -287,7 +288,8 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class Chat_Patches3
     {
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        [HarmonyTranspiler]
+        private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> list = new List<CodeInstruction>(instructions);
             for (int i = 0; i < list.Count; i++)
@@ -309,7 +311,8 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class Chat_Patches2
     {
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        [HarmonyTranspiler]
+        private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> list = new List<CodeInstruction>(instructions);
             MethodInfo methodInfo = AccessTools.DeclaredMethod(typeof(string), "ToUpper", Type.EmptyTypes);
@@ -521,7 +524,8 @@ public static class KG_Chat
             };
         }
 
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        [HarmonyTranspiler]
+        private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
         {
             bool isdone = false;
             foreach (var instruction in instructions)
@@ -536,43 +540,43 @@ public static class KG_Chat
                 }
             }
         }
+    }
 
-        [HarmonyPatch]
-        [ClientOnlyPatch]
-        private static class EmojiPatch
+    [HarmonyPatch]
+    [ClientOnlyPatch]
+    private static class EmojiPatch
+    {
+        private static FieldInfo textField;
+
+        private static MethodInfo TargetMethod()
         {
-            private static FieldInfo textField;
+            const string targetClass = "<>c__DisplayClass12_0";
+            const string targetMethod = "<OnNewChatMessage>b__2";
+            var type = typeof(Chat).GetNestedTypes(BindingFlags.NonPublic)
+                .FirstOrDefault(t => t.Name == targetClass);
+            textField = AccessTools.Field(type, "text");
+            return AccessTools.Method(type, targetMethod);
+        }
 
-            private static MethodInfo TargetMethod()
-            {
-                const string targetClass = "<>c__DisplayClass12_0";
-                const string targetMethod = "<OnNewChatMessage>b__2";
-                var type = typeof(Chat).GetNestedTypes(BindingFlags.NonPublic)
-                    .FirstOrDefault(t => t.Name == targetClass);
-                textField = AccessTools.Field(type, "text");
-                return AccessTools.Method(type, targetMethod);
-            }
+        private static void StringReplacer(object instance)
+        {
+            string str = (string)textField.GetValue(instance);
+            str = Emoji_Map.Aggregate(str, (current, map) => current.Replace(map.Key, map.Value));
+            textField.SetValue(instance, str);
+        }
 
-            private static void StringReplacer(object instance)
+        [HarmonyTranspiler]
+        private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> code)
+        {
+            var targetField = AccessTools.Field(typeof(Chat), nameof(Chat.m_hideTimer));
+            foreach (var instruction in code)
             {
-                string str = (string)textField.GetValue(instance);
-                str = Emoji_Map.Aggregate(str, (current, map) => current.Replace(map.Key, map.Value));
-                textField.SetValue(instance, str);
-            }
-
-            [HarmonyTranspiler]
-            private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> code)
-            {
-                var targetField = AccessTools.Field(typeof(Chat), nameof(Chat.m_hideTimer));
-                foreach (var instruction in code)
+                yield return instruction;
+                if (instruction.opcode == OpCodes.Stfld && instruction.operand == targetField)
                 {
-                    yield return instruction;
-                    if (instruction.opcode == OpCodes.Stfld && instruction.operand == targetField)
-                    {
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Call,
-                            AccessTools.Method(typeof(EmojiPatch), nameof(StringReplacer)));
-                    }
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
+                    yield return new CodeInstruction(OpCodes.Call,
+                        AccessTools.Method(typeof(EmojiPatch), nameof(StringReplacer)));
                 }
             }
         }
