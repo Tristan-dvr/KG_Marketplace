@@ -38,7 +38,7 @@ public static class Utils
             ConsoleManager.SetConsoleColor(color);
             ConsoleManager.StandardOutStream.WriteLine($"[Marketplace] printing array: {arr}");
             int c = 0;
-            foreach (var item in arr)
+            foreach (object item in arr)
             {
                 ConsoleManager.StandardOutStream.WriteLine($"[{c++}] {item}");
             }
@@ -48,7 +48,7 @@ public static class Utils
         {
             MonoBehaviour.print("[Marketplace] " + arr);
             int c = 0;
-            foreach (var item in arr)
+            foreach (object item in arr)
             {
                 MonoBehaviour.print($"[{c++}] {item}");
             }

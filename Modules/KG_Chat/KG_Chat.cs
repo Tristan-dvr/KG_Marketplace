@@ -106,8 +106,8 @@ public static class KG_Chat
             var sizeDelta = dragRect.sizeDelta + new Vector2(34f * dragRect.localScale.x, 0f);
             vec.x /= sizeDelta.x;
             var resized = dragRect.localScale + new Vector3(vec.x, vec.x, 0);
-            resized.x = Mathf.Clamp(resized.x, 0.75f, 1.25f);
-            resized.y = Mathf.Clamp(resized.y, 0.75f, 1.25f);
+            resized.x = Mathf.Clamp(resized.x, 0.5f, 1.5f);
+            resized.y = Mathf.Clamp(resized.y, 0.5f, 1.5f);
             resized.z = 1f;
             dragRect.localScale = resized;
             text.fontSize = (int)(kgchat_Fontsize.Value + 16 * Mathf.Abs(1f - resized.x));
@@ -126,6 +126,7 @@ public static class KG_Chat
         private static RectTransform dragRect;
         private static ConfigEntry<float> UI_X;
         private static ConfigEntry<float> UI_Y;
+        private readonly Transform[] Markers = new Transform[4];
 
         public static void Default()
         {
@@ -133,44 +134,46 @@ public static class KG_Chat
             UI_X.Value = (float)UI_X.DefaultValue;
             UI_Y.Value = (float)UI_Y.DefaultValue;
             Marketplace._thistype.Config.Save();
-            dragRect.anchoredPosition = new Vector2(UI_X.Value, UI_Y.Value);
+            dragRect.anchoredPosition =
+                new Vector2(UI_X.Value / dragRect.lossyScale.x, UI_Y.Value / dragRect.lossyScale.y);
         }
 
         public void Setup()
         {
-            UI_X = Marketplace._thistype.Config.Bind("KG Chat", "UI_posX", 1560f, "UI X position");
+            UI_X = Marketplace._thistype.Config.Bind("KG Chat", "UI_posX", -15f, "UI X position");
             UI_Y = Marketplace._thistype.Config.Bind("KG Chat", "UI_posY", 60f, "UI Y position");
             dragRect = transform.parent.parent.parent.GetComponent<RectTransform>();
             var configPos = new Vector2(UI_X.Value, UI_Y.Value);
             dragRect.anchoredPosition = configPos;
+            Markers[0] = dragRect.transform.Find("LeftTop");
+            Markers[1] = dragRect.transform.Find("RightTop");
+            Markers[2] = dragRect.transform.Find("LeftBottom");
+            Markers[3] = dragRect.transform.Find("RightBottom");
+
+            if (CheckMarkersOutsideScreen(new Vector2(Screen.width, Screen.height) / dragRect.lossyScale))
+                Default();
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            var vec = dragRect.anchoredPosition + eventData.delta;
-            Vector2 sizeDelta = dragRect.sizeDelta * dragRect.localScale + new Vector2(34f * dragRect.localScale.x, 0f);
-            var ScreenSize = new Vector2(1920, 1080);
-            if (vec.x < sizeDelta.x / 2f)
-            {
-                vec.x = sizeDelta.x / 2f;
-            }
-
-            if (vec.y < 0)
-            {
-                vec.y = 0;
-            }
-
-            if (vec.x > ScreenSize.x - sizeDelta.x / 2f)
-            {
-                vec.x = ScreenSize.x - sizeDelta.x / 2f;
-            }
-
-            if (vec.y > ScreenSize.y - sizeDelta.y)
-            {
-                vec.y = ScreenSize.y - sizeDelta.y;
-            }
-
+            var vec = dragRect.anchoredPosition + eventData.delta / dragRect.lossyScale * dragRect.localScale;
+            Vector2 screenSize = new Vector2(Screen.width, Screen.height) / dragRect.lossyScale;
+            Vector2 lastPos = dragRect.anchoredPosition;
             dragRect.anchoredPosition = vec;
+            if (CheckMarkersOutsideScreen(screenSize))
+                dragRect.anchoredPosition = lastPos;
+        }
+        
+        private bool CheckMarkersOutsideScreen(Vector2 screen)
+        {
+            foreach (var marker in Markers)
+            {
+                float markerX = marker.position.x / dragRect.lossyScale.x;
+                float markerY = marker.position.y / dragRect.lossyScale.y;
+                if (markerX < 0 || markerX > screen.x || markerY < 0 || markerY > screen.y)
+                    return true;
+            }
+            return false;
         }
 
         public void OnEndDrag(PointerEventData data)
@@ -200,8 +203,8 @@ public static class KG_Chat
             .AddListener(
                 () =>
                 {
-                    DragUI.Default();
                     ResizeUI.Default();
+                    DragUI.Default();
                     AssetStorage.AssetStorage.AUsrc.Play();
                 });
         kgChat.GetComponentInChildren<InputField>(true).onValueChanged.AddListener(IF_OnValueChanged);
