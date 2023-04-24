@@ -1876,4 +1876,46 @@ public static class Market_NPC
             }
         }
     }
+
+    [HarmonyPatch(typeof(Player), nameof(Player.PlacePiece))]
+    [ClientOnlyPatch]
+    private static class DebugModeBuildCheck
+    {
+        private static bool Prefix(Piece piece)
+        {
+            if (piece.GetComponent<NPCcomponent>() && !Utils.IsDebug)
+            {
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
+                    $"<color=#00ff00>{Localization.instance.Localize("$mpasn_enabledebugmode")}</color>");
+                return false;
+            }
+            return true;
+        }
+    }
+    
+    [HarmonyPatch(typeof(PieceTable),nameof(PieceTable.UpdateAvailable))]
+    [ClientOnlyPatch]
+    private static class PieceTable_UpdateAvailable_Patch
+    {
+        private static void Postfix(PieceTable __instance)
+        {
+            if(__instance.m_availablePieces.Count == 0) return;
+            List<Piece> avaliablePieces = __instance.m_availablePieces[(int)Piece.PieceCategory.Misc];
+            if (Utils.IsDebug)
+            {
+                if(!avaliablePieces.Contains(NPC.GetComponent<Piece>())) avaliablePieces.Add(NPC.GetComponent<Piece>());
+                if(!avaliablePieces.Contains(PinnedNPC.GetComponent<Piece>())) avaliablePieces.Add(PinnedNPC.GetComponent<Piece>());
+            }
+            else
+            {
+                if(avaliablePieces.Contains(NPC.GetComponent<Piece>())) avaliablePieces.Remove(NPC.GetComponent<Piece>());
+                if(avaliablePieces.Contains(PinnedNPC.GetComponent<Piece>())) avaliablePieces.Remove(PinnedNPC.GetComponent<Piece>());
+            }
+        }
+    }
+    
+    
+    
+    
+
 }
