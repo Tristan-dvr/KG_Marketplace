@@ -34,8 +34,8 @@ namespace Marketplace
             Type.GetType("Groups.Initializer, kg.Marketplace")!.GetMethod("Init")!.Invoke(null, null);
             HarmonyLib.Tools.Logger.ChannelFilter = HarmonyLib.Tools.Logger.LogChannel.Error;
             Localizer.Load();
-            TempJewelcraftingType = Type.GetType("Jewelcrafting.Jewelcrafting, Jewelcrafting");
-            TempProfessionsType = Type.GetType("Professions.Professions, Professions");
+            TempJewelcraftingType = Type.GetType("Jewelcrafting.Jewelcrafting, Jewelcrafting")!;
+            TempProfessionsType = Type.GetType("Professions.Professions, Professions")!;
             JSON.Parameters = new JSONParameters
             {
                 UseExtensions = false,

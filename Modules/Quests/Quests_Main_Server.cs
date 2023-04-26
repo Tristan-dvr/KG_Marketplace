@@ -285,6 +285,7 @@ public static class Quests_Main_Server
                 Quests_DataTypes.QuestEventAction.Heal => count == 1,
                 Quests_DataTypes.QuestEventAction.RemoveQuest => count == 1,
                 Quests_DataTypes.QuestEventAction.PlaySound => count == 1,
+                Quests_DataTypes.QuestEventAction.NpcText => count >= 1,
                 _ => false
             };
             if (!result)
@@ -317,7 +318,8 @@ public static class Quests_Main_Server
                 if (!Enum.TryParse(actionSplit[0], out Quests_DataTypes.QuestEventAction action) ||
                     !Enum.IsDefined(typeof(Quests_DataTypes.QuestEventAction), action)) continue;
 
-                string args = actionSplit.Length > 1 ? actionSplit[1].Replace(" ", "") : string.Empty;
+                string args = actionSplit.Length > 1 ? actionSplit[1] : string.Empty;
+                if(action is not Quests_DataTypes.QuestEventAction.NpcText) args = args.Replace(" ", "");
 
                 if (!ValidateEventArguments(action, args, splitProfile)) continue;
                 if (Quests_DataTypes.SyncedQuestsEvents.Value.ContainsKey(splitProfile.GetStableHashCode()))

@@ -347,6 +347,7 @@ public static class Market_NPC
         private float ForwardSpeed;
         private float PatrolTime;
         private float periodicAnimationTimer;
+        private float periodicSoundTimer;
 
         private void OnDestroy()
         {
@@ -465,6 +466,20 @@ public static class Market_NPC
                     {
                         pastOverrideModel.GetComponent<Animator>()
                             ?.SetTrigger(znv.m_zdo.GetString("KGperiodicAnimation"));
+                    }
+                }
+            }
+
+            if (znv.IsOwner() && znv.m_zdo.GetFloat("KGperiodicSoundTime") > 0)
+            {
+                periodicSoundTimer += Time.fixedDeltaTime;
+                if (periodicSoundTimer >= znv.m_zdo.GetFloat("KGperiodicSoundTime"))
+                {
+                    periodicSoundTimer = 0;
+                    if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGperiodicSound")))
+                    {
+                        if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(znv.m_zdo.GetString("KGperiodicSound"), out var sound))
+                            NPC_SoundSource.PlayOneShot(sound);
                     }
                 }
             }
@@ -755,6 +770,12 @@ public static class Market_NPC
                         out float periodicAnimationTimeZDO)
                         ? periodicAnimationTimeZDO
                         : 0f);
+                znv.m_zdo.Set("KGperiodicSound", split[26]);
+                znv.m_zdo.Set("KGperiodicSoundTime",
+                    float.TryParse(split[27], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
+                        out float periodicSoundTimeZDO)
+                        ? periodicSoundTimeZDO
+                        : 0f);
                 if (!float.TryParse(split[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                         out float scaleFloat)) scaleFloat = 1f;
 
@@ -762,6 +783,7 @@ public static class Market_NPC
             }
 
             periodicAnimationTimer = 0f;
+            periodicSoundTimer = 0f;
             string prefab = znv.m_zdo.GetString("KGnpcModelOverride");
             if (TryOverrideModel(ref prefab, out bool isFemale, false))
             {
@@ -1386,7 +1408,7 @@ public static class Market_NPC
         }
     }
 
-    
+
     public class NpcData
     {
         public string PrefabOverride;
@@ -1415,6 +1437,8 @@ public static class Market_NPC
         public string TextHeight;
         public string PeriodicAnimation;
         public string PeriodicAnimationTime;
+        public string PeriodicSound = "";
+        public string PeriodicSoundTime = "0";
         public string IMAGE;
     }
 
@@ -1497,7 +1521,8 @@ public static class Market_NPC
                 $"{data.LeftItem}|{data.RightItem}|{data.HelmetItem}|{data.ChestItem}|{data.LegsItem}|{data.CapeItem}|" +
                 $"{data.HairItem}|{data.HairItemColor}|{data.ModelScale}|{data.LeftItemHidden}|{data.RightItemHidden}|" +
                 $"{data.NPCinteractAnimation}|{data.NPCgreetAnimation}|{data.NPCbyeAnimation}|{data.NPCgreetText}|{data.NPCbyeText}|{data.SkinColor}|{data.NPCcraftingAnimation}|" +
-                $"{data.BeardItem}|{data.BeardItemColor}|{data.InteractAudioClip}|FONT|{data.TextSize}|{data.TextHeight}|{data.PeriodicAnimation}|{data.PeriodicAnimationTime}";
+                $"{data.BeardItem}|{data.BeardItemColor}|{data.InteractAudioClip}|FONT|{data.TextSize}|{data.TextHeight}|{data.PeriodicAnimation}|" +
+                $"{data.PeriodicAnimationTime}|{data.PeriodicSound}|{data.PeriodicSoundTime}";
             _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket fashion", combine);
             Hide();
         }
@@ -1510,8 +1535,14 @@ public static class Market_NPC
             {
                 NPCName = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);
             }
+            
+            string ReplaceInvalidChars(string filename)
+            {
+                return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));    
+            }
 
             NPCName += $" {npc.transform.position}";
+            NPCName = ReplaceInvalidChars(NPCName);
             string folderPath = Path.Combine(BepInEx.Paths.ConfigPath, "SavedNPCs");
             if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
             string fileName = NPCName + ".json";
@@ -1546,6 +1577,8 @@ public static class Market_NPC
                 PeriodicAnimation = npc.znv.m_zdo.GetString("KGperiodicAnimation"),
                 PeriodicAnimationTime = npc.znv.m_zdo.GetFloat("KGperiodicAnimationTime")
                     .ToString(CultureInfo.InvariantCulture),
+                PeriodicSound = npc.znv.m_zdo.GetString("KGperiodicSound"),
+                PeriodicSoundTime = npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture),
                 IMAGE = PhotoManager.__instance.NPC_Photo(npc)
             };
             string json = JSON.ToNiceJSON(newData);
@@ -1597,8 +1630,9 @@ public static class Market_NPC
                 TextSize = _currentNPC.znv.m_zdo.GetFloat("KGtextSize", 3).ToString(CultureInfo.InvariantCulture),
                 TextHeight = _currentNPC.znv.m_zdo.GetFloat("KGtextHeight").ToString(CultureInfo.InvariantCulture),
                 PeriodicAnimation = _currentNPC.znv.m_zdo.GetString("KGperiodicAnimation"),
-                PeriodicAnimationTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicAnimationTime")
-                    .ToString(CultureInfo.InvariantCulture),
+                PeriodicAnimationTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicAnimationTime").ToString(CultureInfo.InvariantCulture),
+                PeriodicSound = _currentNPC.znv.m_zdo.GetString("KGperiodicSound"),
+                PeriodicSoundTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture),
                 IMAGE = PhotoManager.__instance.NPC_Photo(_currentNPC)
             };
             string json = JSON.ToNiceJSON(newData);
@@ -1669,7 +1703,9 @@ public static class Market_NPC
             TextSize,
             TextHeight,
             PeriodicAnimation,
-            PeriodicAnimationTime;
+            PeriodicAnimationTime,
+            PeriodicSound,
+            PeriodicSoundTime;
 
         public static void Init()
         {
@@ -1745,6 +1781,9 @@ public static class Market_NPC
                 .GetComponent<InputField>();
             PeriodicAnimationTime = UI.transform.Find("Canvas/FASHION/Pergament/PeriodicAnimationTime")
                 .GetComponent<InputField>();
+            PeriodicSound = UI.transform.Find("Canvas/FASHION/Pergament/PeriodicSound").GetComponent<InputField>();
+            PeriodicSoundTime = UI.transform.Find("Canvas/FASHION/Pergament/PeriodicSoundTime")
+                .GetComponent<InputField>();
             UI.transform.Find("Canvas/FASHION/Pergament/Apply").GetComponent<Button>().onClick
                 .AddListener(ApplyFashion);
         }
@@ -1762,7 +1801,8 @@ public static class Market_NPC
                 $"{LeftItemFashion.text}|{RightItemFashion.text}|{HelmetItemFashion.text}|{ChestItemFashion.text}|{LegsItemFashion.text}|{CapeItemFashion.text}|" +
                 $"{HairItemFashion.text}|{HairItemFashionColor.text}|{ModelScaleFashion.text}|{LeftItemHiddenFashion.text}|{RightItemHiddenFashion.text}|" +
                 $"{NPCinteractAnimation.text}|{NPCgreetAnimation.text}|{NPCbyeAnimation.text}|{NPCgreetText.text}|{NPCbyeText.text}|{SkinColorFashion.text}|{NPCcraftingAnimation.text}|" +
-                $"{BeardItemFashion.text}|{BeardItemFashionColor.text}|{InteractAudioClip.text}|FONT|{TextSize.text}|{TextHeight.text}|{PeriodicAnimation.text}|{PeriodicAnimationTime.text}";
+                $"{BeardItemFashion.text}|{BeardItemFashionColor.text}|{InteractAudioClip.text}|FONT|{TextSize.text}|{TextHeight.text}|{PeriodicAnimation.text}|{PeriodicAnimationTime.text}|" +
+                $"{PeriodicSound.text}|{PeriodicSoundTime.text}";
             _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket fashion", combine);
             Hide();
         }
@@ -1845,8 +1885,9 @@ public static class Market_NPC
             TextSize.text = _npc.znv.m_zdo.GetFloat("KGtextSize", 3).ToString(CultureInfo.InvariantCulture);
             TextHeight.text = _npc.znv.m_zdo.GetFloat("KGtextHeight").ToString(CultureInfo.InvariantCulture);
             PeriodicAnimation.text = _npc.znv.m_zdo.GetString("KGperiodicAnimation");
-            PeriodicAnimationTime.text = _npc.znv.m_zdo.GetFloat("KGperiodicAnimationTime")
-                .ToString(CultureInfo.InvariantCulture);
+            PeriodicAnimationTime.text = _npc.znv.m_zdo.GetFloat("KGperiodicAnimationTime").ToString(CultureInfo.InvariantCulture);
+            PeriodicSound.text = _npc.znv.m_zdo.GetString("KGperiodicSound");
+            PeriodicSoundTime.text = _npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture);
             UI.SetActive(true);
         }
 
@@ -1889,29 +1930,33 @@ public static class Market_NPC
                     $"<color=#00ff00>{Localization.instance.Localize("$mpasn_enabledebugmode")}</color>");
                 return false;
             }
+
             return true;
         }
     }
-    
-    [HarmonyPatch(typeof(PieceTable),nameof(PieceTable.UpdateAvailable))]
+
+    [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable))]
     [ClientOnlyPatch]
     private static class PieceTable_UpdateAvailable_Patch
     {
         private static void Postfix(PieceTable __instance)
         {
-            if(__instance.m_availablePieces.Count == 0) return;
+            if (__instance.m_availablePieces.Count == 0) return;
             List<Piece> avaliablePieces = __instance.m_availablePieces[(int)Piece.PieceCategory.Misc];
             if (Utils.IsDebug)
             {
-                if(!avaliablePieces.Contains(NPC.GetComponent<Piece>())) avaliablePieces.Add(NPC.GetComponent<Piece>());
-                if(!avaliablePieces.Contains(PinnedNPC.GetComponent<Piece>())) avaliablePieces.Add(PinnedNPC.GetComponent<Piece>());
+                if (!avaliablePieces.Contains(NPC.GetComponent<Piece>()))
+                    avaliablePieces.Add(NPC.GetComponent<Piece>());
+                if (!avaliablePieces.Contains(PinnedNPC.GetComponent<Piece>()))
+                    avaliablePieces.Add(PinnedNPC.GetComponent<Piece>());
             }
             else
             {
-                if(avaliablePieces.Contains(NPC.GetComponent<Piece>())) avaliablePieces.Remove(NPC.GetComponent<Piece>());
-                if(avaliablePieces.Contains(PinnedNPC.GetComponent<Piece>())) avaliablePieces.Remove(PinnedNPC.GetComponent<Piece>());
+                if (avaliablePieces.Contains(NPC.GetComponent<Piece>()))
+                    avaliablePieces.Remove(NPC.GetComponent<Piece>());
+                if (avaliablePieces.Contains(PinnedNPC.GetComponent<Piece>()))
+                    avaliablePieces.Remove(PinnedNPC.GetComponent<Piece>());
             }
         }
     }
-    
 }

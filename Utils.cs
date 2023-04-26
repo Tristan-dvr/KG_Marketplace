@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using BepInEx.Configuration;
 using Marketplace.Modules.Buffer;
+using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.TerritorySystem;
 using Marketplace.Modules.Trader;
@@ -327,6 +328,21 @@ public static class Utils
                 }
             }
         }
+    }
+
+    public static Market_NPC.NPCcomponent GetClosestNPC(Vector3 pos)
+    {
+        List<Market_NPC.NPCcomponent> all = Market_NPC.NPCcomponent.ALL;
+        Market_NPC.NPCcomponent result = null;
+        float current = 999999f;
+        foreach (Market_NPC.NPCcomponent npc in all)
+        {
+            float distance = Vector3.Distance(pos, npc.transform.position);
+            if (distance >= current) continue;
+            current = distance;
+            result = npc;
+        }
+        return result;
     }
     
     public static bool HasFlagFast(this Quests_DataTypes.SpecialQuestTag value,

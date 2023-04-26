@@ -43,6 +43,7 @@ public static class Quests_DataTypes
         Damage,
         Heal,
         PlaySound,
+        NpcText
     }
 
     public enum QuestRequirementType
@@ -825,6 +826,7 @@ public static class Quests_DataTypes
             {
                 RemoveQuestComplete(quest);
             }
+
             Quests_UIs.AcceptedQuestsUI.CheckQuests();
         }
 
@@ -1012,6 +1014,7 @@ public static class Quests_DataTypes
             {
                 RemoveQuestComplete(quest);
             }
+
             Quests_UIs.AcceptedQuestsUI.CheckQuests();
         }
 
@@ -1099,6 +1102,7 @@ public static class Quests_DataTypes
             {
                 RemoveQuestComplete(quest);
             }
+
             Quests_UIs.AcceptedQuestsUI.CheckQuests();
         }
 
@@ -1127,6 +1131,7 @@ public static class Quests_DataTypes
             {
                 RemoveQuestComplete(quest);
             }
+
             Quests_UIs.AcceptedQuestsUI.CheckQuests();
         }
     }
@@ -1208,6 +1213,12 @@ public static class Quests_DataTypes
                         string sound = split[0];
                         if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(sound, out AudioClip clip))
                             AssetStorage.AssetStorage.AUsrc.PlayOneShot(clip);
+                        break;
+                    case QuestEventAction.NpcText:
+                        string text = quest.args;
+                        GameObject closestNPC = Utils.GetClosestNPC(Player.m_localPlayer.transform.position).gameObject;
+                        if (closestNPC == null) closestNPC = Player.m_localPlayer.gameObject;
+                        Chat.instance.SetNpcText(closestNPC, Vector3.up * 4f, 20f, 7f, "", text, false);
                         break;
                     default:
                         continue;

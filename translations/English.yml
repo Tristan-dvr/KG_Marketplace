@@ -229,5 +229,5 @@ mpasn_periodicanimationtime : Periodic Animation Time
 mpasn_currency: Currency
 mpasn_onlyforvip: Only for VIP users
 mpasn_messages: Messages
-mpasn_useopenai: Use AI
-mpasn_useopenaiprompt: AI Message Prompt
+mpasn_periodicsound : Periodic Sound
+mpasn_periodicsoundtime : Periodic Sound Time
