@@ -134,8 +134,7 @@ public static class KG_Chat
             UI_X.Value = (float)UI_X.DefaultValue;
             UI_Y.Value = (float)UI_Y.DefaultValue;
             Marketplace._thistype.Config.Save();
-            dragRect.anchoredPosition =
-                new Vector2(UI_X.Value / dragRect.lossyScale.x, UI_Y.Value / dragRect.lossyScale.y);
+            dragRect.anchoredPosition = new Vector2(UI_X.Value, UI_Y.Value);
         }
 
         public void Setup()
@@ -150,17 +149,16 @@ public static class KG_Chat
             Markers[2] = dragRect.transform.Find("LeftBottom");
             Markers[3] = dragRect.transform.Find("RightBottom");
 
-            if (CheckMarkersOutsideScreen(new Vector2(Screen.width, Screen.height) / dragRect.lossyScale))
+            if (CheckMarkersOutsideScreen(new Vector2(Screen.width, Screen.height) ))
                 Default();
         }
 
         public void OnDrag(PointerEventData eventData)
         {
             var vec = dragRect.anchoredPosition + eventData.delta / dragRect.lossyScale * dragRect.localScale;
-            Vector2 screenSize = new Vector2(Screen.width, Screen.height) / dragRect.lossyScale;
             Vector2 lastPos = dragRect.anchoredPosition;
             dragRect.anchoredPosition = vec;
-            if (CheckMarkersOutsideScreen(screenSize))
+            if (CheckMarkersOutsideScreen(new Vector2(Screen.width, Screen.height)))
                 dragRect.anchoredPosition = lastPos;
         }
 
@@ -168,8 +166,8 @@ public static class KG_Chat
         {
             foreach (var marker in Markers)
             {
-                float markerX = marker.position.x / dragRect.lossyScale.x;
-                float markerY = marker.position.y / dragRect.lossyScale.y;
+                float markerX = marker.position.x;
+                float markerY = marker.position.y;
                 if (markerX < 0 || markerX > screen.x || markerY < 0 || markerY > screen.y)
                     return true;
             }

@@ -122,7 +122,7 @@ public static class Global_Values
     }
     
     private static T SearchOption<T>(string option, T defaultValue, string description)
-    {
+    { 
         T value = _config.Bind("Main", option, defaultValue, description).Value;
         return value; 
     }
