@@ -12,7 +12,7 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        private const string PluginVersion = "8.4.0"; 
+        public const string PluginVersion = "8.4.0"; 
         internal static Marketplace _thistype;
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW;
@@ -42,7 +42,7 @@ namespace Marketplace
                 SerializeNullValues = false,
                 DateTimeMilliseconds = false,
                 UseUTCDateTime = true,
-                UseOptimizedDatasetSchema = true, 
+                UseOptimizedDatasetSchema = true,
                 UseValuesOfEnums = true,
             };
             Utils.print($"Marketplace: {(Utils.IsServer ? "Server" : "Client")}");

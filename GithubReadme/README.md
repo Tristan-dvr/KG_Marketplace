@@ -56,11 +56,8 @@ Paypal: war3spells@gmail.com
 | 8.3.0       | Updated for new Valheim version<br/>Bugfixes<br/>Added  Marketplace_GOBLIN, Marketplace_SKELETON, Marketplace_QUESTBOARD, Marketplace_TELEPORTER, Marketplace_DEFAULTNPC as separated models that you can use to override NPC model                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 8.3.2       | Quest descriptions now may have \n as new line<br/>Territory minimap text fix<br/>Fixed NPC save/load UI problems<br/>Fixed Teleporter map names showup                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 8.3.3       | Added Groups API for Kill type quests                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 8.4.0       | Player Territories removed. Please do not install this version until you replace Player Territories module on something else (Azumatt wards / e.t.c) (TerritoryDatabase is same and working, just not the players one)<br/>Added KGchat as part of marketplace. Its enabled by default but you can turn it off in Main config on serverside. You can replace KGchat emojis in BepInEx/Config/MarketplaceEmojis. You will find spritesheet_original.png there, change pics on what you need and rename it to spritesheet.png<br/>Added 2 new fields to fashion UI: Periodic Sound + Periodic Sound Time<br/>Added new quest event: NpcText<br/>Optimized mod by rewriting it almost from scratch. Now mod is open-source, check: https://github.com/war3i4i/Marketplace for code<br/>Added API for territories so other mods may use it (check github)<br/>NPC's now won't show up in hammer menu if Debug Mode is turned off<br/><br/>Transmogrification system access has changed (now transmogrification is a separated DLL). If you bought Transmog access before this patch please contact me in discord KG#7777 so i can send you mod to enable Transmog         |
 </details>
-
-<span style="font-size: 30px; font-weight:bold; color: red;">V8.2.0 - Mistlands Update. YOU CANNOT USE THIS VERSION ON NON-MISTLANDS VALHEIM
-</span>
-
 
 <span style="color: bisque;">
 Now you can add your own localization. For that download file: <a href="MarketplaceAndServerNPCs.English.yml" download>Translation</a>.<br>Place it into Valheim/BepInEx/config/ folder and name it MarketplaceAndServerNPCs.YOURLANGUAGE.yml . Then you can translate lines to make your own language localization
@@ -235,6 +232,7 @@ Now that we learned how to spawn / edit NPC's lets try to configure some of thos
 15) AllowMultipleQuestsScore - if set to true, then if player has 2 quests with same target, upon adding quest score it will be added to BOTH quests instead of just one
 16) MaxAcceptedQuests - maximum number of quests that player can have accepted at once
 17) BattlepassVIPlist - SteamID list of players that are VIPs in Battlepass
+18) Enable KG Chat - enable / disable KG chat
 </p>
 </details>
 
@@ -518,14 +516,15 @@ OnCompleteQuest - when player completes quest (successfully)
 
 Possible actions:
 ```
-GiveItem - example: GiveItem: SwordIron, 1, 5. Will give player 1 Iron Sword level 5
-GiveQuest - example: GiveQuest: MyQuestID123. Will give player quest with ID MyQuestID123
-RemoveQuest - example: RemoveQuest: MyQuestID123. Will remove quest with ID MyQuestID123
+GiveItem - example: GiveItem, SwordIron, 1, 5. Will give player 1 Iron Sword level 5
+GiveQuest - example: GiveQuest, MyQuestID123. Will give player quest with ID MyQuestID123
+RemoveQuest - example: RemoveQuest, MyQuestID123. Will remove quest with ID MyQuestID123
 Spawn - example: Spawn, Wolf, 5, 2. Will spawn 5 wolves level 2 (near)
 Teleport - example: Teleport, 100, 100, 100. Will teleport player to x100, y100, z100
 Damage - example: Damage, 100. Will deal 100 damage to player
 Heal - example: Heal, 100. Will heal player for 100 health
 PlaySound - example: PlaySound, MySound. Will play sound MySound
+NpcText - example: NpcText, MyText. Will show text MyText above closest NPC head
 ```
 
 Data Format:
