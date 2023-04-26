@@ -152,7 +152,7 @@ public static class Global_Values
         _container.Value._maxAcceptedQuests = SearchOption("MaxAcceptedQuests", 7, "Max Amount Of Accpeted Quests");
         _container.Value._hideOtherQuestRequirementQuests = SearchOption("HideOtherQuestRequirementQuests", false, "Hide Quest in UI if they have OtherQuest as requirement");
         _container.Value._allowKillQuestsInParty = SearchOption("AllowKillQuestsInParty", true, "Allow Kill Quests In Party");
-        _container.Value._enableKGChat = SearchOption("EnableKGChat", false, "Enable KGChat");
+        _container.Value._enableKGChat = SearchOption("EnableKGChat", true, "Enable KGChat");
         _container.Update();
     } 
 
