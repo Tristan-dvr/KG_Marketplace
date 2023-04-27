@@ -73,7 +73,7 @@ public static class Dialogues_UI
         foreach (var option in dialogue.Options)
         {
             var element = UnityEngine.Object.Instantiate(Dialogue_Element, Content);
-            element.transform.Find("Text").GetComponent<Text>().text = option.Text;
+            element.transform.Find("Text").GetComponent<Text>().text = "\"" + option.Text + "\"";
             element.GetComponent<Button>().onClick.AddListener(() =>
             {
                 AssetStorage.AssetStorage.AUsrc.Play();

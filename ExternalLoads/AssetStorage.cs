@@ -84,9 +84,9 @@ public static class AssetStorage
             Texture2D tex = new Texture2D(1, 1);
             tex.LoadImage(data);
             Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0));
-            GlobalCachedSprites.Add(fileName, sprite);
+            GlobalCachedSprites[fileName] = sprite;
         }
-
+        GlobalCachedSprites.Add("teleporter_default", PortalIconDefault);
         Marketplace._thistype.StartCoroutine(LoadSoundsCoroutine(Market_Paths.NPC_SoundsPath));
     }
 

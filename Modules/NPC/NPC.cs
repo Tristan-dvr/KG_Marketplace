@@ -719,8 +719,12 @@ public static class Market_NPC
                 Quests_UIs.AcceptedQuestsUI.CheckQuests();
             }
 
-            Dialogues_UI.LoadDialogue(this, "default");
-            return true;
+            if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGnpcDialogue")))
+            {
+                Dialogues_UI.LoadDialogue(this, "default");
+                return true;
+            }
+            
             OpenUIForType();
             return true;
         }
