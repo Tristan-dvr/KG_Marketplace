@@ -1152,14 +1152,9 @@ public static class Quests_DataTypes
                         string itemPrefab = split[0];
                         GameObject prefab = ZNetScene.instance.GetPrefab(itemPrefab);
                         if (!prefab || !prefab.GetComponent<ItemDrop>()) continue;
-                        GameObject newItem = UnityEngine.Object.Instantiate(prefab,
-                            Player.m_localPlayer.transform.position,
-                            Quaternion.identity);
                         int amount = int.Parse(split[1]);
                         int level = int.Parse(split[2]);
-                        newItem.GetComponent<ItemDrop>().m_itemData.m_stack = amount;
-                        newItem.GetComponent<ItemDrop>().m_itemData.m_quality = level;
-                        newItem.GetComponent<ItemDrop>().Save();
+                        Utils.InstantiateItem(prefab, amount, level);
                         break;
                     case QuestEventAction.GiveQuest:
                         string questName = split[0].ToLower();

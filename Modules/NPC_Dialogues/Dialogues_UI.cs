@@ -11,6 +11,10 @@ public static class Dialogues_UI
     private static Text Dialogue_Text;
     private static Transform Content;
 
+
+    private static bool WasVisible;
+    private static CanvasGroup CanvasAlpha;
+
     public static bool IsVisible()
     {
         return UI && UI.activeSelf;
@@ -29,6 +33,7 @@ public static class Dialogues_UI
     public static void Init()
     {
         UI = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("NPCDialogueUI"));
+        CanvasAlpha = UI.GetComponent<CanvasGroup>();
         Dialogue_Element = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Dialogue_Option");
         UnityEngine.Object.DontDestroyOnLoad(UI);
         UI.SetActive(false);
@@ -51,16 +56,53 @@ public static class Dialogues_UI
         Dialogue_Text.text = "";
     }
 
-    public static void LoadDialogue(Market_NPC.NPCcomponent npc, string UID)
+
+    private static Coroutine FadeCoroutine;
+
+    private enum Fade
+    {
+        Show,
+        Hide
+    }
+
+    private static void SmoothAlpha(Fade type, float time)
+    {
+        if (FadeCoroutine != null)
+            Marketplace._thistype.StopCoroutine(FadeCoroutine);
+        FadeCoroutine = Marketplace._thistype.StartCoroutine(SmoothAlphaCoroutine(type, time));
+    }
+
+    private static IEnumerator SmoothAlphaCoroutine(Fade type, float time)
+    {
+        float start = type == Fade.Show ? 0 : 1;
+        CanvasAlpha.alpha = start;
+        float target = type == Fade.Show ? 1 : 0;
+        float counter = 0;
+        while (counter <= 1f)
+        {
+            if (!UI) yield break;
+            counter += Time.unscaledDeltaTime / time;
+            CanvasAlpha.alpha = Mathf.Lerp(start, target, counter);
+            yield return null;
+        }
+    }
+
+
+    public static bool LoadDialogue(Market_NPC.NPCcomponent npc, string UID)
     {
         Default();
         if (!Dialogues_DataTypes.ClientReadyDialogues.TryGetValue(UID, out var dialogue))
         {
             Hide();
-            return;
+            return false;
         }
 
         UI.SetActive(true);
+
+        if (!WasVisible)
+            SmoothAlpha(Fade.Show, 0.5f);
+
+
         string name = npc.GetNPCName();
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -68,12 +110,12 @@ public static class Dialogues_UI
         }
 
         NPC_Name.text = name;
-        Dialogue_Text.text = Localization.instance.Localize(dialogue.Text);
+        Dialogue_Text.text = "\"" + Localization.instance.Localize(dialogue.Text) + "\"";
         int c = 0;
         foreach (var option in dialogue.Options)
         {
             var element = UnityEngine.Object.Instantiate(Dialogue_Element, Content);
-            element.transform.Find("Text").GetComponent<Text>().text = "\"" + Localization.instance.Localize(option.Text) + "\"";
+            element.transform.Find("Text").GetComponent<Text>().text = Localization.instance.Localize(option.Text);
             element.GetComponent<Button>().onClick.AddListener(() =>
             {
                 AssetStorage.AssetStorage.AUsrc.Play();
@@ -95,11 +137,13 @@ public static class Dialogues_UI
         }
 
         ResetFitters();
+        return true;
     }
 
     public static void Hide()
     {
         UI.SetActive(false);
+        WasVisible = false;
     }
 
     [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]

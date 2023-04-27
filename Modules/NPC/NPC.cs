@@ -554,7 +554,7 @@ public static class Market_NPC
                 znv.Register("KGMarket changeNpcType", new Action<long, int>(ChangeNpcType));
                 znv.Register("KGMarket removeNpc", RemoveNPC);
                 znv.Register("KGmarket snapandrotate", new Action<long, ZPackage>(SnapAndRotate));
-                znv.Register("KGmarket changeprofile", new Action<long, string>(ChangeProfile));
+                znv.Register("KGmarket changeprofile", new Action<long, string, string>(ChangeProfile));
                 znv.Register("KGmarket overridename", new Action<long, string>(OverrideName));
                 znv.Register("KGmarket overridemodel", new Action<long, string>(OverrideModel));
                 znv.Register("KGmarket fashion", new Action<long, string>(FashionApply));
@@ -721,8 +721,8 @@ public static class Market_NPC
 
             if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGnpcDialogue")))
             {
-                Dialogues_UI.LoadDialogue(this, "default");
-                return true;
+                if (Dialogues_UI.LoadDialogue(this, znv.m_zdo.GetString("KGnpcDialogue")))
+                    return true;
             }
             
             OpenUIForType();
@@ -938,12 +938,15 @@ public static class Market_NPC
             transform.Find("MPASNquest").gameObject.SetActive(Quests_DataTypes.Quest.IsQuestTarget(newName));
         }
 
-        private void ChangeProfile(long sender, string text)
+        private void ChangeProfile(long sender, string profile, string dialogue)
         {
             if (znv.IsOwner())
             {
-                if (string.IsNullOrWhiteSpace(text)) text = "default";
-                znv.m_zdo.Set("KGnpcProfile", text.ToLower());
+                if (string.IsNullOrWhiteSpace(profile)) profile = "default";
+                znv.m_zdo.Set("KGnpcProfile", profile.ToLower());
+                
+                if (string.IsNullOrWhiteSpace(dialogue)) dialogue = "";
+                znv.m_zdo.Set("KGnpcDialogue", dialogue);
             }
         }
 
@@ -1686,6 +1689,7 @@ public static class Market_NPC
         private static InputField _npcname;
         private static InputField _npcmodel;
         private static InputField _patroldata;
+        private static InputField _npcDialogue;
 
         private static InputField LeftItemFashion,
             RightItemFashion,
@@ -1727,6 +1731,7 @@ public static class Market_NPC
             _npcname = UI.transform.Find("Canvas/MAIN/Pergament/NPCNAME").GetComponent<InputField>();
             _npcmodel = UI.transform.Find("Canvas/MAIN/Pergament/NPCMODEL").GetComponent<InputField>();
             _patroldata = UI.transform.Find("Canvas/MAIN/Pergament/PATROLDATA").GetComponent<InputField>();
+            _npcDialogue = UI.transform.Find("Canvas/MAIN/Pergament/NPCDIALOGUE").GetComponent<InputField>();
             MAIN.SetActive(false);
             FASHION.SetActive(false);
             Localization.instance.Localize(UI.transform);
@@ -1838,7 +1843,7 @@ public static class Market_NPC
 
             _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGMarket changeNpcType", (int)_currentType);
             _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket overridename", _npcname.text);
-            _currentNPC.znv.InvokeRPC("KGmarket changeprofile", _npcprofile.text);
+            _currentNPC.znv.InvokeRPC("KGmarket changeprofile", _npcprofile.text, _npcDialogue.text);
             _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket overridemodel", _npcmodel.text);
             _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket GetPatrolData", _patroldata.text);
             Hide();
@@ -1910,6 +1915,7 @@ public static class Market_NPC
             _npcname.text = _npc.znv.m_zdo.GetString("KGnpcNameOverride");
             _npcmodel.text = _npc.znv.m_zdo.GetString("KGnpcModelOverride");
             _patroldata.text = _npc.znv.m_zdo.GetString("KGmarket PatrolData");
+            _npcDialogue.text = _npc.znv.m_zdo.GetString("KGnpcDialogue");
             _currentNPC = _npc;
             CheckColors();
             UI.SetActive(true);

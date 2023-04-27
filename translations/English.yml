@@ -231,3 +231,4 @@ mpasn_onlyforvip: Only for VIP users
 mpasn_messages: Messages
 mpasn_periodicsound : Periodic Sound
 mpasn_periodicsoundtime : Periodic Sound Time
+mpasn_setnpcdialogue: Attach NPC Dialogue

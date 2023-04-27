@@ -132,14 +132,9 @@ public static class Dialogues_DataTypes
                                     string itemPrefab = split[1];
                                     GameObject prefab = ZNetScene.instance.GetPrefab(itemPrefab);
                                     if (!prefab || !prefab.GetComponent<ItemDrop>()) return;
-                                    GameObject newItem = UnityEngine.Object.Instantiate(prefab,
-                                        Player.m_localPlayer.transform.position,
-                                        Quaternion.identity);
                                     int amount = int.Parse(split[2]);
                                     int level = int.Parse(split[3]);
-                                    newItem.GetComponent<ItemDrop>().m_itemData.m_stack = amount;
-                                    newItem.GetComponent<ItemDrop>().m_itemData.m_quality = level;
-                                    newItem.GetComponent<ItemDrop>().Save();
+                                    Utils.InstantiateItem(prefab, amount, level);
                                 };
                                 break;
                             case OptionCommand.Spawn:
@@ -201,10 +196,7 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCommand.GiveBuff:
-                                result += (_) =>
-                                {
-                                    Player.m_localPlayer.GetSEMan().AddStatusEffect(split[1], true);
-                                };
+                                result += (_) => { Player.m_localPlayer.GetSEMan().AddStatusEffect(split[1], true); };
                                 break;
                         }
                     }
