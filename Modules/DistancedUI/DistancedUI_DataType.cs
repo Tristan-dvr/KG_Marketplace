@@ -1,6 +1,4 @@
-﻿using ServerSync;
-
-namespace Marketplace.Modules.DistancedUI;
+﻿namespace Marketplace.Modules.DistancedUI;
 
 public static class DistancedUI_DataType
 {

@@ -1,6 +1,4 @@
-﻿using ServerSync;
-
-namespace Marketplace.Modules.Gambler;
+﻿namespace Marketplace.Modules.Gambler;
 
 public static class Gambler_DataTypes
 {

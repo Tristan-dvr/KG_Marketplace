@@ -1,6 +1,4 @@
-﻿using ServerSync;
-
-namespace Marketplace.Modules.Marketplace_NPC;
+﻿namespace Marketplace.Modules.Marketplace_NPC;
 
 public static class Marketplace_DataTypes
 {

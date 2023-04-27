@@ -308,7 +308,7 @@ public static class Trader_UI
                 for (int i = 0; i < resultItem.Count * ModifierValues[CurrentModifier]; i++)
                 {
                     GameObject go = Object.Instantiate(prefab,
-                        CurrentPos.transform.position - CurrentPos.transform.forward * 3f + Vector3.up * 1f,
+                        Player.m_localPlayer.transform.position - Player.m_localPlayer.transform.forward * 3f + Vector3.up * 1f,
                         Quaternion.identity);
                     go.GetComponent<Character>().SetLevel(resultItem.Level);
                     Tameable tame = go.GetComponent<Tameable>();
@@ -340,13 +340,11 @@ public static class Trader_UI
             CreateElementsNew();
         }
     }
+    
 
-    private static GameObject CurrentPos;
-
-    public static void Show(string profile, GameObject initPos, string _npcName)
+    public static void Show(string profile, string _npcName)
     {
         if (!Trader_DataTypes.TraderItemList.Value.ContainsKey(profile)) return;
-        CurrentPos = initPos;
         CurrentProfile = profile;
         SearchInput.text = "";
         SortList();

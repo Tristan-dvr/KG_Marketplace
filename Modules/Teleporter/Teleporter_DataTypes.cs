@@ -1,6 +1,4 @@
-﻿using ServerSync;
-
-namespace Marketplace.Modules.Teleporter;
+﻿namespace Marketplace.Modules.Teleporter;
 
 public static class Teleporter_DataTypes
 {

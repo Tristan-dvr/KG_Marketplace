@@ -17,7 +17,7 @@
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
         <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
+        <DebugType>pdbonly</DebugType>
         <Optimize>true</Optimize>
         <OutputPath>bin\Debug\</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -341,6 +341,10 @@
         <Compile Include="Modules\Marketplace\Marketplace_UI.cs" />
         <Compile Include="Modules\NPC\NPC.cs" />
         <Compile Include="Modules\NPC\NPCmapPins.cs" />
+        <Compile Include="Modules\NPC_Dialogues\Dialogues_DataTypes.cs" />
+        <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Client.cs" />
+        <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Server.cs" />
+        <Compile Include="Modules\NPC_Dialogues\Dialogues_UI.cs" />
         <Compile Include="Modules\Quests\Quests_DataTypes.cs" />
         <Compile Include="Modules\Quests\Quests_Main_Client.cs" />
         <Compile Include="Modules\Quests\Quests_Main_Server.cs" />
@@ -507,9 +511,8 @@
     <Target Name="KeyManager" AfterTargets="ILRepack"> 
         <Seal DLL="$(TargetPath)" />
     </Target>
-    
 
-    <Target Name="Copy" AfterTargets="KeyManager"> 
+    <Target Name="Copy" AfterTargets="ILRepack"> 
         <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;D:\SteamLibrary\steamapps\common\Valheim\BepInEx\plugins\$(AssemblyName).dll&quot;" />
         <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;D:\SteamLibrary\steamapps\common\Valheim Dedicated Server\BepInEx\plugins\$(AssemblyName).dll&quot;" />
         <Exec Command="pdb2mdb.exe &quot;$(TargetDir)$(AssemblyName).dll&quot;" />

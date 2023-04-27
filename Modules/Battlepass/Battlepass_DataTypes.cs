@@ -1,6 +1,4 @@
-﻿using ServerSync;
-
-namespace Marketplace.Modules.Battlepass;
+﻿namespace Marketplace.Modules.Battlepass;
 
 public static class Battlepass_DataTypes
 {

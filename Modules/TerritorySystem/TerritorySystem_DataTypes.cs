@@ -1,6 +1,4 @@
-﻿using ServerSync;
-
-namespace Marketplace.Modules.TerritorySystem;
+﻿namespace Marketplace.Modules.TerritorySystem;
 
 public static class TerritorySystem_DataTypes
 {

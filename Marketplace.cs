@@ -1,6 +1,5 @@
 ﻿using LocalizationManager;
 using Marketplace.Paths;
-using ServerSync;
 
 namespace Marketplace
 {

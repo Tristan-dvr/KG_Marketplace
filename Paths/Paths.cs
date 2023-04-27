@@ -45,6 +45,8 @@ public static class Market_Paths
     public static string BufferProfilesConfig => Path.Combine(MainPath, "BufferProfiles.cfg");
     public static string BufferDatabaseConfig => Path.Combine(MainPath, "BufferDatabase.cfg");
     
+    public static string NpcDialoguesConfig => Path.Combine(MainPath, "NpcDialogues.cfg");
+    
     public static string MainConfig => Path.Combine(MainPath, "MarketPlace.cfg");
 
     private static void OnInit()
@@ -84,6 +86,7 @@ public static class Market_Paths
             if (!File.Exists(BufferProfilesConfig)) File.Create(BufferProfilesConfig).Dispose();
             if (!File.Exists(BufferDatabaseConfig)) File.Create(BufferDatabaseConfig).Dispose();
             if(!File.Exists(GamblerConfig)) File.Create(GamblerConfig).Dispose();
+            if(!File.Exists(NpcDialoguesConfig)) File.Create(NpcDialoguesConfig).Dispose();
         }
         else
         {

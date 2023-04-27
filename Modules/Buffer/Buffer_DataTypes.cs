@@ -1,6 +1,4 @@
-﻿using ServerSync;
-
-namespace Marketplace.Modules.Buffer;
+﻿namespace Marketplace.Modules.Buffer;
 
 public static class Buffer_DataTypes
 {

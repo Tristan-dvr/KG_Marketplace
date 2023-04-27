@@ -1,6 +1,4 @@
-﻿using ServerSync;
-
-namespace Marketplace.Modules.Trader;
+﻿namespace Marketplace.Modules.Trader;
 
 public static class Trader_DataTypes
 {

@@ -344,6 +344,20 @@ public static class Utils
         }
         return result;
     }
+
+    public static Sprite TryFindIcon(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return null;
+        if (AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(name, out var img))
+        {
+            return img;
+        }
+        if (ZNetScene.instance.GetPrefab(name) is { } prefab && prefab.GetComponent<ItemDrop>() is { } item)
+        {
+            return item.m_itemData.GetIcon();
+        }
+        return null;
+    }
     
     public static bool HasFlagFast(this Quests_DataTypes.SpecialQuestTag value,
         Quests_DataTypes.SpecialQuestTag flag)

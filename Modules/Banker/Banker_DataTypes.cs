@@ -1,6 +1,4 @@
-﻿using ServerSync;
-
-namespace Marketplace.Modules.Banker;
+﻿namespace Marketplace.Modules.Banker;
 
 public static class Banker_DataTypes
 {

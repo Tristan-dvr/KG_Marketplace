@@ -12,6 +12,7 @@ global using fastJSON;
 global using HarmonyLib;
 global using KeyManager;
 global using MonoMod.Utils;
+global using ServerSync;
 global using TMPro;
 global using UnityEngine;
 global using UnityEngine.UI; 

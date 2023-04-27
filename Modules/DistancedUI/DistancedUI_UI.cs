@@ -206,7 +206,7 @@ public static class DistancedUI_UI
             switch (type)
             {
                 case NPCtype_Internal.Trader:
-                    Trader_UI.Show(profile, Player.m_localPlayer.gameObject, _NPCname);
+                    Trader_UI.Show(profile, _NPCname);
                     break;
                 case NPCtype_Internal.Banker:
                     Banker_UI.Show(profile, _NPCname);

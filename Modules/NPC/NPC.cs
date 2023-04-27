@@ -3,6 +3,7 @@ using Marketplace.Modules.Buffer;
 using Marketplace.Modules.Feedback;
 using Marketplace.Modules.Gambler;
 using Marketplace.Modules.Marketplace_NPC;
+using Marketplace.Modules.NPC_Dialogues;
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.ServerInfo;
 using Marketplace.Modules.Teleporter;
@@ -340,7 +341,7 @@ public static class Market_NPC
 
         private ZSyncAnimation zanim;
         private TMP_Text canvas;
-        private AudioSource NPC_SoundSource;
+        public AudioSource NPC_SoundSource;
         private bool WasClose;
         private Vector2[] PatrolArray;
         private float MaxSpeed;
@@ -478,7 +479,8 @@ public static class Market_NPC
                     periodicSoundTimer = 0;
                     if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGperiodicSound")))
                     {
-                        if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(znv.m_zdo.GetString("KGperiodicSound"), out var sound))
+                        if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(znv.m_zdo.GetString("KGperiodicSound"),
+                                out var sound))
                             NPC_SoundSource.PlayOneShot(sound);
                     }
                 }
@@ -631,6 +633,47 @@ public static class Market_NPC
             return znv.m_zdo.GetString("KGnpcNameOverride");
         }
 
+        public void OpenUIForType(string profile = null)
+        {
+            if (string.IsNullOrEmpty(profile) || profile == "use_existing")
+                profile = znv.m_zdo.GetString("KGnpcProfile", "default");
+            string npcName = znv.m_zdo.GetString("KGnpcNameOverride");
+            switch (_currentNpcType)
+            {
+                case NPCType.Marketplace:
+                    if (!string.IsNullOrWhiteSpace(Global_Values._localUserID))
+                        Marketplace_UI.Show();
+                    break;
+                case NPCType.Info:
+                    ServerInfo_UI.Show(profile, npcName);
+                    break;
+                case NPCType.Trader:
+                    Trader_UI.Show(profile, npcName);
+                    break;
+                case NPCType.Banker:
+                    Banker_UI.Show(profile, npcName);
+                    break;
+                case NPCType.Teleporter:
+                    Teleporter_Main_Client.ShowTeleporterUI(profile);
+                    break;
+                case NPCType.Feedback:
+                    Feedback_UI.Show();
+                    break;
+                case NPCType.Gambler:
+                    Gambler_UI.Show(profile);
+                    break;
+                case NPCType.Quests:
+                    Quests_UIs.QuestUI.Show(profile, npcName);
+                    break;
+                case NPCType.Buffer:
+                    Buffer_UI.Show(profile, npcName);
+                    break;
+                case NPCType.Transmog:
+                    Transmogrification_UI.Show(profile, npcName);
+                    break;
+            }
+        }
+
         public bool Interact(Humanoid user, bool hold, bool alt)
         {
             if (pastOverrideModel && !string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGinteractAnimation")))
@@ -676,51 +719,9 @@ public static class Market_NPC
                 Quests_UIs.AcceptedQuestsUI.CheckQuests();
             }
 
-
-            switch (_currentNpcType)
-            {
-                case NPCType.Marketplace:
-                    if (!string.IsNullOrWhiteSpace(Global_Values._localUserID))
-                        Marketplace_UI.Show();
-                    break;
-                case NPCType.Info:
-                    ServerInfo_UI.Show(znv.m_zdo.GetString("KGnpcProfile", "default"),
-                        znv.m_zdo.GetString("KGnpcNameOverride"));
-                    break;
-                case NPCType.Trader:
-                    Trader_UI.Show(znv.m_zdo.GetString("KGnpcProfile", "default"),
-                        gameObject,
-                        znv.m_zdo.GetString("KGnpcNameOverride"));
-                    break;
-                case NPCType.Banker:
-                    Banker_UI.Show(znv.m_zdo.GetString("KGnpcProfile", "default"),
-                        znv.m_zdo.GetString("KGnpcNameOverride"));
-                    break;
-                case NPCType.Teleporter:
-                    Teleporter_Main_Client.ShowTeleporterUI(znv.m_zdo.GetString("KGnpcProfile", "default"));
-                    break;
-                case NPCType.Feedback:
-                    Feedback_UI.Show();
-                    break;
-                case NPCType.Gambler:
-                    Gambler_UI.Show(znv.m_zdo.GetString("KGnpcProfile", "default"));
-                    break;
-                case NPCType.Quests:
-                    Quests_UIs.QuestUI.Show(znv.m_zdo.GetString("KGnpcProfile", "default"),
-                        znv.m_zdo.GetString("KGnpcNameOverride"));
-                    break;
-                case NPCType.Buffer:
-                    Buffer_UI.Show(znv.m_zdo.GetString("KGnpcProfile", "default"),
-                        znv.m_zdo.GetString("KGnpcNameOverride"));
-                    break;
-                case NPCType.Transmog:
-                    Transmogrification_UI.Show(znv.m_zdo.GetString("KGnpcProfile", "default"),
-                        znv.m_zdo.GetString("KGnpcNameOverride"));
-                    break;
-                default:
-                    return false;
-            }
-
+            Dialogues_UI.LoadDialogue(this, "default");
+            return true;
+            OpenUIForType();
             return true;
         }
 
@@ -1409,7 +1410,7 @@ public static class Market_NPC
     }
 
 
-    public class NpcData
+    private class NpcData
     {
         public string PrefabOverride;
         public string LeftItem;
@@ -1535,10 +1536,10 @@ public static class Market_NPC
             {
                 NPCName = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);
             }
-            
+
             string ReplaceInvalidChars(string filename)
             {
-                return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));    
+                return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
             }
 
             NPCName += $" {npc.transform.position}";
@@ -1578,7 +1579,8 @@ public static class Market_NPC
                 PeriodicAnimationTime = npc.znv.m_zdo.GetFloat("KGperiodicAnimationTime")
                     .ToString(CultureInfo.InvariantCulture),
                 PeriodicSound = npc.znv.m_zdo.GetString("KGperiodicSound"),
-                PeriodicSoundTime = npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture),
+                PeriodicSoundTime =
+                    npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture),
                 IMAGE = PhotoManager.__instance.NPC_Photo(npc)
             };
             string json = JSON.ToNiceJSON(newData);
@@ -1630,9 +1632,11 @@ public static class Market_NPC
                 TextSize = _currentNPC.znv.m_zdo.GetFloat("KGtextSize", 3).ToString(CultureInfo.InvariantCulture),
                 TextHeight = _currentNPC.znv.m_zdo.GetFloat("KGtextHeight").ToString(CultureInfo.InvariantCulture),
                 PeriodicAnimation = _currentNPC.znv.m_zdo.GetString("KGperiodicAnimation"),
-                PeriodicAnimationTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicAnimationTime").ToString(CultureInfo.InvariantCulture),
+                PeriodicAnimationTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicAnimationTime")
+                    .ToString(CultureInfo.InvariantCulture),
                 PeriodicSound = _currentNPC.znv.m_zdo.GetString("KGperiodicSound"),
-                PeriodicSoundTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture),
+                PeriodicSoundTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicSoundTime")
+                    .ToString(CultureInfo.InvariantCulture),
                 IMAGE = PhotoManager.__instance.NPC_Photo(_currentNPC)
             };
             string json = JSON.ToNiceJSON(newData);
@@ -1885,9 +1889,11 @@ public static class Market_NPC
             TextSize.text = _npc.znv.m_zdo.GetFloat("KGtextSize", 3).ToString(CultureInfo.InvariantCulture);
             TextHeight.text = _npc.znv.m_zdo.GetFloat("KGtextHeight").ToString(CultureInfo.InvariantCulture);
             PeriodicAnimation.text = _npc.znv.m_zdo.GetString("KGperiodicAnimation");
-            PeriodicAnimationTime.text = _npc.znv.m_zdo.GetFloat("KGperiodicAnimationTime").ToString(CultureInfo.InvariantCulture);
+            PeriodicAnimationTime.text = _npc.znv.m_zdo.GetFloat("KGperiodicAnimationTime")
+                .ToString(CultureInfo.InvariantCulture);
             PeriodicSound.text = _npc.znv.m_zdo.GetString("KGperiodicSound");
-            PeriodicSoundTime.text = _npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture);
+            PeriodicSoundTime.text =
+                _npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture);
             UI.SetActive(true);
         }
 

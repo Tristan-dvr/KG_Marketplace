@@ -1,6 +1,4 @@
-﻿using ServerSync;
-
-namespace Marketplace.Modules.ServerInfo;
+﻿namespace Marketplace.Modules.ServerInfo;
 
 public static class ServerInfo_DataTypes
 {
