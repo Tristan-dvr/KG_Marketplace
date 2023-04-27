@@ -73,6 +73,7 @@ public static class Market_Paths
                 File.Move(Path.Combine(MainPath, "QuestsDATABASE.cfg"), QuestDatabasePath);
             if(File.Exists(Path.Combine(MainPath, "BufferDATABASE.cfg")))
                 File.Move(Path.Combine(MainPath, "BufferDATABASE.cfg"), BufferDatabaseConfig);
+            
             if (!File.Exists(QuestDatabasePath)) File.Create(QuestDatabasePath).Dispose();
             if (!File.Exists(BattlepassConfigPath)) File.Create(BattlepassConfigPath).Dispose();
             if (!File.Exists(BattlepassFreeRewardsPath)) File.Create(BattlepassFreeRewardsPath).Dispose();

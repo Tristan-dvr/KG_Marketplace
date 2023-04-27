@@ -126,7 +126,7 @@ public static class Battlepass_UI
                 }
                 else
                 {
-                    float skillLevel = Quests_DataTypes.Quest.GetPlayerSkillLevelCustom(prefab);
+                    float skillLevel = Utils.GetPlayerSkillLevelCustom(prefab);
                     if (skillLevel > 0)
                         Player.m_localPlayer.GetSkills().CheatRaiseSkill(prefab, count);
                 }

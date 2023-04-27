@@ -133,6 +133,7 @@ public static class Dialogues_UI
         int c = 0;
         foreach (var option in dialogue.Options)
         {
+            if(!option.CheckCondition()) continue;
             var element = UnityEngine.Object.Instantiate(Dialogue_Element, Content);
             element.transform.Find("Text").GetComponent<Text>().text = Localization.instance.Localize(option.Text);
 
@@ -172,6 +173,7 @@ public static class Dialogues_UI
     public static void Hide(bool nextFrame = false)
     {
         WasVisible = false;
+        if(!IsVisible()) return;
         if (nextFrame)
         {
             Marketplace._thistype.StartCoroutine(HideCoroutine());

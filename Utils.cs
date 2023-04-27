@@ -359,6 +359,24 @@ public static class Utils
         return null;
     }
     
+    public static float GetPlayerSkillLevelCustom(string skillName)
+    {
+        if (!Enum.TryParse(skillName, out Skills.SkillType skill))
+        {
+            Skills.SkillDef SkillDef =
+                Player.m_localPlayer.m_skills.GetSkillDef(
+                    (Skills.SkillType)Mathf.Abs(skillName.GetStableHashCode()));
+            if (SkillDef == null)
+            {
+                return -1;
+            }
+
+            skill = SkillDef.m_skill;
+        }
+
+        return Player.m_localPlayer.m_skills.GetSkillLevel(skill);
+    }
+    
     public static bool HasFlagFast(this Quests_DataTypes.SpecialQuestTag value,
         Quests_DataTypes.SpecialQuestTag flag)
     {

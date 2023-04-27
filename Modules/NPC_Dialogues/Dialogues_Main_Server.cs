@@ -17,7 +17,8 @@ public class Dialogues_Main_Server
         Text,
         Transition,
         Command,
-        Icon
+        Icon,
+        Condition
     }
 
     private static void ReadDialoguesData()
@@ -57,6 +58,7 @@ public class Dialogues_Main_Server
                     {
                         Dialogues_DataTypes.RawDialogue.RawPlayerOption option = new Dialogues_DataTypes.RawDialogue.RawPlayerOption();
                         List<string> commands = new List<string>();
+                        List<string> conditions = new List<string>();
                         string[] split = profiles[i].Split('|');
                         foreach (string s in split)
                         {
@@ -77,9 +79,13 @@ public class Dialogues_Main_Server
                                 case DataType.Icon:
                                     option.Icon = enumCheck[1].Replace(" ","");
                                     break;
+                                case DataType.Condition:
+                                    conditions.Add(enumCheck[1].Replace(" ", ""));
+                                    break;
                             }
                         }
                         option.Commands = commands.ToArray();
+                        option.Conditions = conditions.ToArray();
                         options.Add(option);
                     }
                 }

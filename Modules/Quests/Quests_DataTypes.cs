@@ -403,24 +403,6 @@ public static class Quests_DataTypes
         public string GetLocalizedReward(int index) => LocalizedReward[index];
         public string GetLocalizedTarget(int index) => LocalizedTarget[index];
 
-        public static float GetPlayerSkillLevelCustom(string skillName)
-        {
-            if (!Enum.TryParse(skillName, out Skills.SkillType skill))
-            {
-                Skills.SkillDef SkillDef =
-                    Player.m_localPlayer.m_skills.GetSkillDef(
-                        (Skills.SkillType)Mathf.Abs(skillName.GetStableHashCode()));
-                if (SkillDef == null)
-                {
-                    return -1;
-                }
-
-                skill = SkillDef.m_skill;
-            }
-
-            return Player.m_localPlayer.m_skills.GetSkillLevel(skill);
-        }
-
 
         public static bool CanTake(int UID, out string message, out QuestRequirementType type)
         {
@@ -443,7 +425,7 @@ public static class Quests_DataTypes
                     message =
                         $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{localizedSkill} {CheckQuest.QuestRequirementLevel[i]}</color>";
                     type = QuestRequirementType.Skill;
-                    float skillLevel = GetPlayerSkillLevelCustom(CheckQuest.QuestRequirementPrefab[i]);
+                    float skillLevel = Utils.GetPlayerSkillLevelCustom(CheckQuest.QuestRequirementPrefab[i]);
                     bool result = skillLevel >= CheckQuest.QuestRequirementLevel[i];
                     if (result)
                     {
@@ -674,7 +656,7 @@ public static class Quests_DataTypes
 
                 if (quest.RewardType[i] is QuestRewardType.Skill)
                 {
-                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) >
+                    if (Utils.GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) >
                         (Marketplace.TempProfessionsType != null ? 0 : -1))
                         Player.m_localPlayer.GetSkills().CheatRaiseSkill(quest.RewardPrefab[i],
                             quest.RewardCount[i]);
@@ -682,7 +664,7 @@ public static class Quests_DataTypes
 
                 if (quest.RewardType[i] is QuestRewardType.Skill_EXP)
                 {
-                    if (GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) >
+                    if (Utils.GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) >
                         (Marketplace.TempProfessionsType != null ? 0 : -1))
                     {
                         Skills.Skill skill;

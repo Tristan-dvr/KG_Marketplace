@@ -24,6 +24,17 @@ public static class Dialogues_DataTypes
         GiveBuff
     }
 
+    private enum OptionCondition
+    {
+        NotFinished,
+        OtherQuest,
+        HasItem,
+        HasBuff,
+        Skill,
+        GlobalKey,
+        IsVIP,
+    }
+
     public class RawDialogue : ISerializableParameter
     {
         public string UID;
@@ -36,6 +47,7 @@ public static class Dialogues_DataTypes
             public string Icon;
             public string NextUID;
             public string[] Commands;
+            public string[] Conditions;
         }
 
         public void Serialize(ref ZPackage pkg)
@@ -49,9 +61,15 @@ public static class Dialogues_DataTypes
                 pkg.Write(option.Icon ?? "");
                 pkg.Write(option.NextUID ?? "");
                 pkg.Write(option.Commands.Length);
-                foreach (var command in option.Commands)
+                foreach (string command in option.Commands)
                 {
                     pkg.Write(command ?? "");
+                }
+
+                pkg.Write(option.Conditions.Length);
+                foreach (string condition in option.Conditions)
+                {
+                    pkg.Write(condition ?? "");
                 }
             }
         }
@@ -76,6 +94,13 @@ public static class Dialogues_DataTypes
                 {
                     Options[i].Commands[j] = pkg.ReadString();
                 }
+
+                int conditionsLength = pkg.ReadInt();
+                Options[i].Conditions = new string[conditionsLength];
+                for (int j = 0; j < conditionsLength; j++)
+                {
+                    Options[i].Conditions[j] = pkg.ReadString();
+                }
             }
         }
     }
@@ -91,6 +116,12 @@ public static class Dialogues_DataTypes
             public Sprite Icon;
             public string NextUID;
             public Action<Market_NPC.NPCcomponent> Command;
+            public Func<bool> Condition;
+
+            public bool CheckCondition()
+            {
+                return Condition == null || Condition.GetInvocationList().Cast<Func<bool>>().All(func => func());
+            }
         }
 
         private static Action<Market_NPC.NPCcomponent> TryParseCommand(IEnumerable<string> commands)
@@ -210,6 +241,65 @@ public static class Dialogues_DataTypes
             return result;
         }
 
+
+        private static Func<bool> TryParseCondition(IEnumerable<string> conditions)
+        {
+            Func<bool> result = null;
+            foreach (string condition in conditions)
+            {
+                try
+                {
+                    string[] split = condition.Split(',');
+                    if (Enum.TryParse(split[0], true, out OptionCondition optionCondition))
+                    {
+                        switch (optionCondition)
+                        {
+                            case OptionCondition.Skill:
+                                result += () => Utils.GetPlayerSkillLevelCustom(split[1]) >= int.Parse(split[2]);
+                                break;
+                            case OptionCondition.OtherQuest:
+                                result += () =>
+                                {
+                                    int reqID = split[1].ToLower().GetStableHashCode();
+                                    return Quests_DataTypes.Quest.IsOnCooldown(reqID, out _);
+                                };
+                                break;
+                            case OptionCondition.NotFinished:
+                                result += () =>
+                                {
+                                    int reqID = split[1].ToLower().GetStableHashCode();
+                                    if (Quests_DataTypes.AcceptedQuests.ContainsKey(reqID)) return false;
+                                    return !Quests_DataTypes.Quest.IsOnCooldown(reqID, out _);
+                                };
+                                break;
+                            case OptionCondition.HasItem:
+                                result += () =>
+                                {
+                                    GameObject prefab = ZNetScene.instance.GetPrefab(split[1]);
+                                    if (!prefab || !prefab.GetComponent<ItemDrop>()) return true;
+                                    return Utils.CustomCountItems(split[1], 1) >= int.Parse(split[2]);
+                                };
+                                break;
+                            case OptionCondition.IsVIP:
+                                result += () => Global_Values._container.Value._vipPlayerList.Contains(Global_Values._localUserID);
+                                break;
+                            case OptionCondition.GlobalKey:
+                                result += () => ZoneSystem.instance.m_globalKeys.Contains(split[1]);
+                                break;
+                            case OptionCondition.HasBuff:
+                                result += () => Player.m_localPlayer.m_seman.HaveStatusEffect(split[1]);
+                                break;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Utils.print($"Error while parsing dialogue condition ({condition}):\n{ex}");
+                }
+            }
+            return result;
+        }
+
         public static implicit operator Dialogue(RawDialogue raw)
         {
             Dialogue dialogue = new()
@@ -224,7 +314,8 @@ public static class Dialogues_DataTypes
                     Text = raw.Options[i].Text,
                     Icon = Utils.TryFindIcon(raw.Options[i].Icon),
                     NextUID = raw.Options[i].NextUID,
-                    Command = TryParseCommand(raw.Options[i].Commands)
+                    Command = TryParseCommand(raw.Options[i].Commands),
+                    Condition = TryParseCondition(raw.Options[i].Conditions)
                 };
             }
 
