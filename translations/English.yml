@@ -100,15 +100,7 @@ mpasn_opennnpcui: NPC UI
 mpasn_fashionmenu: Fashion Menu
 mpasn_npcsaveload: NPC Save / Load Menu
 mpasn_removenpc: Remove NPC
-mpasn_openinfo: Open Info
-mpasn_openteleporthub: Open Teleport Hub
-mpasn_openfeedback: Open Feedback
-mpasn_opentrader: Open Trader
-mpasn_openbanker: Open Banker
-mpasn_opengambler: Open Gambler
-mpasn_openquests: Open Quests
-mpasn_openbuffer: Open Buffer
-mpasn_opentransmog: Open Transmog
+mpasn_interact: Interact
 mpasn_expired: EXPIRED
 mpasn_taxes: Taxes
 mpasn_overridenpcmodel: Override NPC Model

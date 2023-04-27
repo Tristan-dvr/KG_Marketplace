@@ -596,30 +596,8 @@ public static class Market_NPC
                   "\n" + Localization.instance.Localize("[<color=red><b>DELETE + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_removenpc")
                 : "";
-            string text = _currentNpcType switch
-            {
-                NPCType.Marketplace => Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>]") +
-                                       " " + Localization.instance.Localize("$mpasn_openmarketplace"),
-                NPCType.Info => Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>]") + " " +
-                                Localization.instance.Localize("$mpasn_openinfo"),
-                NPCType.Teleporter => Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>]") +
-                                      " " + Localization.instance.Localize("$mpasn_openteleporthub"),
-                NPCType.Feedback => Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>]") +
-                                    " " + Localization.instance.Localize("$mpasn_openfeedback"),
-                NPCType.Trader => Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>]") +
-                                  " " + Localization.instance.Localize("$mpasn_opentrader"),
-                NPCType.Banker => Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>]") +
-                                  " " + Localization.instance.Localize("$mpasn_openbanker"),
-                NPCType.Gambler => Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>]") +
-                                   " " + Localization.instance.Localize("$mpasn_opengambler"),
-                NPCType.Quests => Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>]") +
-                                  " " + Localization.instance.Localize("$mpasn_openquests"),
-                NPCType.Buffer => Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>]") +
-                                  " " + Localization.instance.Localize("$mpasn_openbuffer"),
-                NPCType.Transmog => Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>]") +
-                                    " " + Localization.instance.Localize("$mpasn_opentransmog"),
-                _ => ""
-            };
+            string text = Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>] ") + Localization.instance.Localize("$mpasn_interact");
+
             return text + admintext;
         }
 
@@ -724,7 +702,7 @@ public static class Market_NPC
                 if (Dialogues_UI.LoadDialogue(this, znv.m_zdo.GetString("KGnpcDialogue")))
                     return true;
             }
-            
+
             OpenUIForType();
             return true;
         }
@@ -944,7 +922,7 @@ public static class Market_NPC
             {
                 if (string.IsNullOrWhiteSpace(profile)) profile = "default";
                 znv.m_zdo.Set("KGnpcProfile", profile.ToLower());
-                
+
                 if (string.IsNullOrWhiteSpace(dialogue)) dialogue = "";
                 znv.m_zdo.Set("KGnpcDialogue", dialogue);
             }

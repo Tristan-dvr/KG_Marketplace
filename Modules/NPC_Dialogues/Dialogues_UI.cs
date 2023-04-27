@@ -1,4 +1,5 @@
 ﻿using Marketplace.Modules.NPC;
+using UnityEngine.Events;
 
 namespace Marketplace.Modules.NPC_Dialogues;
 
@@ -14,6 +15,7 @@ public static class Dialogues_UI
 
     private static bool WasVisible;
     private static CanvasGroup CanvasAlpha;
+    private static readonly Dictionary<int, Action> HotbarActions = new();
 
     public static bool IsVisible()
     {
@@ -42,6 +44,25 @@ public static class Dialogues_UI
         Dialogue_Text = UI.transform.Find("GO/Dialogue_Text").GetComponent<Text>();
         Content = UI.transform.Find("GO");
         Default();
+        Marketplace.Global_Updator += PressHotbarUpdate;
+    }
+
+    private static readonly KeyCode[] hotbarKeys =
+    {
+        KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5, KeyCode.Alpha6,
+        KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9, KeyCode.Alpha0
+    };
+    private static void PressHotbarUpdate()
+    {
+        if (!IsVisible() || !Player.m_localPlayer) return;
+        for (int i = 0; i < hotbarKeys.Length; ++i)
+        {
+            if (!Input.GetKeyDown(hotbarKeys[i])) continue;
+            if (HotbarActions.TryGetValue(i, out var action))
+            {
+                action();
+            }
+        }
     }
 
     private static void Default()
@@ -54,17 +75,16 @@ public static class Dialogues_UI
         Elements.Clear();
         NPC_Name.text = "";
         Dialogue_Text.text = "";
+        HotbarActions.Clear();
     }
 
 
     private static Coroutine FadeCoroutine;
-
     private enum Fade
     {
         Show,
         Hide
     }
-
     private static void SmoothAlpha(Fade type, float time)
     {
         if (FadeCoroutine != null)
@@ -87,13 +107,12 @@ public static class Dialogues_UI
         }
     }
 
-
     public static bool LoadDialogue(Market_NPC.NPCcomponent npc, string UID)
     {
         Default();
         if (!Dialogues_DataTypes.ClientReadyDialogues.TryGetValue(UID, out var dialogue))
         {
-            Hide();
+            Hide(true);
             return false;
         }
 
@@ -116,7 +135,8 @@ public static class Dialogues_UI
         {
             var element = UnityEngine.Object.Instantiate(Dialogue_Element, Content);
             element.transform.Find("Text").GetComponent<Text>().text = Localization.instance.Localize(option.Text);
-            element.GetComponent<Button>().onClick.AddListener(() =>
+
+            void OnClick()
             {
                 AssetStorage.AssetStorage.AUsrc.Play();
                 if (!npc || !Player.m_localPlayer) return;
@@ -127,9 +147,12 @@ public static class Dialogues_UI
                 }
                 else
                 {
-                    Hide();
+                    Hide(true);
                 }
-            });
+            }
+
+            HotbarActions[c] = OnClick;
+            element.GetComponent<Button>().onClick.AddListener(OnClick);
             element.transform.Find("Indexer/Text").GetComponent<Text>().text = (++c).ToString();
             if (option.Icon != null)
                 element.transform.Find("Text/Icon").GetComponent<Image>().sprite = option.Icon;
@@ -140,10 +163,21 @@ public static class Dialogues_UI
         return true;
     }
 
-    public static void Hide()
+    private static IEnumerator HideCoroutine()
     {
-        UI.SetActive(false);
+        yield return null;
+        Hide();
+    }
+    
+    public static void Hide(bool nextFrame = false)
+    {
         WasVisible = false;
+        if (nextFrame)
+        {
+            Marketplace._thistype.StartCoroutine(HideCoroutine());
+            return;
+        }
+        UI.SetActive(false);
     }
 
     [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
@@ -153,6 +187,16 @@ public static class Dialogues_UI
         private static void Postfix(ref bool __result)
         {
             if (IsVisible()) __result = true;
+        }
+    }
+
+    [HarmonyPatch(typeof(Player), nameof(Player.OnDeath))]
+    [ClientOnlyPatch]
+    private static class Player_OnDeath_Patch
+    {
+        private static void Prefix()
+        {
+            Hide();
         }
     }
 }
