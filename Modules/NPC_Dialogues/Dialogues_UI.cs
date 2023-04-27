@@ -68,12 +68,12 @@ public static class Dialogues_UI
         }
 
         NPC_Name.text = name;
-        Dialogue_Text.text = dialogue.Text;
+        Dialogue_Text.text = Localization.instance.Localize(dialogue.Text);
         int c = 0;
         foreach (var option in dialogue.Options)
         {
             var element = UnityEngine.Object.Instantiate(Dialogue_Element, Content);
-            element.transform.Find("Text").GetComponent<Text>().text = "\"" + option.Text + "\"";
+            element.transform.Find("Text").GetComponent<Text>().text = "\"" + Localization.instance.Localize(option.Text) + "\"";
             element.GetComponent<Button>().onClick.AddListener(() =>
             {
                 AssetStorage.AssetStorage.AUsrc.Play();
