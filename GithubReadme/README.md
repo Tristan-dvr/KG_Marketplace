@@ -73,6 +73,7 @@ Now you can add your own localization. For that download file: <a href="Marketpl
 
 1) https://youtu.be/5fR_9Qygkro (part one)
 2) https://youtu.be/BthPUGOeaeA (part two)
+3) https://youtu.be/hUU_bPCwFeE (part three)
 
 </p>
 </details>

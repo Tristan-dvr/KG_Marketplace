@@ -180,6 +180,7 @@ Now you can add your own localization. For that download file: <a href="Marketpl
 <ol>
 <li><a href="https://youtu.be/5fR_9Qygkro">https://youtu.be/5fR_9Qygkro</a> (part one)</li>
 <li><a href="https://youtu.be/BthPUGOeaeA">https://youtu.be/BthPUGOeaeA</a> (part two)</li>
+<li><a href="https://youtu.be/hUU_bPCwFeE">https://youtu.be/hUU_bPCwFeE</a> (part three)</li>
 </ol>
 </p>
 </details>
