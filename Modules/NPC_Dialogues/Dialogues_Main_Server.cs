@@ -18,7 +18,8 @@ public class Dialogues_Main_Server
         Transition,
         Command,
         Icon,
-        Condition
+        Condition,
+        AlwaysVisible
     }
 
     private static void ReadDialoguesData()
@@ -40,6 +41,7 @@ public class Dialogues_Main_Server
                         Dialogues_DataTypes.SyncedDialoguesData.Value.Add(dialogue);
                         dialogue = null;
                     }
+
                     string splitProfile = profiles[i].Replace("[", "").Replace("]", "").ToLower();
                     dialogue = new Dialogues_DataTypes.RawDialogue
                     {
@@ -56,13 +58,14 @@ public class Dialogues_Main_Server
                     }
                     else
                     {
-                        Dialogues_DataTypes.RawDialogue.RawPlayerOption option = new Dialogues_DataTypes.RawDialogue.RawPlayerOption();
+                        Dialogues_DataTypes.RawDialogue.RawPlayerOption option =
+                            new Dialogues_DataTypes.RawDialogue.RawPlayerOption();
                         List<string> commands = new List<string>();
-                        List<string> conditions = new List<string>();
+                        List<string> conditions = new List<string>(); 
                         string[] split = profiles[i].Split('|');
                         foreach (string s in split)
                         {
-                            string[] enumCheck = s.Split(new[]{':'}, 2);
+                            string[] enumCheck = s.Split(new[] { ':' }, 2);
                             if (enumCheck.Length != 2) continue;
                             if (!Enum.TryParse(enumCheck[0], true, out DataType type)) continue;
                             switch (type)
@@ -71,22 +74,27 @@ public class Dialogues_Main_Server
                                     option.Text = enumCheck[1].Trim().Replace(@"\n", "\n");
                                     break;
                                 case DataType.Transition:
-                                    option.NextUID = enumCheck[1].Replace(" ","").ToLower();
+                                    option.NextUID = enumCheck[1].Replace(" ", "").ToLower();
                                     break;
                                 case DataType.Command:
                                     commands.Add(enumCheck[1].Replace(" ", ""));
                                     break;
                                 case DataType.Icon:
-                                    option.Icon = enumCheck[1].Replace(" ","");
+                                    option.Icon = enumCheck[1].Replace(" ", "");
                                     break;
                                 case DataType.Condition:
                                     conditions.Add(enumCheck[1].Replace(" ", ""));
                                     break;
+                                case DataType.AlwaysVisible:
+                                    option.AlwaysVisible = bool.Parse(enumCheck[1].Replace(" ", ""));
+                                    break;
                             }
                         }
+
                         option.Commands = commands.ToArray();
                         option.Conditions = conditions.ToArray();
-                        options.Add(option);
+                        if (options.Count < 10)
+                            options.Add(option);
                     }
                 }
             }
@@ -96,11 +104,13 @@ public class Dialogues_Main_Server
                 break;
             }
         }
+
         if (dialogue != null)
         {
             dialogue.Options = options?.ToArray();
             Dialogues_DataTypes.SyncedDialoguesData.Value.Add(dialogue);
         }
+
         Dialogues_DataTypes.SyncedDialoguesData.Update();
     }
 

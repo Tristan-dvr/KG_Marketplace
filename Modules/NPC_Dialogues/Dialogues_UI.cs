@@ -52,13 +52,14 @@ public static class Dialogues_UI
         KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5, KeyCode.Alpha6,
         KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9, KeyCode.Alpha0
     };
+
     private static void PressHotbarUpdate()
     {
         if (!IsVisible() || !Player.m_localPlayer) return;
         for (int i = 0; i < hotbarKeys.Length; ++i)
         {
             if (!Input.GetKeyDown(hotbarKeys[i])) continue;
-            if (HotbarActions.TryGetValue(i, out var action))
+            if (HotbarActions.TryGetValue(i + 1, out var action))
             {
                 action();
             }
@@ -80,11 +81,13 @@ public static class Dialogues_UI
 
 
     private static Coroutine FadeCoroutine;
+
     private enum Fade
     {
         Show,
         Hide
     }
+
     private static void SmoothAlpha(Fade type, float time)
     {
         if (FadeCoroutine != null)
@@ -133,9 +136,29 @@ public static class Dialogues_UI
         int c = 0;
         foreach (var option in dialogue.Options)
         {
-            if(!option.CheckCondition()) continue;
+            bool deactivate = false;
+            if (!option.CheckCondition())
+            {
+                if (option.AlwaysVisible)
+                    deactivate = true;
+                else
+                    continue;
+            }
+
             var element = UnityEngine.Object.Instantiate(Dialogue_Element, Content);
+            Elements.Add(element);
             element.transform.Find("Text").GetComponent<Text>().text = Localization.instance.Localize(option.Text);
+            element.transform.Find("Indexer/Text").GetComponent<Text>().text = (++c).ToString();
+            if (option.Icon != null)
+                element.transform.Find("Text/Icon").GetComponent<Image>().sprite = option.Icon;
+
+            if (deactivate)
+            {
+                UnityEngine.Object.Destroy(element.GetComponent<Button>());
+                element.GetComponent<Image>().color = Color.red;
+                element.transform.Find("Indexer").GetComponent<Image>().color = Color.red;
+                continue;
+            }
 
             void OnClick()
             {
@@ -154,10 +177,6 @@ public static class Dialogues_UI
 
             HotbarActions[c] = OnClick;
             element.GetComponent<Button>().onClick.AddListener(OnClick);
-            element.transform.Find("Indexer/Text").GetComponent<Text>().text = (++c).ToString();
-            if (option.Icon != null)
-                element.transform.Find("Text/Icon").GetComponent<Image>().sprite = option.Icon;
-            Elements.Add(element);
         }
 
         ResetFitters();
@@ -169,16 +188,17 @@ public static class Dialogues_UI
         yield return null;
         Hide();
     }
-    
+
     public static void Hide(bool nextFrame = false)
     {
         WasVisible = false;
-        if(!IsVisible()) return;
+        if (!IsVisible()) return;
         if (nextFrame)
         {
             Marketplace._thistype.StartCoroutine(HideCoroutine());
             return;
         }
+
         UI.SetActive(false);
     }
 

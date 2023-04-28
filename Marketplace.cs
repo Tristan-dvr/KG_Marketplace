@@ -22,7 +22,7 @@ namespace Marketplace
         public static Type TempProfessionsType;
 
         public static readonly ConfigSync configSync = new(GUID)
-        {
+        { 
             DisplayName = GUID, ModRequired = true, MinimumRequiredVersion = PluginVersion,
             CurrentVersion = PluginVersion
         };

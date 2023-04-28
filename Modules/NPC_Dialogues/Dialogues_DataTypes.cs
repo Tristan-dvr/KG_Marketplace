@@ -48,6 +48,7 @@ public static class Dialogues_DataTypes
             public string NextUID;
             public string[] Commands;
             public string[] Conditions;
+            public bool AlwaysVisible;
         }
 
         public void Serialize(ref ZPackage pkg)
@@ -71,6 +72,8 @@ public static class Dialogues_DataTypes
                 {
                     pkg.Write(condition ?? "");
                 }
+
+                pkg.Write(option.AlwaysVisible);
             }
         }
 
@@ -101,6 +104,8 @@ public static class Dialogues_DataTypes
                 {
                     Options[i].Conditions[j] = pkg.ReadString();
                 }
+
+                Options[i].AlwaysVisible = pkg.ReadBool();
             }
         }
     }
@@ -117,6 +122,7 @@ public static class Dialogues_DataTypes
             public string NextUID;
             public Action<Market_NPC.NPCcomponent> Command;
             public Func<bool> Condition;
+            public bool AlwaysVisible;
 
             public bool CheckCondition()
             {
@@ -281,7 +287,8 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.IsVIP:
-                                result += () => Global_Values._container.Value._vipPlayerList.Contains(Global_Values._localUserID);
+                                result += () =>
+                                    Global_Values._container.Value._vipPlayerList.Contains(Global_Values._localUserID);
                                 break;
                             case OptionCondition.GlobalKey:
                                 result += () => ZoneSystem.instance.m_globalKeys.Contains(split[1]);
@@ -297,6 +304,7 @@ public static class Dialogues_DataTypes
                     Utils.print($"Error while parsing dialogue condition ({condition}):\n{ex}");
                 }
             }
+
             return result;
         }
 
@@ -315,7 +323,8 @@ public static class Dialogues_DataTypes
                     Icon = Utils.TryFindIcon(raw.Options[i].Icon),
                     NextUID = raw.Options[i].NextUID,
                     Command = TryParseCommand(raw.Options[i].Commands),
-                    Condition = TryParseCondition(raw.Options[i].Conditions)
+                    Condition = TryParseCondition(raw.Options[i].Conditions),
+                    AlwaysVisible = raw.Options[i].AlwaysVisible
                 };
             }
 
