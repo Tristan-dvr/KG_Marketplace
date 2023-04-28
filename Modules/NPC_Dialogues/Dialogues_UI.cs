@@ -1,5 +1,4 @@
 ﻿using Marketplace.Modules.NPC;
-using UnityEngine.Events;
 
 namespace Marketplace.Modules.NPC_Dialogues;
 
@@ -12,8 +11,7 @@ public static class Dialogues_UI
     private static Text Dialogue_Text;
     private static Transform Content;
 
-
-    private static bool WasVisible;
+    
     private static CanvasGroup CanvasAlpha;
     private static readonly Dictionary<int, Action> HotbarActions = new();
 
@@ -101,11 +99,13 @@ public static class Dialogues_UI
         CanvasAlpha.alpha = start;
         float target = type == Fade.Show ? 1 : 0;
         float counter = 0;
+        const float exponent = 2f;
         while (counter <= 1f)
         {
             if (!UI) yield break;
             counter += Time.unscaledDeltaTime / time;
-            CanvasAlpha.alpha = Mathf.Lerp(start, target, counter);
+            float easedCounter = counter < 1 ? 1 - Mathf.Pow(1 - counter, exponent) : 1;
+            CanvasAlpha.alpha = Mathf.Clamp01(Mathf.Lerp(start, target, easedCounter));
             yield return null;
         }
     }
@@ -120,10 +120,7 @@ public static class Dialogues_UI
         }
 
         UI.SetActive(true);
-
-        if (!WasVisible)
-            SmoothAlpha(Fade.Show, 0.5f);
-
+        SmoothAlpha(Fade.Show, 0.5f);
 
         string name = npc.GetNPCName();
         if (string.IsNullOrWhiteSpace(name))
@@ -192,7 +189,6 @@ public static class Dialogues_UI
 
     public static void Hide(bool nextFrame = false)
     {
-        WasVisible = false;
         if (!IsVisible()) return;
         if (nextFrame)
         {
