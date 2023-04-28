@@ -21,13 +21,6 @@ public static class Dialogues_Main_Client
     
     private static void InitDialogues()
     {
-        ZPackage pkg = new();
-        pkg.Write(JSON.ToJSON(Dialogues_DataTypes.SyncedDialoguesData.Value));
-        int size = pkg.Size();
-        pkg.Compress();
-        Utils.print($"Compressed  {size} bytes to {pkg.Size()} bytes");
-        
-        
         Dialogues_DataTypes.ClientReadyDialogues.Clear();
         foreach (Dialogues_DataTypes.RawDialogue dialogue in Dialogues_DataTypes.SyncedDialoguesData.Value)
         {

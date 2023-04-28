@@ -419,11 +419,8 @@ public static class Quests_DataTypes
                 {
                     string localizedSkill = Enum.TryParse(CheckQuest.QuestRequirementPrefab[i], out Skills.SkillType _)
                         ? Localization.instance.Localize("$skill_" + CheckQuest.QuestRequirementPrefab[i].ToLower())
-                        : Localization.instance.Localize($"$skill_" +
-                                                         Mathf.Abs(CheckQuest.QuestRequirementPrefab[i]
-                                                             .GetStableHashCode()));
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{localizedSkill} {CheckQuest.QuestRequirementLevel[i]}</color>";
+                        : Localization.instance.Localize($"$skill_" + Mathf.Abs(CheckQuest.QuestRequirementPrefab[i].GetStableHashCode()));
+                    message = $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{localizedSkill} {CheckQuest.QuestRequirementLevel[i]}</color>";
                     type = QuestRequirementType.Skill;
                     float skillLevel = Utils.GetPlayerSkillLevelCustom(CheckQuest.QuestRequirementPrefab[i]);
                     bool result = skillLevel >= CheckQuest.QuestRequirementLevel[i];
@@ -441,8 +438,7 @@ public static class Quests_DataTypes
                     type = QuestRequirementType.NotFinished;
                     if (AcceptedQuests.TryGetValue(reqID, out var quest))
                     {
-                        message =
-                            $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{quest.Name}</color>";
+                        message = $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{quest.Name}</color>";
                         return false;
                     }
 

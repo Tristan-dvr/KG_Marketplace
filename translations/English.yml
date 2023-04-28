@@ -219,8 +219,9 @@ kg_banker_putall: Put All
 mpasn_periodicanimation : Periodic Animation
 mpasn_periodicanimationtime : Periodic Animation Time
 mpasn_currency: Currency
-mpasn_onlyforvip: Only for VIP users
+mpasn_onlyforvip: Only for <color=#32CD32>VIP</color> users
 mpasn_messages: Messages
 mpasn_periodicsound : Periodic Sound
 mpasn_periodicsoundtime : Periodic Sound Time
 mpasn_setnpcdialogue: Attach NPC Dialogue
+mpasn_needhasbuff: Need Buff

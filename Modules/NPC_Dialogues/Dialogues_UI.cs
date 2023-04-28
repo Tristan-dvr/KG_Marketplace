@@ -137,7 +137,7 @@ public static class Dialogues_UI
         foreach (var option in dialogue.Options)
         {
             bool deactivate = false;
-            if (!option.CheckCondition())
+            if (!option.CheckCondition(out string reason))
             {
                 if (option.AlwaysVisible)
                     deactivate = true;
@@ -151,12 +151,13 @@ public static class Dialogues_UI
             element.transform.Find("Indexer/Text").GetComponent<Text>().text = (++c).ToString();
             if (option.Icon != null)
                 element.transform.Find("Text/Icon").GetComponent<Image>().sprite = option.Icon;
-
+            
             if (deactivate)
             {
                 UnityEngine.Object.Destroy(element.GetComponent<Button>());
                 element.GetComponent<Image>().color = Color.red;
                 element.transform.Find("Indexer").GetComponent<Image>().color = Color.red;
+                if(!string.IsNullOrWhiteSpace(reason)) element.transform.Find("Text").GetComponent<Text>().text += $"\n<color=red>[</color>{reason}<color=red>]</color>";
                 continue;
             }
 
