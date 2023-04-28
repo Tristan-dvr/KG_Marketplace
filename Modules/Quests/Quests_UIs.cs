@@ -116,7 +116,7 @@ public static class Quests_UIs
             RestrictionText.gameObject.SetActive(false);
             RestrictionButton.gameObject.SetActive(false);
             DescriptionTransform.gameObject.SetActive(true);
-            Description.text = Localization.instance.Localize(quest.Description ?? "").Replace(@"\n", "\n");
+            Description.text = quest.Description.Localize().Replace(@"\n", "\n");
 
             PreviewImage.gameObject.SetActive(false);
             if (quest.GetPreviewSprite != null)
@@ -381,7 +381,7 @@ public static class Quests_UIs
 
                     if (Quests_DataTypes.Quest.IsOnCooldown(profileID, out int cd) && cd > 5000) continue;
                     GameObject newGo = UnityEngine.Object.Instantiate(QuestGO, MainTransform);
-                    newGo.transform.Find("Text").GetComponent<Text>().text = Localization.instance.Localize(data.Name);
+                    newGo.transform.Find("Text").GetComponent<Text>().text = data.Name.Localize();
                     newGo.transform.Find("ImageList").GetChild((int)data.Type).gameObject.SetActive(true);
                     QuestLink[newGo] = profileID;
                     int send = count;
@@ -471,7 +471,7 @@ public static class Quests_UIs
 
         private static void InitQuestData(GameObject go, Quests_DataTypes.Quest data, int UID)
         {
-            go.transform.Find("QuestName").GetComponent<Text>().text = $"<color=yellow> [ {data.Name} ]</color>";
+            go.transform.Find("QuestName").GetComponent<Text>().text = $"<color=yellow> [ {data.Name} ]</color>".Localize();
             go.transform.Find("QuestName/Button").GetComponent<Button>().onClick.AddListener(() =>
             {
                 AssetStorage.AssetStorage.AUsrc.Play();

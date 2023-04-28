@@ -441,8 +441,7 @@ public static class Quests_DataTypes
                     type = QuestRequirementType.NotFinished;
                     if (AcceptedQuests.TryGetValue(reqID, out var quest))
                     {
-                        message =
-                            $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{quest.Name}</color>";
+                        message = $"$mpasn_questtaken: <color=#00ff00>{quest.Name}</color>".Localize();
                         return false;
                     }
 
@@ -450,8 +449,7 @@ public static class Quests_DataTypes
                     {
                         if (IsOnCooldown(reqID, out _))
                         {
-                            message =
-                                $"{Localization.instance.Localize("$mpasn_questfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
+                            message =  $"$mpasn_questfinished: <color=#00ff00>{reqQuest.Name}</color>".Localize();
                             return false;
                         }
                     }
@@ -463,8 +461,7 @@ public static class Quests_DataTypes
                 {
                     int reqID = CheckQuest.QuestRequirementPrefab[i].ToLower().GetStableHashCode();
                     if (!AllQuests.ContainsKey(reqID)) return true;
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_needtofinishquest")}: <color=#00ff00>{AllQuests[reqID].Name}</color>";
+                    message = $"$mpasn_needtofinishquest: <color=#00ff00>{AllQuests[reqID].Name}</color>".Localize();
                     type = QuestRequirementType.OtherQuest;
                     bool result = IsOnCooldown(reqID, out _);
 
@@ -711,7 +708,7 @@ public static class Quests_DataTypes
             string cooldown = "[MPASN]questCD=" + UID;
             Player.m_localPlayer.m_customData[cooldown] = EnvMan.instance.GetCurrentDay().ToString();
             MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
-                $"<color=#00ff00>{Localization.instance.Localize("$mpasn_youfinishedquest")}: <color=#00FFFF>{AllQuests[UID].Name}</color></color>");
+                $"<color=#00ff00>$mpasn_youfinishedquest:</color> <color=#00FFFF>{AllQuests[UID].Name}</color>".Localize());
             ZPackage pkg = new();
             pkg.Write((int)DiscordStuff.Webhooks.Quest);
             pkg.Write(Player.m_localPlayer?.GetPlayerName() ?? "LocalPlayer");
