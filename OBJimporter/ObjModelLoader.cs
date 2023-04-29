@@ -8,7 +8,6 @@ public static class ObjModelLoader
 {
     public static readonly Dictionary<string, GameObject> _loadedModels = new();
     public static readonly Dictionary<string, Sprite> _loadedIcons = new();
-    private static readonly OBJLoader _objModelLoader = new();
     private static readonly Dictionary<string, string> pngFiles = new();
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
     private static readonly int MetallicGlossMap = Shader.PropertyToID("_MetallicGlossMap");
@@ -25,13 +24,12 @@ public static class ObjModelLoader
         {
             try
             {
-                GameObject obj = _objModelLoader.Load(file);
+                GameObject obj = new OBJLoader().Load(file);
                 UnityEngine.Object.DontDestroyOnLoad(obj);
                 string fileName = Path.GetFileNameWithoutExtension(file);
                 _loadedModels.Add(fileName, obj);
                 ParsePNGs(obj, fileName);
                 AddColliders(obj);
-                Utils.print($"Loaded model {fileName}");
             }
             catch (Exception ex)
             {
@@ -96,9 +94,11 @@ public static class ObjModelLoader
         var meshes = go.GetComponentsInChildren<MeshFilter>();
         foreach (var mesh in meshes)
         {
-            MeshCollider collider = mesh.gameObject.AddComponent<MeshCollider>();
-            collider.sharedMesh = mesh.sharedMesh;
-            collider.convex = true;
+            Mesh shared = mesh.sharedMesh;
+            if (mesh == null) continue;
+            BoxCollider boxCollider = go.AddComponent<BoxCollider>();
+            boxCollider.center = shared.bounds.center;
+            boxCollider.size = shared.bounds.size;
         }
     }
 }

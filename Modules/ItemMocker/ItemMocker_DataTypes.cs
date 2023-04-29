@@ -12,26 +12,26 @@ public static class ItemMocker_DataTypes
         public string Name;
         public string Description;
         public int MaxStack;
-        public int Weight;
+        public float Scale;
 
         public void Serialize(ref ZPackage pkg)
         {
             pkg.Write(UID);
             pkg.Write(MaxStack);
-            pkg.Write(Weight);
             pkg.Write(Model ?? "");
             pkg.Write(Name ?? "");
             pkg.Write(Description ?? "");
+            pkg.Write(Scale);
         }
 
         public void Deserialize(ref ZPackage pkg)
         {
             UID = pkg.ReadString();
             MaxStack = pkg.ReadInt();
-            Weight = pkg.ReadInt();
             Model = pkg.ReadString();
             Name = pkg.ReadString();
             Description = pkg.ReadString();
+            Scale = pkg.ReadSingle();
         }
     }
 }

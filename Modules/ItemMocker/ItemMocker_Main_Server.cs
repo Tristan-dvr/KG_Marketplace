@@ -26,10 +26,9 @@ public static class ItemMocker_Main_Server
             }
             else
             {
-                if(splitProfile == null) continue;
+                if (splitProfile == null) continue;
                 try
                 {
-                    if (i + 4 > profiles.Count) break;
                     ItemMocker_DataTypes.ItemMock itemMock = new()
                     {
                         UID = splitProfile,
@@ -37,15 +36,15 @@ public static class ItemMocker_Main_Server
                         Name = profiles[i + 1],
                         Description = profiles[i + 2],
                         MaxStack = int.Parse(profiles[i + 3]),
-                        Weight = int.Parse(profiles[i + 4])
+                        Scale = float.Parse(profiles[i + 4])
                     };
                     ItemMocker_DataTypes.SyncedMockedItems.Value.Add(itemMock);
                     splitProfile = null;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     splitProfile = null;
-                    Utils.print($"Error while reading ItemMocker.cfg (line {i+1})\n: {ex}");
+                    Utils.print($"Error while reading ItemMocker.cfg (line {i + 1})\n: {ex}");
                 }
             }
         }

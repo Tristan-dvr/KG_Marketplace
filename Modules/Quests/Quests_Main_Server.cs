@@ -96,7 +96,6 @@ public static class Quests_Main_Server
                 if (dbProfile == null) continue;
                 try
                 {
-                    if (i + 5 > profiles.Count) break;
                     int UID = dbProfile.GetStableHashCode();
                     string typeString = profiles[i];
                     string name = profiles[i + 1];
