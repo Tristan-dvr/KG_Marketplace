@@ -33,10 +33,11 @@ public static class ItemMocker_Main_Server
                     {
                         UID = splitProfile,
                         Model = profiles[i],
-                        Name = profiles[i + 1],
-                        Description = profiles[i + 2],
+                        Name = profiles[i + 1].Replace(@"\n", "\n"),
+                        Description = profiles[i + 2].Replace(@"\n", "\n"),
                         MaxStack = int.Parse(profiles[i + 3]),
-                        Scale = float.Parse(profiles[i + 4])
+                        Scale = float.Parse(profiles[i + 4]),
+                        Recipe = profiles[i + 5]
                     };
                     ItemMocker_DataTypes.SyncedMockedItems.Value.Add(itemMock);
                     splitProfile = null;

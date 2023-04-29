@@ -30,7 +30,7 @@ public static class ItemMocker_Main_Client
         foreach (var mock in ItemMocker_DataTypes.SyncedMockedItems.Value)
         {
             GameObject newObj = UnityEngine.Object.Instantiate(MockItemBase, inactive.transform);
-            newObj.name = mock.UID; ;
+            newObj.name = mock.UID;
             ItemDrop itemDrop = newObj.GetComponent<ItemDrop>();
             itemDrop.m_itemData.m_shared.m_name = mock.Name;
             itemDrop.m_itemData.m_shared.m_description = mock.Description;
@@ -51,11 +51,49 @@ public static class ItemMocker_Main_Client
                     transform.gameObject.layer = itemLayer;
                 }
             }
+
             ObjectDB.instance.m_items.Add(newObj);
             ZNetScene.instance.m_namedPrefabs[mock.UID.GetStableHashCode()] = newObj;
             ObjectDB.instance.m_itemByHash[mock.UID.GetStableHashCode()] = newObj;
+
+            List<Piece.Requirement> reqs = new();
+
+            try
+            {
+                string[] reqSplit = mock.Recipe.Split(',');
+                if (reqSplit.Length % 2 == 0)
+                {
+                    for (int i = 0; i < reqSplit.Length; i += 2)
+                    {
+                        string reqPrefab = reqSplit[i];
+                        int reqAmount = int.Parse(reqSplit[i + 1]);
+                        if (ZNetScene.instance.GetPrefab(reqPrefab) is { } reqObj)
+                        {
+                            reqs.Add(new Piece.Requirement
+                            {
+                                m_resItem = reqObj.GetComponent<ItemDrop>(),
+                                m_amount = reqAmount
+                            });
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            if (reqs.Count > 0)
+            {
+                Recipe r = ScriptableObject.CreateInstance<Recipe>();
+                r.name = "Recipe_" + mock.UID;
+                r.m_item = newObj.GetComponent<ItemDrop>();
+                r.m_amount = 1;
+                r.m_resources = reqs.ToArray();
+                ObjectDB.instance.m_recipes.Add(r);
+            }
         }
+
         CanMockItems = false;
     }
-
 }

@@ -13,6 +13,7 @@ public static class ItemMocker_DataTypes
         public string Description;
         public int MaxStack;
         public float Scale;
+        public string Recipe;
 
         public void Serialize(ref ZPackage pkg)
         {
@@ -22,6 +23,7 @@ public static class ItemMocker_DataTypes
             pkg.Write(Name ?? "");
             pkg.Write(Description ?? "");
             pkg.Write(Scale);
+            pkg.Write(Recipe ?? "");
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -32,6 +34,7 @@ public static class ItemMocker_DataTypes
             Name = pkg.ReadString();
             Description = pkg.ReadString();
             Scale = pkg.ReadSingle();
+            Recipe = pkg.ReadString();
         }
     }
 }
