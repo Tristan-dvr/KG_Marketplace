@@ -1,6 +1,4 @@
-﻿using Marketplace.Modules.Quests;
-
-namespace Marketplace.Modules.NPC_Dialogues;
+﻿namespace Marketplace.Modules.NPC_Dialogues;
 
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Dialogues_Main_Client

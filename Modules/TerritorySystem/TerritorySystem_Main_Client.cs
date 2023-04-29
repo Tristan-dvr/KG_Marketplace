@@ -375,8 +375,7 @@ public static class TerritorySystem_Main_Client
                                 mapColors[idx] = color;
                                 if (externalWater)
                                 {
-                                    heightColors[idx] =
-                                        new Color(Mathf.Clamp(heightColors[idx].r, 29f, 89), 0, 0);
+                                    heightColors[idx] = new Color(Mathf.Clamp(heightColors[idx].r, 29f, 89), 0, 0);
                                 }
                             }
                         }

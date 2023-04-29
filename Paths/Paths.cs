@@ -5,6 +5,7 @@ public static class Market_Paths
 {
     public static string MainPath => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceKG");
     public static string NPC_SoundsPath => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceNPC_Sounds");
+    public static string OBJModelsFolder => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceNPC_OBJModels");
     public static string CachedImagesFolder => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceCachedImages");
     public static string DiscordStuffFolder => Path.Combine(MainPath, "DiscordWebhooks");
 
@@ -48,6 +49,9 @@ public static class Market_Paths
     public static string NpcDialoguesConfig => Path.Combine(MainPath, "NpcDialogues.cfg");
 
     public static string MainConfig => Path.Combine(MainPath, "MarketPlace.cfg");
+    
+    public static string MockerFolder => Path.Combine(MainPath, "ItemMocker");
+    public static string MockerConfig => Path.Combine(MockerFolder, "ItemMocker.cfg");
 
     private static void OnInit()
     {
@@ -65,20 +69,23 @@ public static class Market_Paths
                 Directory.CreateDirectory(TeleporterPinsFolder);
             if (!Directory.Exists(DistancedUIFolder))
                 Directory.CreateDirectory(DistancedUIFolder);
-            
+            if (!Directory.Exists(MockerFolder))
+                Directory.CreateDirectory(MockerFolder);
+
             if (!File.Exists(QuestProfilesPath)) File.Create(QuestProfilesPath).Dispose();
             if (!File.Exists(QuestEventsPath)) File.Create(QuestEventsPath).Dispose();
             if (!File.Exists(QuestDatabasePath))
             {
                 if (File.Exists(Path.Combine(MainPath, "QuestsDATABASE.cfg")))
                 {
-                    File.Move(Path.Combine(MainPath, "QuestsDATABASE.cfg"), QuestDatabasePath); 
+                    File.Move(Path.Combine(MainPath, "QuestsDATABASE.cfg"), QuestDatabasePath);
                 }
                 else
                 {
-                    File.Create(QuestDatabasePath).Dispose();  
+                    File.Create(QuestDatabasePath).Dispose();
                 }
             }
+
             if (!File.Exists(BattlepassConfigPath)) File.Create(BattlepassConfigPath).Dispose();
             if (!File.Exists(BattlepassFreeRewardsPath)) File.Create(BattlepassFreeRewardsPath).Dispose();
             if (!File.Exists(BattlepassPremiumRewardsPath)) File.Create(BattlepassPremiumRewardsPath).Dispose();
@@ -93,15 +100,18 @@ public static class Market_Paths
             {
                 if (File.Exists(Path.Combine(MainPath, "BufferDATABASE.cfg")))
                 {
-                    File.Move(Path.Combine(MainPath, "BufferDATABASE.cfg"), BufferDatabaseConfig); 
+                    File.Move(Path.Combine(MainPath, "BufferDATABASE.cfg"), BufferDatabaseConfig);
                 }
                 else
                 {
-                    File.Create(BufferDatabaseConfig).Dispose();  
+                    File.Create(BufferDatabaseConfig).Dispose();
                 }
             }
+
             if (!File.Exists(GamblerConfig)) File.Create(GamblerConfig).Dispose();
             if (!File.Exists(NpcDialoguesConfig)) File.Create(NpcDialoguesConfig).Dispose();
+            
+            if (!File.Exists(MockerConfig)) File.Create(MockerConfig).Dispose();
         }
         else
         {
@@ -109,6 +119,8 @@ public static class Market_Paths
                 Directory.CreateDirectory(NPC_SoundsPath);
             if (!Directory.Exists(CachedImagesFolder))
                 Directory.CreateDirectory(CachedImagesFolder);
+            if (!Directory.Exists(OBJModelsFolder))
+                Directory.CreateDirectory(OBJModelsFolder);
         }
     }
 }

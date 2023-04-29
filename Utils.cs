@@ -358,7 +358,7 @@ public static class Utils
         }
         return null;
     }
-    
+
     public static float GetPlayerSkillLevelCustom(string skillName)
     {
         if (!Enum.TryParse(skillName, out Skills.SkillType skill))
