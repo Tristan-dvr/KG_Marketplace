@@ -3,7 +3,7 @@
 public static class DistancedUI_DataType
 {
     internal static readonly CustomSyncedValue<PremiumSystemData> CurrentPremiumSystemData =
-        new(Marketplace.configSync, "premiumSystemData", new());
+        new(Marketplace.configSync, "premiumSystemData", new PremiumSystemData());
 
     public class PremiumSystemData : ISerializableParameter
     {

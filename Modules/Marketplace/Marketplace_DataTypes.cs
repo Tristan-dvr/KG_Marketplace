@@ -3,7 +3,7 @@
 public static class Marketplace_DataTypes
 {
     internal static readonly CustomSyncedValue<List<ServerMarketSendData>> ServerMarketPlaceData = 
-        new(Marketplace.configSync, "marketplaceData", new());
+        new(Marketplace.configSync, "marketplaceData", new List<ServerMarketSendData>());
     
     
     public class ServerMarketSendData : ISerializableParameter

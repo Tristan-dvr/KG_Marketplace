@@ -3,5 +3,5 @@
 public static class ServerInfo_DataTypes
 {
     internal static readonly CustomSyncedValue<Dictionary<string, string>> ServerInfoData =
-        new(Marketplace.configSync, "infoData", new());
+        new(Marketplace.configSync, "infoData", new Dictionary<string, string>());
 }

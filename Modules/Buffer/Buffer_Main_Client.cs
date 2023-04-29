@@ -34,7 +34,7 @@ public static class Buffer_Main_Client
         {
             foreach (KeyValuePair<string, string> kvp in Buffer_DataTypes.BufferProfiles.Value)
             {
-                Buffer_DataTypes.ALLBufferProfiles.Add(kvp.Key, new());
+                Buffer_DataTypes.ALLBufferProfiles.Add(kvp.Key, new List<Buffer_DataTypes.BufferBuffData>());
                 foreach (string split in kvp.Value.Split(','))
                 {
                     if (string.IsNullOrEmpty(split)) continue;

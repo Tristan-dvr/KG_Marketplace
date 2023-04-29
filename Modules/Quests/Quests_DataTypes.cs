@@ -7,13 +7,13 @@ namespace Marketplace.Modules.Quests;
 public static class Quests_DataTypes
 {
     internal static readonly CustomSyncedValue<Dictionary<int, Quest>> SyncedQuestData =
-        new(Marketplace.configSync, "questData", new());
+        new(Marketplace.configSync, "questData", new Dictionary<int, Quest>());
 
     internal static readonly CustomSyncedValue<Dictionary<string, List<int>>> SyncedQuestProfiles =
-        new(Marketplace.configSync, "questProfiles", new());
+        new(Marketplace.configSync, "questProfiles", new Dictionary<string, List<int>>());
 
     internal static readonly CustomSyncedValue<Dictionary<int, List<QuestEvent>>> SyncedQuestsEvents =
-        new(Marketplace.configSync, "questEvents", new());
+        new(Marketplace.configSync, "questEvents", new Dictionary<int, List<QuestEvent>>());
 
     public static readonly Dictionary<int, Quest> AllQuests = new();
     public static readonly Dictionary<int, Quest> AcceptedQuests = new(20);

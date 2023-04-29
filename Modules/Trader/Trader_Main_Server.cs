@@ -80,7 +80,7 @@ public static class Trader_Main_Server
                             Trader_DataTypes.TraderData traderData = new Trader_DataTypes.TraderData()
                             {
                                 NeedToKnow = _NeedToKnow,
-                                NeededItems = new()
+                                NeededItems = new List<Trader_DataTypes.TraderItem>
                                 {
                                     new Trader_DataTypes.TraderItem
                                     {
@@ -88,7 +88,7 @@ public static class Trader_Main_Server
                                         Count = int.Parse(test[1]),
                                     }
                                 },
-                                ResultItems = new()
+                                ResultItems = new List<Trader_DataTypes.TraderItem>
                                 {
                                     new Trader_DataTypes.TraderItem
                                     {

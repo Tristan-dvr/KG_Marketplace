@@ -158,7 +158,7 @@ public static class Marketplace_UI
         UI.SetActive(false);
         Marketplace_Main_Client.OnUpdateCurrency += ResetCurrency;
 
-        JC_Api = new()
+        JC_Api = new List<Transform>
         {
             global::Utils.FindChild(SELLTAB, "JC_API"),
             global::Utils.FindChild(BUYTAB, "JC_API")

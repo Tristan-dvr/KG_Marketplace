@@ -386,7 +386,7 @@ public static class Utils
     public static List<Trader_DataTypes.TraderItem> ToList(
         this Trader_DataTypes.TraderItem item)
     {
-        return new() { item };
+        return new List<Trader_DataTypes.TraderItem> { item };
     }
     
     public static bool HasFlagFast(this Buffer_DataTypes.WhatToModify flag,

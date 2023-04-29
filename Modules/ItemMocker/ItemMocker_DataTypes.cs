@@ -3,7 +3,7 @@
 public static class ItemMocker_DataTypes
 {
     internal static readonly CustomSyncedValue<List<ItemMock>> SyncedMockedItems = new(Marketplace.configSync,
-        "marketItemMocker", new());
+        "marketItemMocker", new List<ItemMock>(), CustomSyncedValueBase.Config_Priority.First);
 
     public class ItemMock : ISerializableParameter
     {

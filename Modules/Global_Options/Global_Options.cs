@@ -110,7 +110,7 @@ public static class Global_Values
     
     private static void OnInit()
     {
-        _config = new(Market_Paths.MainConfig, true);
+        _config = new ConfigFile(Market_Paths.MainConfig, true);
         ReadConfigValues();
     }
 

@@ -3,7 +3,7 @@
 public static class Gambler_DataTypes
 {
     internal static readonly CustomSyncedValue<Dictionary<string, BigData>>
-        GamblerData = new(Marketplace.configSync, "gamblerData", new());
+        GamblerData = new(Marketplace.configSync, "gamblerData", new Dictionary<string, BigData>());
     
     public class BigData : ISerializableParameter
     {

@@ -3,7 +3,7 @@
 public static class Battlepass_DataTypes
 {
     internal static readonly CustomSyncedValue<BattlePassData> SyncedBattlepassData =
-        new(Marketplace.configSync, "battlePassData", new());
+        new(Marketplace.configSync, "battlePassData", new BattlePassData());
     
    public class BattlePassData : ISerializableParameter
     {
@@ -88,9 +88,9 @@ public static class Battlepass_DataTypes
                 {
                     RewardName = pkg.ReadString(),
                     Order = pkg.ReadInt(),
-                    ItemNames = new(),
-                    ItemCounts = new(),
-                    ItemLevels = new()
+                    ItemNames = new List<string>(),
+                    ItemCounts = new List<int>(),
+                    ItemLevels = new List<int>()
                 };
                 int itemCount = pkg.ReadInt();
                 for (int j = 0; j < itemCount; j++)
@@ -120,9 +120,9 @@ public static class Battlepass_DataTypes
                 {
                     RewardName = pkg.ReadString(),
                     Order = pkg.ReadInt(),
-                    ItemNames = new(),
-                    ItemCounts = new(),
-                    ItemLevels = new()
+                    ItemNames = new List<string>(),
+                    ItemCounts = new List<int>(),
+                    ItemLevels = new List<int>()
                 };
                 int itemCount = pkg.ReadInt();
                 for (int j = 0; j < itemCount; j++)

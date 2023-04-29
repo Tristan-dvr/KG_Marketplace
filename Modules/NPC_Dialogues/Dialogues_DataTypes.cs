@@ -6,7 +6,7 @@ namespace Marketplace.Modules.NPC_Dialogues;
 public static class Dialogues_DataTypes
 {
     internal static readonly CustomSyncedValue<List<RawDialogue>> SyncedDialoguesData =
-        new(Marketplace.configSync, "dialoguesData", new());
+        new(Marketplace.configSync, "dialoguesData", new List<RawDialogue>());
 
     internal static readonly Dictionary<string, Dialogue> ClientReadyDialogues = new();
 

@@ -35,7 +35,7 @@ public static class Transmogrification_Client_Main
         foreach (KeyValuePair<string, List<Transmogrification_DataTypes.TransmogItem_Data>> profile in
                  Transmogrification_DataTypes.TransmogData.Value)
         {
-            if (!FilteredTransmogData.ContainsKey(profile.Key)) FilteredTransmogData.Add(profile.Key, new());
+            if (!FilteredTransmogData.ContainsKey(profile.Key)) FilteredTransmogData.Add(profile.Key, new Dictionary<ItemDrop.ItemData.ItemType, List<Transmogrification_DataTypes.TransmogItem_Data>>());
             foreach (Transmogrification_DataTypes.TransmogItem_Data data in profile.Value)
             {
                 GameObject prefab = ZNetScene.instance.GetPrefab(data.Prefab);
@@ -113,11 +113,11 @@ public static class Transmogrification_Client_Main
     
     private static TempItem T_Data(this ItemDrop.ItemData item)
     {
-        if (item == null) return new(){ ReplacedPrefab = "", Variant = 0, VFX_ID = 0 };
+        if (item == null) return new TempItem { ReplacedPrefab = "", Variant = 0, VFX_ID = 0 };
 
         if (item.Data().Get<Transmogrification_DataTypes.TransmogItem_Component>() is { } t)
-            return new() { ReplacedPrefab = t.ReplacedPrefab, Variant = 0, VFX_ID = t.VFX_ID };
-        return new() { ReplacedPrefab = item.m_dropPrefab.name, Variant = item.m_variant, VFX_ID = 0 };
+            return new TempItem { ReplacedPrefab = t.ReplacedPrefab, Variant = 0, VFX_ID = t.VFX_ID };
+        return new TempItem { ReplacedPrefab = item.m_dropPrefab.name, Variant = item.m_variant, VFX_ID = 0 };
     }
 
 

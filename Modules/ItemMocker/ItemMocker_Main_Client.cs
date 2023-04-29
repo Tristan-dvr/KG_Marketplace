@@ -36,7 +36,7 @@ public static class ItemMocker_Main_Client
             itemDrop.m_itemData.m_shared.m_maxStackSize = mock.MaxStack;
             itemDrop.m_itemData.m_shared.m_weight = mock.Weight;
             if (!ObjModelLoader._loadedIcons.TryGetValue(mock.Model, out Sprite icon))
-                icon = ZNetScene.instance.GetPrefab("Stone").GetComponent<ItemDrop>().m_itemData.m_shared.m_icons[0];
+                icon = AssetStorage.AssetStorage.PlaceholderGamblerIcon;
             itemDrop.m_itemData.m_shared.m_icons[0] = icon;
             if (ObjModelLoader._loadedModels.TryGetValue(mock.Model, out var model))
             {
