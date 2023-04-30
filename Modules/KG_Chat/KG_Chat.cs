@@ -267,6 +267,7 @@ public static class KG_Chat
                 __instance.m_input.placeholder.GetComponent<Text>().font = origFont2;
                 if (__instance.m_search)
                     __instance.m_search.font = origFont2;
+                __instance.m_input.gameObject.SetActive(false);
             }
         }
     }

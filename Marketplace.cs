@@ -29,6 +29,7 @@ namespace Marketplace
 
         private void Awake()
         {
+            Utils.print($"Marketplace: {(Utils.IsServer ? "Server" : "Client")}");
             _thistype = this;
             Type.GetType("Groups.Initializer, kg.Marketplace")!.GetMethod("Init")!.Invoke(null, null);
             HarmonyLib.Tools.Logger.ChannelFilter = HarmonyLib.Tools.Logger.LogChannel.Error;
@@ -44,7 +45,6 @@ namespace Marketplace
                 UseOptimizedDatasetSchema = true,
                 UseValuesOfEnums = true,
             };
-            Utils.print($"Marketplace: {(Utils.IsServer ? "Server" : "Client")}");
             IEnumerable<KeyValuePair<Market_Autoload, Type>> toAutoload = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => t.GetCustomAttribute<Market_Autoload>() != null)
                 .Select(x => new KeyValuePair<Market_Autoload, Type>(x.GetCustomAttribute<Market_Autoload>(), x))
@@ -89,8 +89,8 @@ namespace Marketplace
                     Utils.print($"Autoload exception on method {method}\n:{ex}", ConsoleColor.Red);
                 }
             }
-
             InitFSW(Market_Paths.MainPath);
+            
             AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())
                 .Where(t => Utils.IsServer
                     ? t.GetCustomAttribute<ClientOnlyPatch>() == null
@@ -102,7 +102,7 @@ namespace Marketplace
         private void OnGUI() => Global_OnGUI_Updator?.Invoke();
         private void FixedUpdate() => Global_FixedUpdator?.Invoke();
 
-        private void InitFSW(string folderPath)
+        private static void InitFSW(string folderPath)
         {
             if (!Utils.IsServer) return;
             try

@@ -22,6 +22,7 @@ public static class Banker_Main_Server
             Marketplace._thistype.StartCoroutine(BankerIncome());
             Utils.print("Started Banker Income Coroutine");
         }
+
         ReadServerBankerProfiles();
     }
 
@@ -81,8 +82,11 @@ public static class Banker_Main_Server
                                 (DateTime.Now - BankerTimeStamp[id][item]).TotalHours >=
                                 Global_Values.BankerIncomeTime)
                             {
-                                BankerServerSideData[id][item] +=
-                                    Mathf.CeilToInt(BankerServerSideData[id][item] * multiplier);
+                                int val = BankerServerSideData[id][item];
+                                double toAdd = Math.Ceiling(val * multiplier);
+                                if (val + toAdd > int.MaxValue)
+                                    val = int.MaxValue;
+                                BankerServerSideData[id][item] = val;
                             }
                         }
                     }

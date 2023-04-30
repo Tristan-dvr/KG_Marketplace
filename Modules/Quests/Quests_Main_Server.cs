@@ -133,6 +133,7 @@ public static class Quests_Main_Server
                         if (!(Enum.TryParse(rwdTypeCheck[0], true,
                                 out rewardTypes[r])))
                         {
+                            Utils.print($"Failed to parse reward type {rewardsArray[r]} in quest {name}. Skipping quest");
                             goto GoNextLabel;
                         }
 

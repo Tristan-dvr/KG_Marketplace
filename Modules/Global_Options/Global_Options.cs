@@ -38,7 +38,7 @@ public static class Global_Values
         }
     }
 
-    public static readonly CustomSyncedValue<Container> _container = new(Marketplace.configSync, "Global_Values", new Container());
+    internal static readonly CustomSyncedValue<Container> _container = new(Marketplace.configSync, "Global_Values", new Container());
 
     public class Container : ISerializableParameter
     {
