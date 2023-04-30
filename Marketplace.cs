@@ -15,10 +15,10 @@ namespace Marketplace
         internal static Marketplace _thistype;
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW;
-        public static Action Global_Updator;
+        public static Action Global_Updator; 
         public static Action Global_FixedUpdator;
         public static Action Global_OnGUI_Updator;
-        public static Type TempJewelcraftingType;
+        public static Type TempJewelcraftingType; 
         public static Type TempProfessionsType;
 
         public static readonly ConfigSync configSync = new(GUID)

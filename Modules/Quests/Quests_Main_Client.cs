@@ -141,8 +141,6 @@ public static class Quests_Main_Client
             if (!Player.m_localPlayer) return;
             if (LatestHashcode != Quests_DataTypes.SyncedQuestData.Value.GetHashCode())
             {
-                Stopwatch watch = new();
-                watch.Start();
                 LatestHashcode = Quests_DataTypes.SyncedQuestData.Value.GetHashCode();
                 foreach (KeyValuePair<int, Quests_DataTypes.Quest> quest in Quests_DataTypes.SyncedQuestData.Value)
                 {
@@ -155,9 +153,7 @@ public static class Quests_Main_Client
                         Utils.print($"{quest.Value.Name} (id {quest.Key}) can't finish init");
                     }
                 }
-
-                watch.Stop();
-                Utils.print($"Quests init took: {watch.Elapsed}");
+                
                 if (LoadImagesRoutine != null)
                     Marketplace._thistype.StopCoroutine(LoadImagesRoutine);
                 LoadImagesRoutine = Marketplace._thistype.StartCoroutine(LoadQuestImages());

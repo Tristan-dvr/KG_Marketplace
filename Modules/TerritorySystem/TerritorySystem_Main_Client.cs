@@ -882,8 +882,6 @@ public static class TerritorySystem_Main_Client
     {
         private static void Postfix(float wx, float wy, ref float __result)
         {
-            Stopwatch localStopwatch = new Stopwatch();
-            localStopwatch.Start();
             if (PatchMinimapCircles.IsGeneratingMap) return;
             Vector2 vec = new Vector2(wx, wy);
 
@@ -916,8 +914,6 @@ public static class TerritorySystem_Main_Client
                     //break;
                 }
             }
-
-            localStopwatch.Stop();
         }
     }
 
