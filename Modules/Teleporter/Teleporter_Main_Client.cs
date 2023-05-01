@@ -26,26 +26,7 @@ public static class Teleporter_Main_Client
             AssetStorage.AssetStorage.GlobalCachedSprites.Add(raw.Key, sprite);
         }
     }
-    
-    private static Minimap.PinData GetCustomPin(Vector3 pos, float radius)
-    {
-        Minimap.PinData pinData = null;
-        float num = 999999f;
-        foreach (Minimap.PinData pinData2 in Minimap.instance.m_pins)
-            if (pinData2.m_type == PINTYPE)
-            {
-                float num2 = global::Utils.DistanceXZ(pos, pinData2.m_pos);
-                if (num2 < radius && (num2 < num || pinData == null))
-                {
-                    pinData = pinData2;
-                    num = num2; 
-                }
-            }
- 
-        return pinData;
-    }
-    
-    
+
     internal static void ShowTeleporterUI(string profile)
     {
         InventoryGui.instance.Hide();
@@ -81,8 +62,8 @@ public static class Teleporter_Main_Client
             pinData.m_ownerID = 0L;
             Minimap.instance.m_pins.Add(pinData);
             CurrentTeleporterObjects.Add(pinData);
-            Minimap.instance.m_largeZoom = 1f;
             SpeedValues.Add(pinData, data.speed);
+            Minimap.instance.m_largeZoom = 1f;
             Minimap.instance.CenterMap(Vector3.zero);
         }
     }
@@ -96,7 +77,7 @@ public static class Teleporter_Main_Client
         private static bool Prefix(Minimap __instance)
         {
             Vector3 pos = __instance.ScreenToWorldPoint(Input.mousePosition);
-            Minimap.PinData closestPin = GetCustomPin(pos, __instance.m_removeRadius * (__instance.m_largeZoom * 2f));
+            Minimap.PinData closestPin = Utils.GetCustomPin(PINTYPE, pos, __instance.m_removeRadius * (__instance.m_largeZoom * 2f));
             if (closestPin != null)
             {
                 if (!Global_Values._container.Value._canTeleportWithOre && !Player.m_localPlayer.IsTeleportable())

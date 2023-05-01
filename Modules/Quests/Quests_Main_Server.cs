@@ -290,7 +290,7 @@ public static class Quests_Main_Server
             };
             if (!result)
             {
-                Utils.print($"Arguments for Quest: {QuestID} => action {action} are invalid: {args}", ConsoleColor.Red);
+                Utils.print($"Arguments for Quest Event: {QuestID} => action {action} are invalid: {args}", ConsoleColor.Red);
             }
 
             return result;

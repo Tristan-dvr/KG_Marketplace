@@ -348,6 +348,10 @@
         <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Client.cs" />
         <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Server.cs" />
         <Compile Include="Modules\NPC_Dialogues\Dialogues_UI.cs" />
+        <Compile Include="Modules\PostMail\PostMail_DataTypes.cs" />
+        <Compile Include="Modules\PostMail\PostMail_Main_Client.cs" />
+        <Compile Include="Modules\PostMail\PostMail_Pin.cs" />
+        <Compile Include="Modules\PostMail\PostMail_UI.cs" />
         <Compile Include="Modules\Quests\Quests_DataTypes.cs" />
         <Compile Include="Modules\Quests\Quests_Main_Client.cs" />
         <Compile Include="Modules\Quests\Quests_Main_Server.cs" />

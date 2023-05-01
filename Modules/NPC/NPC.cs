@@ -596,7 +596,8 @@ public static class Market_NPC
                   "\n" + Localization.instance.Localize("[<color=red><b>DELETE + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_removenpc")
                 : "";
-            string text = Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>] ") + Localization.instance.Localize("$mpasn_interact");
+            string text = Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>] ") +
+                          Localization.instance.Localize("$mpasn_interact");
 
             return text + admintext;
         }
@@ -611,12 +612,16 @@ public static class Market_NPC
             return znv.m_zdo.GetString("KGnpcNameOverride");
         }
 
-        public void OpenUIForType(string profile = null)
+        public void OpenUIForType(string type, string profile) =>
+            OpenUIForType(type == null ? null : (NPCType)Enum.Parse(typeof(NPCType), type, true), profile);
+
+        public void OpenUIForType(NPCType? type = null, string profile = null)
         {
-            if (string.IsNullOrEmpty(profile) || profile == "use_existing")
+            if (string.IsNullOrEmpty(profile))
                 profile = znv.m_zdo.GetString("KGnpcProfile", "default");
             string npcName = znv.m_zdo.GetString("KGnpcNameOverride");
-            switch (_currentNpcType)
+            type ??= _currentNpcType;
+            switch (type)
             {
                 case NPCType.Marketplace:
                     if (!string.IsNullOrWhiteSpace(Global_Values._localUserID))
@@ -1897,18 +1902,6 @@ public static class Market_NPC
             _currentNPC = _npc;
             CheckColors();
             UI.SetActive(true);
-        }
-
-        [HarmonyPatch(typeof(InputField), "OnPointerDown")]
-        [ClientOnlyPatch]
-        private static class InputField__Patch
-        {
-            private static void Prefix(InputField __instance)
-            {
-                if (__instance.lineType != InputField.LineType.SingleLine) return;
-                if (IsVisible() && !string.IsNullOrEmpty(__instance.text))
-                    AccessTools.Field(typeof(InputField), "m_AllowInput").SetValue(__instance, true);
-            }
         }
     }
 

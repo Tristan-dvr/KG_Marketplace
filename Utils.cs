@@ -168,8 +168,26 @@ public static class Utils
 
         return num;
     }
+    
+    public static Minimap.PinData GetCustomPin(Minimap.PinType type, Vector3 pos, float radius)
+    {
+        Minimap.PinData pinData = null;
+        float num = 999999f;
+        foreach (Minimap.PinData pinData2 in Minimap.instance.m_pins)
+            if (pinData2.m_type == type)
+            {
+                float num2 = global::Utils.DistanceXZ(pos, pinData2.m_pos);
+                if (num2 < radius && (num2 < num || pinData == null))
+                {
+                    pinData = pinData2;
+                    num = num2; 
+                }
+            }
+ 
+        return pinData;
+    }
 
-    private static int CustomCountItemsNoLevel(string prefab)
+    public static int CustomCountItemsNoLevel(string prefab)
     {
         int num = 0;
         foreach (ItemDrop.ItemData itemData in Player.m_localPlayer.m_inventory.m_inventory)

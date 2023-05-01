@@ -75,6 +75,7 @@ Now you can add your own localization. For that download file: <a href="Marketpl
 1) https://youtu.be/5fR_9Qygkro (part one)
 2) https://youtu.be/BthPUGOeaeA (part two)
 3) https://youtu.be/hUU_bPCwFeE (part three)
+4) https://youtu.be/ZgoeYVpEcI4 (part four)
 
 </p>
 </details>
@@ -358,10 +359,10 @@ Here's the quest structure:
 QuestType
 Name
 Description
-Quest Target Prefab , Amount, Min Level (min level works only on Kill quest in order to set minimum level or target you need to kill)
-QuestRewardType: Item/Skill/Pet: prefab, Amount, Level
+Quest Target Prefab , Amount, Min Level (min level works only on Kill or Collect quest in order to set minimum level or target you need to kill)
+QuestRewardType: prefab, Amount, Level
 In-Game Days Cooldown
-QuestRequirementType: Skill/OtherQuest/GlobalKey: Name, MinLevel (only use with Skill requirement)
+QuestRequirementType: Prefab, MinLevel (only use with Skill requirement)
 ```
 
 <span style="color:aqua;"> NOTE: If you want quest to be able to autocomplete (no need to speak again with npc and press "Complete" button after score is 100%), then you can write [QuestID=autocomplete]
@@ -850,18 +851,18 @@ None
 ^ Will create a circular zone at X 100 and Z 300 with Radius 500 and color RED and custom flags.
 
 
-Also, if you will have multiple areas with similar names you can put @1, @2 behind the name to differentiate them.
+You can write @Number after zone id to change its priority, so you can have one zone inside another. For example:
 
 [Trader@1]   
 Circle   
--4784, 3967, 30   
+0,0, 300   
 138, 43, 226, false   
 NoBuild, NoBuildDamage, NoPickaxe, ForceBiome = 4, PeriodicHealALL = 2, NoMonsters, NoDeathPenalty, InfiniteFuel, NoStructureSupport, NoInteractCraftingStation, NoInteractItemStands, NoAttack, NoInteractItems   
 76543210123456789, 7656789876543211,
 
-[Trader@2]   
+[Trader two@2]   
 Square   
-784, -588, 20   
+0,0,100   
 238, 99, 101, false   
 NoBuild, NoBuildDamage, NoPickaxe, ForceBiome = 4, PeriodicHealALL = 2, NoMonsters, NoDeathPenalty, InfiniteFuel, NoStructureSupport, NoInteractCraftingStation, NoInteractItemStands, NoAttack, NoInteractItems   
 76543210123456789, 7656789876543211,

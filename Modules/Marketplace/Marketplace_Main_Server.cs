@@ -46,15 +46,6 @@ public static class Marketplace_Main_Server
         }
     }
 
-    private static void SendMessagesToClient(long id, string userID)
-    {
-        if (!Marketplace_Messages.Messenger.PlayerMessages.ContainsKey(userID)) return;
-        ZPackage pkg = new ZPackage();
-        pkg.Write(Marketplace_Messages.Messenger.PlayerMessages[userID]);
-        pkg.Compress();
-        ZRoutedRpc.instance.InvokeRoutedRPC(id, "KGmarket GetLocalMessages", pkg);
-    }
-    
     public static void SendMessagesToClient(string userID)
     {
         if (!Marketplace_Messages.Messenger.PlayerMessages.ContainsKey(userID)) return;
@@ -206,7 +197,7 @@ public static class Marketplace_Main_Server
     }
     
     
-    [HarmonyPatch(typeof(ZNet), "RPC_PeerInfo")]
+    [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_CharacterID))]
     [ServerOnlyPatch]
     private static class ZnetSyncJson
     {
@@ -217,7 +208,7 @@ public static class Marketplace_Main_Server
             if (peer == null) return;
             string userID = peer.m_socket.GetHostName();
             SendIncomeToClient(peer, userID);
-            SendMessagesToClient(peer.m_uid, userID);
+            SendMessagesToClient(userID);
         }
     }
     

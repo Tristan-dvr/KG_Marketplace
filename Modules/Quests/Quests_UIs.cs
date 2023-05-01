@@ -1,11 +1,14 @@
 ﻿using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
+using Image = UnityEngine.UI.Image;
 
 namespace Marketplace.Modules.Quests;
 
 public static class Quests_UIs
 {
     private const string Star_Emoji = " ★";
-    
+
     internal static class QuestUI
     {
         private static GameObject UI;
@@ -90,6 +93,7 @@ public static class Quests_UIs
         private static void CLICKMAINBUTTONQUEST(Quests_DataTypes.Quest quest, int UID, int index)
         {
             Quests_DataTypes.Quest.ClickQuestButton(UID);
+            if(!IsVisible()) return;
             Reload();
             if (!(Quests_DataTypes.Quest.IsOnCooldown(UID, out int days) && days > 5000))
                 InitQuestData(quest, UID, index);
@@ -124,10 +128,10 @@ public static class Quests_UIs
                 PreviewImage.gameObject.SetActive(true);
                 PreviewImage.sprite = quest.GetPreviewSprite;
             }
-
             for (int i = quest.TargetAMOUNT - 1; i >= 0; --i)
             {
-                Image TargetImage = UnityEngine.Object.Instantiate(QuestTarget, TargetContent).transform.Find("TargetImage")
+                Image TargetImage = UnityEngine.Object.Instantiate(QuestTarget, TargetContent).transform
+                    .Find("TargetImage")
                     .GetComponent<Image>();
                 Text TargetText = UnityEngine.Object.Instantiate(QuestTargetText, TargetContent).GetComponent<Text>();
                 TOREMOVE.Add(TargetImage.transform.parent.gameObject);
@@ -162,7 +166,8 @@ public static class Quests_UIs
                 {
                     case Quests_DataTypes.QuestType.Kill or Quests_DataTypes.QuestType.Harvest:
                         TargetImage.sprite =
-                            PhotoManager.__instance.GetSprite(quest.TargetPrefab[i], AssetStorage.AssetStorage.PlaceholderMonsterIcon,
+                            PhotoManager.__instance.GetSprite(quest.TargetPrefab[i],
+                                AssetStorage.AssetStorage.PlaceholderMonsterIcon,
                                 quest.TargetLevel[i]);
                         break;
                     case Quests_DataTypes.QuestType.Collect or Quests_DataTypes.QuestType.Craft:
@@ -179,8 +184,7 @@ public static class Quests_UIs
                         break;
                 }
             }
-
-
+            
             for (int i = 0; i < quest.RewardsAMOUNT; ++i)
             {
                 GameObject rewardGO = UnityEngine.Object.Instantiate(RewardGO, RewardTransform);
@@ -207,7 +211,8 @@ public static class Quests_UIs
                 {
                     case Quests_DataTypes.QuestRewardType.Pet:
                         rewardImage.sprite =
-                            PhotoManager.__instance.GetSprite(quest.RewardPrefab[i], AssetStorage.AssetStorage.PlaceholderMonsterIcon,
+                            PhotoManager.__instance.GetSprite(quest.RewardPrefab[i],
+                                AssetStorage.AssetStorage.PlaceholderMonsterIcon,
                                 quest.RewardLevel[i]);
                         tooltip.m_topic = quest.GetLocalizedReward(i) +
                                           $" <color=#00ff00>{Star_Emoji}{quest.RewardLevel[i] - 1}</color>";
@@ -241,9 +246,10 @@ public static class Quests_UIs
                         }
 
                         tooltip.m_topic = quest.GetLocalizedReward(i);
-                        tooltip.m_text = Localization.instance.Localize(quest.RewardType[i] is Quests_DataTypes.QuestRewardType.Skill_EXP
-                                             ? "$mpasn_tooltip_addskillexp"
-                                             : "$mpasn_tooltip_addskilllevel") +
+                        tooltip.m_text = Localization.instance.Localize(
+                                             quest.RewardType[i] is Quests_DataTypes.QuestRewardType.Skill_EXP
+                                                 ? "$mpasn_tooltip_addskillexp"
+                                                 : "$mpasn_tooltip_addskilllevel") +
                                          " x" + quest.RewardCount[i];
                         break;
                     case Quests_DataTypes.QuestRewardType.EpicMMO_EXP:
@@ -266,8 +272,7 @@ public static class Quests_UIs
                         break;
                 }
             }
-
-
+            
             if (Quests_DataTypes.Quest.IsOnCooldown(UID, out int left))
             {
                 RestrictionText.gameObject.SetActive(true);
@@ -313,7 +318,6 @@ public static class Quests_UIs
                 RestrictionButton.gameObject.SetActive(false);
                 RestrictionText.gameObject.SetActive(false);
             }
-
             Canvas.ForceUpdateCanvases();
             AllFilters.ForEach(filter => filter.enabled = false);
             AllFilters.ForEach(filter => filter.enabled = true);
@@ -339,7 +343,8 @@ public static class Quests_UIs
             foreach (KeyValuePair<GameObject, int> link in QuestLink)
             {
                 Color c = Color.white;
-                if (Quests_DataTypes.Quest.IsOnCooldown(link.Value, out _) || !Quests_DataTypes.Quest.CanTake(link.Value, out _, out _))
+                if (Quests_DataTypes.Quest.IsOnCooldown(link.Value, out _) ||
+                    !Quests_DataTypes.Quest.CanTake(link.Value, out _, out _))
                 {
                     c = Color.gray;
                 }
@@ -366,14 +371,18 @@ public static class Quests_UIs
             int ForceUID;
             int ForceInt;
 
-            List<int> enumerationTarget = IsJournal ? Quests_DataTypes.AcceptedQuests.Keys.ToList() : Quests_DataTypes.SyncedQuestProfiles.Value[CurrentProfile];
+            List<int> enumerationTarget = IsJournal
+                ? Quests_DataTypes.AcceptedQuests.Keys.ToList()
+                : (Quests_DataTypes.SyncedQuestProfiles.Value.TryGetValue(CurrentProfile, out var value)
+                    ? value : new List<int>());
 
             foreach (int profileID in enumerationTarget)
             {
                 if (Quests_DataTypes.AllQuests.TryGetValue(profileID, out Quests_DataTypes.Quest data))
                 {
-                    bool canTake = Quests_DataTypes.Quest.CanTake(profileID, out _, out Quests_DataTypes.QuestRequirementType type);
-                    
+                    bool canTake = Quests_DataTypes.Quest.CanTake(profileID, out _,
+                        out Quests_DataTypes.QuestRequirementType type);
+
                     if (!canTake && Global_Values._container.Value._hideOtherQuestRequirementQuests &&
                         type is Quests_DataTypes.QuestRequirementType.OtherQuest) continue;
 
@@ -450,8 +459,8 @@ public static class Quests_UIs
             QuestLink.Clear();
         }
     }
-    
-    
+
+
     public static class AcceptedQuestsUI
     {
         private static GameObject UI;
@@ -493,7 +502,8 @@ public static class Quests_UIs
                 string stars = data.Type switch
                 {
                     Quests_DataTypes.QuestType.Kill => $" (<color=#00ff00>{data.TargetLevel[i] - 1}★</color>)",
-                    Quests_DataTypes.QuestType.Craft or Quests_DataTypes.QuestType.Collect => $" (<color=#00ff00>{data.TargetLevel[i]}★</color>)",
+                    Quests_DataTypes.QuestType.Craft or Quests_DataTypes.QuestType.Collect =>
+                        $" (<color=#00ff00>{data.TargetLevel[i]}★</color>)",
                     _ => ""
                 };
 
@@ -529,7 +539,8 @@ public static class Quests_UIs
 
         public static void Init()
         {
-            UI = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketACCEPTEDquests"));
+            UI = UnityEngine.Object.Instantiate(
+                AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketACCEPTEDquests"));
             MainTransform = UI.transform.Find("UI/panel/ALLSTUFF/Scroll View/Viewport/Content");
             QuestGO = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("AcceptedQuestGONew");
             UI.transform.Find("UI/panel/btn").GetComponent<Button>().onClick.AddListener(ClickHideButton);
@@ -571,7 +582,8 @@ public static class Quests_UIs
             AllGO.Clear();
             UpdateData.Clear();
             int c = 0;
-            foreach (KeyValuePair<int, Quests_DataTypes.Quest> quest in Quests_DataTypes.AcceptedQuests.OrderBy(d => d.Value.Name))
+            foreach (KeyValuePair<int, Quests_DataTypes.Quest> quest in Quests_DataTypes.AcceptedQuests.OrderBy(d =>
+                         d.Value.Name))
             {
                 GameObject newGo = UnityEngine.Object.Instantiate(QuestGO, MainTransform);
                 InitQuestData(newGo, quest.Value, quest.Key);
@@ -597,7 +609,7 @@ public static class Quests_UIs
             MainBar.value = 1f;
         }
     }
-    
+
     [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
     [ClientOnlyPatch]
     private static class QuestUIFix
@@ -607,5 +619,4 @@ public static class Quests_UIs
             if (QuestUI.IsVisible()) __result = true;
         }
     }
-
 }

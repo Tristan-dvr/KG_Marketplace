@@ -748,7 +748,7 @@ public class ConfigSync
         }
     }
 
-    [HarmonyPatch(typeof(ZNet), "RPC_PeerInfo")]
+    [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo))]
     private class SendConfigsAfterLogin
     {
         private class BufferingSocket : ISocket

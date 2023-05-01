@@ -110,7 +110,10 @@ public static class Banker_Main_Server
         if (BankerServerSideData.TryGetValue(userID, out var value))
         {
             string data = JSON.ToJSON(value);
-            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, "KGmarket GetBankerClientData", data);
+            ZPackage pkg = new();
+            pkg.Write(data);
+            pkg.Compress();
+            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, "KGmarket GetBankerClientData", pkg);
         }
     }
 
@@ -119,7 +122,7 @@ public static class Banker_Main_Server
         Market_Paths.BankerDataJSONFile.WriteClear(JSON.ToNiceJSON(BankerServerSideData));
     }
 
-    [HarmonyPatch(typeof(ZNet), "RPC_PeerInfo")]
+    [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_CharacterID))]
     [ServerOnlyPatch]
     private static class ZnetSyncBankerProfiles
     {
