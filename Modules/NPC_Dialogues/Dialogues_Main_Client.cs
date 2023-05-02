@@ -17,8 +17,16 @@ public static class Dialogues_Main_Client
         Menu.instance.OnClose();
     }
     
+    [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => InitDialogues();
+    }
+    
     private static void InitDialogues()
     {
+        if(!ZNetScene.instance) return;
         Dialogues_DataTypes.ClientReadyDialogues.Clear();
         foreach (Dialogues_DataTypes.RawDialogue dialogue in Dialogues_DataTypes.SyncedDialoguesData.Value)
         {

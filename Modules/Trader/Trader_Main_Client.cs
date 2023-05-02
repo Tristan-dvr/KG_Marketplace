@@ -1,6 +1,6 @@
 ﻿namespace Marketplace.Modules.Trader;
 
-[Market_Autoload(Market_Autoload.Type.Client,Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Trader_Main_Client
 {
     private static void OnInit()
@@ -16,15 +16,23 @@ public static class Trader_Main_Client
         Trader_UI.Hide();
         Menu.instance.OnClose();
     }
-    
+
     private static void OnTraderUpdate()
     {
         InitTraderItems();
         Trader_UI.Reload();
     }
-    
+
+    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => InitTraderItems();
+    }
+
     private static void InitTraderItems()
     {
+        if (!ZNetScene.instance) return;
         foreach (var kvp in Trader_DataTypes.TraderItemList.Value)
         {
             List<Trader_DataTypes.TraderData> newTraderItems = new List<Trader_DataTypes.TraderData>();
@@ -63,7 +71,7 @@ public static class Trader_Main_Client
                     {
                         Character c = resultItemPrefab.GetComponent<Character>();
                         PhotoManager.__instance.MakeSprite(resultItemPrefab, 0.6f, 0.25f, RI.Level);
-                        RI.SetIcon( PhotoManager.__instance.GetSprite(resultItemPrefab.name,
+                        RI.SetIcon(PhotoManager.__instance.GetSprite(resultItemPrefab.name,
                             AssetStorage.AssetStorage.PlaceholderMonsterIcon, RI.Level));
                         RI.ItemName = Localization.instance.Localize(c.m_name ?? "Default");
                         RI.IsMonster = true;

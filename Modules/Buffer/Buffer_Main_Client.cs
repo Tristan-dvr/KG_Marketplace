@@ -20,9 +20,17 @@ public static class Buffer_Main_Client
             Menu.instance.OnClose();
         }
     }
+    
+    [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => OnBufferUpdate();
+    }
 
     private static void OnBufferUpdate()
     {
+        if(!ZNetScene.instance) return;
         Buffer_DataTypes.ALLBufferProfiles.Clear();
         foreach (Buffer_DataTypes.BufferBuffData buff in Buffer_DataTypes.AllCustomBuffs)
         {

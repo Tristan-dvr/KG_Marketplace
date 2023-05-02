@@ -4,9 +4,10 @@ public static class Battlepass_DataTypes
 {
     internal static readonly CustomSyncedValue<BattlePassData> SyncedBattlepassData =
         new(Marketplace.configSync, "battlePassData", new BattlePassData());
-    
-   public class BattlePassData : ISerializableParameter
+
+    public class BattlePassData : ISerializableParameter
     {
+        public int _revision;
         public string Name;
         public string PremiumUsers;
         public int UID;
@@ -48,7 +49,7 @@ public static class Battlepass_DataTypes
                     pkg.Write(itemLevel);
                 }
             }
-            
+
             pkg.Write(PremiumRewards.Count);
             foreach (BattlePassElement element in PremiumRewards)
             {
@@ -74,9 +75,10 @@ public static class Battlepass_DataTypes
             }
 
             pkg.Write(PremiumUsers ?? "");
+            pkg.Write(_revision);
         }
 
-        public void Deserialize(ref ZPackage pkg) 
+        public void Deserialize(ref ZPackage pkg)
         {
             Name = pkg.ReadString();
             UID = pkg.ReadInt();
@@ -112,7 +114,7 @@ public static class Battlepass_DataTypes
 
                 FreeRewards.Add(element);
             }
-            
+
             int premiumCount = pkg.ReadInt();
             for (int i = 0; i < premiumCount; i++)
             {
@@ -144,35 +146,37 @@ public static class Battlepass_DataTypes
 
                 PremiumRewards.Add(element);
             }
+
             PremiumUsers = pkg.ReadString();
+            _revision = pkg.ReadInt();
         }
     }
 
-   public class BattlePassElement
-   {
-       public string RewardName;
-       public int Order;
-       public List<string> ItemNames = new();
-       public List<int> ItemCounts = new();
-       public List<int> ItemLevels = new();
+    public class BattlePassElement
+    {
+        public string RewardName;
+        public int Order;
+        public List<string> ItemNames = new();
+        public List<int> ItemCounts = new();
+        public List<int> ItemLevels = new();
 
 
-       private readonly List<Sprite> ItemSprites = new();
-       private readonly List<string> AdditionalString = new();
-       private readonly List<string> Localized = new();
+        private readonly List<Sprite> ItemSprites = new();
+        private readonly List<string> AdditionalString = new();
+        private readonly List<string> Localized = new();
 
-       public Sprite GetSprite(int index) => ItemSprites[index];
-       public void AddSprite(Sprite s) => ItemSprites.Add(s);
-       public void AddString(string s) => AdditionalString.Add(s);
-       public string GetString(int index) => AdditionalString[index];
-       public void SetLocalized(string s) => Localized.Add(s);
-       public string GetLocalizedName(int index) => Localized[index];
+        public Sprite GetSprite(int index) => ItemSprites[index];
+        public void AddSprite(Sprite s) => ItemSprites.Add(s);
+        public void AddString(string s) => AdditionalString.Add(s);
+        public string GetString(int index) => AdditionalString[index];
+        public void SetLocalized(string s) => Localized.Add(s);
+        public string GetLocalizedName(int index) => Localized[index];
 
 
-       public override string ToString()
-       {
-           return
-               $"{nameof(RewardName)}: {RewardName}, {nameof(Order)}: {Order}, {nameof(ItemNames)}: {ItemNames}, {nameof(ItemCounts)}: {ItemCounts}, {nameof(ItemLevels)}: {ItemLevels}";
-       }
-   }
+        public override string ToString()
+        {
+            return
+                $"{nameof(RewardName)}: {RewardName}, {nameof(Order)}: {Order}, {nameof(ItemNames)}: {ItemNames}, {nameof(ItemCounts)}: {ItemCounts}, {nameof(ItemLevels)}: {ItemLevels}";
+        }
+    }
 }

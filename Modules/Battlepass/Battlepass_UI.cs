@@ -139,8 +139,7 @@ public static class Battlepass_UI
 
         public static void LoadData()
         {
-            if (LastHashcode == Battlepass_DataTypes.SyncedBattlepassData.Value.GetHashCode()) return;
-            LastHashcode = Battlepass_DataTypes.SyncedBattlepassData.Value.GetHashCode();
+            if(!Player.m_localPlayer) return;
             FindMax = -1;
             foreach (KeyValuePair<GameObject, KeyValuePair<int, Battlepass_Main_Client.Type>> i in AllGO)
             {

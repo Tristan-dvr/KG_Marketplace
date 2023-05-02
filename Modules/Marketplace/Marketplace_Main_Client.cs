@@ -56,17 +56,12 @@ public static class Marketplace_Main_Client
         }
     }
     
-    
     private static void ReceiveIncomeFromServer(long sender, int value)
     {
-        if (sender != ZNet.instance.GetServerPeer().m_uid) return;
         IncomeValue = value;
         Marketplace_UI.ResetIncome();
     }
     
-    
-
-
     private static void InstantiateItemFromServer(long sender, string data)
     {
         if (sender == ZNet.instance.GetServerPeer().m_uid && data.Length > 0)

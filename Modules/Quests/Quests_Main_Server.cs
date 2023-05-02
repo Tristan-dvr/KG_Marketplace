@@ -66,9 +66,11 @@ public static class Quests_Main_Server
         }
         Quests_DataTypes.SyncedQuestProfiles.Update();
     }
-    
+
+    private static int CurrentRevision;
     private static void ReadQuestDatabase(List<string> profiles)
     {
+        CurrentRevision = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         if (profiles.Count == 0) return;
         Quests_DataTypes.SyncedQuestData.Value.Clear();
         string dbProfile = null;
@@ -251,7 +253,8 @@ public static class Quests_Main_Server
                         QuestRequirementPrefab = QuestRestriction,
                         QuestRequirementLevel = QuestRestrictionLevel,
                         SpecialTag = specialQuestTag,
-                        PreviewImage = image
+                        PreviewImage = image,
+                        _revision = CurrentRevision
                     };
                     if (!Quests_DataTypes.SyncedQuestData.Value.ContainsKey(UID))
                         Quests_DataTypes.SyncedQuestData.Value.Add(UID, quest);

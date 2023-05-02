@@ -237,8 +237,7 @@ public static class Gambler_UI
 
     private static IEnumerator ClickOnElement(int whichOne)
     {
-        if (CurrentStatus != Status.Done || CurrentRollMAX <= 0 || AlreadyClicked.Contains(whichOne) ||
-            !Player.m_localPlayer) yield break;
+        if (CurrentStatus != Status.Done || CurrentRollMAX <= 0 || AlreadyClicked.Contains(whichOne) || !Player.m_localPlayer) yield break;
         AlreadyClicked.Add(whichOne);
         CurrentRollMAX--;
         bool CONTINUE = CurrentRollMAX <= 0;
@@ -315,13 +314,16 @@ public static class Gambler_UI
                 ZNetScene.instance.Destroy(go);
             }
 
-            ZPackage pkg = new();
-            pkg.Write((int)DiscordStuff.Webhooks.Gambler);
-            pkg.Write(Player.m_localPlayer.GetPlayerName());
-            pkg.Write(count);
-            pkg.Write(itemDrop.m_itemData.m_shared.m_name);
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks", pkg);
-
+            if (ZNet.instance.GetServerPeer() != null)
+            {
+                ZPackage pkg = new();
+                pkg.Write((int)DiscordStuff.Webhooks.Gambler);
+                pkg.Write(Player.m_localPlayer.GetPlayerName());
+                pkg.Write(count);
+                pkg.Write(itemDrop.m_itemData.m_shared.m_name);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks", pkg);
+            }
+            
             if (Global_Values._container.Value._gamblerEnableNotifications)
             {
                 string sendText =

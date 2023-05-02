@@ -148,6 +148,7 @@ public static class Quests_DataTypes
 
             pkg.Write(PreviewImage ?? "");
             pkg.Write(ResetTime);
+            pkg.Write(_revision);
         }
 
 
@@ -194,12 +195,14 @@ public static class Quests_DataTypes
 
             PreviewImage = pkg.ReadString();
             ResetTime = pkg.ReadInt();
+            _revision = pkg.ReadInt();
         }
     }
 
     //main data part
     public partial class Quest
     {
+        public int _revision;
         public QuestType Type;
         public SpecialQuestTag SpecialTag;
         public string Name;
