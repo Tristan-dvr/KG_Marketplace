@@ -20,10 +20,18 @@ public static class ItemMocker_Main_Client
         MockItemBase = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_ItemMockerBase");
         ItemMocker_DataTypes.SyncedMockedItems.ValueChanged += MockItems;
     }
+    
+    [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => MockItems();
+    }
 
     private static void MockItems()
     {
         if (!ZNetScene.instance || !CanMockItems || ItemMocker_DataTypes.SyncedMockedItems.Value.Count == 0) return;
+        CanMockItems = false;
         LayerMask itemLayer = LayerMask.NameToLayer("item");
         GameObject inactive = new GameObject("Inactive_MockerBase");
         inactive.SetActive(false);
@@ -93,7 +101,5 @@ public static class ItemMocker_Main_Client
                 ObjectDB.instance.m_recipes.Add(r);
             }
         }
-
-        CanMockItems = false;
     }
 }

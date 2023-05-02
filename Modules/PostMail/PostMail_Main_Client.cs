@@ -17,6 +17,7 @@ public static class PostMail_Main_Client
         PostMail_Prefab.AddComponent<PostMailComponent>();
         Icon = PostMail_Prefab.GetComponent<Piece>().m_icon;
         Marketplace.Global_Updator += Update;
+        Global_Values._container.ValueChanged += ResetMailpostRecipe;
     }
 
     private static void Update()
@@ -39,14 +40,38 @@ public static class PostMail_Main_Client
             __instance.m_namedPrefabs[PostMail_Prefab.name.GetStableHashCode()] = PostMail_Prefab;
             GameObject hammer = __instance.GetPrefab("Hammer");
             hammer.GetComponent<ItemDrop>().m_itemData.m_shared.m_buildPieces.m_pieces.Add(PostMail_Prefab);
+            ResetMailpostRecipe();
+        }
+    }
 
-            var swordCheat = __instance.GetPrefab("SwordCheat");
-            PostMail_Prefab.GetComponent<Piece>().m_resources = new Piece.Requirement[]
+    private static void ResetMailpostRecipe()
+    {
+        if(!ZNetScene.instance) return;
+        try
+        {
+            List<Piece.Requirement> reqs = new();
+            string recipeStr = Global_Values._container.Value._mailPostRecipe.Replace(" ","");
+            string[] split = recipeStr.Split(',');
+            for (int i = 0; i < split.Length; i += 2)
+            {
+                string name = split[i];
+                int amount = int.Parse(split[i + 1]);
+                reqs.Add(new Piece.Requirement()
+                {
+                    m_amount = amount,
+                    m_resItem = ObjectDB.instance.GetItemPrefab(name.GetStableHashCode()).GetComponent<ItemDrop>()
+                });
+            }
+            PostMail_Prefab.GetComponent<Piece>().m_resources = reqs.ToArray();
+        }
+        catch
+        {
+            PostMail_Prefab.GetComponent<Piece>().m_resources = new[]
             {
                 new Piece.Requirement()
                 {
-                    m_resItem = swordCheat.GetComponent<ItemDrop>(),
-                    m_amount = 1
+                    m_amount = 1,
+                    m_resItem = ObjectDB.instance.GetItemPrefab("SwordCheat").GetComponent<ItemDrop>()
                 }
             };
         }

@@ -58,6 +58,7 @@ public static class Global_Values
         public bool _hideOtherQuestRequirementQuests;
         public bool _allowKillQuestsInParty;
         public bool _enableKGChat;
+        public string _mailPostRecipe = "";
 
 
         public void Serialize(ref ZPackage pkg)
@@ -76,6 +77,7 @@ public static class Global_Values
             pkg.Write(_hideOtherQuestRequirementQuests);
             pkg.Write(_allowKillQuestsInParty);
             pkg.Write(_enableKGChat);
+            pkg.Write( _mailPostRecipe ?? "");
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -94,6 +96,7 @@ public static class Global_Values
             _hideOtherQuestRequirementQuests = pkg.ReadBool();
             _allowKillQuestsInParty = pkg.ReadBool();
             _enableKGChat = pkg.ReadBool();
+            _mailPostRecipe = pkg.ReadString();
         }
     }
 
@@ -162,6 +165,7 @@ public static class Global_Values
         _container.Value._allowKillQuestsInParty =
             SearchOption("AllowKillQuestsInParty", true, "Allow Kill Quests In Party");
         _container.Value._enableKGChat = SearchOption("EnableKGChat", true, "Enable KGChat");
+        _container.Value._mailPostRecipe = SearchOption("MailPostRecipe", "SwordCheat,1", "Recipe for Mailpost creation");
         _container.Update();
     }
 

@@ -149,7 +149,7 @@ public static class KG_Chat
             Markers[2] = dragRect.transform.Find("LeftBottom");
             Markers[3] = dragRect.transform.Find("RightBottom");
 
-            if (CheckMarkersOutsideScreen(new Vector2(Screen.width, Screen.height) ))
+            if (CheckMarkersOutsideScreen(new Vector2(Screen.width, Screen.height)))
                 Default();
         }
 
@@ -183,9 +183,16 @@ public static class KG_Chat
         }
     }
 
+    [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => ApplyKGChat(); 
+    }
+
     private static void ApplyKGChat()
     {
-        if (!Global_Values._container.Value._enableKGChat || kgChat ||!Chat.instance) return;
+        if (!Global_Values._container.Value._enableKGChat || kgChat || !Chat.instance) return;
         Utils.print($"Switching to KG Chat", ConsoleColor.Cyan);
         ZRoutedRpc.instance.m_functions.Remove("ChatMessage".GetStableHashCode());
         ZRoutedRpc.instance.m_functions.Remove("RPC_TeleportPlayer".GetStableHashCode());
