@@ -128,7 +128,7 @@ public static class Banker_Main_Server
     {
         private static void Postfix(ZRpc rpc)
         {
-            if (!(ZNet.instance.IsServer() && ZNet.instance.IsDedicated())) return;
+            if(!ZNet.instance.IsServer()) return;
             if (!BankerTimeStamp.ContainsKey(rpc.m_socket.GetHostName()))
                 BankerTimeStamp[rpc.m_socket.GetHostName()] = new Dictionary<int, DateTime>();
             ZNetPeer peer = ZNet.instance.GetPeer(rpc);
@@ -143,6 +143,7 @@ public static class Banker_Main_Server
     {
         private static void Postfix()
         {
+            if(!ZNet.instance.IsServer()) return;
             ZRoutedRpc.instance.Register("KGmarket BankerDeposit",
                 new Action<long, string, int>(MethodBankerDeposit));
             ZRoutedRpc.instance.Register("KGmarket BankerWithdraw",

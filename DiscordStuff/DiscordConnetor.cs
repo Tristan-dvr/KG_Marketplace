@@ -129,6 +129,7 @@ public static class DiscordStuff
     {
         private static void Postfix()
         {
+            if(!ZNet.instance.IsServer()) return;
             ZRoutedRpc.instance.Register("KGmarket CustomWebhooks", new Action<long, ZPackage>(SendWebhook));
         }
     }

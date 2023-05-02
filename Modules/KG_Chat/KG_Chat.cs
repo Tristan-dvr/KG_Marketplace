@@ -185,7 +185,7 @@ public static class KG_Chat
 
     private static void ApplyKGChat()
     {
-        if (!Global_Values._container.Value._enableKGChat || kgChat) return;
+        if (!Global_Values._container.Value._enableKGChat || kgChat ||!Chat.instance) return;
         Utils.print($"Switching to KG Chat", ConsoleColor.Cyan);
         ZRoutedRpc.instance.m_functions.Remove("ChatMessage".GetStableHashCode());
         ZRoutedRpc.instance.m_functions.Remove("RPC_TeleportPlayer".GetStableHashCode());

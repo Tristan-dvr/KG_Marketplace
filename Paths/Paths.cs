@@ -49,13 +49,13 @@ public static class Market_Paths
     public static string NpcDialoguesConfig => Path.Combine(MainPath, "NpcDialogues.cfg");
 
     public static string MainConfig => Path.Combine(MainPath, "MarketPlace.cfg");
-    
-    public static string MockerFolder => Path.Combine(MainPath, "ItemMocker");
+
+    private static string MockerFolder => Path.Combine(MainPath, "ItemMocker");
     public static string MockerConfig => Path.Combine(MockerFolder, "ItemMocker.cfg");
 
     private static void OnInit()
     {
-        if (Utils.IsServer)
+        if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server or Marketplace.WorkingAs.Both)
         {
             if (!Directory.Exists(MainPath))
                 Directory.CreateDirectory(MainPath);
@@ -113,7 +113,8 @@ public static class Market_Paths
             
             if (!File.Exists(MockerConfig)) File.Create(MockerConfig).Dispose();
         }
-        else
+
+        if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Client or Marketplace.WorkingAs.Both)
         {
             if (!Directory.Exists(NPC_SoundsPath))
                 Directory.CreateDirectory(NPC_SoundsPath);
@@ -122,5 +123,7 @@ public static class Market_Paths
             if (!Directory.Exists(OBJModelsFolder))
                 Directory.CreateDirectory(OBJModelsFolder);
         }
+           
+        
     }
 }

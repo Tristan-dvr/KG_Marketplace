@@ -11,6 +11,7 @@ public static class Feedback_Main_Server
     {
         private static void Postfix()
         {
+            if(!ZNet.instance.IsServer()) return;
             ZRoutedRpc.instance.Register("KGmarket ReceiveFeedback",
                 new Action<long, ZPackage>(ReceiveFeedback));
         }

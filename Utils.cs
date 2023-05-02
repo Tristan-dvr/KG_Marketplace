@@ -14,8 +14,6 @@ namespace Marketplace;
 
 public static class Utils
 {
-    private static bool? _internal_isServer;
-    internal static bool IsServer => _internal_isServer ??= SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
     public static bool IsDebug => Player.m_debugMode;
     
     public static void print(object obj, ConsoleColor color = ConsoleColor.DarkGreen)

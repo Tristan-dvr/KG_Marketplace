@@ -1,5 +1,6 @@
 ﻿using LocalizationManager;
 using Marketplace.Paths;
+using UnityEngine.Rendering;
 
 namespace Marketplace
 {
@@ -11,25 +12,39 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        public const string PluginVersion = "8.5.0"; 
+        public const string PluginVersion = "8.5.0";
         internal static Marketplace _thistype;
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW;
-        public static Action Global_Updator; 
+        public static Action Global_Updator;
         public static Action Global_FixedUpdator;
         public static Action Global_OnGUI_Updator;
-        public static Type TempJewelcraftingType; 
+        public static Type TempJewelcraftingType;
         public static Type TempProfessionsType;
 
         public static readonly ConfigSync configSync = new(GUID)
-        { 
+        {
             DisplayName = GUID, ModRequired = true, MinimumRequiredVersion = PluginVersion,
             CurrentVersion = PluginVersion
         };
 
+        public enum WorkingAs
+        {
+            Client,
+            Server,
+            Both
+        }
+
+        public static WorkingAs WorkingAsType;
+
         private void Awake()
         {
-            Utils.print($"Marketplace: {(Utils.IsServer ? "Server" : "Client")}");
+            WorkingAsType = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null
+                ? WorkingAs.Server
+                : Config.Bind("General", "Use Marketplace Locally", false, "Enable Market Local Usage").Value
+                    ? WorkingAs.Both
+                    : WorkingAs.Client;
+            Utils.print($"Marketplace Working As: {WorkingAsType}");
             _thistype = this;
             Type.GetType("Groups.Initializer, kg.Marketplace")!.GetMethod("Init")!.Invoke(null, null);
             HarmonyLib.Tools.Logger.ChannelFilter = HarmonyLib.Tools.Logger.LogChannel.Error;
@@ -48,10 +63,12 @@ namespace Marketplace
             IEnumerable<KeyValuePair<Market_Autoload, Type>> toAutoload = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => t.GetCustomAttribute<Market_Autoload>() != null)
                 .Select(x => new KeyValuePair<Market_Autoload, Type>(x.GetCustomAttribute<Market_Autoload>(), x))
-                .OrderBy(x => x.Key.priority)
-                .Where(x => Utils.IsServer
-                    ? x.Key.type != Market_Autoload.Type.Client
-                    : x.Key.type != Market_Autoload.Type.Server);
+                .OrderBy(x => x.Key.priority).Where(x => WorkingAsType switch
+                {
+                    WorkingAs.Client => x.Key.type != Market_Autoload.Type.Server,
+                    WorkingAs.Server => x.Key.type != Market_Autoload.Type.Client,
+                    _ => true
+                });
             foreach (var autoload in toAutoload)
             {
                 if (autoload.Key.OnWatcherNames != null && autoload.Key.OnWatcherMethods != null &&
@@ -80,6 +97,7 @@ namespace Marketplace
                         ConsoleColor.Red);
                     continue;
                 }
+
                 try
                 {
                     method.Invoke(null, null);
@@ -89,13 +107,15 @@ namespace Marketplace
                     Utils.print($"Autoload exception on method {method}\n:{ex}", ConsoleColor.Red);
                 }
             }
+
             InitFSW(Market_Paths.MainPath);
-            
             AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())
-                .Where(t => Utils.IsServer
-                    ? t.GetCustomAttribute<ClientOnlyPatch>() == null
-                    : t.GetCustomAttribute<ServerOnlyPatch>() == null)
-                .Do(type => _harmony.CreateClassProcessor(type).Patch());
+                .Where(t => WorkingAsType switch
+                {
+                    WorkingAs.Client => t.GetCustomAttribute<ServerOnlyPatch>() == null,
+                    WorkingAs.Server => t.GetCustomAttribute<ClientOnlyPatch>() == null,
+                    _ => true
+                }).Do(type => _harmony.CreateClassProcessor(type).Patch());
         }
 
         private void Update() => Global_Updator?.Invoke();
@@ -104,7 +124,7 @@ namespace Marketplace
 
         private static void InitFSW(string folderPath)
         {
-            if (!Utils.IsServer) return;
+            if (WorkingAsType is WorkingAs.Client) return;
             try
             {
                 FSW = new FileSystemWatcher(folderPath)
@@ -128,6 +148,11 @@ namespace Marketplace
 
         private static void MarketplaceConfigChanged(object sender, FileSystemEventArgs e)
         {
+            if (!ZNet.instance || !ZNet.instance.IsServer())
+            {
+                Utils.print("FSW: Not a server, ignoring", ConsoleColor.Red);
+                return;
+            } 
             if (e.ChangeType != WatcherChangeTypes.Changed || !ZNetScene.instance) return;
             if (LastConfigChangeTime > DateTime.Now.AddSeconds(-5)) return;
             LastConfigChangeTime = DateTime.Now;

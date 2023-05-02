@@ -55,7 +55,7 @@ public static class Market_NPC
         NPC = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketPlaceNPC");
         NPC.AddComponent<NPCcomponent>();
         NPC.transform.Find("TMP").gameObject.AddComponent<TextComponent>();
-        if (Utils.IsServer) return;
+        if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
         NPCUI.Init();
         NPCLoader_UI.Init();
         Marketplace.Global_Updator += UpdateNPCGUI;
@@ -535,7 +535,7 @@ public static class Market_NPC
         private void Awake()
         {
             znv = GetComponent<ZNetView>();
-            if (!znv || znv.m_zdo == null || Utils.IsServer) return;
+            if (!znv || znv.m_zdo == null || Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
             NPC_SoundSource = gameObject.AddComponent<AudioSource>();
             NPC_SoundSource.spatialBlend = 1;
             NPC_SoundSource.volume = 0.8f;

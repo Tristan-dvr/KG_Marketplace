@@ -188,6 +188,7 @@ public static class Marketplace_Main_Server
     {
         private static void Postfix()
         {
+            if(!ZNet.instance.IsServer()) return;
             ZRoutedRpc.instance.Register("KGmarket ReceiveItem", new Action<long, string>(ReceiveItemFromClient));
             ZRoutedRpc.instance.Register("KGmarket RequestBuyItem", new Action<long, int, int, int>(RequestBuyItem));
             ZRoutedRpc.instance.Register("KGmarket RequestWithdraw", new Action<long, bool>(RequestWithdrawIncome));
@@ -203,7 +204,7 @@ public static class Marketplace_Main_Server
     {
         private static void Postfix(ZRpc rpc)
         {
-            if (!(ZNet.instance.IsServer() && ZNet.instance.IsDedicated())) return;
+            if(!ZNet.instance.IsServer()) return;
             ZNetPeer peer = ZNet.instance.GetPeer(rpc);
             if (peer == null) return;
             string userID = peer.m_socket.GetHostName();

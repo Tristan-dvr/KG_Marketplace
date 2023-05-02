@@ -1,6 +1,6 @@
 ﻿namespace Marketplace.Modules.PostMail;
 
-[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Last, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Last, "OnInit")]
 public static class PostMail_Pin
 {
     private const string PrefabToSearch = "MarketplacePostMail";
@@ -17,7 +17,7 @@ public static class PostMail_Pin
     {
         for (;;)
         {
-            if (Game.instance && ZDOMan.instance != null)
+            if (Game.instance && ZDOMan.instance != null && ZNet.instance && ZNet.instance.IsServer())
             {
                 TempZDOs.Clear();
                 int index = 0;
