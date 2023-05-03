@@ -624,7 +624,7 @@ public static class Market_NPC
             switch (type)
             {
                 case NPCType.Marketplace:
-                    if (!string.IsNullOrWhiteSpace(Global_Values._localUserID))
+                    if (!string.IsNullOrWhiteSpace(Global_Values._localUserID) && !ZNet.IsSinglePlayer)
                         Marketplace_UI.Show();
                     break;
                 case NPCType.Info:
