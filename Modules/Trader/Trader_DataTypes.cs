@@ -3,9 +3,11 @@
 public static class Trader_DataTypes
 {
     internal static readonly CustomSyncedValue<Dictionary<string, List<TraderData>>>
-        TraderItemList = new(Marketplace.configSync, "traderItemList", new Dictionary<string, List<TraderData>>());
+        SyncedTraderItemList = new(Marketplace.configSync, "traderItemList", new Dictionary<string, List<TraderData>>());
 
-    
+    internal static readonly Dictionary<string, List<TraderData>> ClientSideItemList = new();
+
+
     public class TraderData : ISerializableParameter
     {
         public bool NeedToKnow;

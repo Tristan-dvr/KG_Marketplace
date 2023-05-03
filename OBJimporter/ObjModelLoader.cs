@@ -25,6 +25,7 @@ public static class ObjModelLoader
             try
             {
                 GameObject obj = new OBJLoader().Load(file);
+                obj.SetActive(false);
                 UnityEngine.Object.DontDestroyOnLoad(obj);
                 string fileName = Path.GetFileNameWithoutExtension(file);
                 _loadedModels.Add(fileName, obj);

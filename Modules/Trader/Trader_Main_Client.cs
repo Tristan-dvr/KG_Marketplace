@@ -6,7 +6,7 @@ public static class Trader_Main_Client
     private static void OnInit()
     {
         Trader_UI.Init();
-        Trader_DataTypes.TraderItemList.ValueChanged += OnTraderUpdate;
+        Trader_DataTypes.SyncedTraderItemList.ValueChanged += OnTraderUpdate;
         Marketplace.Global_Updator += Update;
     }
 
@@ -30,10 +30,12 @@ public static class Trader_Main_Client
         private static void Postfix() => InitTraderItems();
     }
 
-    private static void InitTraderItems()
+    
+    public static void InitTraderItems()
     {
+        Trader_DataTypes.ClientSideItemList.Clear();
         if (!ZNetScene.instance) return;
-        foreach (var kvp in Trader_DataTypes.TraderItemList.Value)
+        foreach (var kvp in Trader_DataTypes.SyncedTraderItemList.Value)
         {
             List<Trader_DataTypes.TraderData> newTraderItems = new List<Trader_DataTypes.TraderData>();
             foreach (Trader_DataTypes.TraderData value in kvp.Value)
@@ -85,9 +87,7 @@ public static class Trader_Main_Client
                     newTraderItems.Add(new Trader_DataTypes.TraderData()
                         { NeedToKnow = value.NeedToKnow, NeededItems = _NeededItems, ResultItems = _ResultItems });
             }
-
-            kvp.Value.Clear();
-            kvp.Value.AddRange(newTraderItems);
+            Trader_DataTypes.ClientSideItemList[kvp.Key] = newTraderItems;
         }
     }
 }

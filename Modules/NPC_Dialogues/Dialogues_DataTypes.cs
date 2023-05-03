@@ -173,6 +173,7 @@ public static class Dialogues_DataTypes
                                     string questName = split[1].ToLower();
                                     Quests_DataTypes.Quest.AcceptQuest(questName.GetStableHashCode(),
                                         handleEvent: false);
+                                    Quests_UIs.AcceptedQuestsUI.CheckQuests();
                                 };
                                 break;
                             case OptionCommand.GiveItem:
@@ -245,6 +246,7 @@ public static class Dialogues_DataTypes
                                     string removeQuestName = split[1].ToLower();
                                     Quests_DataTypes.Quest.RemoveQuestFailed(removeQuestName.GetStableHashCode(),
                                         false);
+                                    Quests_UIs.AcceptedQuestsUI.CheckQuests();
                                 };
                                 break;
                             case OptionCommand.GiveBuff:

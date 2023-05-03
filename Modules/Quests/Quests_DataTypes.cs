@@ -711,11 +711,15 @@ public static class Quests_DataTypes
             Player.m_localPlayer.m_customData[cooldown] = EnvMan.instance.GetCurrentDay().ToString();
             MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
                 $"<color=#00ff00>{Localization.instance.Localize("$mpasn_youfinishedquest")}: <color=#00FFFF>{AllQuests[UID].Name}</color></color>");
-            ZPackage pkg = new();
-            pkg.Write((int)DiscordStuff.Webhooks.Quest);
-            pkg.Write(Player.m_localPlayer?.GetPlayerName() ?? "LocalPlayer");
-            pkg.Write(AllQuests[UID].Name);
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks", pkg);
+            if (ZNet.instance.GetServerPeer() != null)
+            {
+                ZPackage pkg = new();
+                pkg.Write((int)DiscordStuff.Webhooks.Quest);
+                pkg.Write(Player.m_localPlayer?.GetPlayerName() ?? "LocalPlayer");
+                pkg.Write(AllQuests[UID].Name);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks", pkg);
+            }
+        
             HandleQuestEvent(UID, QuestEventCondition.OnCompleteQuest);
         }
 
@@ -1140,6 +1144,7 @@ public static class Quests_DataTypes
                     case QuestEventAction.GiveQuest:
                         string questName = split[0].ToLower();
                         Quest.AcceptQuest(questName.GetStableHashCode(), handleEvent: false);
+                        Quests_UIs.AcceptedQuestsUI.CheckQuests();
                         break;
                     case QuestEventAction.Spawn:
                         string spawnPrefab = split[0];
@@ -1183,6 +1188,7 @@ public static class Quests_DataTypes
                     case QuestEventAction.RemoveQuest:
                         string removeQuestName = split[0].ToLower();
                         Quest.RemoveQuestFailed(removeQuestName.GetStableHashCode(), false);
+                        Quests_UIs.AcceptedQuestsUI.CheckQuests();
                         break;
                     case QuestEventAction.PlaySound:
                         string sound = split[0];

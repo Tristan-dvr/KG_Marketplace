@@ -162,7 +162,7 @@ public static class DistancedUI_UI
             };
             List<string> source = type switch
             {
-                NPCtype_Internal.Trader => Trader_DataTypes.TraderItemList.Value.Keys.ToList(),
+                NPCtype_Internal.Trader => Trader_DataTypes.ClientSideItemList.Keys.ToList(),
                 NPCtype_Internal.Banker => Banker_DataTypes.SyncedBankerProfiles.Value.Keys.ToList(),
                 NPCtype_Internal.Teleporter => Teleporter_DataTypes.TeleporterDataServer.Value.Keys.ToList(),
                 NPCtype_Internal.Gambler => Gambler_DataTypes.GamblerData.Value.Keys.ToList(),

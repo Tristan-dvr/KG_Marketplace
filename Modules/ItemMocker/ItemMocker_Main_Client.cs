@@ -51,6 +51,7 @@ public static class ItemMocker_Main_Client
             {
                 newObj.transform.Find("Cube").gameObject.SetActive(false);
                 var newModel = UnityEngine.Object.Instantiate(model, newObj.transform);
+                newModel.SetActive(true);
                 newModel.name = "attach";
                 newModel.transform.localScale = Vector3.one * mock.Scale;
                 newModel.layer = itemLayer;
