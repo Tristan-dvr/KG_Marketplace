@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.Marketplace_NPC;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Marketplace_Main_Client
 {

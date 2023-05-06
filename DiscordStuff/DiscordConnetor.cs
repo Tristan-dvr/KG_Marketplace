@@ -6,6 +6,7 @@ using Marketplace.Paths;
 
 namespace Marketplace;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Last, "OnInit", 
     new[] { "DiscordSettings.cfg" },
     new[] { "OnDiscordSettingsChange" })]

@@ -1,5 +1,6 @@
 ﻿namespace Marketplace.Modules.ServerInfo;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class ServerInfo_Main_Client
 {

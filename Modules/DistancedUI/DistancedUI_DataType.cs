@@ -20,7 +20,6 @@ public static class DistancedUI_DataType
         public List<string> BankerProfiles = new();
         public void Serialize(ref ZPackage pkg)
         {
-            pkg.Write(isAllowed);
             pkg.Write(EveryoneIsVIP);
             pkg.Write(MarketplaceEnabled);
             pkg.Write(Users.Count);
@@ -67,7 +66,6 @@ public static class DistancedUI_DataType
 
         public void Deserialize(ref ZPackage pkg)
         {
-            isAllowed = pkg.ReadBool();
             EveryoneIsVIP = pkg.ReadBool();
             MarketplaceEnabled = pkg.ReadBool();
             int count = pkg.ReadInt();

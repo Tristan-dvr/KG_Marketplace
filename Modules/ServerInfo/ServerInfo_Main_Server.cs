@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.ServerInfo;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "ServerInfoProfiles.cfg" }, new[] { "OnServerInfoProfileChange" })]
 public static class ServerInfo_Main_Server

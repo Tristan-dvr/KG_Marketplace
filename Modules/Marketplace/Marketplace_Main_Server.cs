@@ -4,6 +4,7 @@ using Marketplace.Paths;
 
 namespace Marketplace.Modules.Marketplace_NPC;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Marketplace_Main_Server
 {

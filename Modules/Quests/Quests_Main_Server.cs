@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.Quests;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "QuestsProfiles.cfg", "QuestsDatabase.cfg", "QuestsEvents.cfg" },
     new[] { "OnQuestsProfilesFileChange", "OnQuestDatabaseFileChange", "OnQuestsEventFileChange" })]

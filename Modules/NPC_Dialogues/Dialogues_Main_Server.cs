@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.NPC_Dialogues;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "NpcDialogues.cfg" },
     new[] { "OnDialoguesChange" })]

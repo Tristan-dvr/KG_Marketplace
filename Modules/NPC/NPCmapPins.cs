@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.NPC;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Last, "OnInit")]
 public static class Market_NPC_MapPins
 {

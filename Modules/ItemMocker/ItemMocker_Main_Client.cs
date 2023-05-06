@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.ItemMocker;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class ItemMocker_Main_Client
 {

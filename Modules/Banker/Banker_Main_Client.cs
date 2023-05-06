@@ -1,5 +1,6 @@
 ﻿namespace Marketplace.Modules.Banker;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Banker_Main_Client
 {

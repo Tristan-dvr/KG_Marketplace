@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.ItemMocker;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "ItemMocker.cfg" },
     new[] { "OnConfigChange" })]

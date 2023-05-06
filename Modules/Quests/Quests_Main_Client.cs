@@ -4,6 +4,7 @@ using UnityEngine.Networking;
 
 namespace Marketplace.Modules.Quests;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Quests_Main_Client
 {

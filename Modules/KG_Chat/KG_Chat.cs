@@ -6,6 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace Marketplace.Modules.KG_Chat;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit")]
 public static class KG_Chat
 {

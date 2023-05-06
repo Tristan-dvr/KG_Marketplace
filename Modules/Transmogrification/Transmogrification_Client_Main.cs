@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.Transmogrification;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Transmogrification_Client_Main
 {

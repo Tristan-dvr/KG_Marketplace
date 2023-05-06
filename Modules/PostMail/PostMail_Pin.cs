@@ -1,5 +1,6 @@
 ﻿namespace Marketplace.Modules.PostMail;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Last, "OnInit")]
 public static class PostMail_Pin
 {

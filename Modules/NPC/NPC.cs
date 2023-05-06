@@ -15,6 +15,7 @@ using Object = UnityEngine.Object;
 
 namespace Marketplace.Modules.NPC;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Market_NPC
 {

@@ -1,8 +1,8 @@
 ﻿using BepInEx.Configuration;
 using Marketplace.Paths;
-
 namespace Marketplace.Modules.Battlepass;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "BattlepassFreeRewards.cfg", "BattlepassPremiumRewards.cfg", "BattlepassConfig.cfg" },
     new[] { "OnBattlepassProfileChange", "OnBattlepassProfileChange", "OnBattlepassProfileChange" })]

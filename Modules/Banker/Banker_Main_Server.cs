@@ -4,6 +4,7 @@ using Marketplace.Modules.Marketplace_NPC;
 
 namespace Marketplace.Modules.Banker;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "BankerProfiles.cfg" },
     new[] { "OnBankerProfilesFileChange" })]
 public static class Banker_Main_Server

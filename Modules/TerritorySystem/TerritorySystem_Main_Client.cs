@@ -4,6 +4,7 @@ using Marketplace.Modules.Teleporter;
 
 namespace Marketplace.Modules.TerritorySystem;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class TerritorySystem_Main_Client
 {

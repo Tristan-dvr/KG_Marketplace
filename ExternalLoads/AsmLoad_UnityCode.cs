@@ -1,5 +1,6 @@
 ﻿namespace Marketplace.AssetStorage;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Init, "OnInit")]
 public static class AsmLoad_UnityCode
 {

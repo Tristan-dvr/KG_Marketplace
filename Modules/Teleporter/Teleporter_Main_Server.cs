@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.Teleporter;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "TeleportHubProfiles.cfg" }, new[] { "OnTeleporterProfilesChange" })]
 public static class Teleporter_Main_Server

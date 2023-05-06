@@ -3,6 +3,7 @@ using Marketplace.Modules.Trader;
 
 namespace API;
 
+[PublicAPI]
 //if you want to use marketplace api just copy-paste this whole class into your code and use its methods
 public static class Marketplace_API
 {

@@ -3,6 +3,7 @@ using Marketplace.Paths;
 
 namespace Marketplace;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "MarketPlace.cfg" },
     new[] { "OnChange" })]
 public static class Global_Values

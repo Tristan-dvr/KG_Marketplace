@@ -3,6 +3,7 @@ using Marketplace.Paths;
 
 namespace Marketplace.Modules.DistancedUI;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "DistancedUI.cfg" }, new[] { "OnConfigChange" })]
 public static class DistanceUI_Main_Server
 {

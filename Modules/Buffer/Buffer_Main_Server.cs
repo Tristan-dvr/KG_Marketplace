@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.Buffer;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "BufferProfiles.cfg", "BufferDatabase.cfg" },
     new[] { "OnBufferProfilesFileChange", "OnBufferProfilesFileChange" })]

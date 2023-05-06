@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.Trader;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "TraderProfiles.cfg" },
     new[] { "OnTraderProfilesFileChange" })]
 public static class Trader_Main_Server

@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using BepInEx.Configuration;
-using JetBrains.Annotations;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace ServerSync;
