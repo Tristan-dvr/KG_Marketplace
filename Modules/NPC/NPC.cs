@@ -930,7 +930,7 @@ public static class Market_NPC
                 znv.m_zdo.Set("KGnpcProfile", profile.ToLower());
 
                 if (string.IsNullOrWhiteSpace(dialogue)) dialogue = "";
-                znv.m_zdo.Set("KGnpcDialogue", dialogue);
+                znv.m_zdo.Set("KGnpcDialogue", dialogue.ToLower());
             }
         }
 

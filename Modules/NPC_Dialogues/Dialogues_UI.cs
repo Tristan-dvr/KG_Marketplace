@@ -175,6 +175,7 @@ public static class Dialogues_UI
 
             HotbarActions[c] = OnClick;
             element.GetComponent<Button>().onClick.AddListener(OnClick);
+            if(c >= 10) break;
         }
 
         ResetFitters();

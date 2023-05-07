@@ -94,8 +94,6 @@ public class Dialogues_Main_Server
 
                         option.Commands = commands.ToArray();
                         option.Conditions = conditions.ToArray();
-                        if (options.Count < 10)
-                            options.Add(option);
                     }
                 }
             }
