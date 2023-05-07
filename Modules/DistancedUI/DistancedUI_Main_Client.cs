@@ -11,10 +11,16 @@ public static class DistancedUI_Main_Client
         Marketplace.Global_Updator += Update;
     }
 
+    [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => OnPremiumSystemUpdator();
+    }
+    
     private static void OnPremiumSystemUpdator()
     {
-        DistancedUI_DataType.CurrentPremiumSystemData.Value.isAllowed =
-            DistancedUI_DataType.CurrentPremiumSystemData.Value.Users.Contains(Global_Values._localUserID) ||
+        DistancedUI_DataType.CurrentPremiumSystemData.Value.isAllowed = DistancedUI_DataType.CurrentPremiumSystemData.Value.Users.Contains(Global_Values._localUserID) ||
                                                                         DistancedUI_DataType.CurrentPremiumSystemData.Value.EveryoneIsVIP;
         Utils.print(
             $"Got Premium System data. Am i premium? : {DistancedUI_DataType.CurrentPremiumSystemData.Value.isAllowed}");
