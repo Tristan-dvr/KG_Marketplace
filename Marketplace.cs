@@ -148,19 +148,16 @@ namespace Marketplace
 
         private static void MarketplaceConfigChanged(object sender, FileSystemEventArgs e)
         {
+            if (e.ChangeType != WatcherChangeTypes.Changed) return;
+            if (!FSW_Lookup.TryGetValue(Path.GetFileName(e.Name), out var action)) return;
             if (!ZNet.instance || !ZNet.instance.IsServer())
             {
-                Utils.print("FSW: Not a server, ignoring", ConsoleColor.Red);
+                Utils.print($"FSW: Not a server, ignoring ({e.Name})", ConsoleColor.Red);
                 return;
-            } 
-            if (e.ChangeType != WatcherChangeTypes.Changed || !ZNetScene.instance) return;
+            }
             if (LastConfigChangeTime > DateTime.Now.AddSeconds(-5)) return;
             LastConfigChangeTime = DateTime.Now;
-            string fileName = Path.GetFileName(e.Name);
-            if (FSW_Lookup.TryGetValue(fileName, out var action))
-            {
-                Utils.DelayedAction(action);
-            }
+            Utils.DelayedAction(action);
         }
     }
 }

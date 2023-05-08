@@ -54,6 +54,7 @@ namespace MagicDoors
         
         private static void OnVoiceRegognize(string text, ConfidenceLevel confidence)
         {
+            if(Recognizer.Status != SpeechSystemStatus.Running) return;
             CurrentCommand += text;
             string limited = CurrentCommand.Length > 20 ? CurrentCommand.Substring(0, 20) : CurrentCommand;
             MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, limited + "...");

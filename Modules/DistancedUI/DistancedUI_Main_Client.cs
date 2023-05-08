@@ -22,8 +22,6 @@ public static class DistancedUI_Main_Client
     {
         DistancedUI_DataType.CurrentPremiumSystemData.Value.isAllowed = DistancedUI_DataType.CurrentPremiumSystemData.Value.Users.Contains(Global_Values._localUserID) ||
                                                                         DistancedUI_DataType.CurrentPremiumSystemData.Value.EveryoneIsVIP;
-        Utils.print(
-            $"Got Premium System data. Am i premium? : {DistancedUI_DataType.CurrentPremiumSystemData.Value.isAllowed}");
         if (DistancedUI_DataType.CurrentPremiumSystemData.Value.isAllowed)
         {
             DistancedUI_UI.Show(DistancedUI_DataType.CurrentPremiumSystemData.Value.MarketplaceEnabled);

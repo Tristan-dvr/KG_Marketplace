@@ -67,6 +67,7 @@ public static class Banker_Main_Server
         while (true)
         {
             yield return new WaitForSecondsRealtime(Global_Values.BankerIncomeTime * 3600);
+            if (!ZNet.instance || !ZNet.instance.IsServer()) continue;
             Utils.print("Adding Banker Income");
             Task task = Task.Run(() =>
             {
@@ -87,6 +88,8 @@ public static class Banker_Main_Server
                                 double toAdd = Math.Ceiling(val * multiplier);
                                 if (val + toAdd > int.MaxValue)
                                     val = int.MaxValue;
+                                else
+                                    val = (int)(toAdd + val);
                                 BankerServerSideData[id][item] = val;
                             }
                         }
@@ -129,7 +132,7 @@ public static class Banker_Main_Server
     {
         private static void Postfix(ZRpc rpc)
         {
-            if(!ZNet.instance.IsServer()) return;
+            if (!ZNet.instance.IsServer()) return;
             if (!BankerTimeStamp.ContainsKey(rpc.m_socket.GetHostName()))
                 BankerTimeStamp[rpc.m_socket.GetHostName()] = new Dictionary<int, DateTime>();
             ZNetPeer peer = ZNet.instance.GetPeer(rpc);
@@ -144,7 +147,7 @@ public static class Banker_Main_Server
     {
         private static void Postfix()
         {
-            if(!ZNet.instance.IsServer()) return;
+            if (!ZNet.instance.IsServer()) return;
             ZRoutedRpc.instance.Register("KGmarket BankerDeposit",
                 new Action<long, string, int>(MethodBankerDeposit));
             ZRoutedRpc.instance.Register("KGmarket BankerWithdraw",

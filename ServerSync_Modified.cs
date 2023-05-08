@@ -62,7 +62,7 @@ public abstract class CustomSyncedValueBase
         set
         {
             boxedValue = value;
-            if (Game.instance && Game.instance.m_shuttingDown) return;
+            if (!Game.instance || Game.instance.m_shuttingDown) return;
             ValueChanged?.Invoke();
         }
     }
