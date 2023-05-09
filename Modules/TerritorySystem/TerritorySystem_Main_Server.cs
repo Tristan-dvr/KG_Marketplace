@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.TerritorySystem;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "TerritoryDatabase.cfg" },
     new[] { "OnTerritoryConfigChange" })]
@@ -187,7 +188,7 @@ public static class TerritorySystem_Main_Server
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Error loading zone line {i + 1} : {ex}", ConsoleColor.Red);
+                    Utils.print($"Error loading zone profile {splitProfile} : {ex}", ConsoleColor.Red);
                 }
             }
         }

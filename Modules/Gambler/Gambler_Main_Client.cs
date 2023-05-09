@@ -1,5 +1,6 @@
 ﻿namespace Marketplace.Modules.Gambler;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Gambler_Main_Client
 {
@@ -25,10 +26,18 @@ public static class Gambler_Main_Client
         Gambler_UI.Hide();
         Menu.instance.OnClose();
     }
+    
+    [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => GamblerInit();
+    }
 
     public static readonly Dictionary<string, Gambler_DataTypes.Item> RequiredItem = new();
     private static void GamblerInit()
     {
+        if(!ZNetScene.instance) return;
         RequiredItem.Clear();
         foreach (KeyValuePair<string, Gambler_DataTypes.BigData> item in Gambler_DataTypes.GamblerData.Value)
         {

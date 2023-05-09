@@ -57,6 +57,7 @@ Paypal: war3spells@gmail.com
 | 8.3.2       | Quest descriptions now may have \n as new line<br/>Territory minimap text fix<br/>Fixed NPC save/load UI problems<br/>Fixed Teleporter map names showup                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 8.3.3       | Added Groups API for Kill type quests                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 8.4.0       | Player Territories removed. Please do not install this version until you replace Player Territories module on something else (Azumatt wards / e.t.c) (TerritoryDatabase is same and working, just not the players one)<br/>Added KGchat as part of marketplace. Its enabled by default but you can turn it off in Main config on serverside. You can replace KGchat emojis in BepInEx/Config/MarketplaceEmojis. You will find spritesheet_original.png there, change pics on what you need and rename it to spritesheet.png<br/>Added 2 new fields to fashion UI: Periodic Sound + Periodic Sound Time<br/>Added new quest event: NpcText<br/>Optimized mod by rewriting it almost from scratch. Now mod is open-source, check: https://github.com/war3i4i/Marketplace for code<br/>Added API for territories so other mods may use it (check github)<br/>NPC's now won't show up in hammer menu if Debug Mode is turned off<br/><br/>Transmogrification system access has changed (now transmogrification is a separated DLL). If you bought Transmog access before this patch please contact me in discord KG#7777 so i can send you mod to enable Transmog         |
+| 8.5.0       | New system added: NPC Dialogue (guide soon)<br/>New system added: Item Mocking (guide soon)<br/>Fixed banker multiplier bug<br/>Fixed KGchat text overflow                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 </details>
 
 <span style="color: bisque;">
@@ -74,6 +75,8 @@ Now you can add your own localization. For that download file: <a href="Marketpl
 1) https://youtu.be/5fR_9Qygkro (part one)
 2) https://youtu.be/BthPUGOeaeA (part two)
 3) https://youtu.be/hUU_bPCwFeE (part three)
+4) https://youtu.be/ZgoeYVpEcI4 (part four)
+5) https://youtu.be/xdj2CccUYhk (part five)
 
 </p>
 </details>
@@ -357,10 +360,10 @@ Here's the quest structure:
 QuestType
 Name
 Description
-Quest Target Prefab , Amount, Min Level (min level works only on Kill quest in order to set minimum level or target you need to kill)
-QuestRewardType: Item/Skill/Pet: prefab, Amount, Level
+Quest Target Prefab , Amount, Min Level (min level works only on Kill or Collect quest in order to set minimum level or target you need to kill)
+QuestRewardType: prefab, Amount, Level
 In-Game Days Cooldown
-QuestRequirementType: Skill/OtherQuest/GlobalKey: Name, MinLevel (only use with Skill requirement)
+QuestRequirementType: Prefab, MinLevel (only use with Skill requirement)
 ```
 
 <span style="color:aqua;"> NOTE: If you want quest to be able to autocomplete (no need to speak again with npc and press "Complete" button after score is 100%), then you can write [QuestID=autocomplete]
@@ -849,18 +852,18 @@ None
 ^ Will create a circular zone at X 100 and Z 300 with Radius 500 and color RED and custom flags.
 
 
-Also, if you will have multiple areas with similar names you can put @1, @2 behind the name to differentiate them.
+You can write @Number after zone id to change its priority, so you can have one zone inside another. For example:
 
 [Trader@1]   
 Circle   
--4784, 3967, 30   
+0,0, 300   
 138, 43, 226, false   
 NoBuild, NoBuildDamage, NoPickaxe, ForceBiome = 4, PeriodicHealALL = 2, NoMonsters, NoDeathPenalty, InfiniteFuel, NoStructureSupport, NoInteractCraftingStation, NoInteractItemStands, NoAttack, NoInteractItems   
 76543210123456789, 7656789876543211,
 
-[Trader@2]   
+[Trader two@2]   
 Square   
-784, -588, 20   
+0,0,100   
 238, 99, 101, false   
 NoBuild, NoBuildDamage, NoPickaxe, ForceBiome = 4, PeriodicHealALL = 2, NoMonsters, NoDeathPenalty, InfiniteFuel, NoStructureSupport, NoInteractCraftingStation, NoInteractItemStands, NoAttack, NoInteractItems   
 76543210123456789, 7656789876543211,

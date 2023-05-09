@@ -158,7 +158,7 @@ public static class Marketplace_UI
         UI.SetActive(false);
         Marketplace_Main_Client.OnUpdateCurrency += ResetCurrency;
 
-        JC_Api = new()
+        JC_Api = new List<Transform>
         {
             global::Utils.FindChild(SELLTAB, "JC_API"),
             global::Utils.FindChild(BUYTAB, "JC_API")
@@ -196,7 +196,7 @@ public static class Marketplace_UI
         List<ItemDrop.ItemData> list = player?.m_inventory?.GetAllItems();
         if (list == null || list.Count == 0) return data;
         foreach (ItemDrop.ItemData item in list)
-            if (!Global_Values._container.Value._blockedPrefabsServer.Replace(" ","").Split(',').Contains(item.m_dropPrefab.name.ToLower()))
+            if (!Global_Values._container.Value._blockedPrefabsServer.Replace(" ","").Split(',').Contains(item.m_dropPrefab.name))
             {
                 Marketplace_DataTypes.ItemData_ItemCategory best = ChooseBestCategory(item);
                 string displayName = item.m_shared.m_name;

@@ -37,6 +37,7 @@ internal static class Market_Logger
     {
         private static void Postfix()
         {
+            if(!ZNet.instance.IsServer()) return;
             ZRoutedRpc.instance.Register("LogOnServer_mpasn",
                 new Action<long, int, string>((_, type, message) =>
                 {

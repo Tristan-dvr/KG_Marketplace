@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.Quests;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "QuestsProfiles.cfg", "QuestsDatabase.cfg", "QuestsEvents.cfg" },
     new[] { "OnQuestsProfilesFileChange", "OnQuestDatabaseFileChange", "OnQuestsEventFileChange" })]
@@ -66,9 +67,11 @@ public static class Quests_Main_Server
         }
         Quests_DataTypes.SyncedQuestProfiles.Update();
     }
-    
+
+    private static int CurrentRevision;
     private static void ReadQuestDatabase(List<string> profiles)
     {
+        CurrentRevision = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         if (profiles.Count == 0) return;
         Quests_DataTypes.SyncedQuestData.Value.Clear();
         string dbProfile = null;
@@ -96,7 +99,6 @@ public static class Quests_Main_Server
                 if (dbProfile == null) continue;
                 try
                 {
-                    if (i + 5 > profiles.Count) break;
                     int UID = dbProfile.GetStableHashCode();
                     string typeString = profiles[i];
                     string name = profiles[i + 1];
@@ -134,6 +136,7 @@ public static class Quests_Main_Server
                         if (!(Enum.TryParse(rwdTypeCheck[0], true,
                                 out rewardTypes[r])))
                         {
+                            Utils.print($"Failed to parse reward type {rewardsArray[r]} in quest {name}. Skipping quest");
                             goto GoNextLabel;
                         }
 
@@ -251,7 +254,8 @@ public static class Quests_Main_Server
                         QuestRequirementPrefab = QuestRestriction,
                         QuestRequirementLevel = QuestRestrictionLevel,
                         SpecialTag = specialQuestTag,
-                        PreviewImage = image
+                        PreviewImage = image,
+                        _revision = CurrentRevision
                     };
                     if (!Quests_DataTypes.SyncedQuestData.Value.ContainsKey(UID))
                         Quests_DataTypes.SyncedQuestData.Value.Add(UID, quest);
@@ -290,7 +294,7 @@ public static class Quests_Main_Server
             };
             if (!result)
             {
-                Utils.print($"Arguments for Quest: {QuestID} => action {action} are invalid: {args}", ConsoleColor.Red);
+                Utils.print($"Arguments for Quest Event: {QuestID} => action {action} are invalid: {args}", ConsoleColor.Red);
             }
 
             return result;

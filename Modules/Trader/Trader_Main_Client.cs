@@ -1,12 +1,13 @@
 ﻿namespace Marketplace.Modules.Trader;
 
-[Market_Autoload(Market_Autoload.Type.Client,Market_Autoload.Priority.Normal, "OnInit")]
+[UsedImplicitly]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Trader_Main_Client
 {
     private static void OnInit()
     {
         Trader_UI.Init();
-        Trader_DataTypes.TraderItemList.ValueChanged += OnTraderUpdate;
+        Trader_DataTypes.SyncedTraderItemList.ValueChanged += OnTraderUpdate;
         Marketplace.Global_Updator += Update;
     }
 
@@ -16,16 +17,26 @@ public static class Trader_Main_Client
         Trader_UI.Hide();
         Menu.instance.OnClose();
     }
-    
+
     private static void OnTraderUpdate()
     {
         InitTraderItems();
         Trader_UI.Reload();
     }
-    
-    private static void InitTraderItems()
+
+    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
     {
-        foreach (var kvp in Trader_DataTypes.TraderItemList.Value)
+        private static void Postfix() => InitTraderItems();
+    }
+
+    
+    public static void InitTraderItems()
+    {
+        Trader_DataTypes.ClientSideItemList.Clear();
+        if (!ZNetScene.instance) return;
+        foreach (var kvp in Trader_DataTypes.SyncedTraderItemList.Value)
         {
             List<Trader_DataTypes.TraderData> newTraderItems = new List<Trader_DataTypes.TraderData>();
             foreach (Trader_DataTypes.TraderData value in kvp.Value)
@@ -63,7 +74,7 @@ public static class Trader_Main_Client
                     {
                         Character c = resultItemPrefab.GetComponent<Character>();
                         PhotoManager.__instance.MakeSprite(resultItemPrefab, 0.6f, 0.25f, RI.Level);
-                        RI.SetIcon( PhotoManager.__instance.GetSprite(resultItemPrefab.name,
+                        RI.SetIcon(PhotoManager.__instance.GetSprite(resultItemPrefab.name,
                             AssetStorage.AssetStorage.PlaceholderMonsterIcon, RI.Level));
                         RI.ItemName = Localization.instance.Localize(c.m_name ?? "Default");
                         RI.IsMonster = true;
@@ -77,9 +88,7 @@ public static class Trader_Main_Client
                     newTraderItems.Add(new Trader_DataTypes.TraderData()
                         { NeedToKnow = value.NeedToKnow, NeededItems = _NeededItems, ResultItems = _ResultItems });
             }
-
-            kvp.Value.Clear();
-            kvp.Value.AddRange(newTraderItems);
+            Trader_DataTypes.ClientSideItemList[kvp.Key] = newTraderItems;
         }
     }
 }

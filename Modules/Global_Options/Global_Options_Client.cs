@@ -2,6 +2,7 @@
 
 namespace Marketplace;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client,Market_Autoload.Priority.Normal, "OnInit")]
 public static class Global_Values_Client
 {

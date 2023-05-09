@@ -127,7 +127,7 @@ public static class Buffer_UI
         {
             string group = buff.BuffGroup;
             if (string.IsNullOrEmpty(group)) group = "No Group";
-            if (!tempDictionary.ContainsKey(group)) tempDictionary[group] = new();
+            if (!tempDictionary.ContainsKey(group)) tempDictionary[group] = new List<Buffer_DataTypes.BufferBuffData>();
             tempDictionary[group].Add(buff);
         }
 

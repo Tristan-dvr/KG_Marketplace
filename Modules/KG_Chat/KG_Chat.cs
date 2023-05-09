@@ -6,6 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace Marketplace.Modules.KG_Chat;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit")]
 public static class KG_Chat
 {
@@ -149,7 +150,7 @@ public static class KG_Chat
             Markers[2] = dragRect.transform.Find("LeftBottom");
             Markers[3] = dragRect.transform.Find("RightBottom");
 
-            if (CheckMarkersOutsideScreen(new Vector2(Screen.width, Screen.height) ))
+            if (CheckMarkersOutsideScreen(new Vector2(Screen.width, Screen.height)))
                 Default();
         }
 
@@ -183,9 +184,16 @@ public static class KG_Chat
         }
     }
 
+    [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => ApplyKGChat(); 
+    }
+
     private static void ApplyKGChat()
     {
-        if (!Global_Values._container.Value._enableKGChat || kgChat) return;
+        if (!Global_Values._container.Value._enableKGChat || kgChat || !Chat.instance) return;
         Utils.print($"Switching to KG Chat", ConsoleColor.Cyan);
         ZRoutedRpc.instance.m_functions.Remove("ChatMessage".GetStableHashCode());
         ZRoutedRpc.instance.m_functions.Remove("RPC_TeleportPlayer".GetStableHashCode());
@@ -267,6 +275,7 @@ public static class KG_Chat
                 __instance.m_input.placeholder.GetComponent<Text>().font = origFont2;
                 if (__instance.m_search)
                     __instance.m_search.font = origFont2;
+                __instance.m_input.gameObject.SetActive(false);
             }
         }
     }

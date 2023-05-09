@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.NPC_Dialogues;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "NpcDialogues.cfg" },
     new[] { "OnDialoguesChange" })]
@@ -93,8 +94,6 @@ public class Dialogues_Main_Server
 
                         option.Commands = commands.ToArray();
                         option.Conditions = conditions.ToArray();
-                        if (options.Count < 10)
-                            options.Add(option);
                     }
                 }
             }

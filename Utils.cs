@@ -2,22 +2,20 @@
 using System.Security.Cryptography;
 using System.Text;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using Marketplace.Modules.Buffer;
 using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.TerritorySystem;
 using Marketplace.Modules.Trader;
-using UnityEngine.Rendering;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace Marketplace;
 
 public static class Utils
 {
-    private static bool? _internal_isServer;
-    internal static bool IsServer => _internal_isServer ??= SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
     public static bool IsDebug => Player.m_debugMode;
-    
+
     public static void print(object obj, ConsoleColor color = ConsoleColor.DarkGreen)
     {
         if (Application.platform == RuntimePlatform.WindowsPlayer)
@@ -25,13 +23,16 @@ public static class Utils
             ConsoleManager.SetConsoleColor(color);
             ConsoleManager.StandardOutStream.WriteLine($"[{DateTime.Now}] [kg.Marketplace] {obj}");
             ConsoleManager.SetConsoleColor(ConsoleColor.White);
+            foreach (ILogListener logListener in BepInEx.Logging.Logger.Listeners)
+                if (logListener is DiskLogListener { LogWriter: not null } bepinexlog)
+                    bepinexlog.LogWriter.WriteLine($"[{DateTime.Now}] [kg.Marketplace] {obj}");
         }
         else
         {
             MonoBehaviour.print($"[{DateTime.Now}] [kg.Marketplace] " + obj);
         }
     }
-    
+
     public static void arr_print(IEnumerable arr, ConsoleColor color = ConsoleColor.DarkGreen)
     {
         if (Application.platform == RuntimePlatform.WindowsPlayer)
@@ -43,6 +44,7 @@ public static class Utils
             {
                 ConsoleManager.StandardOutStream.WriteLine($"[{c++}] {item}");
             }
+
             ConsoleManager.SetConsoleColor(ConsoleColor.White);
         }
         else
@@ -63,13 +65,13 @@ public static class Utils
         yield return new WaitForSecondsRealtime(1.5f);
         action?.Invoke();
     }
-    
+
     private static IEnumerator DelayedActionRoutine(Action action)
     {
         yield return new WaitForSecondsRealtime(1.5f);
         action?.Invoke();
     }
-    
+
     public static void DelayedAction(Action action)
     {
         if (action != null)
@@ -82,7 +84,7 @@ public static class Utils
     {
         Marketplace._thistype.StartCoroutine(DelayReloadConfigFile(file, action));
     }
-    
+
     public static void CopyComponent<T>(T original, GameObject destination) where T : Component
     {
         Type type = original.GetType();
@@ -108,9 +110,11 @@ public static class Utils
     public static void CustomFindFloor(Vector3 p, out float height)
     {
         height = Physics.SphereCast(p + Vector3.up * 1f, 0.05f, Vector3.down, out RaycastHit hitInfo, 100f,
-            ZoneSystem.instance.m_solidRayMask) ? hitInfo.point.y : 0.0f;
+            ZoneSystem.instance.m_solidRayMask)
+            ? hitInfo.point.y
+            : 0.0f;
     }
-    
+
     public static string RemoveRichTextDynamicTag(string input, string tag)
     {
         while (true)
@@ -154,7 +158,7 @@ public static class Utils
         if (split.Length == 0) return "";
         return split[0];
     }
-    
+
     public static int CustomCountItems(string prefab, int level)
     {
         int num = 0;
@@ -169,7 +173,25 @@ public static class Utils
         return num;
     }
 
-    private static int CustomCountItemsNoLevel(string prefab)
+    public static Minimap.PinData GetCustomPin(Minimap.PinType type, Vector3 pos, float radius)
+    {
+        Minimap.PinData pinData = null;
+        float num = 999999f;
+        foreach (Minimap.PinData pinData2 in Minimap.instance.m_pins)
+            if (pinData2.m_type == type)
+            {
+                float num2 = global::Utils.DistanceXZ(pos, pinData2.m_pos);
+                if (num2 < radius && (num2 < num || pinData == null))
+                {
+                    pinData = pinData2;
+                    num = num2;
+                }
+            }
+
+        return pinData;
+    }
+
+    public static int CustomCountItemsNoLevel(string prefab)
     {
         int num = 0;
         foreach (ItemDrop.ItemData itemData in Player.m_localPlayer.m_inventory.m_inventory)
@@ -200,8 +222,8 @@ public static class Utils
         Player.m_localPlayer.m_inventory.m_inventory.RemoveAll(x => x.m_stack <= 0);
         Player.m_localPlayer.m_inventory.Changed();
     }
-    
-     public static void DecryptOldData(this string path)
+
+    public static void DecryptOldData(this string path)
     {
         if (File.Exists(path)) return;
         File.Create(path).Dispose();
@@ -220,6 +242,7 @@ public static class Utils
             case 0:
                 return string.Format("{0:n" + decimalPlaces + "} bytes", 0);
         }
+
         int mag = (int)Math.Log(value, 1024);
         decimal adjustedSize = (decimal)value / (1L << (mag * 10));
         if (Math.Round(adjustedSize, decimalPlaces) < 1000)
@@ -266,7 +289,7 @@ public static class Utils
         baseBytes = CreateEnc().CreateDecryptor().TransformFinalBlock(baseBytes, 0, baseBytes.Length);
         return Encoding.UTF8.GetString(baseBytes);
     }
-    
+
     private static Aes CreateEnc()
     {
         Aes myAes = Aes.Create();
@@ -290,7 +313,7 @@ public static class Utils
             pkg.m_writer.Write(compress);
         }
     }
-    
+
     public static void InstantiateItem(GameObject main, int count, int rewardLevel)
     {
         Player p = Player.m_localPlayer;
@@ -342,6 +365,7 @@ public static class Utils
             current = distance;
             result = npc;
         }
+
         return result;
     }
 
@@ -352,13 +376,15 @@ public static class Utils
         {
             return img;
         }
+
         if (ZNetScene.instance.GetPrefab(name) is { } prefab && prefab.GetComponent<ItemDrop>() is { } item)
         {
             return item.m_itemData.GetIcon();
         }
+
         return null;
     }
-    
+
     public static float GetPlayerSkillLevelCustom(string skillName)
     {
         if (!Enum.TryParse(skillName, out Skills.SkillType skill))
@@ -376,25 +402,25 @@ public static class Utils
 
         return Player.m_localPlayer.m_skills.GetSkillLevel(skill);
     }
-    
+
     public static bool HasFlagFast(this Quests_DataTypes.SpecialQuestTag value,
         Quests_DataTypes.SpecialQuestTag flag)
     {
         return (value & flag) != 0;
     }
-    
+
     public static List<Trader_DataTypes.TraderItem> ToList(
         this Trader_DataTypes.TraderItem item)
     {
-        return new() { item };
+        return new List<Trader_DataTypes.TraderItem> { item };
     }
-    
+
     public static bool HasFlagFast(this Buffer_DataTypes.WhatToModify flag,
         Buffer_DataTypes.WhatToModify other)
     {
         return (flag & other) != 0;
     }
-    
+
     public static bool HasFlagFast(this TerritorySystem_DataTypes.AdditionalTerritoryFlags flag,
         TerritorySystem_DataTypes.AdditionalTerritoryFlags other)
     {
@@ -411,5 +437,5 @@ public static class Utils
     {
         return string.IsNullOrEmpty(text) ? string.Empty : Localization.instance.Localize(text);
     }
-  
+
 }

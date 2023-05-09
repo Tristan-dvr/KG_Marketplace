@@ -4,6 +4,7 @@ using Marketplace.Modules.Teleporter;
 
 namespace Marketplace.Modules.TerritorySystem;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class TerritorySystem_Main_Client
 {
@@ -375,8 +376,7 @@ public static class TerritorySystem_Main_Client
                                 mapColors[idx] = color;
                                 if (externalWater)
                                 {
-                                    heightColors[idx] =
-                                        new Color(Mathf.Clamp(heightColors[idx].r, 29f, 89), 0, 0);
+                                    heightColors[idx] = new Color(Mathf.Clamp(heightColors[idx].r, 29f, 89), 0, 0);
                                 }
                             }
                         }
@@ -883,8 +883,6 @@ public static class TerritorySystem_Main_Client
     {
         private static void Postfix(float wx, float wy, ref float __result)
         {
-            Stopwatch localStopwatch = new Stopwatch();
-            localStopwatch.Start();
             if (PatchMinimapCircles.IsGeneratingMap) return;
             Vector2 vec = new Vector2(wx, wy);
 
@@ -917,8 +915,6 @@ public static class TerritorySystem_Main_Client
                     //break;
                 }
             }
-
-            localStopwatch.Stop();
         }
     }
 

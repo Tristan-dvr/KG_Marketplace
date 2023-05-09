@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 
 namespace Marketplace.AssetStorage;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.First, "OnInit")]
 public static class AssetStorage
 {
@@ -46,7 +47,7 @@ public static class AssetStorage
     private static void OnInit()
     {
         asset = GetAssetBundle("kgmarketplacemod");
-        if (Utils.IsServer) return;
+        if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
         TypeClip = asset.LoadAsset<AudioClip>("TypeKeySoundMP");
         NullSprite = asset.LoadAsset<Sprite>("NullSpriteMP");
         OpenUI_Sound = asset.LoadAsset<AudioClip>("UI_InventoryShow_MPASN");

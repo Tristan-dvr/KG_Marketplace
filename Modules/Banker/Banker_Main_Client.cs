@@ -1,5 +1,6 @@
 ﻿namespace Marketplace.Modules.Banker;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Banker_Main_Client
 {
@@ -29,14 +30,15 @@ public static class Banker_Main_Client
     {
         private static void Postfix()
         {
-            ZRoutedRpc.instance.Register("KGmarket GetBankerClientData", new Action<long, string>(GetBankerClientData));
+            ZRoutedRpc.instance.Register("KGmarket GetBankerClientData", new Action<long, ZPackage>(GetBankerClientData));
         }
     }
     
-    private static void GetBankerClientData(long sender, string data)
+    private static void GetBankerClientData(long sender, ZPackage pkg)
     {
+        pkg.Decompress();
         Banker_DataTypes.BankerClientData.Clear();
-        Banker_DataTypes.BankerClientData.AddRange(JSON.ToObject<Dictionary<int, int>>(data));
+        Banker_DataTypes.BankerClientData.AddRange(JSON.ToObject<Dictionary<int, int>>(pkg.ReadString()));
         Banker_UI.Reload();
     }
     

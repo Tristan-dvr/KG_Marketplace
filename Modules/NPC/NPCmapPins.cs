@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.NPC;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Last, "OnInit")]
 public static class Market_NPC_MapPins
 {
@@ -14,33 +15,35 @@ public static class Market_NPC_MapPins
     // ReSharper disable once UnusedMember.Global
     private static void OnInit()
     {
-        Marketplace._thistype.StartCoroutine(Utils.IsServer ? SendNPCsToClients() : UpdateNPCpins());
+        Marketplace._thistype.StartCoroutine(SendNPCsToClients());
+        Marketplace._thistype.StartCoroutine(UpdateNPCpins());
     }
-    
+
     private static IEnumerator UpdateNPCpins()
     {
         while (true)
-        { 
+        {
             if (Player.m_localPlayer && ZDOMan.instance != null && Minimap.instance)
             {
                 foreach (Minimap.PinData obj in TempNPCpins) Minimap.instance.RemovePin(obj);
                 TempNPCpins.Clear();
-                List<ZDO> AllNPCs = new(); 
+                List<ZDO> AllNPCs = new();
                 int index = 0;
-                while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName, AllNPCs, ref index)) 
+                while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName, AllNPCs, ref index))
                 {
                     if (!Player.m_localPlayer || ZDOMan.instance == null || !Minimap.instance) break;
                     yield return null;
-                } 
-                foreach (ZDO zdo in AllNPCs) 
+                }
+
+                foreach (ZDO zdo in AllNPCs)
                 {
-                    if(!zdo.IsValid()) continue;
+                    if (!zdo.IsValid()) continue;
                     string name = zdo.GetString("KGnpcNameOverride");
                     int type = zdo.GetInt("KGmarketNPC", (int)Market_NPC.NPCType.None);
                     bool questTarget = Quests_DataTypes.Quest.IsQuestTarget(name);
                     if (string.IsNullOrWhiteSpace(name))
                     {
-                        name = Localization.instance.Localize("$"+(Market_NPC.NPCType)type);
+                        name = Localization.instance.Localize("$" + (Market_NPC.NPCType)type);
                     }
 
                     Minimap.PinData pinData = new Minimap.PinData
@@ -48,21 +51,23 @@ public static class Market_NPC_MapPins
                         m_type = PINTYPENPC,
                         m_name = Utils.RichTextFormatting(name),
                         m_pos = zdo.GetPosition(),
-                    }; 
+                    };
                     if (!string.IsNullOrEmpty(pinData.m_name))
                     {
                         pinData.m_NamePinData = new Minimap.PinNameData(pinData);
                     }
+
                     Sprite icon = AssetStorage.AssetStorage.PlaceholderGamblerIcon;
-                    
+
                     if (questTarget)
                     {
-                        if (!QuestCompleteIcon) QuestCompleteIcon = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("questcomplete");
-                        icon = QuestCompleteIcon; 
-                        pinData.m_animate = true; 
+                        if (!QuestCompleteIcon)
+                            QuestCompleteIcon = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("questcomplete");
+                        icon = QuestCompleteIcon;
+                        pinData.m_animate = true;
                         pinData.m_doubleSize = true;
                     }
-                    else 
+                    else
                     {
                         string[] split = name.Split(new[] { "<icon>" }, StringSplitOptions.RemoveEmptyEntries);
                         if (split.Length == 2)
@@ -72,9 +77,9 @@ public static class Market_NPC_MapPins
                             if (AssetStorage.AssetStorage.GlobalCachedSprites.ContainsKey(split[1]))
                             {
                                 icon = AssetStorage.AssetStorage.GlobalCachedSprites[split[1]];
-                            } 
-                            
-                            if(!prefab) goto GOTOLABEL;
+                            }
+
+                            if (!prefab) goto GOTOLABEL;
                             if (prefab.GetComponent<ItemDrop>())
                             {
                                 icon = prefab.GetComponent<ItemDrop>().m_itemData.GetIcon();
@@ -82,10 +87,12 @@ public static class Market_NPC_MapPins
                             else if (prefab.GetComponent<Character>())
                             {
                                 PhotoManager.__instance.MakeSprite(prefab, 0.6f, 0.25f);
-                                icon =  PhotoManager.__instance.GetSprite(prefab.name, AssetStorage.AssetStorage.PlaceholderMonsterIcon, 1);
+                                icon = PhotoManager.__instance.GetSprite(prefab.name,
+                                    AssetStorage.AssetStorage.PlaceholderMonsterIcon, 1);
                             }
                         }
                     }
+
                     GOTOLABEL:
                     pinData.m_icon = icon;
                     pinData.m_save = false;
@@ -99,6 +106,7 @@ public static class Market_NPC_MapPins
                     Minimap.instance.m_pins.Add(p);
                 }
             }
+
             yield return new WaitForSecondsRealtime(10f);
         }
     }
@@ -107,7 +115,7 @@ public static class Market_NPC_MapPins
     {
         for (;;)
         {
-            if (Game.instance && ZDOMan.instance != null)
+            if (Game.instance && ZDOMan.instance != null && ZNet.instance && ZNet.instance.IsServer())
             {
                 TempNPCList.Clear();
                 int index = 0;
@@ -115,11 +123,13 @@ public static class Market_NPC_MapPins
                 {
                     yield return null;
                 }
+
                 foreach (ZDO zdo in TempNPCList)
                 {
                     ZDOMan.instance.ForceSendZDO(zdo.m_uid);
                 }
             }
+
             yield return new WaitForSeconds(10f);
         }
     }

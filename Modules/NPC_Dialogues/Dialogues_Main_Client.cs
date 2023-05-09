@@ -1,7 +1,6 @@
-﻿using Marketplace.Modules.Quests;
+﻿namespace Marketplace.Modules.NPC_Dialogues;
 
-namespace Marketplace.Modules.NPC_Dialogues;
-
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Dialogues_Main_Client
 {
@@ -19,15 +18,16 @@ public static class Dialogues_Main_Client
         Menu.instance.OnClose();
     }
     
+    [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => InitDialogues();
+    }
+    
     private static void InitDialogues()
     {
-        ZPackage pkg = new();
-        pkg.Write(JSON.ToJSON(Dialogues_DataTypes.SyncedDialoguesData.Value));
-        int size = pkg.Size();
-        pkg.Compress();
-        Utils.print($"Compressed  {size} bytes to {pkg.Size()} bytes");
-        
-        
+        if(!ZNetScene.instance) return;
         Dialogues_DataTypes.ClientReadyDialogues.Clear();
         foreach (Dialogues_DataTypes.RawDialogue dialogue in Dialogues_DataTypes.SyncedDialoguesData.Value)
         {

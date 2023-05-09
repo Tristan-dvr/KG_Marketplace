@@ -1,5 +1,6 @@
 ﻿namespace Marketplace.Modules.Buffer;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Buffer_Main_Client
 {
@@ -20,9 +21,17 @@ public static class Buffer_Main_Client
             Menu.instance.OnClose();
         }
     }
+    
+    [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => OnBufferUpdate();
+    }
 
     private static void OnBufferUpdate()
     {
+        if(!ZNetScene.instance) return;
         Buffer_DataTypes.ALLBufferProfiles.Clear();
         foreach (Buffer_DataTypes.BufferBuffData buff in Buffer_DataTypes.AllCustomBuffs)
         {
@@ -34,7 +43,7 @@ public static class Buffer_Main_Client
         {
             foreach (KeyValuePair<string, string> kvp in Buffer_DataTypes.BufferProfiles.Value)
             {
-                Buffer_DataTypes.ALLBufferProfiles.Add(kvp.Key, new());
+                Buffer_DataTypes.ALLBufferProfiles.Add(kvp.Key, new List<Buffer_DataTypes.BufferBuffData>());
                 foreach (string split in kvp.Value.Split(','))
                 {
                     if (string.IsNullOrEmpty(split)) continue;

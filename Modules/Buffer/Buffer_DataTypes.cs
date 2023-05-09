@@ -3,9 +3,9 @@
 public static class Buffer_DataTypes
 {
     internal static readonly CustomSyncedValue<Dictionary<string, string>> BufferProfiles =
-        new(Marketplace.configSync, "bufferProfiles", new());
+        new(Marketplace.configSync, "bufferProfiles", new Dictionary<string, string>());
     internal static readonly CustomSyncedValue<List<BufferBuffData>> BufferBuffs =
-        new(Marketplace.configSync, "bufferBuffs", new());
+        new(Marketplace.configSync, "bufferBuffs", new List<BufferBuffData>());
 
     public static readonly List<BufferBuffData> AllCustomBuffs = new();
     public static readonly Dictionary<string, List<BufferBuffData>> ALLBufferProfiles = new();

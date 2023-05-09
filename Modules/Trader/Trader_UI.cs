@@ -119,15 +119,15 @@ public static class Trader_UI
 
     private static void SortList()
     {
-        if (!Trader_DataTypes.TraderItemList.Value.ContainsKey(CurrentProfile)) return;
+        if (!Trader_DataTypes.ClientSideItemList.ContainsKey(CurrentProfile)) return;
         string search = SearchInput.text.ToLower();
         if (string.IsNullOrWhiteSpace(search))
         {
-            SortedList = Trader_DataTypes.TraderItemList.Value[CurrentProfile];
+            SortedList = Trader_DataTypes.ClientSideItemList[CurrentProfile];
             return;
         }
 
-        SortedList = Trader_DataTypes.TraderItemList.Value[CurrentProfile].Where(data =>
+        SortedList = Trader_DataTypes.ClientSideItemList[CurrentProfile].Where(data =>
             data.NeededItems.Any(i => i.ItemName.ToLower().Contains(search)) ||
             data.ResultItems.Any(i => i.ItemName.ToLower().Contains(search)));
     }
@@ -344,7 +344,7 @@ public static class Trader_UI
 
     public static void Show(string profile, string _npcName)
     {
-        if (!Trader_DataTypes.TraderItemList.Value.ContainsKey(profile)) return;
+        if (!Trader_DataTypes.ClientSideItemList.ContainsKey(profile)) return;
         CurrentProfile = profile;
         SearchInput.text = "";
         SortList();

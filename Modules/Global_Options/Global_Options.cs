@@ -3,7 +3,9 @@ using Marketplace.Paths;
 
 namespace Marketplace;
 
-[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[]{"MarketPlace.cfg"}, new[]{"OnChange"})]
+[UsedImplicitly]
+[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "MarketPlace.cfg" },
+    new[] { "OnChange" })]
 public static class Global_Values
 {
     public static string CurrencyName =>
@@ -11,7 +13,7 @@ public static class Global_Values
             ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name
             : "$item_coins";
 
-    public static string _localUserID;
+    public static string _localUserID = "none";
 
     [HarmonyPatch]
     [ClientOnlyPatch]
@@ -38,7 +40,8 @@ public static class Global_Values
         }
     }
 
-    public static readonly CustomSyncedValue<Container> _container = new(Marketplace.configSync, "Global_Values", new Container());
+    internal static readonly CustomSyncedValue<Container> _container = new(Marketplace.configSync, "Global_Values",
+        new Container());
 
     public class Container : ISerializableParameter
     {
@@ -56,6 +59,7 @@ public static class Global_Values
         public bool _hideOtherQuestRequirementQuests;
         public bool _allowKillQuestsInParty;
         public bool _enableKGChat;
+        public string _mailPostRecipe = "";
 
 
         public void Serialize(ref ZPackage pkg)
@@ -74,6 +78,7 @@ public static class Global_Values
             pkg.Write(_hideOtherQuestRequirementQuests);
             pkg.Write(_allowKillQuestsInParty);
             pkg.Write(_enableKGChat);
+            pkg.Write( _mailPostRecipe ?? "");
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -92,6 +97,7 @@ public static class Global_Values
             _hideOtherQuestRequirementQuests = pkg.ReadBool();
             _allowKillQuestsInParty = pkg.ReadBool();
             _enableKGChat = pkg.ReadBool();
+            _mailPostRecipe = pkg.ReadString();
         }
     }
 
@@ -106,11 +112,11 @@ public static class Global_Values
 
 
     private static ConfigFile _config;
-    
-    
+
+
     private static void OnInit()
     {
-        _config = new(Market_Paths.MainConfig, true);
+        _config = new ConfigFile(Market_Paths.MainConfig, true);
         ReadConfigValues();
     }
 
@@ -119,41 +125,50 @@ public static class Global_Values
         Utils.DelayReloadConfig(_config, ReadConfigValues);
         Utils.print("Main Configs Changed. Sending new info to all clients");
     }
-    
+
     private static T SearchOption<T>(string option, T defaultValue, string description)
-    { 
+    {
         T value = _config.Bind("Main", option, defaultValue, description).Value;
-        return value; 
+        return value;
     }
 
     private static void ReadConfigValues()
     {
-        EnableTransmogLog = SearchOption( "EnableTransmogLog",  false, "Enable/Disable Transmog Log");
-        EnableTraderLog = SearchOption( "EnableTraderLog",  false, "Enable/Disable Trader Log");
-        BankerIncomeTime = SearchOption( "BankerIncomeTime", 1,"Banker Income Time (hours)");
-        BankerIncomeMultiplier = SearchOption( "BankerIncomeMultiplier",  0f, "Banker Income Multiplier (per time)");
-        BankerVIPIncomeMultiplier = SearchOption( "BankerVIPIncomeMultiplier",  0f, "VIP Banker Income Multiplier");
-        WebHookLink = SearchOption( "FeedbackWebhookLink","webhook link","Feedback Webhook Link");
-  
-        
-        _container.Value._itemMarketLimit = SearchOption( "ItemMarketLimit", 15, "Limit amount of slots player can sell in marketpalce");
-        _container.Value._blockedPlayerList = SearchOption( "BlockedPlayers",  "User IDs", "Marketplace Blocked Players");
-        _container.Value._vipPlayerList = SearchOption( "VIPplayersList",  "User IDs", "Marketplace VIP Players List ");
-        _container.Value._marketTaxes = SearchOption( "MarketTaxes",  0, "Market Taxes From Each Sell");
-        _container.Value._vipmarketTaxes = SearchOption( "VIPplayersTaxes",  0, "VIP Player Market Taxes");
+        EnableTransmogLog = SearchOption("EnableTransmogLog", false, "Enable/Disable Transmog Log");
+        EnableTraderLog = SearchOption("EnableTraderLog", false, "Enable/Disable Trader Log");
+        BankerIncomeTime = SearchOption("BankerIncomeTime", 1, "Banker Income Time (hours)");
+        BankerIncomeMultiplier = SearchOption("BankerIncomeMultiplier", 0f, "Banker Income Multiplier (per time)");
+        BankerVIPIncomeMultiplier = SearchOption("BankerVIPIncomeMultiplier", 0f, "VIP Banker Income Multiplier");
+        WebHookLink = SearchOption("FeedbackWebhookLink", "webhook link", "Feedback Webhook Link");
+
+
+        _container.Value._itemMarketLimit =
+            SearchOption("ItemMarketLimit", 15, "Limit amount of slots player can sell in marketpalce");
+        _container.Value._blockedPlayerList = SearchOption("BlockedPlayers", "User IDs", "Marketplace Blocked Players");
+        _container.Value._vipPlayerList = SearchOption("VIPplayersList", "User IDs", "Marketplace VIP Players List ");
+        _container.Value._marketTaxes = SearchOption("MarketTaxes", 0, "Market Taxes From Each Sell");
+        _container.Value._vipmarketTaxes = SearchOption("VIPplayersTaxes", 0, "VIP Player Market Taxes");
         _container.Value._marketTaxes = Mathf.Clamp(_container.Value._marketTaxes, 0, 100);
-        _container.Value._vipmarketTaxes = Mathf.Clamp( _container.Value._vipmarketTaxes, 0, 100);
-        _container.Value._canTeleportWithOre = SearchOption( "CanTeleportWithOre",  true, "Enable/Disable players teleporter with ore");
-        _container.Value._blockedPrefabsServer = SearchOption( "MarketSellBlockedPrefabs", "Coins, SwordCheat", "Marketplace Blocked Prefabs For Selling");
-        _container.Value._serverCurrency = SearchOption( "ServerCurrency", "Coins","Prefab Of Server Currency (marketplace)");
-        _container.Value._gamblerEnableNotifications = SearchOption( "GamblerEnableWinNotifications",  false, "Enable Gambler Win Notification");
-        _container.Value._allowMultipleQuestScore = SearchOption("AllowMultipleQuestsScore", false, "Enable Kill / Harvest Craft Same Target Quests Get + Score In Same Time");
+        _container.Value._vipmarketTaxes = Mathf.Clamp(_container.Value._vipmarketTaxes, 0, 100);
+        _container.Value._canTeleportWithOre =
+            SearchOption("CanTeleportWithOre", true, "Enable/Disable players teleporter with ore");
+        _container.Value._blockedPrefabsServer = SearchOption("MarketSellBlockedPrefabs", "Coins, SwordCheat",
+            "Marketplace Blocked Prefabs For Selling");
+        _container.Value._serverCurrency =
+            SearchOption("ServerCurrency", "Coins", "Prefab Of Server Currency (marketplace)");
+        _container.Value._gamblerEnableNotifications =
+            SearchOption("GamblerEnableWinNotifications", false, "Enable Gambler Win Notification");
+        _container.Value._allowMultipleQuestScore = SearchOption("AllowMultipleQuestsScore", false,
+            "Enable Kill / Harvest Craft Same Target Quests Get + Score In Same Time");
         _container.Value._maxAcceptedQuests = SearchOption("MaxAcceptedQuests", 7, "Max Amount Of Accpeted Quests");
-        _container.Value._hideOtherQuestRequirementQuests = SearchOption("HideOtherQuestRequirementQuests", false, "Hide Quest in UI if they have OtherQuest as requirement");
-        _container.Value._allowKillQuestsInParty = SearchOption("AllowKillQuestsInParty", true, "Allow Kill Quests In Party");
+        _container.Value._hideOtherQuestRequirementQuests = SearchOption("HideOtherQuestRequirementQuests", false,
+            "Hide Quest in UI if they have OtherQuest as requirement");
+        _container.Value._allowKillQuestsInParty =
+            SearchOption("AllowKillQuestsInParty", true, "Allow Kill Quests In Party");
         _container.Value._enableKGChat = SearchOption("EnableKGChat", true, "Enable KGChat");
+        _container.Value._mailPostRecipe = SearchOption("MailPostRecipe", "SwordCheat,1", "Recipe for Mailpost creation");
         _container.Update();
-    } 
+    }
 
 
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
@@ -162,18 +177,21 @@ public static class Global_Values
     {
         private static void Postfix()
         {
-            ItemDrop currencyItem = ZNetScene.instance.GetPrefab(_container.Value._serverCurrency)?.GetComponent<ItemDrop>();
+            if (!ZNet.instance.IsServer()) return;
+            ItemDrop currencyItem = ZNetScene.instance.GetPrefab(_container.Value._serverCurrency)
+                ?.GetComponent<ItemDrop>();
             if (currencyItem)
             {
                 Utils.print($"New server currency accepted, Currency Name: {CurrencyName}");
             }
             else
             {
-                Utils.print("Can't accept new currency so changing that to Default: Coins, $item_coins", ConsoleColor.Red);
+                Utils.print("Can't accept new currency so changing that to Default: Coins, $item_coins",
+                    ConsoleColor.Red);
                 _container.Value._serverCurrency = "Coins";
             }
+
             _container.Update();
         }
     }
-    
 }

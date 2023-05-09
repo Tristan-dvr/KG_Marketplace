@@ -167,6 +167,10 @@ Paypal: <a href="mailto:war3spells@gmail.com">war3spells@gmail.com</a></p>
 <td>8.4.0</td>
 <td>Player Territories removed. Please do not install this version until you replace Player Territories module on something else (Azumatt wards / e.t.c) (TerritoryDatabase is same and working, just not the players one)<br/>Added KGchat as part of marketplace. Its enabled by default but you can turn it off in Main config on serverside. You can replace KGchat emojis in BepInEx/Config/MarketplaceEmojis. You will find spritesheet_original.png there, change pics on what you need and rename it to spritesheet.png<br/>Added 2 new fields to fashion UI: Periodic Sound + Periodic Sound Time<br/>Added new quest event: NpcText<br/>Optimized mod by rewriting it almost from scratch. Now mod is open-source, check: <a href="https://github.com/war3i4i/Marketplace">https://github.com/war3i4i/Marketplace</a> for code<br/>Added API for territories so other mods may use it (check github)<br/>NPC’s now won’t show up in hammer menu if Debug Mode is turned off<br/><br/>Transmogrification system access has changed (now transmogrification is a separated DLL). If you bought Transmog access before this patch please contact me in discord KG#7777 so i can send you mod to enable Transmog</td>
 </tr>
+<tr>
+<td>8.5.0</td>
+<td>New system added: NPC Dialogue (guide soon)<br/>New system added: Item Mocking (guide soon)<br/>Fixed banker multiplier bug<br/>Fixed KGchat text overflow</td>
+</tr>
 </tbody>
 </table>
 </details>
@@ -181,6 +185,8 @@ Now you can add your own localization. For that download file: <a href="Marketpl
 <li><a href="https://youtu.be/5fR_9Qygkro">https://youtu.be/5fR_9Qygkro</a> (part one)</li>
 <li><a href="https://youtu.be/BthPUGOeaeA">https://youtu.be/BthPUGOeaeA</a> (part two)</li>
 <li><a href="https://youtu.be/hUU_bPCwFeE">https://youtu.be/hUU_bPCwFeE</a> (part three)</li>
+<li><a href="https://youtu.be/ZgoeYVpEcI4">https://youtu.be/ZgoeYVpEcI4</a> (part four)</li>
+<li><a href="https://youtu.be/xdj2CccUYhk">https://youtu.be/xdj2CccUYhk</a> (part five)</li>
 </ol>
 </p>
 </details>
@@ -375,10 +381,10 @@ Coins, 0, BlackMetal, 5
 QuestType
 Name
 Description
-Quest Target Prefab , Amount, Min Level (min level works only on Kill quest in order to set minimum level or target you need to kill)
-QuestRewardType: Item/Skill/Pet: prefab, Amount, Level
+Quest Target Prefab , Amount, Min Level (min level works only on Kill or Collect quest in order to set minimum level or target you need to kill)
+QuestRewardType: prefab, Amount, Level
 In-Game Days Cooldown
-QuestRequirementType: Skill/OtherQuest/GlobalKey: Name, MinLevel (only use with Skill requirement)
+QuestRequirementType: Prefab, MinLevel (only use with Skill requirement)
 </code></pre>
 <p><span style="color:aqua;"> NOTE: If you want quest to be able to autocomplete (no need to speak again with npc and press “Complete” button after score is 100%), then you can write [QuestID=autocomplete]
 </span></p>
@@ -700,16 +706,16 @@ Circle<br>
 NoInteractDoors, CustomEnvironment = Clear, NoPickaxe, PvpOnly<br>
 None<br>
 ^ Will create a circular zone at X 100 and Z 300 with Radius 500 and color RED and custom flags.</p>
-<p>Also, if you will have multiple areas with similar names you can put @1, @2 behind the name to differentiate them.</p>
+<p>You can write @Number after zone id to change its priority, so you can have one zone inside another. For example:</p>
 <p>[Trader@1]<br>
 Circle<br>
--4784, 3967, 30<br>
+0,0, 300<br>
 138, 43, 226, false<br>
 NoBuild, NoBuildDamage, NoPickaxe, ForceBiome = 4, PeriodicHealALL = 2, NoMonsters, NoDeathPenalty, InfiniteFuel, NoStructureSupport, NoInteractCraftingStation, NoInteractItemStands, NoAttack, NoInteractItems<br>
 76543210123456789, 7656789876543211,</p>
-<p>[Trader@2]<br>
+<p>[Trader two@2]<br>
 Square<br>
-784, -588, 20<br>
+0,0,100<br>
 238, 99, 101, false<br>
 NoBuild, NoBuildDamage, NoPickaxe, ForceBiome = 4, PeriodicHealALL = 2, NoMonsters, NoDeathPenalty, InfiniteFuel, NoStructureSupport, NoInteractCraftingStation, NoInteractItemStands, NoAttack, NoInteractItems<br>
 76543210123456789, 7656789876543211,</p>

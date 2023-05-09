@@ -7,13 +7,13 @@ namespace Marketplace.Modules.Quests;
 public static class Quests_DataTypes
 {
     internal static readonly CustomSyncedValue<Dictionary<int, Quest>> SyncedQuestData =
-        new(Marketplace.configSync, "questData", new());
+        new(Marketplace.configSync, "questData", new Dictionary<int, Quest>());
 
     internal static readonly CustomSyncedValue<Dictionary<string, List<int>>> SyncedQuestProfiles =
-        new(Marketplace.configSync, "questProfiles", new());
+        new(Marketplace.configSync, "questProfiles", new Dictionary<string, List<int>>());
 
     internal static readonly CustomSyncedValue<Dictionary<int, List<QuestEvent>>> SyncedQuestsEvents =
-        new(Marketplace.configSync, "questEvents", new());
+        new(Marketplace.configSync, "questEvents", new Dictionary<int, List<QuestEvent>>());
 
     public static readonly Dictionary<int, Quest> AllQuests = new();
     public static readonly Dictionary<int, Quest> AcceptedQuests = new(20);
@@ -148,6 +148,7 @@ public static class Quests_DataTypes
 
             pkg.Write(PreviewImage ?? "");
             pkg.Write(ResetTime);
+            pkg.Write(_revision);
         }
 
 
@@ -194,12 +195,14 @@ public static class Quests_DataTypes
 
             PreviewImage = pkg.ReadString();
             ResetTime = pkg.ReadInt();
+            _revision = pkg.ReadInt();
         }
     }
 
     //main data part
     public partial class Quest
     {
+        public int _revision;
         public QuestType Type;
         public SpecialQuestTag SpecialTag;
         public string Name;
@@ -419,11 +422,8 @@ public static class Quests_DataTypes
                 {
                     string localizedSkill = Enum.TryParse(CheckQuest.QuestRequirementPrefab[i], out Skills.SkillType _)
                         ? Localization.instance.Localize("$skill_" + CheckQuest.QuestRequirementPrefab[i].ToLower())
-                        : Localization.instance.Localize($"$skill_" +
-                                                         Mathf.Abs(CheckQuest.QuestRequirementPrefab[i]
-                                                             .GetStableHashCode()));
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{localizedSkill} {CheckQuest.QuestRequirementLevel[i]}</color>";
+                        : Localization.instance.Localize($"$skill_" + Mathf.Abs(CheckQuest.QuestRequirementPrefab[i].GetStableHashCode()));
+                    message = $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{localizedSkill} {CheckQuest.QuestRequirementLevel[i]}</color>";
                     type = QuestRequirementType.Skill;
                     float skillLevel = Utils.GetPlayerSkillLevelCustom(CheckQuest.QuestRequirementPrefab[i]);
                     bool result = skillLevel >= CheckQuest.QuestRequirementLevel[i];
@@ -709,11 +709,15 @@ public static class Quests_DataTypes
             Player.m_localPlayer.m_customData[cooldown] = EnvMan.instance.GetCurrentDay().ToString();
             MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
                 $"<color=#00ff00>$mpasn_youfinishedquest:</color> <color=#00FFFF>{AllQuests[UID].Name}</color>".Localize());
-            ZPackage pkg = new();
-            pkg.Write((int)DiscordStuff.Webhooks.Quest);
-            pkg.Write(Player.m_localPlayer?.GetPlayerName() ?? "LocalPlayer");
-            pkg.Write(AllQuests[UID].Name);
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks", pkg);
+            
+            if (ZNet.instance.GetServerPeer() != null)
+            {
+                ZPackage pkg = new();
+                pkg.Write((int)DiscordStuff.Webhooks.Quest);
+                pkg.Write(Player.m_localPlayer?.GetPlayerName() ?? "LocalPlayer");
+                pkg.Write(AllQuests[UID].Name);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks", pkg);
+            }
             HandleQuestEvent(UID, QuestEventCondition.OnCompleteQuest);
         }
 
@@ -1138,6 +1142,7 @@ public static class Quests_DataTypes
                     case QuestEventAction.GiveQuest:
                         string questName = split[0].ToLower();
                         Quest.AcceptQuest(questName.GetStableHashCode(), handleEvent: false);
+                        Quests_UIs.AcceptedQuestsUI.CheckQuests();
                         break;
                     case QuestEventAction.Spawn:
                         string spawnPrefab = split[0];
@@ -1181,6 +1186,7 @@ public static class Quests_DataTypes
                     case QuestEventAction.RemoveQuest:
                         string removeQuestName = split[0].ToLower();
                         Quest.RemoveQuestFailed(removeQuestName.GetStableHashCode(), false);
+                        Quests_UIs.AcceptedQuestsUI.CheckQuests();
                         break;
                     case QuestEventAction.PlaySound:
                         string sound = split[0];
@@ -1199,7 +1205,7 @@ public static class Quests_DataTypes
             }
             catch
             {
-                // 
+                //
             }
         }
     }

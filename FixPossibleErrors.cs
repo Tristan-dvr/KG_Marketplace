@@ -8,13 +8,9 @@ public static class FixPossibleErrors
     {
         private static bool Prefix(CharacterAnimEvent __instance)
         {
-            if (__instance.GetComponentInParent<Character>() == null)
-            {
-                UnityEngine.Object.Destroy(__instance);
-                return false;
-            }
-
-            return true;
+            if (__instance.GetComponentInParent<Character>() != null) return true;
+            UnityEngine.Object.Destroy(__instance);
+            return false;
         }
     }
 

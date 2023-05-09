@@ -4,14 +4,14 @@ using UnityEngine.Networking;
 
 namespace Marketplace.Modules.Quests;
 
-
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Quests_Main_Client
 {
     private static ConfigEntry<KeyCode> QuestJournalOpenKey;
-    private static int LatestHashcode;
+    private static int LatestRevision;
     private static Coroutine LoadImagesRoutine;
-    
+
     private static void OnInit()
     {
         QuestJournalOpenKey = Marketplace._thistype.Config.Bind("General", "Quest Journal Keycode", KeyCode.J);
@@ -43,18 +43,17 @@ public static class Quests_Main_Client
         {
             if (Quests_UIs.QuestUI.IsVisible())
             {
-                Quests_UIs.QuestUI.Hide(); 
+                Quests_UIs.QuestUI.Hide();
                 Menu.instance.OnClose();
             }
         }
-        
+
         if (!Player.m_localPlayer) return;
         if (Input.GetKeyDown(QuestJournalOpenKey.Value) && Player.m_localPlayer.TakeInput())
             Quests_UIs.QuestUI.ClickJournal();
-
     }
-    
-    
+
+
     [HarmonyPatch(typeof(Player), nameof(Player.Load))]
     [ClientOnlyPatch]
     private static class Quest_Main_LoadPatch
@@ -76,12 +75,11 @@ public static class Quests_Main_Client
                 Player.m_localPlayer.m_knownTexts.Remove(key);
             }
         }
-        
+
         private static void ClearEmptyQuestCooldowns()
         {
             if (!Player.m_localPlayer) return;
             MigrateToCustomData();
-            Utils.print($"Removing Expired Quest Cooldowns");
             HashSet<string> toRemove = new();
             const string str = "[MPASN]questCD=";
             const string str2 = "[MPASN]quest=";
@@ -90,10 +88,10 @@ public static class Quests_Main_Client
                 if (key.Key.Contains(str))
                 {
                     int UID = Convert.ToInt32(key.Key.Split('=')[1]);
-                    if (!Quests_DataTypes.AllQuests.ContainsKey(UID) || !Quests_DataTypes.Quest.IsOnCooldown(UID, out _))
+                    if (!Quests_DataTypes.AllQuests.ContainsKey(UID) ||
+                        !Quests_DataTypes.Quest.IsOnCooldown(UID, out _))
                     {
                         toRemove.Add(key.Key);
-                        Utils.print($"Gonna remove {key.Key} (cooldown)");
                     }
                 }
 
@@ -103,7 +101,6 @@ public static class Quests_Main_Client
                     if (!Quests_DataTypes.AllQuests.ContainsKey(UID))
                     {
                         toRemove.Add(key.Key);
-                        Utils.print($"Gonna remove {key.Key} (action)");
                     }
                 }
             }
@@ -133,41 +130,39 @@ public static class Quests_Main_Client
             {
                 Quests_DataTypes.Quest.AcceptQuest(key.Key, key.Value, false);
             }
+
             Quests_UIs.AcceptedQuestsUI.CheckQuests();
         }
 
         private static void InitRawQuests()
         {
-            if (!Player.m_localPlayer) return;
-            if (LatestHashcode != Quests_DataTypes.SyncedQuestData.Value.GetHashCode())
-            {
-                Stopwatch watch = new();
-                watch.Start();
-                LatestHashcode = Quests_DataTypes.SyncedQuestData.Value.GetHashCode();
-                foreach (KeyValuePair<int, Quests_DataTypes.Quest> quest in Quests_DataTypes.SyncedQuestData.Value)
-                {
-                    if (quest.Value.Init())
-                    {
-                        Quests_DataTypes.AllQuests.Add(quest.Key, quest.Value);
-                    }
-                    else
-                    {
-                        Utils.print($"{quest.Value.Name} (id {quest.Key}) can't finish init");
-                    }
-                }
+            if (!Player.m_localPlayer || Quests_DataTypes.SyncedQuestData.Value.Count == 0) return;
+            var questsRevision = Quests_DataTypes.SyncedQuestData.Value.ElementAt(0).Value._revision;
+            if (LatestRevision == questsRevision) return;
+            LatestRevision = questsRevision;
 
-                watch.Stop();
-                Utils.print($"Quests init took: {watch.Elapsed}");
-                if (LoadImagesRoutine != null)
-                    Marketplace._thistype.StopCoroutine(LoadImagesRoutine);
-                LoadImagesRoutine = Marketplace._thistype.StartCoroutine(LoadQuestImages());
+            foreach (KeyValuePair<int, Quests_DataTypes.Quest> quest in Quests_DataTypes.SyncedQuestData.Value)
+            {
+                if (quest.Value.Init())
+                {
+                    Quests_DataTypes.AllQuests.Add(quest.Key, quest.Value);
+                }
+                else
+                {
+                    Utils.print($"{quest.Value.Name} (id {quest.Key}) can't finish init");
+                }
             }
+
+            if (LoadImagesRoutine != null)
+                Marketplace._thistype.StopCoroutine(LoadImagesRoutine);
+            LoadImagesRoutine = Marketplace._thistype.StartCoroutine(LoadQuestImages());
         }
-        
+
         private static IEnumerator LoadQuestImages()
         {
             yield return new WaitForSeconds(3f);
-            foreach (KeyValuePair<Quests_DataTypes.Quest, string> url in Quests_DataTypes.AllQuests.Select(x => new KeyValuePair<Quests_DataTypes.Quest, string>(x.Value, x.Value.PreviewImage)))
+            foreach (KeyValuePair<Quests_DataTypes.Quest, string> url in Quests_DataTypes.AllQuests.Select(x =>
+                         new KeyValuePair<Quests_DataTypes.Quest, string>(x.Value, x.Value.PreviewImage)))
             {
                 if (string.IsNullOrEmpty(url.Value)) continue;
                 UnityWebRequest request = UnityWebRequestTexture.GetTexture(url.Value);
@@ -175,21 +170,21 @@ public static class Quests_Main_Client
                 if (!request.isNetworkError && !request.isHttpError)
                 {
                     Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                    if(texture == null || texture.width == 0 || texture.height == 0) continue;
+                    if (texture == null || texture.width == 0 || texture.height == 0) continue;
                     Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
                     url.Key.SetPreviewSprite(sprite);
                 }
             }
         }
-        
+
         public static void Postfix()
-        { 
+        {
             InitRawQuests();
             ClearEmptyQuestCooldowns();
             LoadQuests();
         }
     }
-    
+
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     [ClientOnlyPatch]
     private class CloseUIMenuLogout

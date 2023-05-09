@@ -1,8 +1,8 @@
 ﻿using BepInEx.Configuration;
 using Marketplace.Paths;
-
 namespace Marketplace.Modules.Battlepass;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "BattlepassFreeRewards.cfg", "BattlepassPremiumRewards.cfg", "BattlepassConfig.cfg" },
     new[] { "OnBattlepassProfileChange", "OnBattlepassProfileChange", "OnBattlepassProfileChange" })]
@@ -39,8 +39,8 @@ public static class Battlepass_Main_Server
             100, "Experience Step Between Each Reward Order").Value;
         Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumUsers =
             BP_Config.Bind("BP", "Premium Users", "User IDs", "Premium Users").Value;
-        Battlepass_DataTypes.SyncedBattlepassData.Value.FreeRewards = new();
-        Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumRewards = new();
+        Battlepass_DataTypes.SyncedBattlepassData.Value.FreeRewards = new List<Battlepass_DataTypes.BattlePassElement>();
+        Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumRewards = new List<Battlepass_DataTypes.BattlePassElement>();
 
         List<string> freeData = File.ReadAllLines(Market_Paths.BattlepassFreeRewardsPath).ToList();
         if (freeData.Count > 0)
@@ -73,13 +73,13 @@ public static class Battlepass_Main_Server
                             continue;
                         }
 
-                        currentElement = new()
+                        currentElement = new Battlepass_DataTypes.BattlePassElement
                         {
                             RewardName = split[0],
                             Order = latestOrder,
-                            ItemNames = new(),
-                            ItemCounts = new(),
-                            ItemLevels = new()
+                            ItemNames = new List<string>(),
+                            ItemCounts = new List<int>(),
+                            ItemLevels = new List<int>()
                         };
                     }
                     else
@@ -147,13 +147,13 @@ public static class Battlepass_Main_Server
                             continue;
                         }
 
-                        currentElement = new()
+                        currentElement = new Battlepass_DataTypes.BattlePassElement
                         {
                             RewardName = split[0],
                             Order = latestOrder,
-                            ItemNames = new(),
-                            ItemCounts = new(),
-                            ItemLevels = new()
+                            ItemNames = new List<string>(),
+                            ItemCounts = new List<int>(),
+                            ItemLevels = new List<int>()
                         };
                     }
                     else

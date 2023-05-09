@@ -1,5 +1,6 @@
 ﻿namespace Marketplace.Modules.Battlepass;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Battlepass_Main_Client
 {
@@ -35,9 +36,8 @@ public static class Battlepass_Main_Client
 
     private static void OnBattlepassUpdate()
     {
-        FilterData();
+        ProcessBattlepass();
         SetPremium(Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumUsers.Contains(Global_Values._localUserID));
-        if (Player.m_localPlayer) Battlepass_UI.LoadData();
     }
     
     [HarmonyPatch(typeof(Player), nameof(Player.Load))]
@@ -46,7 +46,7 @@ public static class Battlepass_Main_Client
     {
         private static void Postfix()
         {
-            FilterData();
+            ProcessBattlepass();
             ReadEXP();
         }
     }
@@ -72,7 +72,6 @@ public static class Battlepass_Main_Client
 
     private static void ReadEXP()
     {
-        Battlepass_UI.LoadData();
         TakenFree.Clear();
         TakenPremium.Clear();
         CurrentEXP = 0;
@@ -204,12 +203,12 @@ public static class Battlepass_Main_Client
 
     public static int GetExp() => CurrentEXP;
 
-    private static int latestHash = -1;
+    private static int LatestRevision;
 
-    private static void FilterData()
+    private static void ProcessBattlepass()
     {
-        if (latestHash == Battlepass_DataTypes.SyncedBattlepassData.Value.GetHashCode() || !Player.m_localPlayer) return;
-        latestHash = Battlepass_DataTypes.SyncedBattlepassData.Value.GetHashCode();
+        if (LatestRevision == Battlepass_DataTypes.SyncedBattlepassData.Value._revision || !Player.m_localPlayer) return;
+        LatestRevision = Battlepass_DataTypes.SyncedBattlepassData.Value._revision;
         if (Battlepass_DataTypes.SyncedBattlepassData.Value.FreeRewards.Count == 0 &&
             Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumRewards.Count == 0) return;
         foreach (Battlepass_DataTypes.BattlePassElement passElement in Battlepass_DataTypes.SyncedBattlepassData.Value
@@ -269,5 +268,6 @@ public static class Battlepass_Main_Client
                 }
             }
         }
+        Battlepass_UI.LoadData();
     }
 }

@@ -4,6 +4,7 @@ using Marketplace.Modules.Marketplace_NPC;
 
 namespace Marketplace.Modules.Banker;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "BankerProfiles.cfg" },
     new[] { "OnBankerProfilesFileChange" })]
 public static class Banker_Main_Server
@@ -22,6 +23,7 @@ public static class Banker_Main_Server
             Marketplace._thistype.StartCoroutine(BankerIncome());
             Utils.print("Started Banker Income Coroutine");
         }
+
         ReadServerBankerProfiles();
     }
 
@@ -65,6 +67,7 @@ public static class Banker_Main_Server
         while (true)
         {
             yield return new WaitForSecondsRealtime(Global_Values.BankerIncomeTime * 3600);
+            if (!ZNet.instance || !ZNet.instance.IsServer()) continue;
             Utils.print("Adding Banker Income");
             Task task = Task.Run(() =>
             {
@@ -81,8 +84,13 @@ public static class Banker_Main_Server
                                 (DateTime.Now - BankerTimeStamp[id][item]).TotalHours >=
                                 Global_Values.BankerIncomeTime)
                             {
-                                BankerServerSideData[id][item] +=
-                                    Mathf.CeilToInt(BankerServerSideData[id][item] * multiplier);
+                                int val = BankerServerSideData[id][item];
+                                double toAdd = Math.Ceiling(val * multiplier);
+                                if (val + toAdd > int.MaxValue)
+                                    val = int.MaxValue;
+                                else
+                                    val = (int)(toAdd + val);
+                                BankerServerSideData[id][item] = val;
                             }
                         }
                     }
@@ -106,7 +114,10 @@ public static class Banker_Main_Server
         if (BankerServerSideData.TryGetValue(userID, out var value))
         {
             string data = JSON.ToJSON(value);
-            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, "KGmarket GetBankerClientData", data);
+            ZPackage pkg = new();
+            pkg.Write(data);
+            pkg.Compress();
+            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, "KGmarket GetBankerClientData", pkg);
         }
     }
 
@@ -115,13 +126,13 @@ public static class Banker_Main_Server
         Market_Paths.BankerDataJSONFile.WriteClear(JSON.ToNiceJSON(BankerServerSideData));
     }
 
-    [HarmonyPatch(typeof(ZNet), "RPC_PeerInfo")]
+    [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_CharacterID))]
     [ServerOnlyPatch]
     private static class ZnetSyncBankerProfiles
     {
         private static void Postfix(ZRpc rpc)
         {
-            if (!(ZNet.instance.IsServer() && ZNet.instance.IsDedicated())) return;
+            if (!ZNet.instance.IsServer()) return;
             if (!BankerTimeStamp.ContainsKey(rpc.m_socket.GetHostName()))
                 BankerTimeStamp[rpc.m_socket.GetHostName()] = new Dictionary<int, DateTime>();
             ZNetPeer peer = ZNet.instance.GetPeer(rpc);
@@ -136,6 +147,7 @@ public static class Banker_Main_Server
     {
         private static void Postfix()
         {
+            if (!ZNet.instance.IsServer()) return;
             ZRoutedRpc.instance.Register("KGmarket BankerDeposit",
                 new Action<long, string, int>(MethodBankerDeposit));
             ZRoutedRpc.instance.Register("KGmarket BankerWithdraw",

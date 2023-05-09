@@ -2,6 +2,7 @@
 
 namespace Marketplace.Modules.Gambler;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
     new[] { "GamblerProfiles.cfg" }, new[] { "OnGamblerProfilesFileChange" })]
 public static class Gambler_Main_Server

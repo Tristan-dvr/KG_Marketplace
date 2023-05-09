@@ -3,7 +3,7 @@
 public static class TerritorySystem_DataTypes
 {
     internal static readonly CustomSyncedValue<List<Territory>> TerritoriesData =
-        new(Marketplace.configSync, "territoryData", new());
+        new(Marketplace.configSync, "territoryData", new List<Territory>());
 
     public static readonly TerritoryFlags[] AllTerritoryFlagsArray =
         (TerritoryFlags[])Enum.GetValues(typeof(TerritoryFlags));

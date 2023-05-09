@@ -15,6 +15,7 @@ using Object = UnityEngine.Object;
 
 namespace Marketplace.Modules.NPC;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Market_NPC
 {
@@ -55,7 +56,7 @@ public static class Market_NPC
         NPC = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketPlaceNPC");
         NPC.AddComponent<NPCcomponent>();
         NPC.transform.Find("TMP").gameObject.AddComponent<TextComponent>();
-        if (Utils.IsServer) return;
+        if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
         NPCUI.Init();
         NPCLoader_UI.Init();
         Marketplace.Global_Updator += UpdateNPCGUI;
@@ -535,7 +536,7 @@ public static class Market_NPC
         private void Awake()
         {
             znv = GetComponent<ZNetView>();
-            if (!znv || znv.m_zdo == null || Utils.IsServer) return;
+            if (!znv || znv.m_zdo == null || Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
             NPC_SoundSource = gameObject.AddComponent<AudioSource>();
             NPC_SoundSource.spatialBlend = 1;
             NPC_SoundSource.volume = 0.8f;
@@ -596,7 +597,8 @@ public static class Market_NPC
                   "\n" + Localization.instance.Localize("[<color=red><b>DELETE + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_removenpc")
                 : "";
-            string text = Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>] ") + Localization.instance.Localize("$mpasn_interact");
+            string text = Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>] ") +
+                          Localization.instance.Localize("$mpasn_interact");
 
             return text + admintext;
         }
@@ -611,15 +613,19 @@ public static class Market_NPC
             return znv.m_zdo.GetString("KGnpcNameOverride");
         }
 
-        public void OpenUIForType(string profile = null)
+        public void OpenUIForType(string type, string profile) =>
+            OpenUIForType(type == null ? null : (NPCType)Enum.Parse(typeof(NPCType), type, true), profile);
+
+        public void OpenUIForType(NPCType? type = null, string profile = null)
         {
-            if (string.IsNullOrEmpty(profile) || profile == "use_existing")
+            if (string.IsNullOrEmpty(profile))
                 profile = znv.m_zdo.GetString("KGnpcProfile", "default");
             string npcName = znv.m_zdo.GetString("KGnpcNameOverride");
-            switch (_currentNpcType)
+            type ??= _currentNpcType;
+            switch (type)
             {
                 case NPCType.Marketplace:
-                    if (!string.IsNullOrWhiteSpace(Global_Values._localUserID))
+                    if (!string.IsNullOrWhiteSpace(Global_Values._localUserID) && !ZNet.IsSinglePlayer)
                         Marketplace_UI.Show();
                     break;
                 case NPCType.Info:
@@ -924,7 +930,7 @@ public static class Market_NPC
                 znv.m_zdo.Set("KGnpcProfile", profile.ToLower());
 
                 if (string.IsNullOrWhiteSpace(dialogue)) dialogue = "";
-                znv.m_zdo.Set("KGnpcDialogue", dialogue);
+                znv.m_zdo.Set("KGnpcDialogue", dialogue.ToLower());
             }
         }
 
@@ -1897,18 +1903,6 @@ public static class Market_NPC
             _currentNPC = _npc;
             CheckColors();
             UI.SetActive(true);
-        }
-
-        [HarmonyPatch(typeof(InputField), "OnPointerDown")]
-        [ClientOnlyPatch]
-        private static class InputField__Patch
-        {
-            private static void Prefix(InputField __instance)
-            {
-                if (__instance.lineType != InputField.LineType.SingleLine) return;
-                if (IsVisible() && !string.IsNullOrEmpty(__instance.text))
-                    AccessTools.Field(typeof(InputField), "m_AllowInput").SetValue(__instance, true);
-            }
         }
     }
 

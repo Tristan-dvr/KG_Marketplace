@@ -1,7 +1,9 @@
 ﻿using Marketplace.Modules.TerritorySystem;
+using Marketplace.Modules.Trader;
 
 namespace API;
 
+[PublicAPI]
 //if you want to use marketplace api just copy-paste this whole class into your code and use its methods
 public static class Marketplace_API
 {
@@ -9,6 +11,7 @@ public static class Marketplace_API
     private static readonly MethodInfo MI_IsPlayerInsideTerritory;
     private static readonly MethodInfo MI_IsObjectInsideTerritoryWithFlag;
     private static readonly MethodInfo MI_IsObjectInsideTerritoryWithFlag_Additional;
+    private static readonly MethodInfo MI_ResetTraderItems;
 
     [Flags]
     public enum TerritoryFlags
@@ -131,6 +134,13 @@ public static class Marketplace_API
         additionalFlags = (AdditionalTerritoryFlags)args[4];
         return result;
     }
+    
+    public static void ResetTraderItems()
+    {
+        if (!_IsInstalled || MI_ResetTraderItems == null)
+            return;
+        MI_ResetTraderItems.Invoke(null, null);
+    }
 
     static Marketplace_API()
     {
@@ -148,6 +158,8 @@ public static class Marketplace_API
         MI_IsObjectInsideTerritoryWithFlag_Additional = marketplaceAPI.GetMethod(
             "IsObjectInsideTerritoryWithFlag_Additional",
             BindingFlags.Public | BindingFlags.Static);
+        MI_ResetTraderItems = marketplaceAPI.GetMethod("ResetTraderItems",
+            BindingFlags.Public | BindingFlags.Static);
     }
 }
 
@@ -156,6 +168,8 @@ public static class ClientSide
     //Jere Expand World compatibility
     public static bool FillingTerritoryData = false;
 
+    //trader
+    public static void ResetTraderItems() => Trader_Main_Client.InitTraderItems();
 
     //territories
     public static bool IsPlayerInsideTerritory(out string name, out int flags,

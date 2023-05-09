@@ -6,6 +6,7 @@ using Marketplace.Paths;
 
 namespace Marketplace;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Last, "OnInit", 
     new[] { "DiscordSettings.cfg" },
     new[] { "OnDiscordSettingsChange" })]
@@ -31,13 +32,13 @@ public static class DiscordStuff
         {
             SaveOnConfigSet = true
         };
-        WebhookLinks = new()
+        WebhookLinks = new Dictionary<Webhooks, ConfigEntry<string>>
         {
             [Webhooks.Marketplace] = DiscordConfig.Bind("Webhook Links", "Marketplace Webhook Link", "LINK HERE"),
             [Webhooks.Gambler] = DiscordConfig.Bind("Webhook Links", "Gambler Webhook Link", "LINK HERE"),
             [Webhooks.Quest] = DiscordConfig.Bind("Webhook Links", "Quest Webhook Link", "LINK HERE")
         };
-        WebhookMessages = new()
+        WebhookMessages = new Dictionary<Webhooks, ConfigEntry<string>>
         {
             [Webhooks.Marketplace] = DiscordConfig.Bind("Webhook Messages", "Marketplace Webhook Message",
                 "**{0}** posted **x{1} {2}** with **{3} gold each**"),
@@ -46,7 +47,7 @@ public static class DiscordStuff
             [Webhooks.Quest] =
                 DiscordConfig.Bind("Webhook Messages", "Quest Webhook Message", "**{0}** finished quest **{1}**")
         };
-        LocalizedWebhookTitles = new()
+        LocalizedWebhookTitles = new Dictionary<Webhooks, ConfigEntry<string>>
         {
             [Webhooks.Marketplace] =
                 DiscordConfig.Bind("Webhook Titles", "Marketplace Webhook Title", "Marketplace Message"),
@@ -129,6 +130,7 @@ public static class DiscordStuff
     {
         private static void Postfix()
         {
+            if(!ZNet.instance.IsServer()) return;
             ZRoutedRpc.instance.Register("KGmarket CustomWebhooks", new Action<long, ZPackage>(SendWebhook));
         }
     }

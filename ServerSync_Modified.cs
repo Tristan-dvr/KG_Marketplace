@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using BepInEx.Configuration;
-using JetBrains.Annotations;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace ServerSync;
@@ -63,17 +62,25 @@ public abstract class CustomSyncedValueBase
         set
         {
             boxedValue = value;
-            if(Game.instance && Game.instance.m_shuttingDown) return;
+            if (!Game.instance || Game.instance.m_shuttingDown) return;
             ValueChanged?.Invoke();
         }
     }
 
     protected bool localIsOwner;
 
-    protected CustomSyncedValueBase(ConfigSync configSync, string identifier, Type type)
+    public readonly Config_Priority Priority;
+    public enum Config_Priority
+    {
+        First,
+        Last
+    }
+
+    protected CustomSyncedValueBase(ConfigSync configSync, string identifier, Type type, Config_Priority priority = Config_Priority.Last)
     {
         Identifier = "kg.Marketplace" + identifier;
         Type = type;
+        Priority = priority;
         configSync.AddCustomValue(this);
         localIsOwner = configSync.IsSourceOfTruth;
         configSync.SourceOfTruthChanged += truth => localIsOwner = truth;
@@ -91,8 +98,8 @@ public class CustomSyncedValue<T> : CustomSyncedValueBase
 
     public void Update() => ValueChanged?.Invoke();
 
-    public CustomSyncedValue(ConfigSync configSync, string identifier, T value = default!) : base(configSync,
-        identifier, typeof(T))
+    public CustomSyncedValue(ConfigSync configSync, string identifier, T value, Config_Priority prio = Config_Priority.Last) : base(configSync,
+        identifier, typeof(T), prio)
     {
         Value = value;
     }
@@ -158,7 +165,7 @@ public class ConfigSync
     private static readonly HashSet<ConfigSync> configSyncs = new();
 
     private readonly HashSet<OwnConfigEntryBase> allConfigs = new();
-    private readonly HashSet<CustomSyncedValueBase> allCustomValues = new();
+    private HashSet<CustomSyncedValueBase> allCustomValues = new();
 
     private static bool isServer;
 
@@ -225,6 +232,7 @@ public class ConfigSync
         }
 
         allCustomValues.Add(customValue);
+        allCustomValues = new HashSet<CustomSyncedValueBase>(allCustomValues.OrderBy(v => v.Priority));
         customValue.ValueChanged += () =>
         {
             if (!ProcessingServerUpdate)
@@ -739,7 +747,7 @@ public class ConfigSync
         }
     }
 
-    [HarmonyPatch(typeof(ZNet), "RPC_PeerInfo")]
+    [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo))]
     private class SendConfigsAfterLogin
     {
         private class BufferingSocket : ISocket
@@ -902,8 +910,7 @@ public class ConfigSync
                                 new object[] { adminList, rpc.GetSocket().GetHostName() })
                     });
 
-                    ZPackage package = ConfigsToPackage(configSync.allConfigs.Select(c => c.BaseConfig),
-                        configSync.allCustomValues, entries, false);
+                    ZPackage package = ConfigsToPackage(configSync.allConfigs.Select(c => c.BaseConfig), configSync.allCustomValues, entries, false);
 
                     yield return __instance.StartCoroutine(
                         configSync.sendZPackage(new List<ZNetPeer> { peer }, package));
