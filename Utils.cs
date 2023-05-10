@@ -432,4 +432,10 @@ public static class Utils
     {
         return (flag & other) != 0;
     }
+
+    public static string Localize(this string text)
+    {
+        return string.IsNullOrEmpty(text) ? string.Empty : Localization.instance.Localize(text);
+    }
+
 }
