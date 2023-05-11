@@ -1,4 +1,5 @@
-﻿using Marketplace.Modules.TerritorySystem;
+﻿using Marketplace.Modules.Quests;
+using Marketplace.Modules.TerritorySystem;
 using Marketplace.Modules.Trader;
 
 namespace API;
@@ -12,6 +13,7 @@ public static class Marketplace_API
     private static readonly MethodInfo MI_IsObjectInsideTerritoryWithFlag;
     private static readonly MethodInfo MI_IsObjectInsideTerritoryWithFlag_Additional;
     private static readonly MethodInfo MI_ResetTraderItems;
+    private static readonly MethodInfo MI_OpenQuestJournal;
 
     [Flags]
     public enum TerritoryFlags
@@ -140,6 +142,12 @@ public static class Marketplace_API
         if (!_IsInstalled || MI_ResetTraderItems == null)
             return;
         MI_ResetTraderItems.Invoke(null, null);
+    }   
+    public static void OpenQuestJournal()
+    {
+        if (!_IsInstalled || MI_OpenQuestJournal == null)
+            return;
+        MI_OpenQuestJournal.Invoke(null, null);
     }
 
     static Marketplace_API()
@@ -160,6 +168,8 @@ public static class Marketplace_API
             BindingFlags.Public | BindingFlags.Static);
         MI_ResetTraderItems = marketplaceAPI.GetMethod("ResetTraderItems",
             BindingFlags.Public | BindingFlags.Static);
+        MI_OpenQuestJournal = marketplaceAPI.GetMethod("OpenQuestJournal",
+            BindingFlags.Public | BindingFlags.Static);
     }
 }
 
@@ -170,6 +180,7 @@ public static class ClientSide
 
     //trader
     public static void ResetTraderItems() => Trader_Main_Client.InitTraderItems();
+    public static void OpenQuestJournal() => Quests_UIs.QuestUI.ClickJournal();
 
     //territories
     public static bool IsPlayerInsideTerritory(out string name, out int flags,
