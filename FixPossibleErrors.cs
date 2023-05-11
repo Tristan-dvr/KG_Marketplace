@@ -29,7 +29,7 @@ public static class FixPossibleErrors
             return true;
         }
     }
-    
+
     [HarmonyPatch(typeof(Minimap), nameof(Minimap.Start))]
     [ClientOnlyPatch]
     private static class SetMaxPins

@@ -48,7 +48,7 @@ public static class Quests_Main_Server
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
             {
-                splitProfile = profiles[i].Replace("[", "").Replace("]", "").ToLower();
+                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","").ToLower();
             }
             else
             {
@@ -196,7 +196,7 @@ public static class Quests_Main_Server
                         }
                     }
 
-
+                    int _TimeLimit = 0;
                     string[] restrictionArray = restrictions.Replace(" ", "").Split('|');
                     int _RestrictionsAMOUNT = Mathf.Max(1, restrictionArray.Length);
                     Quests_DataTypes.QuestRequirementType[] reqs = new Quests_DataTypes.QuestRequirementType[_RestrictionsAMOUNT];
@@ -224,6 +224,11 @@ public static class Quests_Main_Server
                             if (RestrData.Length == 2)
                             {
                                 QuestRestrictionLevel[r] = int.Parse(RestrData[1]);
+                            }
+
+                            if (restrType == Quests_DataTypes.QuestRequirementType.Time)
+                            {
+                                _TimeLimit = Convert.ToInt32(QuestRestriction[r]);
                             }
                         }
                         else
@@ -255,7 +260,8 @@ public static class Quests_Main_Server
                         QuestRequirementLevel = QuestRestrictionLevel,
                         SpecialTag = specialQuestTag,
                         PreviewImage = image,
-                        _revision = CurrentRevision
+                        _revision = CurrentRevision,
+                        TimeLimit = _TimeLimit
                     };
                     if (!Quests_DataTypes.SyncedQuestData.Value.ContainsKey(UID))
                         Quests_DataTypes.SyncedQuestData.Value.Add(UID, quest);

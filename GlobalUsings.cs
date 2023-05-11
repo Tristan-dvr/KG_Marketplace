@@ -11,7 +11,6 @@ global using BepInEx;
 global using fastJSON;
 global using HarmonyLib;
 global using JetBrains.Annotations;
-global using KeyManager;
 global using MonoMod.Utils;
 global using ServerSync;
 global using TMPro;

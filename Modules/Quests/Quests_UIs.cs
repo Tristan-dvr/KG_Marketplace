@@ -76,6 +76,7 @@ public static class Quests_UIs
             Localization.instance.Localize(UI.transform);
         }
 
+
         [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Awake))]
         [ClientOnlyPatch]
         private static class InventoryGui_Awake_Patch
@@ -93,7 +94,7 @@ public static class Quests_UIs
         private static void CLICKMAINBUTTONQUEST(Quests_DataTypes.Quest quest, int UID, int index)
         {
             Quests_DataTypes.Quest.ClickQuestButton(UID);
-            if(!IsVisible()) return;
+            if (!IsVisible()) return;
             Reload();
             if (!(Quests_DataTypes.Quest.IsOnCooldown(UID, out int days) && days > 5000))
                 InitQuestData(quest, UID, index);
@@ -128,6 +129,7 @@ public static class Quests_UIs
                 PreviewImage.gameObject.SetActive(true);
                 PreviewImage.sprite = quest.GetPreviewSprite;
             }
+
             for (int i = quest.TargetAMOUNT - 1; i >= 0; --i)
             {
                 Image TargetImage = UnityEngine.Object.Instantiate(QuestTarget, TargetContent).transform
@@ -184,7 +186,7 @@ public static class Quests_UIs
                         break;
                 }
             }
-            
+
             for (int i = 0; i < quest.RewardsAMOUNT; ++i)
             {
                 GameObject rewardGO = UnityEngine.Object.Instantiate(RewardGO, RewardTransform);
@@ -272,7 +274,7 @@ public static class Quests_UIs
                         break;
                 }
             }
-            
+
             if (Quests_DataTypes.Quest.IsOnCooldown(UID, out int left))
             {
                 RestrictionText.gameObject.SetActive(true);
@@ -318,6 +320,7 @@ public static class Quests_UIs
                 RestrictionButton.gameObject.SetActive(false);
                 RestrictionText.gameObject.SetActive(false);
             }
+
             Canvas.ForceUpdateCanvases();
             AllFilters.ForEach(filter => filter.enabled = false);
             AllFilters.ForEach(filter => filter.enabled = true);
@@ -374,7 +377,8 @@ public static class Quests_UIs
             List<int> enumerationTarget = IsJournal
                 ? Quests_DataTypes.AcceptedQuests.Keys.ToList()
                 : (Quests_DataTypes.SyncedQuestProfiles.Value.TryGetValue(CurrentProfile, out var value)
-                    ? value : new List<int>());
+                    ? value
+                    : new List<int>());
 
             foreach (int profileID in enumerationTarget)
             {
@@ -466,7 +470,6 @@ public static class Quests_UIs
         private static GameObject UI;
         private static Transform MainTransform;
         private static GameObject QuestGO;
-        private static readonly List<GameObject> AllGO = new();
         private static readonly Dictionary<Quests_DataTypes.Quest, GameObject> UpdateData = new();
         private static readonly List<ContentSizeFitter> AllFilters = new();
         private static Scrollbar MainBar;
@@ -480,7 +483,9 @@ public static class Quests_UIs
 
         private static void InitQuestData(GameObject go, Quests_DataTypes.Quest data, int UID)
         {
-            go.transform.Find("QuestName").GetComponent<Text>().text = $"<color=yellow> [ {data.Name} ]</color>";
+            string timeLeft = data.TimeLimit > 0 ? $" (<color=red>{CalculateTimeLeft(data).ToTime()}</color>)" : "";
+            go.transform.Find("QuestName").GetComponent<Text>().text =
+                $"<color=yellow> [ {data.Name}{timeLeft} ]</color>";
             go.transform.Find("QuestName/Button").GetComponent<Button>().onClick.AddListener(() =>
             {
                 AssetStorage.AssetStorage.AUsrc.Play();
@@ -523,6 +528,7 @@ public static class Quests_UIs
             }
         }
 
+
         public static void UpdateStatus(Quests_DataTypes.Quest data)
         {
             if (!UpdateData.ContainsKey(data)) return;
@@ -550,6 +556,51 @@ public static class Quests_UIs
             AllFilters.AddRange(UI.GetComponentsInChildren<ContentSizeFitter>().ToList());
             MainBar = UI.GetComponentInChildren<Scrollbar>();
             MainBar.onValueChanged.AddListener(ScrollBarValueChange);
+            Marketplace._thistype.StartCoroutine(UpdateTimedQuests());
+        }
+
+        private static long CalculateTimeLeft(Quests_DataTypes.Quest quest)
+        {
+            long finishTime = quest.TimeLimit + quest.AcceptedTime;
+            long currentTime = (long)EnvMan.instance.m_totalSeconds;
+            long timeLeft = finishTime - currentTime;
+            return Math.Max(0, timeLeft);
+        }
+
+        private static IEnumerator UpdateTimedQuests()
+        {
+            var yield = new WaitForSeconds(1f);
+            HashSet<int> toRemove = new();
+            while (true)
+            {
+                yield return yield;
+                if (!Player.m_localPlayer) continue;
+                foreach (var quest in Quests_DataTypes.AcceptedQuests)
+                {
+                    if (quest.Value.TimeLimit <= 0) continue;
+                    long timeLeft = CalculateTimeLeft(quest.Value);
+                    if (timeLeft <= 0)
+                    {
+                        toRemove.Add(quest.Key);
+                    }
+                    else
+                    {
+                        if (UpdateData.TryGetValue(quest.Value, out var value))
+                        {
+                            value.transform.Find("QuestName").GetComponent<Text>().text =
+                                $"<color=yellow> [ {quest.Value.Name}  (<color=red>{timeLeft.ToTime()}</color>) ]</color>";
+                        }
+                    }
+                }
+                foreach (int i in toRemove)
+                {
+                    string questName = Quests_DataTypes.AcceptedQuests[i].Name;
+                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,$"{questName} $mpasn_questtimelimitfail", 0, null);
+                    Quests_DataTypes.Quest.RemoveQuestFailed(i);
+                    CheckQuests();
+                }
+                toRemove.Clear();
+            }
         }
 
         private static void ScrollBarValueChange(float arg0)
@@ -578,8 +629,11 @@ public static class Quests_UIs
             }
 
             Show();
-            AllGO.ForEach(UnityEngine.Object.Destroy);
-            AllGO.Clear();
+            foreach (var go in UpdateData)
+            {
+                UnityEngine.Object.Destroy(go.Value);
+            }
+
             UpdateData.Clear();
             int c = 0;
             foreach (KeyValuePair<int, Quests_DataTypes.Quest> quest in Quests_DataTypes.AcceptedQuests.OrderBy(d =>
@@ -587,7 +641,6 @@ public static class Quests_UIs
             {
                 GameObject newGo = UnityEngine.Object.Instantiate(QuestGO, MainTransform);
                 InitQuestData(newGo, quest.Value, quest.Key);
-                AllGO.Add(newGo);
                 UpdateData.Add(quest.Value, newGo);
                 newGo.transform.SetAsLastSibling();
             }

@@ -3,7 +3,6 @@
 	<Target Name="ILRepacker" AfterTargets="Build" >
 		<ItemGroup>
 			<InputAssemblies Include="$(TargetPath)"/>
-			<InputAssemblies Include="$(OutputPath)\KeyManager.dll" />
 			<InputAssemblies Include="$(OutputPath)\fastJSON.dll" />
 			<InputAssemblies Include="$(OutputPath)\LocalizationManager.dll" />
 			<InputAssemblies Include="$(OutputPath)\ItemDataManager.dll" />
@@ -12,4 +11,4 @@
 		<ILRepack Parallel="true" DebugInfo="true" Internalize="true" InputAssemblies="@(InputAssemblies)" OutputFile="$(TargetPath)"
 				  TargetKind="SameAsPrimaryAssembly" LibraryPath="$(OutputPath)" RepackDropAttribute="RepackDropAttribute"/>
 	</Target>
-</Project>   
+</Project>    

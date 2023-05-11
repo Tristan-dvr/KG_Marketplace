@@ -43,7 +43,7 @@ public static class Banker_Main_Server
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
             {
-                splitProfile = profiles[i].Replace("[", "").Replace("]", "").ToLower();
+                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","").ToLower();
             }
             else
             {

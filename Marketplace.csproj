@@ -528,12 +528,8 @@
       <EmbeddedResource Include="Resources\Marketplace_TransmogCode.dll" />
       <EmbeddedResource Include="Resources\Marketplace_UnityCode.dll" />
     </ItemGroup> 
-
-    <UsingTask AssemblyFile="$(TargetDir)/KeyManager.dll" TaskName="KeyManager.Seal" />
-    <Target Name="KeyManager" AfterTargets="ILRepack"> 
-        <Seal DLL="$(TargetPath)" />
-    </Target>
-
+    
+    
     <Target Name="Copy" AfterTargets="ILRepack"> 
         <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;D:\SteamLibrary\steamapps\common\Valheim\BepInEx\plugins\$(AssemblyName).dll&quot;" />
         <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;D:\SteamLibrary\steamapps\common\Valheim Dedicated Server\BepInEx\plugins\$(AssemblyName).dll&quot;" />

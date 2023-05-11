@@ -226,3 +226,5 @@ mpasn_periodicsoundtime : Periodic Sound Time
 mpasn_setnpcdialogue: Attach NPC Dialogue
 mpasn_needhasbuff: Need Buff
 mpasn_nocreaturedrops: No Creature Drops
+mpasn_questtimelimit: Time Limit
+mpasn_questtimelimitfail: Time Expired

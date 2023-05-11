@@ -621,6 +621,7 @@ public static class Market_NPC
             if (string.IsNullOrEmpty(profile))
                 profile = znv.m_zdo.GetString("KGnpcProfile", "default");
             string npcName = znv.m_zdo.GetString("KGnpcNameOverride");
+            profile = profile.ToLower();
             type ??= _currentNpcType;
             switch (type)
             {

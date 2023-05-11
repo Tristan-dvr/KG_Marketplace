@@ -43,7 +43,7 @@ public class Dialogues_Main_Server
                         dialogue = null;
                     }
 
-                    string splitProfile = profiles[i].Replace("[", "").Replace("]", "").ToLower();
+                    string splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","").ToLower();
                     dialogue = new Dialogues_DataTypes.RawDialogue
                     {
                         UID = splitProfile.Replace(@"\n", "\n")
@@ -59,8 +59,7 @@ public class Dialogues_Main_Server
                     }
                     else
                     {
-                        Dialogues_DataTypes.RawDialogue.RawPlayerOption option =
-                            new Dialogues_DataTypes.RawDialogue.RawPlayerOption();
+                        Dialogues_DataTypes.RawDialogue.RawPlayerOption option = new Dialogues_DataTypes.RawDialogue.RawPlayerOption();
                         List<string> commands = new List<string>();
                         List<string> conditions = new List<string>(); 
                         string[] split = profiles[i].Split('|');
@@ -91,9 +90,9 @@ public class Dialogues_Main_Server
                                     break;
                             }
                         }
-
                         option.Commands = commands.ToArray();
                         option.Conditions = conditions.ToArray();
+                        options.Add(option);
                     }
                 }
             }
@@ -109,7 +108,6 @@ public class Dialogues_Main_Server
             dialogue.Options = options?.ToArray();
             Dialogues_DataTypes.SyncedDialoguesData.Value.Add(dialogue);
         }
-
         Dialogues_DataTypes.SyncedDialoguesData.Update();
     }
 

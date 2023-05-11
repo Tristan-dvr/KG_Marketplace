@@ -24,7 +24,7 @@ public static class Gambler_Main_Server
         ReadGamblerProfiles(list);
         ClientClearData();
     }
-    
+
     private static void ClientClearData()
     {
         foreach (KeyValuePair<string, Gambler_DataTypes.BigData> data in Gambler_DataTypes.GamblerData.Value)
@@ -46,7 +46,7 @@ public static class Gambler_Main_Server
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
             {
-                splitProfile = profiles[i].Replace("[", "").Replace("]", "").ToLower();
+                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
 
                 string[] testSplit = splitProfile.Split('=');
                 if (testSplit.Length > 1)

@@ -38,7 +38,7 @@ public static class ServerInfo_Main_Server
                     ServerInfo_DataTypes.ServerInfoData.Value[splitProfile] =  data.Trim('\n');
                 }
 
-                string[] split = profiles[i].Replace("[", "").Replace("]", "").ToLower().Split('=');
+                string[] split = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","").ToLower().Split('=');
 
                 splitProfile = split[0];
                 if (split.Length == 2)

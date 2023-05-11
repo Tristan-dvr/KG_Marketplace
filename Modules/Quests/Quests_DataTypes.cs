@@ -56,6 +56,7 @@ public static class Quests_DataTypes
         MH_Level,
         HasItem,
         IsVIP,
+        Time
     }
 
     public enum QuestType
@@ -149,6 +150,7 @@ public static class Quests_DataTypes
             pkg.Write(PreviewImage ?? "");
             pkg.Write(ResetTime);
             pkg.Write(_revision);
+            pkg.Write(TimeLimit);
         }
 
 
@@ -196,6 +198,7 @@ public static class Quests_DataTypes
             PreviewImage = pkg.ReadString();
             ResetTime = pkg.ReadInt();
             _revision = pkg.ReadInt();
+            TimeLimit = pkg.ReadInt();
         }
     }
 
@@ -222,17 +225,15 @@ public static class Quests_DataTypes
         public int[] QuestRequirementLevel;
         public string PreviewImage;
         public int ResetTime;
+        public int TimeLimit;
 
 
-        private Sprite PreviewSprite;
-        private int[] CurrentScore;
+        public int[] ScoreArray { get; private set; }
+        public long AcceptedTime { get; private set; }
         private string[] LocalizedReward;
         private string[] LocalizedTarget;
-
-        public Sprite GetPreviewSprite => PreviewSprite;
-        public void SetPreviewSprite(Sprite sprite) => PreviewSprite = sprite;
-
-        public int[] ScoreArray => CurrentScore;
+        public Sprite GetPreviewSprite { get; private set; }
+        public void SetPreviewSprite(Sprite sprite) => GetPreviewSprite = sprite;
 
         public override string ToString()
         {
@@ -262,18 +263,18 @@ public static class Quests_DataTypes
             return result.ToString();
         }
 
-        public int GetScore(int index) => CurrentScore[index];
+        public int GetScore(int index) => ScoreArray[index];
 
         public bool IsComplete()
         {
             for (int i = 0; i < TargetAMOUNT; ++i)
-                if (CurrentScore[i] < TargetCount[i])
+                if (ScoreArray[i] < TargetCount[i])
                     return false;
             return true;
         }
 
 
-        public bool IsComplete(int index) => CurrentScore[index] >= TargetCount[index];
+        public bool IsComplete(int index) => ScoreArray[index] >= TargetCount[index];
 
 
         public bool Init()
@@ -422,8 +423,11 @@ public static class Quests_DataTypes
                 {
                     string localizedSkill = Enum.TryParse(CheckQuest.QuestRequirementPrefab[i], out Skills.SkillType _)
                         ? Localization.instance.Localize("$skill_" + CheckQuest.QuestRequirementPrefab[i].ToLower())
-                        : Localization.instance.Localize($"$skill_" + Mathf.Abs(CheckQuest.QuestRequirementPrefab[i].GetStableHashCode()));
-                    message = $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{localizedSkill} {CheckQuest.QuestRequirementLevel[i]}</color>";
+                        : Localization.instance.Localize($"$skill_" +
+                                                         Mathf.Abs(CheckQuest.QuestRequirementPrefab[i]
+                                                             .GetStableHashCode()));
+                    message =
+                        $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{localizedSkill} {CheckQuest.QuestRequirementLevel[i]}</color>";
                     type = QuestRequirementType.Skill;
                     float skillLevel = Utils.GetPlayerSkillLevelCustom(CheckQuest.QuestRequirementPrefab[i]);
                     bool result = skillLevel >= CheckQuest.QuestRequirementLevel[i];
@@ -441,7 +445,8 @@ public static class Quests_DataTypes
                     type = QuestRequirementType.NotFinished;
                     if (AcceptedQuests.TryGetValue(reqID, out var quest))
                     {
-                        message = $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{quest.Name}</color>";
+                        message =
+                            $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{quest.Name}</color>";
                         return false;
                     }
 
@@ -572,31 +577,34 @@ public static class Quests_DataTypes
             return left > 0;
         }
 
-        public static void AcceptQuest(int UID, string score = "0", bool handleEvent = true)
+        public static void AcceptQuest(int UID, string score = "0", string acceptedTime = null, bool handleEvent = true)
         {
             if (!Player.m_localPlayer) return;
             if (AcceptedQuests.ContainsKey(UID) || !AllQuests.ContainsKey(UID)) return;
             AcceptedQuests[UID] = AllQuests[UID];
-            AcceptedQuests[UID].CurrentScore = new int[AcceptedQuests[UID].TargetAMOUNT];
+            AcceptedQuests[UID].ScoreArray = new int[AcceptedQuests[UID].TargetAMOUNT];
 
             string[] split = score.Split(',');
             for (int i = 0; i < split.Length; i++)
             {
-                AcceptedQuests[UID].CurrentScore[i] = Convert.ToInt32(split[i]);
+                AcceptedQuests[UID].ScoreArray[i] = Convert.ToInt32(split[i]);
             }
+
+            AcceptedQuests[UID].AcceptedTime = acceptedTime == null
+                ? (long)EnvMan.instance.m_totalSeconds
+                : Convert.ToInt64(acceptedTime);
 
             if (handleEvent) HandleQuestEvent(UID, QuestEventCondition.OnAcceptQuest);
             InventoryChanged();
             SaveScore(UID);
         }
-
-        private static void SaveScore(int UID)
+ 
+        private static void SaveScore(int UID) 
         {
             if (!Player.m_localPlayer || !AcceptedQuests.ContainsKey(UID)) return;
             string save = "[MPASN]quest=" + UID;
-
-            string scoreSave = AcceptedQuests[UID].CurrentScore.Aggregate("", (current, i) => current + (i + ","));
-            scoreSave = scoreSave.Substring(0, scoreSave.Length - 1);
+            string scoreSave = AcceptedQuests[UID].ScoreArray.Aggregate("", (current, i) => current + (i + ",")).TrimEnd(',');
+            scoreSave += ";" + AcceptedQuests[UID].AcceptedTime;
             Player.m_localPlayer.m_customData[save] = scoreSave;
             Quests_UIs.AcceptedQuestsUI.UpdateStatus(AcceptedQuests[UID]);
         }
@@ -717,9 +725,10 @@ public static class Quests_DataTypes
                 pkg.Write((int)DiscordStuff.Webhooks.Quest);
                 pkg.Write(Player.m_localPlayer?.GetPlayerName() ?? "LocalPlayer");
                 pkg.Write(AllQuests[UID].Name);
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks", pkg);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks",
+                    pkg);
             }
-        
+
             HandleQuestEvent(UID, QuestEventCondition.OnCompleteQuest);
         }
 
@@ -789,7 +798,7 @@ public static class Quests_DataTypes
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab && level >= quest.Value.TargetLevel[i])
                     {
-                        quest.Value.CurrentScore[i]++;
+                        quest.Value.ScoreArray[i]++;
                         SaveScore(quest.Key);
                         CheckCharacterTargets();
 
@@ -978,7 +987,7 @@ public static class Quests_DataTypes
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab && level == quest.Value.TargetLevel[i])
                     {
-                        quest.Value.CurrentScore[i]++;
+                        quest.Value.ScoreArray[i]++;
                         SaveScore(quest.Key);
 
                         if (quest.Value.SpecialTag.HasFlagFast(SpecialQuestTag.Autocomplete) &&
@@ -1012,7 +1021,7 @@ public static class Quests_DataTypes
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab)
                     {
-                        quest.Value.CurrentScore[i]++;
+                        quest.Value.ScoreArray[i]++;
                         SaveScore(quest.Key);
 
                         if (quest.Value.SpecialTag.HasFlagFast(SpecialQuestTag.Autocomplete) &&
@@ -1040,7 +1049,7 @@ public static class Quests_DataTypes
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == name)
                     {
-                        quest.Value.CurrentScore[i] = 1;
+                        quest.Value.ScoreArray[i] = 1;
                         if (quest.Value.IsComplete())
                         {
                             RemoveQuestComplete(quest.Key);
@@ -1065,7 +1074,7 @@ public static class Quests_DataTypes
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab)
                     {
-                        quest.Value.CurrentScore[i]++;
+                        quest.Value.ScoreArray[i]++;
                         SaveScore(quest.Key);
                         CheckPickableTargets();
 
@@ -1098,7 +1107,7 @@ public static class Quests_DataTypes
             {
                 for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
                 {
-                    quest.Value.CurrentScore[i] =
+                    quest.Value.ScoreArray[i] =
                         Utils.CustomCountItems(quest.Value.TargetPrefab[i], quest.Value.TargetLevel[i]);
                     SaveScore(quest.Key);
                     CheckItemDropsTargets();

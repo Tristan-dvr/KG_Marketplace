@@ -24,7 +24,7 @@ public static class Dialogues_Main_Client
     {
         private static void Postfix() => InitDialogues();
     }
-    
+
     private static void InitDialogues()
     {
         if(!ZNetScene.instance) return;

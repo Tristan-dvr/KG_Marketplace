@@ -128,7 +128,10 @@ public static class Quests_Main_Client
 
             foreach (KeyValuePair<int, string> key in temp)
             {
-                Quests_DataTypes.Quest.AcceptQuest(key.Key, key.Value, false);
+                string[] split = key.Value.Split(';');
+                string score = split[0];
+                string time = split.Length > 1 ? split[1] : null;
+                Quests_DataTypes.Quest.AcceptQuest(key.Key, score, time, false);
             }
 
             Quests_UIs.AcceptedQuestsUI.CheckQuests();

@@ -7,7 +7,6 @@ namespace Marketplace
     [BepInPlugin(GUID, PluginName, PluginVersion)]
     [BepInDependency("org.bepinex.plugins.groups", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInIncompatibility("org.bepinex.plugins.valheim_plus")]
-    [VerifyKey("KGvalheim/Marketplace", LicenseMode.DedicatedServer)]
     public class Marketplace : BaseUnityPlugin
     {
         private const string GUID = "MarketplaceAndServerNPCs";
@@ -31,8 +30,7 @@ namespace Marketplace
         public enum WorkingAs
         {
             Client,
-            Server,
-            Both
+            Server
         }
 
         public static WorkingAs WorkingAsType;
@@ -41,9 +39,7 @@ namespace Marketplace
         {
             WorkingAsType = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null
                 ? WorkingAs.Server
-                : Config.Bind("General", "Use Marketplace Locally", false, "Enable Market Local Usage").Value
-                    ? WorkingAs.Both
-                    : WorkingAs.Client;
+                : WorkingAs.Client;
             Utils.print($"Marketplace Working As: {WorkingAsType}");
             _thistype = this;
             Type.GetType("Groups.Initializer, kg.Marketplace")!.GetMethod("Init")!.Invoke(null, null);

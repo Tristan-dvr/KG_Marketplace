@@ -29,7 +29,7 @@ public static class Trader_Main_Server
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
             {
-                splitProfile = profiles[i].Replace("[", "").Replace("]", "").ToLower();
+                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","").ToLower();
                 string[] split = splitProfile.Split('=');
                 if (split.Length == 2)
                 {

@@ -23,14 +23,13 @@ public static class Trader_Main_Client
         InitTraderItems();
         Trader_UI.Reload();
     }
-
+    
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     [ClientOnlyPatch]
     private static class ZNetScene_Awake_Patch
     {
         private static void Postfix() => InitTraderItems();
     }
-
     
     public static void InitTraderItems()
     {

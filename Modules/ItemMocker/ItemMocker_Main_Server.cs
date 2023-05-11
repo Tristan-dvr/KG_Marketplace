@@ -23,7 +23,7 @@ public static class ItemMocker_Main_Server
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
             {
-                splitProfile = profiles[i].Replace("[", "").Replace("]", "");
+                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","");
             }
             else
             {

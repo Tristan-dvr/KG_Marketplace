@@ -133,11 +133,11 @@ public static class Dialogues_UI
         int c = 0;
         foreach (var option in dialogue.Options)
         {
-            bool deactivate = false;
+            bool alwaysVisibleCheck = false;
             if (!option.CheckCondition(out string reason))
             {
                 if (option.AlwaysVisible)
-                    deactivate = true;
+                    alwaysVisibleCheck = true;
                 else
                     continue;
             }
@@ -149,7 +149,7 @@ public static class Dialogues_UI
             if (option.Icon != null)
                 element.transform.Find("Text/Icon").GetComponent<Image>().sprite = option.Icon;
             
-            if (deactivate)
+            if (alwaysVisibleCheck)
             {
                 UnityEngine.Object.Destroy(element.GetComponent<Button>());
                 element.GetComponent<Image>().color = Color.red;
@@ -175,7 +175,6 @@ public static class Dialogues_UI
 
             HotbarActions[c] = OnClick;
             element.GetComponent<Button>().onClick.AddListener(OnClick);
-            if(c >= 10) break;
         }
 
         ResetFitters();
