@@ -10,6 +10,7 @@ using Marketplace.Modules.Teleporter;
 using Marketplace.Modules.Trader;
 using Marketplace.Modules.Transmogrification;
 using UnityEngine.EventSystems;
+using Valheim.UI;
 using Image = UnityEngine.UI.Image;
 using Object = UnityEngine.Object;
 
@@ -34,6 +35,28 @@ public static class Market_NPC
     private static readonly int Wakeup = Animator.StringToHash("wakeup");
     private static readonly int Crafting = Animator.StringToHash("crafting");
     private static readonly int Stagger = Animator.StringToHash("stagger");
+
+    [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
+    [ClientOnlyPatch]
+    private static class FejdStartup_Awake_Patch
+    {
+        private static bool done;
+
+        private static void Postfix(FejdStartup __instance)
+        {
+            if (!done)
+            {
+                done = true;
+                if (__instance.transform.Find("StartGame/Panel/JoinPanel/serverCount")
+                        ?.GetComponent<TextMeshProUGUI>() is { } tmp)
+                {
+                    NPC.transform.Find("TMP").GetComponent<TMP_Text>().font = tmp.font;
+                    NPC.transform.Find("TMP").GetComponent<TMP_Text>().outlineWidth = 0.075f;
+                    Utils.print("Replaced TMP for NPC");
+                }
+            }
+        }
+    }
 
     public enum NPCType
     {

@@ -11,7 +11,7 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        public const string PluginVersion = "8.6.0";
+        public const string PluginVersion = "8.6.1";
         internal static Marketplace _thistype;
         private static readonly Harmony _harmony = new(GUID); 
         private static FileSystemWatcher FSW;
