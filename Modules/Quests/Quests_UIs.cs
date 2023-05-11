@@ -121,7 +121,9 @@ public static class Quests_UIs
             RestrictionText.gameObject.SetActive(false);
             RestrictionButton.gameObject.SetActive(false);
             DescriptionTransform.gameObject.SetActive(true);
-            string timeLimitString = quest.TimeLimit > 0 ? $"\n<color=#B20000>{"$mpasn_questtimelimit".Localize()}: {quest.TimeLimit.ToTime()}</color>" : "";
+            string timeLimitString = quest.TimeLimit > 0
+                ? $"\n<color=#B20000>{"$mpasn_questtimelimit".Localize()}: {quest.TimeLimit.ToTime()}</color>"
+                : "";
             Description.text = quest.Description.Localize().Replace(@"\n", "\n") + timeLimitString;
 
             PreviewImage.gameObject.SetActive(false);
@@ -485,7 +487,8 @@ public static class Quests_UIs
         private static void InitQuestData(GameObject go, Quests_DataTypes.Quest data, int UID)
         {
             string timeLeft = data.TimeLimit > 0 ? $"\n (<color=red>{CalculateTimeLeft(data).ToTime()}</color>)" : "";
-            go.transform.Find("QuestName").GetComponent<Text>().text = $"<color=yellow> [ {data.Name} ]</color>".Localize() + timeLeft;
+            go.transform.Find("QuestName").GetComponent<Text>().text =
+                $"<color=yellow> [ {data.Name} ]</color>".Localize() + timeLeft;
             go.transform.Find("QuestName/Button").GetComponent<Button>().onClick.AddListener(() =>
             {
                 AssetStorage.AssetStorage.AUsrc.Play();
@@ -588,17 +591,20 @@ public static class Quests_UIs
                         if (UpdateData.TryGetValue(quest.Value, out var value))
                         {
                             value.transform.Find("QuestName").GetComponent<Text>().text =
-                                $"<color=yellow> [ {quest.Value.Name} ]\n (<color=red>{timeLeft.ToTime()}</color>)</color>";
+                                    $"<color=yellow> [ {quest.Value.Name} ]</color>".Localize() +
+                                    $"\n (<color=red>{CalculateTimeLeft(quest.Value).ToTime()}</color>)";
                         }
                     }
                 }
-                foreach (int i in toRemove)
+                foreach (int id in toRemove)
                 {
-                    string questName = Quests_DataTypes.AcceptedQuests[i].Name;
-                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,$"{questName} $mpasn_questtimelimitfail");
-                    Quests_DataTypes.Quest.RemoveQuestFailed(i);
+                    string questName = Quests_DataTypes.AcceptedQuests[id].Name.Localize();
+                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
+                        $"{questName} $mpasn_questtimelimitfail");
+                    Quests_DataTypes.Quest.RemoveQuestFailed(id);
                     CheckQuests();
                 }
+
                 toRemove.Clear();
             }
         }

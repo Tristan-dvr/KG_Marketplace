@@ -143,6 +143,7 @@ public static class Marketplace_API
             return;
         MI_ResetTraderItems.Invoke(null, null);
     }   
+    
     public static void OpenQuestJournal()
     {
         if (!_IsInstalled || MI_OpenQuestJournal == null)
@@ -180,6 +181,8 @@ public static class ClientSide
 
     //trader
     public static void ResetTraderItems() => Trader_Main_Client.InitTraderItems();
+    
+    //quests
     public static void OpenQuestJournal() => Quests_UIs.QuestUI.ClickJournal();
 
     //territories
