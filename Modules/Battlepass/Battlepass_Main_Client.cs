@@ -203,7 +203,7 @@ public static class Battlepass_Main_Client
 
     public static int GetExp() => CurrentEXP;
 
-    private static int LatestRevision;
+    private static int LatestRevision = -1;
 
     private static void ProcessBattlepass()
     {

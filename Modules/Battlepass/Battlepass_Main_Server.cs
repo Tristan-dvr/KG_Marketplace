@@ -1,5 +1,7 @@
 ﻿using BepInEx.Configuration;
 using Marketplace.Paths;
+using Random = UnityEngine.Random;
+
 namespace Marketplace.Modules.Battlepass;
 
 [UsedImplicitly]
@@ -41,7 +43,7 @@ public static class Battlepass_Main_Server
             BP_Config.Bind("BP", "Premium Users", "User IDs", "Premium Users").Value;
         Battlepass_DataTypes.SyncedBattlepassData.Value.FreeRewards = new List<Battlepass_DataTypes.BattlePassElement>();
         Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumRewards = new List<Battlepass_DataTypes.BattlePassElement>();
-
+        Battlepass_DataTypes.SyncedBattlepassData.Value._revision = Random.Range(int.MinValue, int.MaxValue);
         List<string> freeData = File.ReadAllLines(Market_Paths.BattlepassFreeRewardsPath).ToList();
         if (freeData.Count > 0)
         {

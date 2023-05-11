@@ -44,8 +44,6 @@ Paypal: war3spells@gmail.com
 
 # You can find all guides here: https://kg-dev.xyz/
 
-[![KeyManager Disclaimer](https://noobtrap.eu/images/keymanager_disclaimer_server.png)](https://key.sayless.eu/faq.php)
-
 For Questions or Comments, find KG#7777 ![https://i.imgur.com/CPYNjXV.png](https://i.imgur.com/CPYNjXV.png)in the Odin
 Plus
 Team Discord:
