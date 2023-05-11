@@ -249,7 +249,7 @@ public static class PostMail_Main_Client
 
         public string GetHoverText()
         {
-            return Localization.instance.Localize("[<color=yellow><b>ALT + $KEY_Use</b></color>] Open Mailbox") + "\n" +
+            return Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>] Open Mailbox") + "\n" +
                    Localization.instance.Localize("[<color=yellow><b>L.Shift + $KEY_Use</b></color>] Send Mail");
         }
 

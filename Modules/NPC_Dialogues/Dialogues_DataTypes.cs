@@ -188,7 +188,10 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCommand.RemoveItem:
-                                Utils.CustomRemoveItems(split[1], int.Parse(split[2]), 1);
+                                result += (_) =>
+                                {
+                                    Utils.CustomRemoveItems(split[1], int.Parse(split[2]), 1);
+                                };
                                 break;
                             case OptionCommand.Spawn:
                                 result += (_) =>
