@@ -73,9 +73,6 @@
         <Reference Include="Jewelcrafting">
           <HintPath>Libs\Jewelcrafting.dll</HintPath>
         </Reference>
-        <Reference Include="KeyManager">
-          <HintPath>Libs\KeyManager.dll</HintPath>
-        </Reference>
         <Reference Include="LocalizationManager">
           <HintPath>Libs\LocalizationManager.dll</HintPath>
         </Reference>
@@ -88,7 +85,7 @@
         <Reference Include="Mono.Posix">
           <HintPath>Libs\Mono.Posix.dll</HintPath>
         </Reference>
-        <Reference Include="Mono.Security">
+        <Reference Include="Mono.Security"> 
           <HintPath>Libs\Mono.Security.dll</HintPath>
         </Reference>
         <Reference Include="MonoMod.Utils">

@@ -215,7 +215,7 @@ public class MTLLoader {
                 }
 
                 var bumpTexture = TryLoadTexture(texturePath, true);
-                float bumpScale = GetArgValue(splitLine, "-bm", 1.0f);
+                float bumpScale = GetArgValue(splitLine, "-bm");
 
                 if (bumpTexture != null) {
                     currentMaterial.SetTexture("_BumpMap", bumpTexture);

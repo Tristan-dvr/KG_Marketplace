@@ -445,19 +445,15 @@ public static class Quests_DataTypes
                     type = QuestRequirementType.NotFinished;
                     if (AcceptedQuests.TryGetValue(reqID, out var quest))
                     {
-                        message =
-                            $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{quest.Name}</color>";
+                        message = $"$mpasn_questtaken: <color=#00ff00>{quest.Name}</color>".Localize();
                         return false;
                     }
 
-                    if (AllQuests.TryGetValue(reqID, out var reqQuest))
+                    if (AllQuests.TryGetValue(reqID, out var _) && IsOnCooldown(reqID, out _))
                     {
-                        if (IsOnCooldown(reqID, out _))
-                        {
-                            message =
-                                $"{Localization.instance.Localize("$mpasn_questfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
-                            return false;
-                        }
+                        message = $"$mpasn_needtofinishquest: <color=#00ff00>{AllQuests[reqID].Name}</color>"
+                            .Localize();
+                        return false; 
                     }
 
                     continue;
@@ -598,12 +594,13 @@ public static class Quests_DataTypes
             InventoryChanged();
             SaveScore(UID);
         }
- 
-        private static void SaveScore(int UID) 
+
+        private static void SaveScore(int UID)
         {
             if (!Player.m_localPlayer || !AcceptedQuests.ContainsKey(UID)) return;
             string save = "[MPASN]quest=" + UID;
-            string scoreSave = AcceptedQuests[UID].ScoreArray.Aggregate("", (current, i) => current + (i + ",")).TrimEnd(',');
+            string scoreSave = AcceptedQuests[UID].ScoreArray.Aggregate("", (current, i) => current + (i + ","))
+                .TrimEnd(',');
             scoreSave += ";" + AcceptedQuests[UID].AcceptedTime;
             Player.m_localPlayer.m_customData[save] = scoreSave;
             Quests_UIs.AcceptedQuestsUI.UpdateStatus(AcceptedQuests[UID]);
@@ -718,7 +715,8 @@ public static class Quests_DataTypes
             string cooldown = "[MPASN]questCD=" + UID;
             Player.m_localPlayer.m_customData[cooldown] = EnvMan.instance.GetCurrentDay().ToString();
             MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
-                $"<color=#00ff00>{Localization.instance.Localize("$mpasn_youfinishedquest")}: <color=#00FFFF>{AllQuests[UID].Name}</color></color>");
+                $"<color=#00ff00>$mpasn_youfinishedquest:</color> <color=#00FFFF>{AllQuests[UID].Name}</color>"
+                    .Localize());
             if (ZNet.instance.GetServerPeer() != null)
             {
                 ZPackage pkg = new();

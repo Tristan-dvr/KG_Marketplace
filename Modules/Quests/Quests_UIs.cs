@@ -121,7 +121,8 @@ public static class Quests_UIs
             RestrictionText.gameObject.SetActive(false);
             RestrictionButton.gameObject.SetActive(false);
             DescriptionTransform.gameObject.SetActive(true);
-            Description.text = Localization.instance.Localize(quest.Description ?? "").Replace(@"\n", "\n");
+            string timeLimitString = quest.TimeLimit > 0 ? $"\n<color=#B20000>{"$mpasn_questtimelimit".Localize()}: {quest.TimeLimit.ToTime()}</color>" : "";
+            Description.text = quest.Description.Localize().Replace(@"\n", "\n") + timeLimitString;
 
             PreviewImage.gameObject.SetActive(false);
             if (quest.GetPreviewSprite != null)
@@ -394,7 +395,7 @@ public static class Quests_UIs
 
                     if (Quests_DataTypes.Quest.IsOnCooldown(profileID, out int cd) && cd > 5000) continue;
                     GameObject newGo = UnityEngine.Object.Instantiate(QuestGO, MainTransform);
-                    newGo.transform.Find("Text").GetComponent<Text>().text = Localization.instance.Localize(data.Name);
+                    newGo.transform.Find("Text").GetComponent<Text>().text = data.Name.Localize();
                     newGo.transform.Find("ImageList").GetChild((int)data.Type).gameObject.SetActive(true);
                     QuestLink[newGo] = profileID;
                     int send = count;
@@ -483,9 +484,8 @@ public static class Quests_UIs
 
         private static void InitQuestData(GameObject go, Quests_DataTypes.Quest data, int UID)
         {
-            string timeLeft = data.TimeLimit > 0 ? $" (<color=red>{CalculateTimeLeft(data).ToTime()}</color>)" : "";
-            go.transform.Find("QuestName").GetComponent<Text>().text =
-                $"<color=yellow> [ {data.Name}{timeLeft} ]</color>";
+            string timeLeft = data.TimeLimit > 0 ? $"\n (<color=red>{CalculateTimeLeft(data).ToTime()}</color>)" : "";
+            go.transform.Find("QuestName").GetComponent<Text>().text = $"<color=yellow> [ {data.Name} ]</color>".Localize() + timeLeft;
             go.transform.Find("QuestName/Button").GetComponent<Button>().onClick.AddListener(() =>
             {
                 AssetStorage.AssetStorage.AUsrc.Play();
@@ -588,14 +588,14 @@ public static class Quests_UIs
                         if (UpdateData.TryGetValue(quest.Value, out var value))
                         {
                             value.transform.Find("QuestName").GetComponent<Text>().text =
-                                $"<color=yellow> [ {quest.Value.Name}  (<color=red>{timeLeft.ToTime()}</color>) ]</color>";
+                                $"<color=yellow> [ {quest.Value.Name} ]\n (<color=red>{timeLeft.ToTime()}</color>)</color>";
                         }
                     }
                 }
                 foreach (int i in toRemove)
                 {
                     string questName = Quests_DataTypes.AcceptedQuests[i].Name;
-                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,$"{questName} $mpasn_questtimelimitfail", 0, null);
+                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,$"{questName} $mpasn_questtimelimitfail");
                     Quests_DataTypes.Quest.RemoveQuestFailed(i);
                     CheckQuests();
                 }

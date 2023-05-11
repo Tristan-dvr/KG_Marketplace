@@ -189,7 +189,7 @@ namespace MagicDoors
 
             private bool IsOpened
             {
-                get => _znv.GetZDO().GetBool("isopened", false);
+                get => _znv.GetZDO().GetBool("isopened");
                 set => _znv.GetZDO().Set("isopened", value);
             }
 

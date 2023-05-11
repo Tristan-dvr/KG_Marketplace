@@ -432,4 +432,43 @@ public static class Utils
     {
         return (flag & other) != 0;
     }
+    
+    
+    public static string ToTime(this int seconds)
+    {
+        TimeSpan t = TimeSpan.FromSeconds(seconds);
+        string result = "";
+        if (t.Days > 0) result += $"{t.Days:D2}d ";
+        if (t.Hours > 0) result += $"{t.Hours:D2}h ";
+        if (t.Minutes > 0) result += $"{t.Minutes:D2}m ";
+        result += $"{t.Seconds:D2}s";
+        return  result;
+    }
+    public static string ToTime(this long seconds)
+    {
+        TimeSpan t = TimeSpan.FromSeconds(seconds);
+        string result = "";
+        if (t.Days > 0) result += $"{t.Days:D2}d ";
+        if (t.Hours > 0) result += $"{t.Hours:D2}h ";
+        if (t.Minutes > 0) result += $"{t.Minutes:D2}m ";
+        result += $"{t.Seconds:D2}s";
+        return  result;
+    }
+        
+    public static string ToTimeNoS(this long seconds)
+    {
+        TimeSpan t = TimeSpan.FromSeconds(seconds);
+        string result = "";
+        if (t.Days > 0) result += $"{t.Days:D2}d ";
+        if (t.Hours > 0) result += $"{t.Hours:D2}h ";
+        if (t.Minutes > 0) result += $"{t.Minutes:D2}m ";
+        return  result;
+    }
+    
+    public static string Localize(this string text)
+    {
+        return string.IsNullOrEmpty(text) ? string.Empty : Localization.instance.Localize(text);
+    }
+    
+    
 }
