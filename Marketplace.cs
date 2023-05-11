@@ -11,9 +11,9 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        public const string PluginVersion = "8.6.1";
+        public const string PluginVersion = "8.6.0";
         internal static Marketplace _thistype;
-        private static readonly Harmony _harmony = new(GUID); 
+        private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW;
         public static Action Global_Updator;
         public static Action Global_FixedUpdator;
@@ -30,7 +30,8 @@ namespace Marketplace
         public enum WorkingAs
         {
             Client,
-            Server
+            Server,
+            Both
         }
 
         public static WorkingAs WorkingAsType;
@@ -39,7 +40,9 @@ namespace Marketplace
         {
             WorkingAsType = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null
                 ? WorkingAs.Server
-                : WorkingAs.Client;
+                : Config.Bind("General", "Use Marketplace Locally", false, "Enable Market Local Usage").Value
+                    ? WorkingAs.Both
+                    : WorkingAs.Client;
             Utils.print($"Marketplace Working As: {WorkingAsType}");
             _thistype = this;
             Type.GetType("Groups.Initializer, kg.Marketplace")!.GetMethod("Init")!.Invoke(null, null);
@@ -151,6 +154,7 @@ namespace Marketplace
                 Utils.print($"FSW: Not a server, ignoring ({e.Name})", ConsoleColor.Red);
                 return;
             }
+
             if (LastConfigChangeTime > DateTime.Now.AddSeconds(-5)) return;
             LastConfigChangeTime = DateTime.Now;
             Utils.DelayedAction(action);

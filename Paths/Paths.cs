@@ -56,7 +56,7 @@ public static class Market_Paths
 
     private static void OnInit()
     {
-        if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server)
+        if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server or Marketplace.WorkingAs.Both)
         {
             if (!Directory.Exists(MainPath))
                 Directory.CreateDirectory(MainPath);
@@ -115,7 +115,7 @@ public static class Market_Paths
             if (!File.Exists(MockerConfig)) File.Create(MockerConfig).Dispose();
         }
 
-        if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Client)
+        if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Client or Marketplace.WorkingAs.Both)
         {
             if (!Directory.Exists(NPC_SoundsPath))
                 Directory.CreateDirectory(NPC_SoundsPath);

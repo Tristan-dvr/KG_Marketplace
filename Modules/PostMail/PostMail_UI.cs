@@ -224,6 +224,11 @@ public static class PostMail_UI
     private static void SendItem()
     {
         if (_currentProcessedTargetPost == null || !_currentProcessedTargetPost.IsValid()) return;
+        if (PostMail_Main_Client.PostMailComponent.TryReadMailFromZDO(_currentProcessedTargetPost).Count >= 30)
+        {
+            MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "Mailbox is full");
+            return;
+        }
         ItemDrop.ItemData item = CurrentSendItem;
         if (!Player.m_localPlayer.m_inventory.m_inventory.Contains(item)) item = null;
         Marketplace_DataTypes.ClientMarketSendData newData = item != null

@@ -44,6 +44,20 @@ public static class PostMail_Main_Client
             ResetMailpostRecipe();
         }
     }
+    
+    [HarmonyPatch(typeof(Piece), nameof(Piece.CanBeRemoved))]
+    [ClientOnlyPatch]
+    static class Piece_CanBeRemoved_Patch
+    {
+        static void Postfix(Piece __instance, ref bool __result)
+        {
+            if (global::Utils.GetPrefabName(__instance.gameObject) == PostMail_Prefab.name && !Utils.IsDebug)
+            {
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "Debug Mode Please");
+                __result = false;
+            }
+        }
+    }
 
     private static void ResetMailpostRecipe()
     {
