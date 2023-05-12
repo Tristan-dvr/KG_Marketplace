@@ -179,7 +179,7 @@ public static class DistancedUI_UI
                 string toUppper = "";
                 for (int i = 0; i < item.Length; ++i)
                 {
-                    if (i == 0 || item[i - 1] == ' ')
+                    if (i == 0 || item[i - 1] == '_')
                     {
                         toUppper += char.ToUpper(item[i]);
                     }

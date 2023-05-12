@@ -878,9 +878,9 @@ You can assign specific flags to a zone to define its behavior and characteristi
 - `NoPickaxe`: Players cannot use pickaxes within the zone.
 - `NoInteract`: Interactions with objects or NPCs within the zone are disabled.
 - `NoAttack`: Players cannot initiate attacks or engage in combat within the zone.
-- `PvpOnly`: Only player-versus-player (PvP) interactions are allowed within the zone.
-- `PveOnly`: Only player-versus-environment (PvE) interactions are allowed within the zone.
-- `PeriodicHeal`: Players are periodically healed while inside the zone.
+- `PvpOnly`: Forces PvP mode within the zone.
+- `PveOnly`:  Forces PvE mode within the zone.
+- `PeriodicHeal`: Players are periodically healed while inside the zone (only zone owners).
 - `PeriodicDamage`: Players receive periodic damage while inside the zone.
 - `IncreasedPlayerDamage`: Player attacks deal increased damage within the zone.
 - `IncreasedMonsterDamage`: Monsters deal increased damage to players within the zone.
@@ -889,7 +889,7 @@ You can assign specific flags to a zone to define its behavior and characteristi
 - `MoveSpeedMultiplier`: Players' movement speed is multiplied by a certain factor within the zone.
 - `NoDeathPenalty`: Players do not suffer penalties upon death within the zone.
 - `NoPortals`: Teleportation portals cannot be used within the zone.
-- `PeriodicHealALL`: All entities (players and creatures) are periodically healed within the zone.
+- `PeriodicHealALL`: All players are periodically healed within the zone.
 - `ForceGroundHeight`: The ground height is forcefully set within the zone.
 - `ForceBiome`: The biome within the zone is forcefully set.
 - `AddGroundHeight`: Additional ground height is added within the zone.
@@ -901,10 +901,10 @@ You can assign specific flags to a zone to define its behavior and characteristi
 - `NoInteractItemStands`: Interactions with item stands within the zone are disabled.
 - `NoInteractChests`: Interactions with chests within the zone are disabled.
 - `NoInteractDoors`: Interactions with doors within the zone are disabled.
-- `NoStructureSupport`: Structures within the zone do not provide support for other structures.
+- `NoStructureSupport`: Structures within the zone do not get damaged if they are not supported.
 - `NoInteractPortals`: Interactions with portals within the zone are disabled.
 - `CustomPaint`: The zone has custom paint applied to it.
-- `LimitZoneHeight`: The height within the zone is limited, preventing players from reaching extreme heights.
+- `LimitZoneHeight`: The minimum height of the zone is limited.
 - `NoItemLoss`: Players do not lose items upon death within the zone.
 - `SnowMask`: A snow mask effect is applied within the zone.
 - `NoMist`: Mist weather effects are disabled within the zone.

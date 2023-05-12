@@ -694,79 +694,120 @@ some common useful ones are vfx_HealthUpgrade, vfx_lootspawn, vfx_odin_despawn, 
 </details>
 <details><summary>Territory System</summary>
 <p> 
-<p>Territories can be created to provide a special area. They can be used to provide a place for marketplace npc’s, a PVP arena, a safe haven for a town, really the possibilities are up to you. Territories are outlined by coordinates and the actions allowed or disallowed inside a territory are defined by “flags”. Territories can be set by admins, but can also be placed by players if enabled in config.</p>
-<p>Territory config parameters:</p>
-<p>[ZoneName]<br>
-Shape type: Circle, Square<br>
-X pos, Z pos, Radius<br>
-Red Color, Green Color, Blue Color, True/False Show Territory on water
-Zone Flags seperated by comma if multiple<br>
-Owners SteamID seperated by comma if multiple</p>
-<p>Note the use of standard html styles like adding color, bold text, italics, size etc.</p>
-<p>Example of admin configured territory in the territorydatabase.cfg file:</p>
-<p>[Traning  Arena]<br>
-Circle<br>
-100, 300, 500, false
-255, 0, 0<br>
-NoInteractDoors, CustomEnvironment = Clear, NoPickaxe, PvpOnly<br>
-None<br>
-^ Will create a circular zone at X 100 and Z 300 with Radius 500 and color RED and custom flags.</p>
-<p>You can write @Number after zone id to change its priority, so you can have one zone inside another. For example:</p>
-<p>[Trader@1]<br>
-Circle<br>
-0,0, 300<br>
-138, 43, 226, false<br>
-NoBuild, NoBuildDamage, NoPickaxe, ForceBiome = 4, PeriodicHealALL = 2, NoMonsters, NoDeathPenalty, InfiniteFuel, NoStructureSupport, NoInteractCraftingStation, NoInteractItemStands, NoAttack, NoInteractItems<br>
-76543210123456789, 7656789876543211,</p>
-<p>[Trader two@2]<br>
-Square<br>
-0,0,100<br>
-238, 99, 101, false<br>
-NoBuild, NoBuildDamage, NoPickaxe, ForceBiome = 4, PeriodicHealALL = 2, NoMonsters, NoDeathPenalty, InfiniteFuel, NoStructureSupport, NoInteractCraftingStation, NoInteractItemStands, NoAttack, NoInteractItems<br>
-76543210123456789, 7656789876543211,</p>
-<p>###Territories flags are as follows:</p>
-<pre><code>    None
-    PushAway  
-    NoBuild  
-    NoPickaxe  
-    NoInteract  
-    NoAttack  
-    PvpOnly  
-    PveOnly  
-    PeriodicHeal = Integer Value
-    PeriodicDamage = Integer Value 
-    PeriodicHealALL = Integer Value 
-    IncreasedPlayerDamage = Integer Value 
-    IncreasedMonsterDamage = Integer Value 
-    NoMonsters  
-    CustomEnvironment = Clear, Twilight_Clear, Misty, Darklands_dark, Heath clear, DeepForest Mist, GDKing, Rain, LightRain, ThunderStorm, Eikthyr, GoblinKing, nofogts, SwampRain, Bonemass, Snow, Twilight_Snow, Twilight_SnowStorm, SnowStorm, Moder, Ashrain, Crypt, SunkenCrypt        MoveSpeedMultiplier = Integer Value 
-    NoDeathPenalty  
-    NoPortals  
-    NoInteractPortals 
-    ForceGroundHeight = Integer Value 
-    ForceBiome = 1 (Meadows), 2 (Swamp), 4 (Mountain), 8 (BlackForest), 16 (Plains), AshLands, DeepNorth, Ocean, Mistlands
-    AddGroundHeight = Integer Value 
-    NoBuildDamage  
-    MonstersAddStars  
-    InfiniteFuel  
-    NoInteractItems  
-    NoInteractCraftingStation  
-    NoInteractItemStands  
-    NoInteractChests  
-    NoInteractDoors  
-    NoStructureSupport  
-    CustomPaint = paved
-    LimitZoneHeight = Integer Value 
-    SnowMask  (creates a snow covered environment)
-    NoItemLoss
-    SnowMask
-    NoMist
-    InfiniteEitr
-    InfiniteStamina
+<p>The <code>TerritoryDatabase.cfg</code> file is used to define territories or zones within your game world. Each zone can have specific attributes such as shape, position, size, color, flags, and owners. This guide will help you understand the format and options available in the configuration file.</p>
+<h2>Format</h2>
+<p>The configuration file follows the following format:</p>
+<pre><code class="language-plaintext">[ZoneName]
+Shape type (Circle, Square, Custom)
+X pos, Z pos, Radius (for circle/square) or X pos, Z pos, X length, Z length (for custom zone)
+Red Color, Green Color, Blue Color, Show Territory on water (True/False)
+Zone Flags (separated by comma if multiple)
+Owners SteamID (separated by comma if multiple)
 </code></pre>
-<p>If territory will have at least one color less than 0 (-1, -10 and so on) then it won’t be shown on map, but still will function</p>
-<p>Territories can also be set by players if enabled in the PlayerTerritories config file. The amount of territories a player can create, the radius, and the allowed flags can be set in the file.</p>
-<p>When a player presses F8 a menu will appear and the player can enter coordinates for their new territory. Those settings will be saved in a json file in the PlayerTerritories folder beside the config file.</p>
+<h2>Zone Attributes</h2>
+<h3>Zone Name</h3>
+<p>Each zone entry begins with a unique <code>ZoneName</code>. This identifier is used to differentiate between different zones in the configuration file.</p>
+<h3>Shape Type</h3>
+<p>The shape of the zone can be specified as one of the following:</p>
+<ul>
+<li>Circle: The zone is defined as a circle with a center point and a radius.</li>
+<li>Square: The zone is defined as a square with a center point and side length.</li>
+<li>Custom: The zone is defined with custom dimensions using the X and Z position coordinates, along with the X and Z lengths.</li>
+</ul>
+<h3>Position and Size</h3>
+<p>Depending on the shape type, you need to specify the position and size of the zone:</p>
+<ul>
+<li>For a circle or square, provide the X and Z position coordinates and the radius (for a circle) or side length (for a square).</li>
+<li>For a custom zone, provide the X and Z position coordinates, as well as the X and Z lengths.</li>
+</ul>
+<h3>Color and Show Territory on Water</h3>
+<p>Specify the color of the zone using RGB values (Red, Green, Blue). Additionally, indicate whether the territory should be visible on water by specifying <code>True</code> or <code>False</code> after the RGB color values.</p>
+<h3>Zone Flags</h3>
+<p>You can assign specific flags to a zone to define its behavior and characteristics. Multiple flags can be assigned to a zone, separated by commas. Here are the available flags:</p>
+<ul>
+<li><code>PushAway</code>: Players are pushed away from the zone boundaries.</li>
+<li><code>NoBuild</code>: Building structures is not allowed within the zone.</li>
+<li><code>NoPickaxe</code>: Players cannot use pickaxes within the zone.</li>
+<li><code>NoInteract</code>: Interactions with objects or NPCs within the zone are disabled.</li>
+<li><code>NoAttack</code>: Players cannot initiate attacks or engage in combat within the zone.</li>
+<li><code>PvpOnly</code>: Forces PvP mode within the zone.</li>
+<li><code>PveOnly</code>:  Forces PvE mode within the zone.</li>
+<li><code>PeriodicHeal</code>: Players are periodically healed while inside the zone (only zone owners).</li>
+<li><code>PeriodicDamage</code>: Players receive periodic damage while inside the zone.</li>
+<li><code>IncreasedPlayerDamage</code>: Player attacks deal increased damage within the zone.</li>
+<li><code>IncreasedMonsterDamage</code>: Monsters deal increased damage to players within the zone.</li>
+<li><code>NoMonsters</code>: Monsters do not spawn or exist within the zone.</li>
+<li><code>CustomEnvironment</code>: The zone has a custom environment specified by the environment name.</li>
+<li><code>MoveSpeedMultiplier</code>: Players’ movement speed is multiplied by a certain factor within the zone.</li>
+<li><code>NoDeathPenalty</code>: Players do not suffer penalties upon death within the zone.</li>
+<li><code>NoPortals</code>: Teleportation portals cannot be used within the zone.</li>
+<li><code>PeriodicHealALL</code>: All players are periodically healed within the zone.</li>
+<li><code>ForceGroundHeight</code>: The ground height is forcefully set within the zone.</li>
+<li><code>ForceBiome</code>: The biome within the zone is forcefully set.</li>
+<li><code>AddGroundHeight</code>: Additional ground height is added within the zone.</li>
+<li><code>NoBuildDamage</code>: Structures within the zone do not take damage.</li>
+<li><code>MonstersAddStars</code>: Monsters within the zone have additional stars, indicating higher difficulty.</li>
+<li><code>InfiniteFuel</code>: Fuel consumption is disabled within the zone.</li>
+<li><code>NoInteractItems</code>: Interactions with items within the zone are disabled.</li>
+<li><code>NoInteractCraftingStation</code>: Interactions with crafting stations within the zone are disabled.</li>
+<li><code>NoInteractItemStands</code>: Interactions with item stands within the zone are disabled.</li>
+<li><code>NoInteractChests</code>: Interactions with chests within the zone are disabled.</li>
+<li><code>NoInteractDoors</code>: Interactions with doors within the zone are disabled.</li>
+<li><code>NoStructureSupport</code>: Structures within the zone do not get damaged if they are not supported.</li>
+<li><code>NoInteractPortals</code>: Interactions with portals within the zone are disabled.</li>
+<li><code>CustomPaint</code>: The zone has custom paint applied to it.</li>
+<li><code>LimitZoneHeight</code>: The minimum height of the zone is limited.</li>
+<li><code>NoItemLoss</code>: Players do not lose items upon death within the zone.</li>
+<li><code>SnowMask</code>: A snow mask effect is applied within the zone.</li>
+<li><code>NoMist</code>: Mist weather effects are disabled within the zone.</li>
+<li><code>InfiniteEitr</code>: Eitr consumption is disabled within the zone.</li>
+<li><code>InfiniteStamina</code>: Stamina consumption is disabled within the zone.</li>
+<li><code>NoCreatureDrops</code>: Creatures within the zone do not drop items upon defeat.</li>
+</ul>
+<p><strong>Note:</strong> For the <code>CustomEnvironment</code>, <code>PeriodicDamage</code>, <code>PeriodicHealALL</code>, <code>PeriodicHeal</code>, <code>IncreasedMonsterDamage</code>, <code>IncreasedPlayerDamage</code>, <code>MoveSpeedMultiplier</code>, <code>ForceGroundHeight</code>, <code>AddGroundHeight</code>, <code>LimitZoneHeight</code>, <code>ForceBiome</code>, <code>MonstersAddStars</code>, and <code>CustomPaint</code> flags, the flag should be followed by = and the value of the flag. For example, <code>CustomEnvironment = Clear</code> or <code>PeriodicDamage = 10</code>.</p>
+<p><code>ForceBiome</code> accepts values:</p>
+<pre><code>Meadows = 1,
+Swamp = 2,
+Mountain = 4,
+BlackForest = 8,
+Plains = 16,
+AshLands = 32,
+DeepNorth = 64,
+Ocean = 256,
+Mistlands = 512
+</code></pre>
+<p>(<code>ForceBiome = 2</code> will force the biome to be swamp)</p>
+<p><code>CustomPaint</code> accepts values:</p>
+<pre><code>Paved = 0,
+Grass = 1,
+Cultivated = 2,
+Dirt = 3
+</code></pre>
+<p>(<code>CustomPaint = 2</code> will paint the zone with the Cultivated texture)</p>
+<h3>Owners</h3>
+<p>Specify the SteamIDs of the owners of the zone. If there are multiple owners, separate their SteamIDs with commas.</p>
+<h2>Example</h2>
+<p>Here’s an example entry in the <code>TerritoryDatabase.cfg</code> file:</p>
+<pre><code class="language-plaintext">[ExampleZone]
+Square
+150, 100, 800
+0, 128, 255
+False
+NoBuild, NoInteract, PeriodicHealALL = 50
+None
+
+
+[ZoneWithHigherPriority@2]
+Square
+150, 100, 400
+255, 0, 0
+False
+CustomEnvironment = Clear, NoAttack, NoPickaxe, PeriodicDamage = 10
+None
+
+</code></pre>
+<p>All zones by default having priority 1. If you want to change priority of zone, you need to add <code>@</code> and priority number after zone name. For example, <code>ZoneWithHigherPriority@2</code> will have priority 2.
+That will allow you to create zones inside zones. For example, you can create a zone with priority 1 and then create a zone with priority 2 inside it.</p>
 </p>
 </details>
 <details><summary>Battlepass</summary>
