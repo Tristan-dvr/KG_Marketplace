@@ -1162,8 +1162,8 @@ public static class Quests_DataTypes
                         int spawnLevel = Mathf.Max(1, int.Parse(split[2]) + 1);
                         for (int i = 0; i < spawnAmount; i++)
                         {
-                            float randomX = UnityEngine.Random.Range(-15f, 15f);
-                            float randomZ = UnityEngine.Random.Range(-15f, 15f);
+                            float randomX = UnityEngine.Random.Range(-15, 15);
+                            float randomZ = UnityEngine.Random.Range(-15, 15);
                             Vector3 randomPos = new Vector3(spawnPos.x + randomX, spawnPos.y, spawnPos.z + randomZ);
                             float height = ZoneSystem.instance.GetSolidHeight(randomPos);
                             randomPos.y = height;

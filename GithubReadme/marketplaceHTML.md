@@ -418,6 +418,7 @@ QuestRequirementType: Prefab, MinLevel (only use with Skill requirement)
 6) NotFinished - example: NotFinished: MyQuestID123. Will make so that quest is only acceptable if player has NOT finished quest with ID MyQuestID123
 7) IsVIP - example: IsVIP . Will make so that quest is only acceptable if player is VIP
 8) MH_Level - example: MH_Level: 20. Will make so that quest is only acceptable if player has at least 20 MagicHeim levels (other mod API)
+9) Time - example: Time: 60. Will time limit quest completion to 60 seconds. If player won't complete quest in 60 seconds it will fail
 </code></pre>
 <p>Please note that Quest Targets, Quest Rewards and Quest Requirements may be multiple in one quest. You can add them as much as you want with | symbol. Example:</p>
 <pre><code>Item: SwordIron, 1, 5 | Pet: Wolf, 2, 10 | Skill: Run, 2 | Item: Coins, 100
@@ -801,6 +802,199 @@ ArmorIronChest,1,0</p>
 <p>[reward = 9]<br>
 HelmetIron,1,0</p>
 </p>
+</details>
+<details><summary>NPC Dialogues</summary>
+<h3>File Format</h3>
+<p>The <code>NpcDialogues.cfg</code> file is written in a simple and human-readable format. Each dialogue entry consists of a unique profile name followed by the NPC dialogue text and player options. The player options can have various attributes such as text, transition, command, icon, condition, and always visible.</p>
+<p>Here’s the structure of a dialogue entry:</p>
+<pre><code>[UniqueProfileName]
+Dialogue Text
+Player Option 1
+Player Option 2
+...
+</code></pre>
+<p>The player options can have the following attributes:</p>
+<ul>
+<li>
+<p><code>Text</code>: Represents the text of the player option.</p>
+</li>
+<li>
+<p><code>Transition</code>: Specifies a transition to another dialogue.</p>
+</li>
+<li>
+<p><code>Command</code>: Specifies the command associated with the player option.</p>
+</li>
+<li>
+<p><code>Icon</code>: Represents an icon associated with the player option ( Can be any item prefab or icons from client folder ).</p>
+</li>
+<li>
+<p><code>Condition</code>: Defines the condition under which the player option is available.</p>
+</li>
+<li>
+<p><code>AlwaysVisible</code>: Indicates that the player option is always visible, regardless of conditions.</p>
+</li>
+</ul>
+<p>Dialogue may have multiple attributes split by | (pipe) character. For example:</p>
+<pre><code>[UniqueProfileName]
+NPC text
+Text: Option1 | Transition: UniqueProfileName2 | Command: Damage, 20 | Icon: Hammer | Condition: NotFinished, QuestId | AlwaysVisible: true
+Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: SwordIron | Condition: NotFinished, QuestId | AlwaysVisible: true
+</code></pre>
+<h3>Conditions</h3>
+<p>The following conditions can be used in the <code>NpcDialogues.cfg</code> file:</p>
+<ul>
+<li>
+<p><code>NotFinished</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>NotFinished, QuestId</code></li>
+<li><strong>Description</strong>: Checks if the specified quest is not finished yet.</li>
+</ul>
+</li>
+<li>
+<p><code>OtherQuest</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>OtherQuest, QuestId</code></li>
+<li><strong>Description</strong>: Checks if the specified quest is already finished.</li>
+</ul>
+</li>
+<li>
+<p><code>HasItem</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>HasItem, ItemPrefab, Amount</code></li>
+<li><strong>Description</strong>: Checks if the player has the specified amount of a particular item.</li>
+</ul>
+</li>
+<li>
+<p><code>HasBuff</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>HasBuff, BuffName</code></li>
+<li><strong>Description</strong>: Checks if the player currently has the specified buff.</li>
+</ul>
+</li>
+<li>
+<p><code>Skill</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>Skill, SkillName, MinLevel</code></li>
+<li><strong>Description</strong>: Checks if the player’s skill level in the specified skill is equal to or higher than the minimum level.</li>
+</ul>
+</li>
+<li>
+<p><code>GlobalKey</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>GlobalKey, GlobalKey</code></li>
+<li><strong>Description</strong>: Checks if the specified global key is active.</li>
+</ul>
+</li>
+<li>
+<p><code>IsVIP</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>IsVIP</code></li>
+<li><strong>Description</strong>: Checks if the player is a VIP.</li>
+</ul>
+</li>
+</ul>
+<p>Please note that you can use these conditions within the player options of your dialogue entries to control the availability and visibility of options based on specific game conditions or player states.</p>
+<p>Feel free to refer to this documentation for further clarification or provide more examples if needed.</p>
+<p>Please note that you should replace the placeholder values (<code>UniqueProfileName</code>, <code>Dialogue Text</code>, <code>Player options</code>, <code>Text</code>, <code>Transition</code>, <code>Command</code>, <code>Icon</code>, <code>Condition</code>, <code>AlwaysVisible</code>, <code>QuestId</code>, <code>ItemPrefab</code>, <code>amount</code>, <code>BuffName</code>, <code>SkillName</code>, <code>MinLevel</code>, <code>somekey</code>) with actual values relevant to your game and dialogues.</p>
+<h3>Commands</h3>
+<p>The following commands can be used in the <code>NpcDialogues.cfg</code> file:</p>
+<ul>
+<li>
+<p><code>OpenUI</code>: Opens a specific NPC type profile UI.</p>
+<ul>
+<li><strong>Usage</strong>: <code>OpenUI, NPC Type, Profile Name</code></li>
+<li><strong>Description</strong>: Opens the UI associated with a particular NPC type profile.</li>
+<li><strong>Possible NPC Types</strong>: Marketplace, Trader, Info, Teleporter, Feedback, Banker, Gambler, Quests, Buffer, Transmog</li>
+</ul>
+</li>
+<li>
+<p><code>PlaySound</code>: Plays a sound.</p>
+<ul>
+<li><strong>Usage</strong>: <code>PlaySound, SoundName</code></li>
+<li><strong>Description</strong>: Plays the specified sound.</li>
+</ul>
+</li>
+<li>
+<p><code>GiveQuest</code>: Gives a quest to the player.</p>
+<ul>
+<li><strong>Usage</strong>: <code>GiveQuest, QuestID</code></li>
+<li><strong>Description</strong>: Gives the player the specified quest.</li>
+</ul>
+</li>
+<li>
+<p><code>GiveItem</code>: Gives an item to the player.</p>
+<ul>
+<li><strong>Usage</strong>: <code>GiveItem, ItemPrefab, Amount, Level</code></li>
+<li><strong>Description</strong>: Gives the player a specified number of items of a certain level.</li>
+</ul>
+</li>
+<li>
+<p><code>RemoveItem</code>: Removes items from the player’s inventory.</p>
+<ul>
+<li><strong>Usage</strong>: <code>RemoveItem, ItemPrefab, Amount</code></li>
+<li><strong>Description</strong>: Removes a specified number of items from the player’s inventory.</li>
+</ul>
+</li>
+<li>
+<p><code>Spawn</code>: Spawns creatures nearby.</p>
+<ul>
+<li><strong>Usage</strong>: <code>Spawn, CreaturePrefab, Amount, Level</code></li>
+<li><strong>Description</strong>: Spawns a specified number of creatures of a certain level near the player.</li>
+</ul>
+</li>
+<li>
+<p><code>Teleport</code>: Teleports the player to a specific location.</p>
+<ul>
+<li><strong>Usage</strong>: <code>Teleport, X, Y, Z</code></li>
+<li><strong>Description</strong>: Teleports the player to the specified coordinates.</li>
+</ul>
+</li>
+<li>
+<p><code>RemoveQuest</code>: Removes a quest from the player.</p>
+<ul>
+<li><strong>Usage</strong>: <code>RemoveQuest, QuestID</code></li>
+<li><strong>Description</strong>: Removes the specified quest from the player’s quest log.</li>
+</ul>
+</li>
+<li>
+<p><code>Damage</code>: Inflicts damage on the player.</p>
+<ul>
+<li><strong>Usage</strong>: <code>Damage, Value</code></li>
+<li><strong>Description</strong>: Damages the player by the specified value.</li>
+</ul>
+</li>
+<li>
+<p><code>Heal</code>: Restores health to the player.</p>
+<ul>
+<li><strong>Usage</strong>: <code>Heal, Value</code></li>
+<li><strong>Description</strong>: Restores the player’s health by the specified value.</li>
+</ul>
+</li>
+<li>
+<p><code>GiveBuff</code>: Gives a buff to the player.</p>
+<ul>
+<li><strong>Usage</strong>: <code>GiveBuff, BuffID</code></li>
+<li><strong>Description</strong>: Gives the player the specified buff.</li>
+</ul>
+</li>
+</ul>
+<p>Please note that you can use these commands within the player options of your dialogue entries to trigger specific actions or behaviors based on the player’s choices.</p>
+<p>You can use <strong>multiple</strong> commands and conditions in a single player option by separating them with | (pipe) character.</p>
+<h1>Dialogue exampes:</h1>
+<pre><code>[default]
+Welcome to the village!
+Text: Hello there! What brings you to our peaceful village?
+Text: How can I assist you today?
+Text: Tell me more about this village | Command: OpenUI, Info, VillageInfoProfile | Icon: village_icon
+Text: I'm looking for work | Transition: JobOptions | Icon: job_icon
+
+[JobOptions]
+Available job options:
+Text: We have various job opportunities available. What type of work are you interested in?
+Text: Farming | Command: OpenUI, Quests, Job | Icon: Hoe | Condition: HasItem, Hoe, 1 
+Text: Fishing | Command: OpenUI, Quests, FishingJob | Icon: Fish1 | Condition: Skill, Fishing, 10
+</code></pre>
+<p>Then just attach initial (in our case default) dialogue to NPC UI</p>
 </details>
 <details><summary><span style="color:crimson;font-weight:200;font-size:18px">Transmogrification</span></summary>
 <p> 

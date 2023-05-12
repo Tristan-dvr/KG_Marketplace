@@ -400,6 +400,7 @@ Quest Requirements Types:
 6) NotFinished - example: NotFinished: MyQuestID123. Will make so that quest is only acceptable if player has NOT finished quest with ID MyQuestID123
 7) IsVIP - example: IsVIP . Will make so that quest is only acceptable if player is VIP
 8) MH_Level - example: MH_Level: 20. Will make so that quest is only acceptable if player has at least 20 MagicHeim levels (other mod API)
+9) Time - example: Time: 60. Will time limit quest completion to 60 seconds. If player won't complete quest in 60 seconds it will fail
 ```
 
 Please note that Quest Targets, Quest Rewards and Quest Requirements may be multiple in one quest. You can add them as much as you want with | symbol. Example:
@@ -828,93 +829,147 @@ some common useful ones are vfx_HealthUpgrade, vfx_lootspawn, vfx_odin_despawn, 
 <details><summary>Territory System</summary>
 <p> 
 
-Territories can be created to provide a special area. They can be used to provide a place for marketplace npc's, a PVP arena, a safe haven for a town, really the possibilities are up to you. Territories are outlined by coordinates and the actions allowed or disallowed inside a territory are defined by "flags". Territories can be set by admins, but can also be placed by players if enabled in config. 
+The `TerritoryDatabase.cfg` file is used to define territories or zones within your game world. Each zone can have specific attributes such as shape, position, size, color, flags, and owners. This guide will help you understand the format and options available in the configuration file.
+
+## Format
+
+The configuration file follows the following format:
+
+```plaintext
+[ZoneName]
+Shape type (Circle, Square, Custom)
+X pos, Z pos, Radius (for circle/square) or X pos, Z pos, X length, Z length (for custom zone)
+Red Color, Green Color, Blue Color, Show Territory on water (True/False)
+Zone Flags (separated by comma if multiple)
+Owners SteamID (separated by comma if multiple)
+```
+
+## Zone Attributes
+
+### Zone Name
+
+Each zone entry begins with a unique `ZoneName`. This identifier is used to differentiate between different zones in the configuration file.
+
+### Shape Type
+
+The shape of the zone can be specified as one of the following:
+
+- Circle: The zone is defined as a circle with a center point and a radius.
+- Square: The zone is defined as a square with a center point and side length.
+- Custom: The zone is defined with custom dimensions using the X and Z position coordinates, along with the X and Z lengths.
+
+### Position and Size
+
+Depending on the shape type, you need to specify the position and size of the zone:
+
+- For a circle or square, provide the X and Z position coordinates and the radius (for a circle) or side length (for a square).
+- For a custom zone, provide the X and Z position coordinates, as well as the X and Z lengths.
+
+### Color and Show Territory on Water
+
+Specify the color of the zone using RGB values (Red, Green, Blue). Additionally, indicate whether the territory should be visible on water by specifying `True` or `False` after the RGB color values.
+
+### Zone Flags
+
+You can assign specific flags to a zone to define its behavior and characteristics. Multiple flags can be assigned to a zone, separated by commas. Here are the available flags:
+
+- `PushAway`: Players are pushed away from the zone boundaries.
+- `NoBuild`: Building structures is not allowed within the zone.
+- `NoPickaxe`: Players cannot use pickaxes within the zone.
+- `NoInteract`: Interactions with objects or NPCs within the zone are disabled.
+- `NoAttack`: Players cannot initiate attacks or engage in combat within the zone.
+- `PvpOnly`: Only player-versus-player (PvP) interactions are allowed within the zone.
+- `PveOnly`: Only player-versus-environment (PvE) interactions are allowed within the zone.
+- `PeriodicHeal`: Players are periodically healed while inside the zone.
+- `PeriodicDamage`: Players receive periodic damage while inside the zone.
+- `IncreasedPlayerDamage`: Player attacks deal increased damage within the zone.
+- `IncreasedMonsterDamage`: Monsters deal increased damage to players within the zone.
+- `NoMonsters`: Monsters do not spawn or exist within the zone.
+- `CustomEnvironment`: The zone has a custom environment specified by the environment name.
+- `MoveSpeedMultiplier`: Players' movement speed is multiplied by a certain factor within the zone.
+- `NoDeathPenalty`: Players do not suffer penalties upon death within the zone.
+- `NoPortals`: Teleportation portals cannot be used within the zone.
+- `PeriodicHealALL`: All entities (players and creatures) are periodically healed within the zone.
+- `ForceGroundHeight`: The ground height is forcefully set within the zone.
+- `ForceBiome`: The biome within the zone is forcefully set.
+- `AddGroundHeight`: Additional ground height is added within the zone.
+- `NoBuildDamage`: Structures within the zone do not take damage.
+- `MonstersAddStars`: Monsters within the zone have additional stars, indicating higher difficulty.
+- `InfiniteFuel`: Fuel consumption is disabled within the zone.
+- `NoInteractItems`: Interactions with items within the zone are disabled.
+- `NoInteractCraftingStation`: Interactions with crafting stations within the zone are disabled.
+- `NoInteractItemStands`: Interactions with item stands within the zone are disabled.
+- `NoInteractChests`: Interactions with chests within the zone are disabled.
+- `NoInteractDoors`: Interactions with doors within the zone are disabled.
+- `NoStructureSupport`: Structures within the zone do not provide support for other structures.
+- `NoInteractPortals`: Interactions with portals within the zone are disabled.
+- `CustomPaint`: The zone has custom paint applied to it.
+- `LimitZoneHeight`: The height within the zone is limited, preventing players from reaching extreme heights.
+- `NoItemLoss`: Players do not lose items upon death within the zone.
+- `SnowMask`: A snow mask effect is applied within the zone.
+- `NoMist`: Mist weather effects are disabled within the zone.
+- `InfiniteEitr`: Eitr consumption is disabled within the zone.
+- `InfiniteStamina`: Stamina consumption is disabled within the zone.
+- `NoCreatureDrops`: Creatures within the zone do not drop items upon defeat.
+
+**Note:** For the `CustomEnvironment`, `PeriodicDamage`, `PeriodicHealALL`, `PeriodicHeal`, `IncreasedMonsterDamage`, `IncreasedPlayerDamage`, `MoveSpeedMultiplier`, `ForceGroundHeight`, `AddGroundHeight`, `LimitZoneHeight`, `ForceBiome`, `MonstersAddStars`, and `CustomPaint` flags, the flag should be followed by = and the value of the flag. For example, `CustomEnvironment = Clear` or `PeriodicDamage = 10`.
+
+`ForceBiome` accepts values:
+```
+Meadows = 1,
+Swamp = 2,
+Mountain = 4,
+BlackForest = 8,
+Plains = 16,
+AshLands = 32,
+DeepNorth = 64,
+Ocean = 256,
+Mistlands = 512
+```
+
+(`ForceBiome = 2` will force the biome to be swamp)
+
+`CustomPaint` accepts values:
+```
+Paved = 0,
+Grass = 1,
+Cultivated = 2,
+Dirt = 3
+```
+
+(`CustomPaint = 2` will paint the zone with the Cultivated texture)
+
+### Owners
+
+Specify the SteamIDs of the owners of the zone. If there are multiple owners, separate their SteamIDs with commas.
+
+## Example
+
+Here's an example entry in the `TerritoryDatabase.cfg` file:
+
+```plaintext
+[ExampleZone]
+Square
+150, 100, 800
+0, 128, 255
+False
+NoBuild, NoInteract, PeriodicHealALL = 50
+None
 
 
-Territory config parameters:
+[ZoneWithHigherPriority@2]
+Square
+150, 100, 400
+255, 0, 0
+False
+CustomEnvironment = Clear, NoAttack, NoPickaxe, PeriodicDamage = 10
+None
 
-[ZoneName]  
-Shape type: Circle, Square  
-X pos, Z pos, Radius  
-Red Color, Green Color, Blue Color, True/False Show Territory on water
-Zone Flags seperated by comma if multiple  
-Owners SteamID seperated by comma if multiple
+```
 
-Note the use of standard html styles like adding color, bold text, italics, size etc.
+All zones by default having priority 1. If you want to change priority of zone, you need to add `@` and priority number after zone name. For example, `ZoneWithHigherPriority@2` will have priority 2.
+That will allow you to create zones inside zones. For example, you can create a zone with priority 1 and then create a zone with priority 2 inside it.
 
-Example of admin configured territory in the territorydatabase.cfg file:
-
-[Traning  Arena]  
-Circle  
-100, 300, 500, false
-255, 0, 0  
-NoInteractDoors, CustomEnvironment = Clear, NoPickaxe, PvpOnly  
-None  
-^ Will create a circular zone at X 100 and Z 300 with Radius 500 and color RED and custom flags.
-
-
-You can write @Number after zone id to change its priority, so you can have one zone inside another. For example:
-
-[Trader@1]   
-Circle   
-0,0, 300   
-138, 43, 226, false   
-NoBuild, NoBuildDamage, NoPickaxe, ForceBiome = 4, PeriodicHealALL = 2, NoMonsters, NoDeathPenalty, InfiniteFuel, NoStructureSupport, NoInteractCraftingStation, NoInteractItemStands, NoAttack, NoInteractItems   
-76543210123456789, 7656789876543211,
-
-[Trader two@2]   
-Square   
-0,0,100   
-238, 99, 101, false   
-NoBuild, NoBuildDamage, NoPickaxe, ForceBiome = 4, PeriodicHealALL = 2, NoMonsters, NoDeathPenalty, InfiniteFuel, NoStructureSupport, NoInteractCraftingStation, NoInteractItemStands, NoAttack, NoInteractItems   
-76543210123456789, 7656789876543211,
-
-###Territories flags are as follows:
-
-        None
-        PushAway  
-        NoBuild  
-        NoPickaxe  
-        NoInteract  
-        NoAttack  
-        PvpOnly  
-        PveOnly  
-        PeriodicHeal = Integer Value
-        PeriodicDamage = Integer Value 
-        PeriodicHealALL = Integer Value 
-        IncreasedPlayerDamage = Integer Value 
-        IncreasedMonsterDamage = Integer Value 
-        NoMonsters  
-        CustomEnvironment = Clear, Twilight_Clear, Misty, Darklands_dark, Heath clear, DeepForest Mist, GDKing, Rain, LightRain, ThunderStorm, Eikthyr, GoblinKing, nofogts, SwampRain, Bonemass, Snow, Twilight_Snow, Twilight_SnowStorm, SnowStorm, Moder, Ashrain, Crypt, SunkenCrypt        MoveSpeedMultiplier = Integer Value 
-        NoDeathPenalty  
-        NoPortals  
-        NoInteractPortals 
-        ForceGroundHeight = Integer Value 
-        ForceBiome = 1 (Meadows), 2 (Swamp), 4 (Mountain), 8 (BlackForest), 16 (Plains), AshLands, DeepNorth, Ocean, Mistlands
-        AddGroundHeight = Integer Value 
-        NoBuildDamage  
-        MonstersAddStars  
-        InfiniteFuel  
-        NoInteractItems  
-        NoInteractCraftingStation  
-        NoInteractItemStands  
-        NoInteractChests  
-        NoInteractDoors  
-        NoStructureSupport  
-        CustomPaint = paved
-        LimitZoneHeight = Integer Value 
-        SnowMask  (creates a snow covered environment)
-        NoItemLoss
-        SnowMask
-        NoMist
-        InfiniteEitr
-        InfiniteStamina
-
-If territory will have at least one color less than 0 (-1, -10 and so on) then it won't be shown on map, but still will function
-
-Territories can also be set by players if enabled in the PlayerTerritories config file. The amount of territories a player can create, the radius, and the allowed flags can be set in the file.
-
-When a player presses F8 a menu will appear and the player can enter coordinates for their new territory. Those settings will be saved in a json file in the PlayerTerritories folder beside the config file.
 </p>
 </details>
 
@@ -971,6 +1026,176 @@ ArmorIronChest,1,0
 HelmetIron,1,0
 
 </p>
+</details>
+
+<details><summary>NPC Dialogues</summary>
+
+### File Format
+
+The `NpcDialogues.cfg` file is written in a simple and human-readable format. Each dialogue entry consists of a unique profile name followed by the NPC dialogue text and player options. The player options can have various attributes such as text, transition, command, icon, condition, and always visible.
+
+Here's the structure of a dialogue entry:
+
+```
+[UniqueProfileName]
+Dialogue Text
+Player Option 1
+Player Option 2
+...
+```
+
+The player options can have the following attributes:
+
+- `Text`: Represents the text of the player option.
+
+- `Transition`: Specifies a transition to another dialogue.
+
+- `Command`: Specifies the command associated with the player option.
+
+- `Icon`: Represents an icon associated with the player option ( Can be any item prefab or icons from client folder ).
+
+- `Condition`: Defines the condition under which the player option is available.
+
+- `AlwaysVisible`: Indicates that the player option is always visible, regardless of conditions.
+
+Dialogue may have multiple attributes split by | (pipe) character. For example:
+
+```
+[UniqueProfileName]
+NPC text
+Text: Option1 | Transition: UniqueProfileName2 | Command: Damage, 20 | Icon: Hammer | Condition: NotFinished, QuestId | AlwaysVisible: true
+Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: SwordIron | Condition: NotFinished, QuestId | AlwaysVisible: true
+```
+
+### Conditions
+
+The following conditions can be used in the `NpcDialogues.cfg` file:
+
+- `NotFinished`
+
+    - **Usage**: `NotFinished, QuestId`
+    - **Description**: Checks if the specified quest is not finished yet.
+
+- `OtherQuest`
+
+    - **Usage**: `OtherQuest, QuestId`
+    - **Description**: Checks if the specified quest is already finished.
+
+- `HasItem`
+
+    - **Usage**: `HasItem, ItemPrefab, Amount`
+    - **Description**: Checks if the player has the specified amount of a particular item.
+
+- `HasBuff`
+
+    - **Usage**: `HasBuff, BuffName`
+    - **Description**: Checks if the player currently has the specified buff.
+
+- `Skill`
+
+    - **Usage**: `Skill, SkillName, MinLevel`
+    - **Description**: Checks if the player's skill level in the specified skill is equal to or higher than the minimum level.
+
+- `GlobalKey`
+
+    - **Usage**: `GlobalKey, GlobalKey`
+    - **Description**: Checks if the specified global key is active.
+
+- `IsVIP`
+
+    - **Usage**: `IsVIP`
+    - **Description**: Checks if the player is a VIP.
+
+Please note that you can use these conditions within the player options of your dialogue entries to control the availability and visibility of options based on specific game conditions or player states.
+
+Feel free to refer to this documentation for further clarification or provide more examples if needed.
+
+Please note that you should replace the placeholder values (`UniqueProfileName`, `Dialogue Text`, `Player options`, `Text`, `Transition`, `Command`, `Icon`, `Condition`, `AlwaysVisible`, `QuestId`, `ItemPrefab`, `amount`, `BuffName`, `SkillName`, `MinLevel`, `somekey`) with actual values relevant to your game and dialogues.
+
+
+### Commands
+
+The following commands can be used in the `NpcDialogues.cfg` file:
+
+- `OpenUI`: Opens a specific NPC type profile UI.
+
+    - **Usage**: `OpenUI, NPC Type, Profile Name`
+    - **Description**: Opens the UI associated with a particular NPC type profile.
+    - **Possible NPC Types**: Marketplace, Trader, Info, Teleporter, Feedback, Banker, Gambler, Quests, Buffer, Transmog
+
+- `PlaySound`: Plays a sound.
+
+    - **Usage**: `PlaySound, SoundName`
+    - **Description**: Plays the specified sound.
+
+- `GiveQuest`: Gives a quest to the player.
+
+    - **Usage**: `GiveQuest, QuestID`
+    - **Description**: Gives the player the specified quest.
+
+- `GiveItem`: Gives an item to the player.
+
+    - **Usage**: `GiveItem, ItemPrefab, Amount, Level`
+    - **Description**: Gives the player a specified number of items of a certain level.
+
+- `RemoveItem`: Removes items from the player's inventory.
+
+    - **Usage**: `RemoveItem, ItemPrefab, Amount`
+    - **Description**: Removes a specified number of items from the player's inventory.
+
+- `Spawn`: Spawns creatures nearby.
+
+    - **Usage**: `Spawn, CreaturePrefab, Amount, Level`
+    - **Description**: Spawns a specified number of creatures of a certain level near the player.
+
+- `Teleport`: Teleports the player to a specific location.
+
+    - **Usage**: `Teleport, X, Y, Z`
+    - **Description**: Teleports the player to the specified coordinates.
+
+- `RemoveQuest`: Removes a quest from the player.
+
+    - **Usage**: `RemoveQuest, QuestID`
+    - **Description**: Removes the specified quest from the player's quest log.
+
+- `Damage`: Inflicts damage on the player.
+
+    - **Usage**: `Damage, Value`
+    - **Description**: Damages the player by the specified value.
+
+- `Heal`: Restores health to the player.
+
+    - **Usage**: `Heal, Value`
+    - **Description**: Restores the player's health by the specified value.
+
+- `GiveBuff`: Gives a buff to the player.
+
+    - **Usage**: `GiveBuff, BuffID`
+    - **Description**: Gives the player the specified buff.
+
+Please note that you can use these commands within the player options of your dialogue entries to trigger specific actions or behaviors based on the player's choices.
+
+You can use **multiple** commands and conditions in a single player option by separating them with | (pipe) character.
+
+# Dialogue exampes:
+
+```
+[default]
+Welcome to the village!
+Text: Hello there! What brings you to our peaceful village?
+Text: How can I assist you today?
+Text: Tell me more about this village | Command: OpenUI, Info, VillageInfoProfile | Icon: village_icon
+Text: I'm looking for work | Transition: JobOptions | Icon: job_icon
+
+[JobOptions]
+Available job options:
+Text: We have various job opportunities available. What type of work are you interested in?
+Text: Farming | Command: OpenUI, Quests, Job | Icon: Hoe | Condition: HasItem, Hoe, 1 
+Text: Fishing | Command: OpenUI, Quests, FishingJob | Icon: Fish1 | Condition: Skill, Fishing, 10
+```
+
+Then just attach initial (in our case default) dialogue to NPC UI
+
 </details>
 
 <details><summary><span style="color:crimson;font-weight:200;font-size:18px">Transmogrification</span></summary>
