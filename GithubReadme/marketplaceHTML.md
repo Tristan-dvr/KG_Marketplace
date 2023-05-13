@@ -175,6 +175,10 @@ Paypal: <a href="mailto:war3spells@gmail.com">war3spells@gmail.com</a></p>
 <td>8.6.0</td>
 <td>New system added: Mailbox<br/>Finished NPC Dialogues system<br/>Bugfixes<br/>Fixed Banker interest not working<br/>Now Marketplace can use SOME of its features locally on client (to enable set config option to true on clientside)<br/>New Quest Restriction - Time: value, allows quest to be time limited<br/>Added NPC font support for chinese symbols and other languages special symbols<br/></td>
 </tr>
+<tr>
+<td>8.6.3</td>
+<td>Posted / updated NPC Dialogues + Territory System guides on site<br/>Added config option to specify banker interest items (All by default)<br/>Added config option to set mailbox item wait time<br/>Fixed gambler code<br/>Now working with wackydb 2.0 (beta) cloned items</td>
+</tr>
 </tbody>
 </table>
 </details>

@@ -195,6 +195,7 @@ public static class Quests_Main_Client
         private static void Postfix()
         {
             Quests_UIs.AcceptedQuestsUI.Hide();
+            LatestRevision = 0;
         }
     }
 }

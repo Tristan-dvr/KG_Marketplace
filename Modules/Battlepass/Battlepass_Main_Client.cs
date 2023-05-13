@@ -203,8 +203,18 @@ public static class Battlepass_Main_Client
 
     public static int GetExp() => CurrentEXP;
 
-    private static int LatestRevision = -1;
-
+    private static int LatestRevision;
+    
+    [HarmonyPatch(typeof(FejdStartup),nameof(FejdStartup.Awake))]
+    [ClientOnlyPatch]
+    private static class FejdStartup_Awake_Patch
+    {
+        private static void Postfix()
+        {
+            LatestRevision = 0;
+        }
+    }
+    
     private static void ProcessBattlepass()
     {
         if (LatestRevision == Battlepass_DataTypes.SyncedBattlepassData.Value._revision || !Player.m_localPlayer) return;

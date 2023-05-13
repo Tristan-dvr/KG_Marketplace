@@ -41,9 +41,15 @@ public static class Battlepass_Main_Server
             100, "Experience Step Between Each Reward Order").Value;
         Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumUsers =
             BP_Config.Bind("BP", "Premium Users", "User IDs", "Premium Users").Value;
-        Battlepass_DataTypes.SyncedBattlepassData.Value.FreeRewards = new List<Battlepass_DataTypes.BattlePassElement>();
-        Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumRewards = new List<Battlepass_DataTypes.BattlePassElement>();
-        Battlepass_DataTypes.SyncedBattlepassData.Value._revision = Random.Range(int.MinValue, int.MaxValue);
+        Battlepass_DataTypes.SyncedBattlepassData.Value.FreeRewards =
+            new List<Battlepass_DataTypes.BattlePassElement>();
+        Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumRewards =
+            new List<Battlepass_DataTypes.BattlePassElement>();
+        while (Battlepass_DataTypes.SyncedBattlepassData.Value._revision == 0)
+        {
+            Battlepass_DataTypes.SyncedBattlepassData.Value._revision = Random.Range(int.MinValue, int.MaxValue);
+        }
+
         List<string> freeData = File.ReadAllLines(Market_Paths.BattlepassFreeRewardsPath).ToList();
         if (freeData.Count > 0)
         {
