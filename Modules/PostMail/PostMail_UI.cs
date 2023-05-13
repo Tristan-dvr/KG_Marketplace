@@ -251,7 +251,7 @@ public static class PostMail_UI
             Message = Send_UI_Message.text,
             AttachedItem = newData,
             HasAttachedItem = newData != null,
-            TotalSeconds = (long)EnvMan.instance.m_totalSeconds + 60 * 5
+            TotalSeconds = (long)EnvMan.instance.m_totalSeconds + 60 * Global_Values._container.Value._mailPostWaitTime
         };
         Player.m_localPlayer.m_inventory.RemoveItem(item);
         if (_currentProcessedTargetPost.HasOwner())

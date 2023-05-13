@@ -43,7 +43,7 @@ public static class Banker_Main_Server
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
             {
-                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","").ToLower();
+                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
             }
             else
             {
@@ -71,6 +71,7 @@ public static class Banker_Main_Server
             Utils.print("Adding Banker Income");
             Task task = Task.Run(() =>
             {
+                HashSet<int> interestItems = new(Global_Values.BankerInterestItems.Split(',').Select(i => i.GetStableHashCode()));
                 foreach (string id in BankerServerSideData.Keys)
                 {
                     float multiplier = Global_Values._container.Value._vipPlayerList.Contains(id)
@@ -80,6 +81,7 @@ public static class Banker_Main_Server
                     {
                         foreach (int item in new List<int>(BankerServerSideData[id].Keys))
                         {
+                            if (Global_Values.BankerInterestItems != "All" && !interestItems.Contains(item)) continue;
                             if (!BankerTimeStamp.ContainsKey(id) || !BankerTimeStamp[id].ContainsKey(item) ||
                                 (DateTime.Now - BankerTimeStamp[id][item]).TotalHours >=
                                 Global_Values.BankerIncomeTime)
