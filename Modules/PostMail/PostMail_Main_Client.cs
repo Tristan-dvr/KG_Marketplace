@@ -40,11 +40,12 @@ public static class PostMail_Main_Client
         {
             __instance.m_namedPrefabs[PostMail_Prefab.name.GetStableHashCode()] = PostMail_Prefab;
             GameObject hammer = __instance.GetPrefab("Hammer");
-            hammer.GetComponent<ItemDrop>().m_itemData.m_shared.m_buildPieces.m_pieces.Add(PostMail_Prefab);
+            if (!hammer.GetComponent<ItemDrop>().m_itemData.m_shared.m_buildPieces.m_pieces.Contains(PostMail_Prefab))
+                hammer.GetComponent<ItemDrop>().m_itemData.m_shared.m_buildPieces.m_pieces.Add(PostMail_Prefab);
             ResetMailpostRecipe();
         }
     }
-    
+
     [HarmonyPatch(typeof(Piece), nameof(Piece.CanBeRemoved))]
     [ClientOnlyPatch]
     static class Piece_CanBeRemoved_Patch
@@ -61,11 +62,11 @@ public static class PostMail_Main_Client
 
     private static void ResetMailpostRecipe()
     {
-        if(!ZNetScene.instance) return;
+        if (!ZNetScene.instance) return;
         try
         {
             List<Piece.Requirement> reqs = new();
-            string recipeStr = Global_Values._container.Value._mailPostRecipe.Replace(" ","");
+            string recipeStr = Global_Values._container.Value._mailPostRecipe.Replace(" ", "");
             string[] split = recipeStr.Split(',');
             for (int i = 0; i < split.Length; i += 2)
             {
@@ -77,6 +78,7 @@ public static class PostMail_Main_Client
                     m_resItem = ObjectDB.instance.GetItemPrefab(name.GetStableHashCode()).GetComponent<ItemDrop>()
                 });
             }
+
             PostMail_Prefab.GetComponent<Piece>().m_resources = reqs.ToArray();
         }
         catch
@@ -257,6 +259,5 @@ public static class PostMail_Main_Client
         {
             return Mail_Name;
         }
-        
     }
 }

@@ -51,7 +51,8 @@ public static class PostMail_UI
     private static void FillMail()
     {
         if (_currentlyProcessedMail == null || !_currentlyProcessedMail.IsValid()) return;
-        List<PostMail_DataTypes.MailData> data = PostMail_Main_Client.PostMailComponent.TryReadMailFromZDO(_currentlyProcessedMail);
+        List<PostMail_DataTypes.MailData> data =
+            PostMail_Main_Client.PostMailComponent.TryReadMailFromZDO(_currentlyProcessedMail);
         foreach (Transform child in Content)
         {
             UnityEngine.Object.Destroy(child.gameObject);
@@ -124,7 +125,7 @@ public static class PostMail_UI
         if (timeLeft > 0) return;
         _currentlyProcessedMail.InvokeRPC("RemoveMail", data.UID);
         if (MailElements.TryGetValue(data.UID, out GameObject go)) UnityEngine.Object.Destroy(go);
-        
+
         if (ZNetScene.instance.GetPrefab(data.AttachedItem.ItemPrefab) is not { } itemPrefab) return;
         ItemDrop item = itemPrefab.GetComponent<ItemDrop>();
         Dictionary<string, string> NewCustomData =
@@ -195,7 +196,8 @@ public static class PostMail_UI
     {
         _currentProcessedTargetPost = zdo;
         Send_UI.SetActive(true);
-        Send_UI.transform.Find("GO/From_Text").GetComponent<Text>().text = $"Sending message to: {_currentProcessedTargetPost.GetString("MarketplacePostMailName","Mail Post")}";
+        Send_UI.transform.Find("GO/From_Text").GetComponent<Text>().text =
+            $"Sending message to: {_currentProcessedTargetPost.GetString("MarketplacePostMailName", "Mail Post")}";
         Send_UI_Message.text = "";
         Send_UI.transform.Find("GO/AttachItem/img").GetComponent<Image>().sprite = AssetStorage.AssetStorage.NullSprite;
         CurrentSendItem = null;
@@ -208,9 +210,10 @@ public static class PostMail_UI
     {
         static void Postfix(InventoryGui __instance)
         {
-            if (__instance.m_dragGo && __instance.m_dragItem != null)
+            if (__instance.m_dragGo && __instance.m_dragItem != null && __instance.m_dragItem.m_dropPrefab)
             {
-                if (IsSendVisible())
+                if (IsSendVisible() && !Global_Values._container.Value._mailPostExcludeItems.Replace(" ", "").Split(',')
+                        .Contains(__instance.m_dragItem.m_dropPrefab.name))
                 {
                     CurrentSendItem = __instance.m_dragItem;
                     Send_UI.transform.Find("GO/AttachItem/img").GetComponent<Image>().sprite =
@@ -229,6 +232,7 @@ public static class PostMail_UI
             MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "Mailbox is full");
             return;
         }
+
         ItemDrop.ItemData item = CurrentSendItem;
         if (!Player.m_localPlayer.m_inventory.m_inventory.Contains(item)) item = null;
         Marketplace_DataTypes.ClientMarketSendData newData = item != null
@@ -263,7 +267,8 @@ public static class PostMail_UI
         }
         else
         {
-            List<PostMail_DataTypes.MailData> zdoMails = PostMail_Main_Client.PostMailComponent.TryReadMailFromZDO(_currentProcessedTargetPost);
+            List<PostMail_DataTypes.MailData> zdoMails =
+                PostMail_Main_Client.PostMailComponent.TryReadMailFromZDO(_currentProcessedTargetPost);
             zdoMails.Add(toSend);
             PostMail_Main_Client.PostMailComponent.WriteMailToZDO(_currentProcessedTargetPost, zdoMails);
         }
