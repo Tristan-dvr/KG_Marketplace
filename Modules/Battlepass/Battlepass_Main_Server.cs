@@ -46,11 +46,6 @@ public static class Battlepass_Main_Server
         Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumRewards =
             new List<Battlepass_DataTypes.BattlePassElement>();
         Battlepass_DataTypes.SyncedBattlepassData.Value._revision = Random.Range(int.MinValue, int.MaxValue);
-        while (Battlepass_DataTypes.SyncedBattlepassData.Value._revision == 0)
-        {
-            Battlepass_DataTypes.SyncedBattlepassData.Value._revision = Random.Range(int.MinValue, int.MaxValue);
-        }
-
         List<string> freeData = File.ReadAllLines(Market_Paths.BattlepassFreeRewardsPath).ToList();
         if (freeData.Count > 0)
         {

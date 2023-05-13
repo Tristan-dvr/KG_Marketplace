@@ -211,7 +211,7 @@ public static class Battlepass_Main_Client
     {
         private static void Postfix()
         {
-            LatestRevision = 0;
+            LatestRevision = int.MaxValue;
         }
     }
     
