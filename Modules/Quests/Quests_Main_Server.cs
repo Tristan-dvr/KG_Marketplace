@@ -71,6 +71,7 @@ public static class Quests_Main_Server
     private static int CurrentRevision;
     private static void ReadQuestDatabase(List<string> profiles)
     {
+        CurrentRevision = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         while (CurrentRevision == 0)
         {
             CurrentRevision = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
