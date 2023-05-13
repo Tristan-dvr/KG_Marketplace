@@ -1,4 +1,5 @@
-﻿using Marketplace.Modules.Quests;
+﻿using Marketplace.Modules.Gambler;
+using Marketplace.Modules.Quests;
 using Marketplace.Modules.TerritorySystem;
 using Marketplace.Modules.Trader;
 
@@ -13,6 +14,7 @@ public static class Marketplace_API
     private static readonly MethodInfo MI_IsObjectInsideTerritoryWithFlag;
     private static readonly MethodInfo MI_IsObjectInsideTerritoryWithFlag_Additional;
     private static readonly MethodInfo MI_ResetTraderItems;
+    private static readonly MethodInfo MI_AddTraderItem;
     private static readonly MethodInfo MI_OpenQuestJournal;
 
     [Flags]
@@ -180,10 +182,15 @@ public static class ClientSide
     public static bool FillingTerritoryData = false;
 
     //trader
-    public static void ResetTraderItems() => Trader_Main_Client.InitTraderItems();
-    
+    public static void ResetTraderItems()
+    {
+        Trader_Main_Client.InitTraderItems();
+        Gambler_Main_Client.GamblerInit();
+    }
+
     //quests
     public static void OpenQuestJournal() => Quests_UIs.QuestUI.ClickJournal();
+    
 
     //territories
     public static bool IsPlayerInsideTerritory(out string name, out int flags,

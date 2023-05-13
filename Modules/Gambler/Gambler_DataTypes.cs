@@ -3,10 +3,11 @@
 public static class Gambler_DataTypes
 {
     internal static readonly CustomSyncedValue<Dictionary<string, BigData>>
-        GamblerData = new(Marketplace.configSync, "gamblerData", new Dictionary<string, BigData>());
+        SyncedGamblerData = new(Marketplace.configSync, "gamblerData", new Dictionary<string, BigData>());
     
     public class BigData : ISerializableParameter
     {
+        public Item RequiredItem = new();
         public List<Item> Data = new();
         public int MAXROLLS;
 
@@ -20,6 +21,9 @@ public static class Gambler_DataTypes
                 pkg.Write(item.Min);
                 pkg.Write(item.Max);
             }
+            pkg.Write(RequiredItem.Prefab ?? "");
+            pkg.Write(RequiredItem.Min);
+            pkg.Write(RequiredItem.Max);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -35,6 +39,12 @@ public static class Gambler_DataTypes
                     Max = pkg.ReadInt()
                 });
             }
+            RequiredItem = new Item
+            {
+                Prefab = pkg.ReadString(),
+                Min = pkg.ReadInt(),
+                Max = pkg.ReadInt()
+            };
         }
     }
     

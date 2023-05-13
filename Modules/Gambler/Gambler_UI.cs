@@ -117,7 +117,7 @@ public static class Gambler_UI
             }
         }
     }
-    
+
     public static void Init()
     {
         if (UI) UnityEngine.Object.Destroy(UI);
@@ -177,7 +177,7 @@ public static class Gambler_UI
             if (IsPanelVisible()) __result = true;
         }
     }
-    
+
     private static void ResetDefault()
     {
         Shuffling[0] = false;
@@ -205,7 +205,7 @@ public static class Gambler_UI
         RequiredTab.gameObject.SetActive(true);
         Elements.Clear();
         ElementsAlpha.Clear();
-        for (int i = 0; i < Gambler_DataTypes.GamblerData.Value[CurrentProfile].Data.Count(); i++)
+        for (int i = 0; i < Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count(); i++)
         {
             Transform child = MainTransform.GetChild(i);
             child.gameObject.SetActive(true);
@@ -215,11 +215,11 @@ public static class Gambler_UI
             child.GetChild(2).GetComponent<Image>().sprite = QuestionMarkIcon;
         }
 
-        currentShuffle = Enumerable.Range(0, Gambler_DataTypes.GamblerData.Value[CurrentProfile].Data.Count());
+        currentShuffle = Enumerable.Range(0, Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count());
         Exclude.Clear();
         string description =
             $"<size=60>{Localization.instance.Localize("$mpasn_gambleryouhaveachance")}:</size><size=20>\n";
-        foreach (Gambler_DataTypes.Item VARIABLE in Gambler_DataTypes.GamblerData.Value[CurrentProfile].Data)
+        foreach (Gambler_DataTypes.Item VARIABLE in Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data)
         {
             if (VARIABLE.Min == VARIABLE.Max)
             {
@@ -237,7 +237,8 @@ public static class Gambler_UI
 
     private static IEnumerator ClickOnElement(int whichOne)
     {
-        if (CurrentStatus != Status.Done || CurrentRollMAX <= 0 || AlreadyClicked.Contains(whichOne) || !Player.m_localPlayer) yield break;
+        if (CurrentStatus != Status.Done || CurrentRollMAX <= 0 || AlreadyClicked.Contains(whichOne) ||
+            !Player.m_localPlayer) yield break;
         AlreadyClicked.Add(whichOne);
         CurrentRollMAX--;
         bool CONTINUE = CurrentRollMAX <= 0;
@@ -321,9 +322,10 @@ public static class Gambler_UI
                 pkg.Write(Player.m_localPlayer.GetPlayerName());
                 pkg.Write(count);
                 pkg.Write(itemDrop.m_itemData.m_shared.m_name);
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks", pkg);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks",
+                    pkg);
             }
-            
+
             if (Global_Values._container.Value._gamblerEnableNotifications)
             {
                 string sendText =
@@ -364,21 +366,22 @@ public static class Gambler_UI
         if (CurrentStatus != Status.Idle || !CanRoll() || !Player.m_localPlayer) return;
         ResetDefault();
 
-        CurrentRollMAX = Mathf.Max(1, Gambler_DataTypes.GamblerData.Value[CurrentProfile].MAXROLLS);
+        CurrentRollMAX = Mathf.Max(1, Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].MAXROLLS);
         CurrentRollMAX = Mathf.Min(Elements.Count, CurrentRollMAX);
 
         Player.m_localPlayer.m_inventory.RemoveItem(
-            Gambler_Main_Client.RequiredItem[CurrentProfile].RawName,
-            Gambler_Main_Client.RequiredItem[CurrentProfile].Min);
+            Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].RequiredItem.RawName,
+            Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].RequiredItem.Min);
 
         tempDictionary.Clear();
-        IEnumerable<int> range = Enumerable.Range(0, Gambler_DataTypes.GamblerData.Value[CurrentProfile].Data.Count());
+        IEnumerable<int> range =
+            Enumerable.Range(0, Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count());
         HashSet<int> tempExclude = new HashSet<int>();
         foreach (Transform element in Elements)
         {
             int random = Random.Range(0, range.Count());
             int randomValue = range.ElementAt(random);
-            tempDictionary[element] = Gambler_DataTypes.GamblerData.Value[CurrentProfile].Data[randomValue];
+            tempDictionary[element] = Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data[randomValue];
             tempExclude.Add(randomValue);
             range = range.Where(val => !tempExclude.Contains(val));
         }
@@ -437,7 +440,8 @@ public static class Gambler_UI
     {
         if (currentShuffle.Count() <= 1)
         {
-            currentShuffle = Enumerable.Range(0, Gambler_DataTypes.GamblerData.Value[CurrentProfile].Data.Count());
+            currentShuffle =
+                Enumerable.Range(0, Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count());
             Exclude.Clear();
         }
 
@@ -501,20 +505,20 @@ public static class Gambler_UI
 
     private static bool CanRoll()
     {
-        return Player.m_localPlayer.m_inventory.CountItems(Gambler_Main_Client
-                   .RequiredItem[CurrentProfile].RawName) >=
-               Gambler_Main_Client.RequiredItem[CurrentProfile].Min;
+        return Player.m_localPlayer.m_inventory.CountItems(Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile]
+                   .RequiredItem.RawName) >=
+               Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].RequiredItem.Min;
     }
 
     private static void RollString()
     {
         int quantity =
-            Player.m_localPlayer.m_inventory.CountItems(
-                Gambler_Main_Client.RequiredItem[CurrentProfile].RawName);
-        int needed = Gambler_Main_Client.RequiredItem[CurrentProfile].Min;
+            Player.m_localPlayer.m_inventory.CountItems(Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile]
+                .RequiredItem.RawName);
+        int needed = Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].RequiredItem.Min;
         NeededItemText.text = quantity + " / " + needed;
         NeededItemText.transform.parent.Find("Image").GetComponent<Image>().sprite =
-            Gambler_Main_Client.RequiredItem[CurrentProfile].Sprite;
+            Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].RequiredItem.Sprite;
         NeededItemText.transform.parent.Find("Background").GetComponent<Image>().color =
             quantity >= needed ? Color.green : Color.red;
         NeededItemText.color = quantity >= needed ? Color.green : Color.red;
@@ -527,8 +531,8 @@ public static class Gambler_UI
 
     public static void Show(string profile)
     {
-        if (!Gambler_DataTypes.GamblerData.Value.ContainsKey(profile) ||
-            Gambler_DataTypes.GamblerData.Value[profile].Data.Count < 2) return;
+        if (!Gambler_DataTypes.SyncedGamblerData.Value.ContainsKey(profile) ||
+            Gambler_DataTypes.SyncedGamblerData.Value[profile].Data.Count < 2) return;
         CurrentProfile = profile;
         if (CurrentStatus == Status.Idle)
         {
@@ -538,7 +542,7 @@ public static class Gambler_UI
         RollString();
         UI.transform.Find("Canvas/Header/Text").GetComponent<Text>().text =
             $"{Localization.instance.Localize("$mpasn_itemsperroll")}" + ":\n<color=#00ff00>" +
-            Gambler_DataTypes.GamblerData.Value[profile].MAXROLLS + "</color>";
+            Gambler_DataTypes.SyncedGamblerData.Value[profile].MAXROLLS + "</color>";
         UI.SetActive(true);
     }
 }

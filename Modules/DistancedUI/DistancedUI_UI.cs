@@ -165,7 +165,7 @@ public static class DistancedUI_UI
                 NPCtype_Internal.Trader => Trader_DataTypes.ClientSideItemList.Keys.ToList(),
                 NPCtype_Internal.Banker => Banker_DataTypes.SyncedBankerProfiles.Value.Keys.ToList(),
                 NPCtype_Internal.Teleporter => Teleporter_DataTypes.TeleporterDataServer.Value.Keys.ToList(),
-                NPCtype_Internal.Gambler => Gambler_DataTypes.GamblerData.Value.Keys.ToList(),
+                NPCtype_Internal.Gambler => Gambler_DataTypes.SyncedGamblerData.Value.Keys.ToList(),
                 NPCtype_Internal.Buffer => Buffer_DataTypes.ALLBufferProfiles.Keys.ToList(),
                 NPCtype_Internal.Quests => Quests_DataTypes.SyncedQuestProfiles.Value.Keys.ToList(),
                 NPCtype_Internal.Info => ServerInfo_DataTypes.ServerInfoData.Value.Keys.ToList(),

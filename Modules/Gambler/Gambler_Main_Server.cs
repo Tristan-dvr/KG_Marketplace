@@ -27,7 +27,7 @@ public static class Gambler_Main_Server
 
     private static void ClientClearData()
     {
-        foreach (KeyValuePair<string, Gambler_DataTypes.BigData> data in Gambler_DataTypes.GamblerData.Value)
+        foreach (KeyValuePair<string, Gambler_DataTypes.BigData> data in Gambler_DataTypes.SyncedGamblerData.Value)
         {
             if (data.Value.Data.Count() > 19)
             {
@@ -38,7 +38,7 @@ public static class Gambler_Main_Server
 
     private static void ReadGamblerProfiles(List<string> profiles)
     {
-        Gambler_DataTypes.GamblerData.Value.Clear();
+        Gambler_DataTypes.SyncedGamblerData.Value.Clear();
         string splitProfile = "default";
         int MAXSROLL = 1;
         for (int i = 0; i < profiles.Count; i++)
@@ -88,16 +88,17 @@ public static class Gambler_Main_Server
                         itm.Min = int.Parse(minmax[0]);
                         itm.Max = int.Parse(minmax[1]);
                     }
-
                     data.Add(itm);
-                    Gambler_DataTypes.GamblerData.Value[splitProfile] = new Gambler_DataTypes.BigData()
-                    {
-                        MAXROLLS = MAXSROLL, Data = data
-                    };
                 }
+                Gambler_DataTypes.Item required = data[0];
+                data.RemoveAt(0);
+                Gambler_DataTypes.SyncedGamblerData.Value[splitProfile] = new Gambler_DataTypes.BigData()
+                {
+                    MAXROLLS = MAXSROLL, Data = data, RequiredItem = required
+                };
             }
         }
 
-        Gambler_DataTypes.GamblerData.Update();
+        Gambler_DataTypes.SyncedGamblerData.Update();
     }
 }

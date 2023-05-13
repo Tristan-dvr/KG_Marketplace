@@ -7,7 +7,7 @@ public static class Gambler_Main_Client
     private static void OnInit()
     {
         Gambler_UI.Init();
-        Gambler_DataTypes.GamblerData.ValueChanged += OnGamblerUpdate;
+        Gambler_DataTypes.SyncedGamblerData.ValueChanged += OnGamblerUpdate;
         Marketplace.Global_Updator += Update;
     }
 
@@ -33,13 +33,11 @@ public static class Gambler_Main_Client
     {
         private static void Postfix() => GamblerInit();
     }
-
-    public static readonly Dictionary<string, Gambler_DataTypes.Item> RequiredItem = new();
-    private static void GamblerInit()
+    
+    public static void GamblerInit()
     {
         if(!ZNetScene.instance) return;
-        RequiredItem.Clear();
-        foreach (KeyValuePair<string, Gambler_DataTypes.BigData> item in Gambler_DataTypes.GamblerData.Value)
+        foreach (KeyValuePair<string, Gambler_DataTypes.BigData> item in Gambler_DataTypes.SyncedGamblerData.Value)
         {
             foreach (Gambler_DataTypes.Item data in item.Value.Data)
             {
@@ -55,9 +53,18 @@ public static class Gambler_Main_Client
                     data.SetData(name, hook);
                 }
             }
-
-            RequiredItem[item.Key] = item.Value.Data[0];
-            item.Value.Data.RemoveAt(0);
+            
+            GameObject reqPrefab = ZNetScene.instance.GetPrefab(item.Value.RequiredItem.Prefab);
+            if (!reqPrefab)
+            {
+                item.Value.RequiredItem.SetData(item.Value.RequiredItem.Prefab, AssetStorage.AssetStorage.PlaceholderGamblerIcon);
+            }
+            else
+            {
+                Sprite hook = reqPrefab.GetComponent<ItemDrop>()?.m_itemData.GetIcon();
+                string name = reqPrefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
+                item.Value.RequiredItem.SetData(name, hook);
+            }
         }
     }
 }
