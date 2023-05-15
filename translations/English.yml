@@ -165,8 +165,8 @@ mpasn_save: Save
 mpasn_gamblebutton : GAMBLE
 mpasn_gambleryouhaveachance: You have a chance of getting
 mpasn_itemsperroll: Items Per Roll
-mpasn_questfinished: Cannot take because you finished quest
-mpasn_questtaken: Cannot take because you already took quest
+mpasn_questfinished: You already finished quest
+mpasn_questtaken: You already took quest
 mpasn_transmog_onehandedweapon : One Handed Weapons
 mpasn_transmog_twohandedweapon : Two Handed Weapons
 mpasn_transmog_bow : Bows
@@ -228,3 +228,11 @@ mpasn_needhasbuff: Need Buff
 mpasn_nocreaturedrops: No Creature Drops
 mpasn_questtimelimit: Time Limit
 mpasn_questtimelimitfail: Time Expired
+mpasn_queststillnotfinished: Quest progress not done
+mpasn_questalreadyfinished: Quest progress already done
+mpasn_questnottaken: Quest not taken
+mpasn_toomuchskilllevel: Too much skill level
+mpasn_notneedglobalkey: Global Key is active
+mpasn_notneedhasbuff: Buff is active
+mpasn_notforvip: Not for <color=#32CD32>VIP</color> users
+mpasn_neednothasitem: You have item

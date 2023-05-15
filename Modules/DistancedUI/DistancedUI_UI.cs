@@ -185,7 +185,7 @@ public static class DistancedUI_UI
                     }
                     else
                     {
-                        toUppper += item[i];
+                        toUppper += (item[i] == '_' ? ' ' : item[i]);
                     }
                 }
 

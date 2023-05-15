@@ -606,7 +606,7 @@ public static class Quests_DataTypes
             Quests_UIs.AcceptedQuestsUI.UpdateStatus(AcceptedQuests[UID]);
         }
 
-        private static void RemoveQuestComplete(int UID)
+        public static void RemoveQuestComplete(int UID)
         {
             if (!Player.m_localPlayer) return;
             if (!AcceptedQuests.ContainsKey(UID)) return;

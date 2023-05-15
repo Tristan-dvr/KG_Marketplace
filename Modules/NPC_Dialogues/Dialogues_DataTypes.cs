@@ -24,18 +24,28 @@ public static class Dialogues_DataTypes
         RemoveQuest,
         Damage,
         Heal,
-        GiveBuff
+        GiveBuff,
+        FinishQuest
     }
 
     private enum OptionCondition
     {
-        NotFinished,
-        OtherQuest,
         HasItem,
+        NotHasItem,
         HasBuff,
-        Skill,
+        NotHasBuff,
+        SkillMore,
+        SkillLess,
         GlobalKey,
+        NotGlobalKey,
         IsVIP,
+        NotIsVIP,
+        HasQuest,
+        NotHasQuest,
+        QuestProgressDone,
+        QuestProgressNotDone,
+        QuestNotFinished,
+        QuestFinished
     }
 
     public class RawDialogue : ISerializableParameter
@@ -188,10 +198,7 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCommand.RemoveItem:
-                                result += (_) =>
-                                {
-                                    Utils.CustomRemoveItems(split[1], int.Parse(split[2]), 1);
-                                };
+                                result += (_) => { Utils.CustomRemoveItems(split[1], int.Parse(split[2]), 1); };
                                 break;
                             case OptionCommand.Spawn:
                                 result += (_) =>
@@ -255,6 +262,15 @@ public static class Dialogues_DataTypes
                             case OptionCommand.GiveBuff:
                                 result += (_) => { Player.m_localPlayer.GetSEMan().AddStatusEffect(split[1], true); };
                                 break;
+                            case OptionCommand.FinishQuest:
+                                result += (_) =>
+                                {
+                                    int reqID = split[1].ToLower().GetStableHashCode();
+                                    if (!Quests_DataTypes.AllQuests.ContainsKey(reqID)) return;
+                                    Quests_DataTypes.Quest.RemoveQuestComplete(reqID);
+                                    Quests_UIs.AcceptedQuestsUI.CheckQuests();
+                                };
+                                break;
                         }
                     }
                 }
@@ -280,7 +296,7 @@ public static class Dialogues_DataTypes
                     {
                         switch (optionCondition)
                         {
-                            case OptionCondition.Skill:
+                            case OptionCondition.SkillMore:
                                 result += (out string reason) =>
                                 {
                                     string localizedSkill = Enum.TryParse(split[1], out Skills.SkillType _)
@@ -292,32 +308,35 @@ public static class Dialogues_DataTypes
                                     return Utils.GetPlayerSkillLevelCustom(split[1]) >= int.Parse(split[2]);
                                 };
                                 break;
-                            case OptionCondition.OtherQuest:
+                            case OptionCondition.SkillLess:
+                                result += (out string reason) =>
+                                {
+                                    string localizedSkill = Enum.TryParse(split[1], out Skills.SkillType _)
+                                        ? Localization.instance.Localize("$skill_" + split[1].ToLower())
+                                        : Localization.instance.Localize($"$skill_" +
+                                                                         Mathf.Abs(split[1].GetStableHashCode()));
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_toomuchskilllevel")}: <color=#00ff00>{localizedSkill} {split[2]}</color>";
+                                    return Utils.GetPlayerSkillLevelCustom(split[1]) < int.Parse(split[2]);
+                                };
+                                break;
+                            case OptionCondition.QuestFinished:
                                 result += (out string reason) =>
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
                                     if (!Quests_DataTypes.AllQuests.ContainsKey(reqID)) return true;
-                                    reason =
-                                        $"{Localization.instance.Localize("$mpasn_needtofinishquest")}: <color=#00ff00>{Quests_DataTypes.AllQuests[reqID].Name}</color>";
+                                    reason = $"{Localization.instance.Localize("$mpasn_needtofinishquest")}: <color=#00ff00>{Quests_DataTypes.AllQuests[reqID].Name}</color>";
                                     return Quests_DataTypes.Quest.IsOnCooldown(reqID, out _);
                                 };
                                 break;
-                            case OptionCondition.NotFinished:
+                            case OptionCondition.QuestNotFinished:
                                 result += (out string reason) =>
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (Quests_DataTypes.AcceptedQuests.TryGetValue(reqID, out var quest))
-                                    {
-                                        reason =
-                                            $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{quest.Name}</color>";
-                                        return false;
-                                    }
-
                                     if (Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest))
-                                        reason =
-                                            $"{Localization.instance.Localize("$mpasn_questfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
+                                        reason = $"{Localization.instance.Localize("$mpasn_questfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
                                     return !Quests_DataTypes.Quest.IsOnCooldown(reqID, out _);
                                 };
                                 break;
@@ -332,11 +351,30 @@ public static class Dialogues_DataTypes
                                     return Utils.CustomCountItemsNoLevel(split[1]) >= int.Parse(split[2]);
                                 };
                                 break;
+                            case OptionCondition.NotHasItem:
+                                result += (out string reason) =>
+                                {
+                                    reason = "";
+                                    GameObject prefab = ZNetScene.instance.GetPrefab(split[1]);
+                                    if (!prefab || !prefab.GetComponent<ItemDrop>()) return true;
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_neednothasitem")}: <color=#00ff00>{Localization.instance.Localize(prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_name)} x{split[2]}</color>";
+                                    return Utils.CustomCountItemsNoLevel(split[1]) < int.Parse(split[2]);
+                                };
+                                break;
                             case OptionCondition.IsVIP:
                                 result += (out string reason) =>
                                 {
                                     reason = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
                                     return Global_Values._container.Value._vipPlayerList.Contains(Global_Values
+                                        ._localUserID);
+                                };
+                                break;
+                            case OptionCondition.NotIsVIP:
+                                result += (out string reason) =>
+                                {
+                                    reason = $"{Localization.instance.Localize("$mpasn_notforvip")}";
+                                    return !Global_Values._container.Value._vipPlayerList.Contains(Global_Values
                                         ._localUserID);
                                 };
                                 break;
@@ -348,14 +386,84 @@ public static class Dialogues_DataTypes
                                     return ZoneSystem.instance.m_globalKeys.Contains(split[1]);
                                 };
                                 break;
+                            case OptionCondition.NotGlobalKey:
+                                result += (out string reason) =>
+                                {
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_notneedglobalkey")}: <color=#00ff00>{split[1]}</color>";
+                                    return !ZoneSystem.instance.m_globalKeys.Contains(split[1]);
+                                };
+                                break;
                             case OptionCondition.HasBuff:
                                 result += (out string reason) =>
                                 {
-                                    StatusEffect findSe = ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1]);
-                                    string seName = findSe == null ? split[1] : Localization.instance.Localize(findSe.m_name);
+                                    StatusEffect findSe =
+                                        ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1]);
+                                    string seName = findSe == null
+                                        ? split[1]
+                                        : Localization.instance.Localize(findSe.m_name);
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needhasbuff")}: <color=#00ff00>{seName}</color>";
                                     return Player.m_localPlayer.m_seman.HaveStatusEffect(split[1]);
+                                };
+                                break;
+                            case OptionCondition.NotHasBuff:
+                                result += (out string reason) =>
+                                {
+                                    StatusEffect findSe =
+                                        ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1]);
+                                    string seName = findSe == null
+                                        ? split[1]
+                                        : Localization.instance.Localize(findSe.m_name);
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_notneedhasbuff")}: <color=#00ff00>{seName}</color>";
+                                    return !Player.m_localPlayer.m_seman.HaveStatusEffect(split[1]);
+                                };
+                                break;
+                            case OptionCondition.QuestProgressDone:
+                                result += (out string reason) =>
+                                {
+                                    reason = "";
+                                    int reqID = split[1].ToLower().GetStableHashCode();
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest) || !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID))
+                                        return false;
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_queststillnotfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
+                                    return Quests_DataTypes.AllQuests[reqID].IsComplete();
+                                };
+                                break;
+                            case OptionCondition.QuestProgressNotDone:
+                                result += (out string reason) =>
+                                {
+                                    reason = "";
+                                    int reqID = split[1].ToLower().GetStableHashCode();
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest) || !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID))
+                                        return false;
+                                    reason = $"{Localization.instance.Localize("$mpasn_questalreadyfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
+                                    return !Quests_DataTypes.AllQuests[reqID].IsComplete();
+                                };
+                                break;
+                            case OptionCondition.HasQuest:
+                                result += (out string reason) =>
+                                {
+                                    reason = "";
+                                    int reqID = split[1].ToLower().GetStableHashCode();
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest))
+                                        return false;
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_questnottaken")}: <color=#00ff00>{reqQuest.Name}</color>";
+                                    return Quests_DataTypes.AcceptedQuests.ContainsKey(reqID);
+                                };
+                                break;
+                            case OptionCondition.NotHasQuest:
+                                result += (out string reason) =>
+                                {
+                                    reason = "";
+                                    int reqID = split[1].ToLower().GetStableHashCode();
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest))
+                                        return false;
+                                    reason = $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{reqQuest.Name}</color>";
+                                    return !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID);
                                 };
                                 break;
                         }
