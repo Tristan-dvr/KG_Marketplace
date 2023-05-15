@@ -1,4 +1,6 @@
-﻿namespace Marketplace.Modules.ServerInfo;
+﻿using UnityEngine.Networking;
+
+namespace Marketplace.Modules.ServerInfo;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
@@ -10,7 +12,7 @@ public static class ServerInfo_Main_Client
         ServerInfo_DataTypes.ServerInfoData.ValueChanged += OnInfoUpdate;
         Marketplace.Global_Updator += Update;
     }
-    
+
     private static void Update()
     {
         if (!Input.GetKeyDown(KeyCode.Escape) || !ServerInfo_UI.IsPanelVisible()) return;
@@ -18,8 +20,63 @@ public static class ServerInfo_Main_Client
         Menu.instance.OnClose();
     }
 
+    private static Coroutine LoadImagesRoutine;
     private static void OnInfoUpdate()
     {
+        if (LoadImagesRoutine != null)
+            Marketplace._thistype.StopCoroutine(LoadImagesRoutine);
+        LoadImagesRoutine = Marketplace._thistype.StartCoroutine(LoadQuestImages(
+            ServerInfo_DataTypes.ServerInfoData.Value.Values.SelectMany(x => x.infoQueue)
+                .Where(x => x.Type == ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Image)));
+        
         if (ServerInfo_UI.IsPanelVisible()) ServerInfo_UI.Reload();
     }
+
+    private static IEnumerator LoadQuestImages(IEnumerable<ServerInfo_DataTypes.ServerInfoQueue.Info> urls)
+    {
+        yield return new WaitForSeconds(3f);
+        foreach (var url in urls)
+        {
+            if (string.IsNullOrEmpty(url.Text)) continue; 
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(url.Text);
+            yield return request.SendWebRequest();
+            if (!request.isNetworkError && !request.isHttpError)
+            {
+                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                if (texture == null || texture.width == 0 || texture.height == 0) continue;
+                var newTempTexture = new Texture2D(texture.width, texture.height);
+                newTempTexture.SetPixels(texture.GetPixels());
+                newTempTexture.Apply();
+                Sprite sprite = Sprite.Create(newTempTexture, new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
+                url.SetSprite(sprite);
+            }
+        }
+    }
+    
+    
+    [HarmonyPatch(typeof(Player),nameof(Player.SetLocalPlayer))]
+    private static class Player_SetLocalPlayer_Patch
+    {
+        private static void Postfix()
+        {
+            if (FejdStartup_Awake_Patch.ShowInfoOnStartup)
+            {
+                FejdStartup_Awake_Patch.ShowInfoOnStartup = false;
+
+                if (ServerInfo_DataTypes.ServerInfoData.Value.ContainsKey("onplayerjoin"))
+                    ServerInfo_UI.Show("onplayerjoin", "");
+            }
+        }
+    }
+    
+    
+    [HarmonyPatch(typeof(FejdStartup),nameof(FejdStartup.Awake))]
+    private static class FejdStartup_Awake_Patch
+    {
+        public static bool ShowInfoOnStartup = true;
+        private static void Postfix() => ShowInfoOnStartup = true;
+    }
+    
+    
+    
 }

@@ -4,10 +4,9 @@ public static class ServerInfo_UI
 {
     private static GameObject UI;
     private static Text NPCname;
-    private static Text InfoText;
     private static Scrollbar Scrollbar;
     private static string CurrentProfile;
-    private static List<ContentSizeFitter> AllFilters;
+    private static Transform Content;
 
     public static bool IsPanelVisible()
     {
@@ -20,34 +19,58 @@ public static class ServerInfo_UI
             AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceInfoNewUI"));
         UnityEngine.Object.DontDestroyOnLoad(UI);
         NPCname = UI.transform.Find("Canvas/Header/Text").GetComponent<Text>();
-        InfoText = UI.transform.Find("Canvas/Scroll View/Viewport/Content/Text").GetComponent<Text>();
+        Content = UI.transform.Find("Canvas/Scroll View/Viewport/Content/");
         Scrollbar = UI.GetComponentInChildren<Scrollbar>();
-        AllFilters = UI.GetComponentsInChildren<ContentSizeFitter>().ToList();
         UI.SetActive(false);
     }
 
-    public static void OnInfoUpdate()
-    {
-        if (IsPanelVisible()) Reload();
-    }
 
     public static void Reload()
     {
+        if (!IsPanelVisible()) return;
         if (!ServerInfo_DataTypes.ServerInfoData.Value.ContainsKey(CurrentProfile))
         {
             Hide();
             return;
         }
 
-        InfoText.text = ServerInfo_DataTypes.ServerInfoData.Value[CurrentProfile];
+        const int maxX = 700;
+        var origText = Content.Find("Text");
+        var origImage = Content.Find("Image");
+
+        for (int i = 2; i < Content.childCount; i++)
+            UnityEngine.Object.Destroy(Content.GetChild(i).gameObject);
+
+        foreach (var q in ServerInfo_DataTypes.ServerInfoData.Value[CurrentProfile].infoQueue)
+        {
+            if (q.Type == ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Text)
+            {
+                var text = UnityEngine.Object.Instantiate(origText, Content);
+                text.gameObject.SetActive(true);
+                text.GetComponent<Text>().text = q.Text;
+            }
+            else
+            {
+                var image = UnityEngine.Object.Instantiate(origImage, Content);
+                image.gameObject.SetActive(true);
+                var sprite = q.GetSprite();
+                image.GetComponent<Image>().sprite = sprite;
+                if (sprite != null)
+                    image.GetComponent<RectTransform>().sizeDelta = new Vector2(Mathf.Min(maxX, sprite.texture.width),
+                        sprite.texture.height);
+            }
+        }
+
         Canvas.ForceUpdateCanvases();
+        var AllFilters = UI.GetComponentsInChildren<ContentSizeFitter>().ToList();
         AllFilters.ForEach(filter => filter.enabled = false);
         AllFilters.ForEach(filter => filter.enabled = true);
     }
 
     public static void Hide()
     {
-        InfoText.text = "";
+        for (int i = 2; i < Content.childCount; i++)
+            UnityEngine.Object.Destroy(Content.GetChild(i).gameObject);
         UI.SetActive(false);
     }
 
@@ -59,13 +82,10 @@ public static class ServerInfo_UI
         UI.SetActive(true);
         _npcName = Utils.RichTextFormatting(_npcName);
         NPCname.text = string.IsNullOrEmpty(_npcName) ? Localization.instance.Localize("$mpasn_Info") : _npcName;
-        InfoText.text = ServerInfo_DataTypes.ServerInfoData.Value[profile];
         Scrollbar.value = 1;
-        Canvas.ForceUpdateCanvases();
-        AllFilters.ForEach(filter => filter.enabled = false);
-        AllFilters.ForEach(filter => filter.enabled = true);
+        Reload();
     }
-    
+
     [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
     [ClientOnlyPatch]
     private static class InfoUIFix

@@ -7,58 +7,86 @@ namespace Marketplace.Modules.ServerInfo;
     new[] { "ServerInfoProfiles.cfg" }, new[] { "OnServerInfoProfileChange" })]
 public static class ServerInfo_Main_Server
 {
-    private const string no_breaking_space = "\u00A0";
-    
+  
     private static void OnInit()
     {
         ReadServerInfoProfiles();
     }
-    
+
     private static void OnServerInfoProfileChange()
     {
         ReadServerInfoProfiles();
         Utils.print("Info Profiles Changed. Sending new info to all clients");
     }
-    
+
     private static void ReadServerInfoProfiles()
     {
         List<string> profiles = File.ReadAllLines(Market_Paths.ServerInfoConfig).ToList();
         ServerInfo_DataTypes.ServerInfoData.Value.Clear();
         string splitProfile = "default";
+        List<ServerInfo_DataTypes.ServerInfoQueue.Info> _infoQueue = new();
         string data = "";
-        bool breakSpaces = false;
         for (int i = 0; i < profiles.Count; i++)
         {
             if (profiles[i].StartsWith("#")) continue;
-            if (profiles[i].StartsWith("[")) 
+            if (profiles[i].StartsWith("["))
             {
                 if (!string.IsNullOrEmpty(data))
                 {
-                    if (breakSpaces) data = data.Replace(" ", no_breaking_space);
-                    ServerInfo_DataTypes.ServerInfoData.Value[splitProfile] =  data.Trim('\n');
+                    _infoQueue.Add(new()
+                    {
+                        Type = ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Text,
+                        Text = data.TrimEnd('\n')
+                    });
+                    ServerInfo_DataTypes.ServerInfoData.Value[splitProfile] = new() { infoQueue = new(_infoQueue) };
                 }
 
-                string[] split = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","").ToLower().Split('=');
-
-                splitProfile = split[0];
-                if (split.Length == 2)
-                {
-                    breakSpaces = bool.Parse(split[1]);
-                }
-                
+                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
+                _infoQueue = new();
                 data = "";
             }
             else
-            { 
-                data += "\n" + profiles[i]; 
+            {
+                if (profiles[i].Contains("<image="))
+                {
+                    string[] splitImage = profiles[i].Split(new[] { "<image=" }, StringSplitOptions.None);
+                    string[] splitImage2 = splitImage[1].Split(new[] { ">" }, StringSplitOptions.None);
+                    string link = splitImage2[0];
+                    
+                    string textBefore = splitImage[0];
+                    string textAfter = splitImage2[1];
+                    
+                    data += textBefore;
+                    _infoQueue.Add(new()
+                    {
+                        Type = ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Text,
+                        Text = data
+                    });
+                    _infoQueue.Add(new()
+                    {
+                        Type = ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Image,
+                        Text = link
+                    });
+                    data = textAfter + "\n";
+                }
+                else
+                {
+                    data += profiles[i] + "\n";
+                }
             }
-        } 
+        }
+
         if (!string.IsNullOrEmpty(data))
         {
-            if (breakSpaces) data = data.Replace(" ", no_breaking_space);
-            ServerInfo_DataTypes.ServerInfoData.Value[splitProfile] =  data.Trim('\n');
+            _infoQueue.Add(new()
+            {
+                Type = ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Text,
+                Text = data.TrimEnd('\n')
+            });
+            ServerInfo_DataTypes.ServerInfoData.Value[splitProfile] = new() { infoQueue = new(_infoQueue) };
+            _infoQueue.Clear();
         }
+
         ServerInfo_DataTypes.ServerInfoData.Update();
     }
-    
 }

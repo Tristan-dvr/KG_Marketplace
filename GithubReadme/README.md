@@ -1097,7 +1097,7 @@ The following conditions can be used in the `NpcDialogues.cfg` file:
 
 - `SkillLess`
     - **Usage**: `SkillLess, SkillName, MaxLevel`
-    - **Description**: Checks if the player's skill level in the specified skill is less than or equal to the maximum level.
+    - **Description**: Checks if the player's skill level in the specified skill is less to the maximum level.
 
 - `GlobalKey`
     - **Usage**: `GlobalKey, KeyName`
@@ -1199,6 +1199,14 @@ The following commands can be used in the `NpcDialogues.cfg` file:
 - `GiveBuff`: Gives a buff to the player.
     - **Usage**: `GiveBuff, BuffID`
     - **Description**: Gives the player the specified buff.
+
+- `AddPin`: Adds a pin to the player's map.
+    - **Usage**: `AddPin, Name, X, Y, Z`
+    - **Description**: Adds the specified pin to the player's map.
+
+- `PingMap`: Pings a location on the player's map.
+    - **Usage**: `PingMap, Name, X, Y, Z`
+    - **Description**: Pings the specified location on the player's map.
 
 Please note that you can use these commands within the player options of your dialogue entries to trigger specific actions or behaviors based on the player's choices.
 

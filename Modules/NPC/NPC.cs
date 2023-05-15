@@ -372,7 +372,7 @@ public static class Market_NPC
         private float ForwardSpeed;
         private float PatrolTime;
         private float periodicAnimationTimer;
-        private float periodicSoundTimer;
+        private float periodicSoundTimer = 999f;
 
         private void OnDestroy()
         {
@@ -796,7 +796,7 @@ public static class Market_NPC
             }
 
             periodicAnimationTimer = 0f;
-            periodicSoundTimer = 0f;
+            periodicSoundTimer = 999f;
             string prefab = znv.m_zdo.GetString("KGnpcModelOverride");
             if (TryOverrideModel(ref prefab, out bool isFemale, false))
             {

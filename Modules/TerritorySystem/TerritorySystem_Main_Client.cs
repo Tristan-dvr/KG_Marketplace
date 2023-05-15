@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Marketplace.Modules.Teleporter;
 
 namespace Marketplace.Modules.TerritorySystem;
@@ -63,7 +62,7 @@ public static class TerritorySystem_Main_Client
                     ParticleMist.instance.m_ps.enableEmission = true;
             }
         }
-    
+
 
         if (CurrentTerritory.Flags.HasFlagFast(TerritorySystem_DataTypes.TerritoryFlags.PushAway) &&
             !CurrentTerritory.IsOwner())
@@ -172,7 +171,6 @@ public static class TerritorySystem_Main_Client
             .Sort((a, b) => a.Priority.CompareTo(b.Priority));
         API.ClientSide.FillingTerritoryData = false;
         DoMapMagic();
-        
     }
 
     [HarmonyPatch(typeof(Minimap), nameof(Minimap.UpdateBiome))]
@@ -287,7 +285,6 @@ public static class TerritorySystem_Main_Client
     [ClientOnlyPatch]
     private class PatchMinimapCircles
     {
-        private static readonly int Pulse = Animator.StringToHash("pulse");
         public static bool IsGeneratingMap;
 
         private static void Prefix()
@@ -788,6 +785,21 @@ public static class TerritorySystem_Main_Client
         }
     }
 
+    [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Spawn))]
+    [ClientOnlyPatch]
+    private static class SpawnSystem_Spawn_Patch
+    {
+        private static bool Prefix(Vector3 spawnPoint)
+        {
+            foreach (var territory in TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.NoMonsters])
+            {
+                if (territory.IsInside(spawnPoint))
+                    return false;
+            }
+            return true;
+        }
+    }
+
     [HarmonyPatch(typeof(Player), nameof(Player.GetRunSpeedFactor))]
     [ClientOnlyPatch]
     private static class MoveSpeed_Patch_Territory
@@ -1096,7 +1108,4 @@ public static class TerritorySystem_Main_Client
             }
         }
     }
-    
-    
-
 }

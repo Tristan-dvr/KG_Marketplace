@@ -96,7 +96,7 @@ namespace Marketplace
                         ConsoleColor.Red);
                     continue;
                 }
-
+ 
                 try
                 {
                     method.Invoke(null, null);

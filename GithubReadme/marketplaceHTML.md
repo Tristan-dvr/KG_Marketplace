@@ -928,7 +928,7 @@ Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: Sword
 <p><code>SkillLess</code></p>
 <ul>
 <li><strong>Usage</strong>: <code>SkillLess, SkillName, MaxLevel</code></li>
-<li><strong>Description</strong>: Checks if the player’s skill level in the specified skill is less than or equal to the maximum level.</li>
+<li><strong>Description</strong>: Checks if the player’s skill level in the specified skill is less to the maximum level.</li>
 </ul>
 </li>
 <li>
@@ -1092,6 +1092,20 @@ Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: Sword
 <ul>
 <li><strong>Usage</strong>: <code>GiveBuff, BuffID</code></li>
 <li><strong>Description</strong>: Gives the player the specified buff.</li>
+</ul>
+</li>
+<li>
+<p><code>AddPin</code>: Adds a pin to the player’s map.</p>
+<ul>
+<li><strong>Usage</strong>: <code>AddPin, Name, X, Y, Z</code></li>
+<li><strong>Description</strong>: Adds the specified pin to the player’s map.</li>
+</ul>
+</li>
+<li>
+<p><code>PingMap</code>: Pings a location on the player’s map.</p>
+<ul>
+<li><strong>Usage</strong>: <code>PingMap, Name, X, Y, Z</code></li>
+<li><strong>Description</strong>: Pings the specified location on the player’s map.</li>
 </ul>
 </li>
 </ul>

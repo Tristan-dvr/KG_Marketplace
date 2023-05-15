@@ -174,7 +174,10 @@ public static class Quests_Main_Client
                 {
                     Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                     if (texture == null || texture.width == 0 || texture.height == 0) continue;
-                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+                    var newTempTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
+                    newTempTexture.SetPixels(texture.GetPixels());
+                    newTempTexture.Apply();
+                    Sprite sprite = Sprite.Create(newTempTexture, new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
                     url.Key.SetPreviewSprite(sprite);
                 }
             }
