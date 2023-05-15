@@ -1068,44 +1068,76 @@ Text: Option1 | Transition: UniqueProfileName2 | Command: Damage, 20 | Icon: Ham
 Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: SwordIron | Condition: NotFinished, QuestId | AlwaysVisible: true
 ```
 
+---
+
 ### Conditions
 
 The following conditions can be used in the `NpcDialogues.cfg` file:
 
-- `NotFinished`
-
-    - **Usage**: `NotFinished, QuestId`
-    - **Description**: Checks if the specified quest is not finished yet.
-
-- `OtherQuest`
-
-    - **Usage**: `OtherQuest, QuestId`
-    - **Description**: Checks if the specified quest is already finished.
 
 - `HasItem`
-
     - **Usage**: `HasItem, ItemPrefab, Amount`
     - **Description**: Checks if the player has the specified amount of a particular item.
 
+- `NotHasItem`
+    - **Usage**: `NotHasItem, ItemPrefab, Amount`
+    - **Description**: Checks if the player does not have the specified amount of a particular item.
+
 - `HasBuff`
-
     - **Usage**: `HasBuff, BuffName`
-    - **Description**: Checks if the player currently has the specified buff.
+    - **Description**: Checks if the player has the specified buff.
 
-- `Skill`
+- `NotHasBuff`
+    - **Usage**: `NotHasBuff, BuffName`
+    - **Description**: Checks if the player does not have the specified buff.
 
-    - **Usage**: `Skill, SkillName, MinLevel`
-    - **Description**: Checks if the player's skill level in the specified skill is equal to or higher than the minimum level.
+- `SkillMore`
+    - **Usage**: `SkillMore, SkillName, MinLevel`
+    - **Description**: Checks if the player's skill level in the specified skill is greater than or equal to the minimum level.
+
+- `SkillLess`
+    - **Usage**: `SkillLess, SkillName, MaxLevel`
+    - **Description**: Checks if the player's skill level in the specified skill is less than or equal to the maximum level.
 
 - `GlobalKey`
-
-    - **Usage**: `GlobalKey, GlobalKey`
+    - **Usage**: `GlobalKey, KeyName`
     - **Description**: Checks if the specified global key is active.
 
-- `IsVIP`
+- `NotGlobalKey`
+    - **Usage**: `NotGlobalKey, KeyName`
+    - **Description**: Checks if the specified global key is not active.
 
+- `IsVIP`
     - **Usage**: `IsVIP`
     - **Description**: Checks if the player is a VIP.
+
+- `NotIsVIP`
+    - **Usage**: `NotIsVIP`
+    - **Description**: Checks if the player is not a VIP.
+
+- `HasQuest`
+    - **Usage**: `HasQuest, QuestID`
+    - **Description**: Checks if the player has the specified quest.
+
+- `NotHasQuest`
+    - **Usage**: `NotHasQuest, QuestID`
+    - **Description**: Checks if the player does not have the specified quest.
+
+- `QuestProgressDone`
+    - **Usage**: `QuestProgressDone, QuestID`
+    - **Description**: Checks if quest progress is done (max score).
+
+- `QuestProgressNotDone`
+    - **Usage**: `QuestProgressNotDone, QuestID`
+    - **Description**:  Checks if quest progress is not done (max score).
+
+- `QuestFinished`
+    - **Usage**: `QuestFinished, QuestID`
+    - **Description**: Checks if the specified quest is already finished.
+
+- `QuestNotFinished`
+    - **Usage**: `QuestNotFinished, QuestID`
+    - **Description**: Checks if the specified quest is not finished yet.
 
 Please note that you can use these conditions within the player options of your dialogue entries to control the availability and visibility of options based on specific game conditions or player states.
 
@@ -1113,70 +1145,66 @@ Feel free to refer to this documentation for further clarification or provide mo
 
 Please note that you should replace the placeholder values (`UniqueProfileName`, `Dialogue Text`, `Player options`, `Text`, `Transition`, `Command`, `Icon`, `Condition`, `AlwaysVisible`, `QuestId`, `ItemPrefab`, `amount`, `BuffName`, `SkillName`, `MinLevel`, `somekey`) with actual values relevant to your game and dialogues.
 
+---
 
 ### Commands
 
 The following commands can be used in the `NpcDialogues.cfg` file:
 
 - `OpenUI`: Opens a specific NPC type profile UI.
-
     - **Usage**: `OpenUI, NPC Type, Profile Name`
     - **Description**: Opens the UI associated with a particular NPC type profile.
     - **Possible NPC Types**: Marketplace, Trader, Info, Teleporter, Feedback, Banker, Gambler, Quests, Buffer, Transmog
 
-- `PlaySound`: Plays a sound.
+- `FinishQuest`: Finishes a quest.
+    - **Usage**: `FinishQuest, QuestID`
+    - **Description**: Finishes the specified quest.
 
+- `PlaySound`: Plays a sound.
     - **Usage**: `PlaySound, SoundName`
     - **Description**: Plays the specified sound.
 
 - `GiveQuest`: Gives a quest to the player.
-
     - **Usage**: `GiveQuest, QuestID`
     - **Description**: Gives the player the specified quest.
 
 - `GiveItem`: Gives an item to the player.
-
     - **Usage**: `GiveItem, ItemPrefab, Amount, Level`
     - **Description**: Gives the player a specified number of items of a certain level.
 
 - `RemoveItem`: Removes items from the player's inventory.
-
     - **Usage**: `RemoveItem, ItemPrefab, Amount`
     - **Description**: Removes a specified number of items from the player's inventory.
 
 - `Spawn`: Spawns creatures nearby.
-
     - **Usage**: `Spawn, CreaturePrefab, Amount, Level`
     - **Description**: Spawns a specified number of creatures of a certain level near the player.
 
 - `Teleport`: Teleports the player to a specific location.
-
     - **Usage**: `Teleport, X, Y, Z`
     - **Description**: Teleports the player to the specified coordinates.
 
 - `RemoveQuest`: Removes a quest from the player.
-
     - **Usage**: `RemoveQuest, QuestID`
     - **Description**: Removes the specified quest from the player's quest log.
 
 - `Damage`: Inflicts damage on the player.
-
     - **Usage**: `Damage, Value`
     - **Description**: Damages the player by the specified value.
 
 - `Heal`: Restores health to the player.
-
     - **Usage**: `Heal, Value`
     - **Description**: Restores the player's health by the specified value.
 
 - `GiveBuff`: Gives a buff to the player.
-
     - **Usage**: `GiveBuff, BuffID`
     - **Description**: Gives the player the specified buff.
 
 Please note that you can use these commands within the player options of your dialogue entries to trigger specific actions or behaviors based on the player's choices.
 
 You can use **multiple** commands and conditions in a single player option by separating them with | (pipe) character.
+
+---
 
 # Dialogue exampes:
 

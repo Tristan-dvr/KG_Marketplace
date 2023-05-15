@@ -1,5 +1,6 @@
 ﻿using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
+using Random = UnityEngine.Random;
 
 namespace Marketplace.Modules.NPC_Dialogues;
 
@@ -25,7 +26,9 @@ public static class Dialogues_DataTypes
         Damage,
         Heal,
         GiveBuff,
-        FinishQuest
+        FinishQuest,
+        PingMap,
+        AddPin
     }
 
     private enum OptionCondition
@@ -271,6 +274,28 @@ public static class Dialogues_DataTypes
                                     Quests_UIs.AcceptedQuestsUI.CheckQuests();
                                 };
                                 break;
+                            case OptionCommand.PingMap:
+                                result += (_) =>
+                                {
+                                    Vector3 pos = new Vector3(int.Parse(split[2]), int.Parse(split[3]), int.Parse(split[4]));
+                                    long sender = Random.Range(-10000, 10000);
+                                    Chat.instance.AddInworldText(null, sender , pos, Talker.Type.Ping, new(){ Name = "", Gamertag = "", NetworkUserId = ""}, "");
+                                    var worldText = Chat.instance.FindExistingWorldText(sender);
+                                    if (worldText != null)
+                                        worldText.m_text = split[1];
+                                    Minimap.instance.ShowPointOnMap(pos);
+                                    Minimap.instance.m_largeZoom = 0.1f;
+                                };
+                                break;
+                            case OptionCommand.AddPin:
+                                result += (_) =>
+                                {
+                                    Vector3 pos = new Vector3(int.Parse(split[2]), int.Parse(split[3]), int.Parse(split[4]));
+                                    Minimap.instance.AddPin(pos, Market_NPC_MapPins.PINTYPENPC, split[1], true, false);
+                                    Minimap.instance.ShowPointOnMap(pos);
+                                    Minimap.instance.m_largeZoom = 0.1f;
+                                };
+                                break;
                         }
                     }
                 }
@@ -326,7 +351,8 @@ public static class Dialogues_DataTypes
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
                                     if (!Quests_DataTypes.AllQuests.ContainsKey(reqID)) return true;
-                                    reason = $"{Localization.instance.Localize("$mpasn_needtofinishquest")}: <color=#00ff00>{Quests_DataTypes.AllQuests[reqID].Name}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needtofinishquest")}: <color=#00ff00>{Quests_DataTypes.AllQuests[reqID].Name}</color>";
                                     return Quests_DataTypes.Quest.IsOnCooldown(reqID, out _);
                                 };
                                 break;
@@ -336,7 +362,8 @@ public static class Dialogues_DataTypes
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
                                     if (Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest))
-                                        reason = $"{Localization.instance.Localize("$mpasn_questfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
+                                        reason =
+                                            $"{Localization.instance.Localize("$mpasn_questfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
                                     return !Quests_DataTypes.Quest.IsOnCooldown(reqID, out _);
                                 };
                                 break;
@@ -425,7 +452,8 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest) || !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID))
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest) ||
+                                        !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID))
                                         return false;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_queststillnotfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
@@ -437,9 +465,11 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest) || !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID))
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest) ||
+                                        !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID))
                                         return false;
-                                    reason = $"{Localization.instance.Localize("$mpasn_questalreadyfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_questalreadyfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
                                     return !Quests_DataTypes.AllQuests[reqID].IsComplete();
                                 };
                                 break;
@@ -462,7 +492,8 @@ public static class Dialogues_DataTypes
                                     int reqID = split[1].ToLower().GetStableHashCode();
                                     if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest))
                                         return false;
-                                    reason = $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{reqQuest.Name}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{reqQuest.Name}</color>";
                                     return !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID);
                                 };
                                 break;

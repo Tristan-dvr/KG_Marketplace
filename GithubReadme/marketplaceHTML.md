@@ -885,23 +885,10 @@ NPC text
 Text: Option1 | Transition: UniqueProfileName2 | Command: Damage, 20 | Icon: Hammer | Condition: NotFinished, QuestId | AlwaysVisible: true
 Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: SwordIron | Condition: NotFinished, QuestId | AlwaysVisible: true
 </code></pre>
+<hr>
 <h3>Conditions</h3>
 <p>The following conditions can be used in the <code>NpcDialogues.cfg</code> file:</p>
 <ul>
-<li>
-<p><code>NotFinished</code></p>
-<ul>
-<li><strong>Usage</strong>: <code>NotFinished, QuestId</code></li>
-<li><strong>Description</strong>: Checks if the specified quest is not finished yet.</li>
-</ul>
-</li>
-<li>
-<p><code>OtherQuest</code></p>
-<ul>
-<li><strong>Usage</strong>: <code>OtherQuest, QuestId</code></li>
-<li><strong>Description</strong>: Checks if the specified quest is already finished.</li>
-</ul>
-</li>
 <li>
 <p><code>HasItem</code></p>
 <ul>
@@ -910,24 +897,52 @@ Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: Sword
 </ul>
 </li>
 <li>
-<p><code>HasBuff</code></p>
+<p><code>NotHasItem</code></p>
 <ul>
-<li><strong>Usage</strong>: <code>HasBuff, BuffName</code></li>
-<li><strong>Description</strong>: Checks if the player currently has the specified buff.</li>
+<li><strong>Usage</strong>: <code>NotHasItem, ItemPrefab, Amount</code></li>
+<li><strong>Description</strong>: Checks if the player does not have the specified amount of a particular item.</li>
 </ul>
 </li>
 <li>
-<p><code>Skill</code></p>
+<p><code>HasBuff</code></p>
 <ul>
-<li><strong>Usage</strong>: <code>Skill, SkillName, MinLevel</code></li>
-<li><strong>Description</strong>: Checks if the player’s skill level in the specified skill is equal to or higher than the minimum level.</li>
+<li><strong>Usage</strong>: <code>HasBuff, BuffName</code></li>
+<li><strong>Description</strong>: Checks if the player has the specified buff.</li>
+</ul>
+</li>
+<li>
+<p><code>NotHasBuff</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>NotHasBuff, BuffName</code></li>
+<li><strong>Description</strong>: Checks if the player does not have the specified buff.</li>
+</ul>
+</li>
+<li>
+<p><code>SkillMore</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>SkillMore, SkillName, MinLevel</code></li>
+<li><strong>Description</strong>: Checks if the player’s skill level in the specified skill is greater than or equal to the minimum level.</li>
+</ul>
+</li>
+<li>
+<p><code>SkillLess</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>SkillLess, SkillName, MaxLevel</code></li>
+<li><strong>Description</strong>: Checks if the player’s skill level in the specified skill is less than or equal to the maximum level.</li>
 </ul>
 </li>
 <li>
 <p><code>GlobalKey</code></p>
 <ul>
-<li><strong>Usage</strong>: <code>GlobalKey, GlobalKey</code></li>
+<li><strong>Usage</strong>: <code>GlobalKey, KeyName</code></li>
 <li><strong>Description</strong>: Checks if the specified global key is active.</li>
+</ul>
+</li>
+<li>
+<p><code>NotGlobalKey</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>NotGlobalKey, KeyName</code></li>
+<li><strong>Description</strong>: Checks if the specified global key is not active.</li>
 </ul>
 </li>
 <li>
@@ -937,10 +952,60 @@ Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: Sword
 <li><strong>Description</strong>: Checks if the player is a VIP.</li>
 </ul>
 </li>
+<li>
+<p><code>NotIsVIP</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>NotIsVIP</code></li>
+<li><strong>Description</strong>: Checks if the player is not a VIP.</li>
+</ul>
+</li>
+<li>
+<p><code>HasQuest</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>HasQuest, QuestID</code></li>
+<li><strong>Description</strong>: Checks if the player has the specified quest.</li>
+</ul>
+</li>
+<li>
+<p><code>NotHasQuest</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>NotHasQuest, QuestID</code></li>
+<li><strong>Description</strong>: Checks if the player does not have the specified quest.</li>
+</ul>
+</li>
+<li>
+<p><code>QuestProgressDone</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>QuestProgressDone, QuestID</code></li>
+<li><strong>Description</strong>: Checks if quest progress is done (max score).</li>
+</ul>
+</li>
+<li>
+<p><code>QuestProgressNotDone</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>QuestProgressNotDone, QuestID</code></li>
+<li><strong>Description</strong>:  Checks if quest progress is not done (max score).</li>
+</ul>
+</li>
+<li>
+<p><code>QuestFinished</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>QuestFinished, QuestID</code></li>
+<li><strong>Description</strong>: Checks if the specified quest is already finished.</li>
+</ul>
+</li>
+<li>
+<p><code>QuestNotFinished</code></p>
+<ul>
+<li><strong>Usage</strong>: <code>QuestNotFinished, QuestID</code></li>
+<li><strong>Description</strong>: Checks if the specified quest is not finished yet.</li>
+</ul>
+</li>
 </ul>
 <p>Please note that you can use these conditions within the player options of your dialogue entries to control the availability and visibility of options based on specific game conditions or player states.</p>
 <p>Feel free to refer to this documentation for further clarification or provide more examples if needed.</p>
 <p>Please note that you should replace the placeholder values (<code>UniqueProfileName</code>, <code>Dialogue Text</code>, <code>Player options</code>, <code>Text</code>, <code>Transition</code>, <code>Command</code>, <code>Icon</code>, <code>Condition</code>, <code>AlwaysVisible</code>, <code>QuestId</code>, <code>ItemPrefab</code>, <code>amount</code>, <code>BuffName</code>, <code>SkillName</code>, <code>MinLevel</code>, <code>somekey</code>) with actual values relevant to your game and dialogues.</p>
+<hr>
 <h3>Commands</h3>
 <p>The following commands can be used in the <code>NpcDialogues.cfg</code> file:</p>
 <ul>
@@ -950,6 +1015,13 @@ Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: Sword
 <li><strong>Usage</strong>: <code>OpenUI, NPC Type, Profile Name</code></li>
 <li><strong>Description</strong>: Opens the UI associated with a particular NPC type profile.</li>
 <li><strong>Possible NPC Types</strong>: Marketplace, Trader, Info, Teleporter, Feedback, Banker, Gambler, Quests, Buffer, Transmog</li>
+</ul>
+</li>
+<li>
+<p><code>FinishQuest</code>: Finishes a quest.</p>
+<ul>
+<li><strong>Usage</strong>: <code>FinishQuest, QuestID</code></li>
+<li><strong>Description</strong>: Finishes the specified quest.</li>
 </ul>
 </li>
 <li>
@@ -1025,6 +1097,7 @@ Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: Sword
 </ul>
 <p>Please note that you can use these commands within the player options of your dialogue entries to trigger specific actions or behaviors based on the player’s choices.</p>
 <p>You can use <strong>multiple</strong> commands and conditions in a single player option by separating them with | (pipe) character.</p>
+<hr>
 <h1>Dialogue exampes:</h1>
 <pre><code>[default]
 Welcome to the village!

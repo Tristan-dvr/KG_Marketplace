@@ -9,7 +9,7 @@ public static class Market_NPC_MapPins
     private const string npcToSearchPrefabName = "MarketPlaceNPCpinned";
     private static readonly List<ZDO> TempNPCList = new();
     private static readonly List<Minimap.PinData> TempNPCpins = new();
-    private const Minimap.PinType PINTYPENPC = (Minimap.PinType)175;
+    public const Minimap.PinType PINTYPENPC = (Minimap.PinType)175;
     private static Sprite QuestCompleteIcon;
 
     // ReSharper disable once UnusedMember.Global
@@ -17,6 +17,16 @@ public static class Market_NPC_MapPins
     {
         Marketplace._thistype.StartCoroutine(SendNPCsToClients());
         Marketplace._thistype.StartCoroutine(UpdateNPCpins());
+    }
+
+    [HarmonyPatch(typeof(Minimap), nameof(Minimap.GetSprite))]
+    [ClientOnlyPatch]
+    private static class Minimap_GetSprite_Patch
+    {
+        private static void Postfix(Minimap.PinType type, ref Sprite __result)
+        {
+            if (type is PINTYPENPC) __result = AssetStorage.AssetStorage.PlaceholderGamblerIcon;
+        }
     }
 
     private static IEnumerator UpdateNPCpins()
