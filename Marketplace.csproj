@@ -64,9 +64,6 @@
         <Reference Include="GroupsAPI">
           <HintPath>Libs\GroupsAPI.dll</HintPath>
         </Reference>
-        <Reference Include="ItemDataManager">
-          <HintPath>Libs\ItemDataManager.dll</HintPath>
-        </Reference>
         <Reference Include="ItemManager">
           <HintPath>Libs\ItemManager.dll</HintPath>
         </Reference>
@@ -302,6 +299,7 @@
         <Compile Include="ExternalLoads\AssetStorage.cs" />
         <Compile Include="FixPossibleErrors.cs" />
         <Compile Include="GlobalUsings.cs" />
+        <Compile Include="ItemDataManager_Modified.cs" />
         <Compile Include="Logger.cs" />
         <Compile Include="Marketplace.cs" />
         <Compile Include="Modules\Banker\Banker_DataTypes.cs" />

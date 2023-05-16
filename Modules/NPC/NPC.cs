@@ -383,7 +383,7 @@ public static class Market_NPC
         {
             ForwardSpeed = 0f;
             if (zanim.enabled)
-                zanim.SetFloat(Character.forward_speed, 0);
+                zanim.SetFloat(Character.s_forwardSpeed, 0);
             if (string.IsNullOrEmpty(ForceData)) return;
             MaxSpeed = 1f;
             try
@@ -418,7 +418,7 @@ public static class Market_NPC
                 ? Mathf.Clamp(ForwardSpeed - Time.deltaTime, 0, MaxSpeed)
                 : Mathf.Clamp(ForwardSpeed + Time.deltaTime, 0, MaxSpeed);
             if (zanim.enabled)
-                zanim.SetFloat(Character.forward_speed, ForwardSpeed * 1.5f);
+                zanim.SetFloat(Character.s_forwardSpeed, ForwardSpeed * 1.5f);
             int currentPatrolPoint = znv.m_zdo.GetInt(LatestPatrolPoint);
             Vector2 currentPos = new Vector2(transform.position.x, transform.position.z);
             Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint],

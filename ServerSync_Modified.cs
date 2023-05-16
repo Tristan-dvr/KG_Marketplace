@@ -251,7 +251,7 @@ public class ConfigSync
         private static void Prefix(ZRpc __instance) => currentRpc = __instance;
     }
 
-    [HarmonyPatch(typeof(ZNet), "Awake")]
+    [HarmonyPatch(typeof(ZNet), nameof(ZNet.Awake))]
     internal static class RegisterRPCPatch
     {
         [HarmonyPostfix]

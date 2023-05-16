@@ -178,7 +178,10 @@ public static class PostMail_Main_Client
             PinMapper.Clear();
             Minimap.instance.SetMapMode(Minimap.MapMode.Large);
             List<ZDO> AllMails = new();
-            ZDOMan.instance.GetAllZDOsWithPrefab(PrefabToSearch, AllMails);
+            int amount = 0;
+            while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(PrefabToSearch, AllMails, ref amount))
+            {
+            }
             if (AllMails.Count == 0) return;
             foreach (var mail in AllMails)
             {

@@ -137,7 +137,7 @@ public static class Quest_ProgressionHook
             if (Global_Values._container.Value._allowKillQuestsInParty && ownerRPC && Groups.API.IsLoaded() &&
                 Groups.API.GroupPlayers() is { Count: > 1 } group)
                 foreach (PlayerReference member in group)
-                    if (member.peerId != ZDOMan.instance.m_myid)
+                    if (member.peerId != ZDOMan.instance.m_sessionID)
                         ZRoutedRpc.instance.InvokeRoutedRPC(member.peerId, "KGmarket QuestKill", prefab, level, pos,
                             false);
             if (!ownerRPC && Vector3.Distance(Player.m_localPlayer.transform.position, pos) >= 100f) return;

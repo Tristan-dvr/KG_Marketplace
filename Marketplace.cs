@@ -11,7 +11,7 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        public const string PluginVersion = "8.6.6";
+        public const string PluginVersion = "8.6.7";
         internal static Marketplace _thistype;
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW;
@@ -96,7 +96,7 @@ namespace Marketplace
                         ConsoleColor.Red);
                     continue;
                 }
- 
+
                 try
                 {
                     method.Invoke(null, null);
@@ -148,7 +148,16 @@ namespace Marketplace
         private static void MarketplaceConfigChanged(object sender, FileSystemEventArgs e)
         {
             if (e.ChangeType != WatcherChangeTypes.Changed) return;
-            if (!FSW_Lookup.TryGetValue(Path.GetFileName(e.Name), out var action)) return;
+
+            string fName = Path.GetFileName(e.Name);
+
+            string folderPath = Path.GetDirectoryName(e.FullPath);
+            if (folderPath == Market_Paths.AdditionalConfigsQuestsFolder)
+                fName = Path.GetFileName(Market_Paths.QuestDatabasePath);
+            else if (folderPath == Market_Paths.AdditionalConfigsDialoguesFolder)
+                fName = Path.GetFileName(Market_Paths.NpcDialoguesConfig);
+            
+            if (!FSW_Lookup.TryGetValue(fName!, out var action)) return;
             if (!ZNet.instance || !ZNet.instance.IsServer())
             {
                 Utils.print($"FSW: Not a server, ignoring ({e.Name})", ConsoleColor.Red);

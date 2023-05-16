@@ -23,10 +23,8 @@ public class Dialogues_Main_Server
         AlwaysVisible
     }
 
-    private static void ReadDialoguesData()
+    private static void ProcessDialogueProfiles(List<string> profiles)
     {
-        List<string> profiles = File.ReadAllLines(Market_Paths.NpcDialoguesConfig).ToList();
-        Dialogues_DataTypes.SyncedDialoguesData.Value.Clear();
         Dialogues_DataTypes.RawDialogue dialogue = null;
         List<Dialogues_DataTypes.RawDialogue.RawPlayerOption> options = null;
         for (int i = 0; i < profiles.Count; i++)
@@ -108,6 +106,21 @@ public class Dialogues_Main_Server
             dialogue.Options = options?.ToArray();
             Dialogues_DataTypes.SyncedDialoguesData.Value.Add(dialogue);
         }
+    }
+    
+    private static void ReadDialoguesData()
+    {
+        List<string> profiles = File.ReadAllLines(Market_Paths.NpcDialoguesConfig).ToList();
+        Dialogues_DataTypes.SyncedDialoguesData.Value.Clear();
+        ProcessDialogueProfiles(profiles);
+        string folder = Market_Paths.AdditionalConfigsDialoguesFolder;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            profiles = File.ReadAllLines(file).ToList();
+            ProcessDialogueProfiles(profiles);
+        }
+        
         Dialogues_DataTypes.SyncedDialoguesData.Update();
     }
 

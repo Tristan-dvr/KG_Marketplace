@@ -73,7 +73,7 @@ public static class Buffer_Main_Server
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
             {
-                dbProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
+                dbProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "");
             }
             else
             {

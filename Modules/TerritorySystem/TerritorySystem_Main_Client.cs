@@ -1076,7 +1076,7 @@ public static class TerritorySystem_Main_Client
                 0f, __instance.m_width * __instance.m_scale * 0.5f);
             int num = __instance.m_width + 1;
             bool invoke = false;
-            Heightmap.m_tempColors.Clear();
+            Heightmap.s_tempColors.Clear();
             for (int x = 0; x < num; ++x)
             {
                 for (int z = 0; z < num; ++z)
@@ -1089,11 +1089,11 @@ public static class TerritorySystem_Main_Client
                         if (!paint.IsInside(new Vector2(FinalX, FinalZ)))
                         {
                             Heightmap.Biome biome = WorldGenerator.instance.GetBiome(FinalX, FinalZ);
-                            Heightmap.m_tempColors.Add(Heightmap.GetBiomeColor(biome));
+                            Heightmap.s_tempColors.Add(Heightmap.GetBiomeColor(biome));
                         }
                         else
                         {
-                            Heightmap.m_tempColors.Add(Heightmap.GetBiomeColor(Heightmap.Biome.Mountain));
+                            Heightmap.s_tempColors.Add(Heightmap.GetBiomeColor(Heightmap.Biome.Mountain));
                             invoke = true;
                         }
 
@@ -1104,7 +1104,7 @@ public static class TerritorySystem_Main_Client
 
             if (invoke)
             {
-                __instance.m_renderMesh.SetColors(Heightmap.m_tempColors);
+                __instance.m_renderMesh.SetColors(Heightmap.s_tempColors);
             }
         }
     }

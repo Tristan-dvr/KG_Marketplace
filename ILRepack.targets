@@ -5,7 +5,6 @@
 			<InputAssemblies Include="$(TargetPath)"/>
 			<InputAssemblies Include="$(OutputPath)\fastJSON.dll" />
 			<InputAssemblies Include="$(OutputPath)\LocalizationManager.dll" />
-			<InputAssemblies Include="$(OutputPath)\ItemDataManager.dll" />
 			<InputAssemblies Include="$(OutputPath)\GroupsAPI.dll" />
 		</ItemGroup>
 		<ILRepack Parallel="true" DebugInfo="true" Internalize="true" InputAssemblies="@(InputAssemblies)" OutputFile="$(TargetPath)"

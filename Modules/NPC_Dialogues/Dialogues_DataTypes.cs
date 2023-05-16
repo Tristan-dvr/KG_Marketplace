@@ -263,7 +263,7 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCommand.GiveBuff:
-                                result += (_) => { Player.m_localPlayer.GetSEMan().AddStatusEffect(split[1], true); };
+                                result += (_) => { Player.m_localPlayer.GetSEMan().AddStatusEffect(split[1].GetStableHashCode(), true); };
                                 break;
                             case OptionCommand.FinishQuest:
                                 result += (_) =>

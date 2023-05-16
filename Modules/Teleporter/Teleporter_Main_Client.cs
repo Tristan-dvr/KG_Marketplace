@@ -148,7 +148,7 @@ public static class Teleporter_Main_Client
         }
     }
     
-    [HarmonyPatch(typeof(Character), nameof(Character.FixedUpdate))]
+    [HarmonyPatch(typeof(Character), nameof(Character.CustomFixedUpdate))]
     [ClientOnlyPatch]
     private static class PriestCancelTP
     {

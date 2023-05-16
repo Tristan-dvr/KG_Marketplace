@@ -888,7 +888,7 @@ public static class Quests_DataTypes
 
         public static void CheckItemDropsTargets()
         {
-            foreach (ItemDrop c in ItemDrop.m_instances)
+            foreach (ItemDrop c in ItemDrop.s_instances)
             {
                 c.transform.Find("MPASNquest").gameObject.SetActive(IsQuestTarget(c));
             }

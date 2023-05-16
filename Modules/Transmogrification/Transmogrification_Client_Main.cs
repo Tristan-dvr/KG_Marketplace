@@ -294,8 +294,8 @@ public static class Transmogrification_Client_Main
         if (index < 0 || index >= MEL_Effects.Count) return null;
         return MEL_Effects[index];
     }
-
-    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquiped))]
+    
+    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquipped))]
     [ClientOnlyPatch]
     private static class MockRight
     {
@@ -330,7 +330,7 @@ public static class Transmogrification_Client_Main
     }
 
 
-    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquiped))]
+    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLeftHandEquipped))]
     [ClientOnlyPatch]
     private static class MockLeft
     {
@@ -364,7 +364,7 @@ public static class Transmogrification_Client_Main
         }
     }
 
-    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetHelmetEquiped))]
+    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetHelmetEquipped))]
     [ClientOnlyPatch]
     private static class MockHelmet
     {
@@ -403,7 +403,7 @@ public static class Transmogrification_Client_Main
         }
     }
 
-    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetShoulderEquiped))]
+    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetShoulderEquipped))]
     [ClientOnlyPatch]
     private static class MockCape
     {
@@ -444,7 +444,7 @@ public static class Transmogrification_Client_Main
         }
     }
 
-    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLegEquiped))]
+    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLegEquipped))]
     [ClientOnlyPatch]
     private static class MockLegs
     {
@@ -485,7 +485,7 @@ public static class Transmogrification_Client_Main
         }
     }
 
-    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetBackEquiped))]
+    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetBackEquipped))]
     [ClientOnlyPatch]
     private static class MockBackItems
     {
@@ -534,7 +534,7 @@ public static class Transmogrification_Client_Main
         }
     }
 
-    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetChestEquiped))]
+    [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetChestEquipped))]
     [ClientOnlyPatch]
     private static class MockChest
     {

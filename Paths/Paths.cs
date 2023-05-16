@@ -54,6 +54,10 @@ public static class Market_Paths
     private static string MockerFolder => Path.Combine(MainPath, "ItemMocker");
     public static string MockerConfig => Path.Combine(MockerFolder, "ItemMocker.cfg");
 
+    public static string AdditionalConfigsFolder => Path.Combine(MainPath, "AdditionalConfigs");
+    public static string AdditionalConfigsQuestsFolder => Path.Combine(AdditionalConfigsFolder, "Quests");
+    public static string AdditionalConfigsDialoguesFolder => Path.Combine(AdditionalConfigsFolder, "Dialogues");
+
     private static void OnInit()
     {
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server or Marketplace.WorkingAs.Both)
@@ -72,6 +76,12 @@ public static class Market_Paths
                 Directory.CreateDirectory(DistancedUIFolder);
             if (!Directory.Exists(MockerFolder))
                 Directory.CreateDirectory(MockerFolder);
+            if (!Directory.Exists(AdditionalConfigsFolder))
+                Directory.CreateDirectory(AdditionalConfigsFolder);
+            if (!Directory.Exists(AdditionalConfigsQuestsFolder))
+                Directory.CreateDirectory(AdditionalConfigsQuestsFolder);
+            if (!Directory.Exists(AdditionalConfigsDialoguesFolder))
+                Directory.CreateDirectory(AdditionalConfigsDialoguesFolder);
 
             if (!File.Exists(QuestProfilesPath)) File.Create(QuestProfilesPath).Dispose();
             if (!File.Exists(QuestEventsPath)) File.Create(QuestEventsPath).Dispose();
@@ -111,7 +121,7 @@ public static class Market_Paths
 
             if (!File.Exists(GamblerConfig)) File.Create(GamblerConfig).Dispose();
             if (!File.Exists(NpcDialoguesConfig)) File.Create(NpcDialoguesConfig).Dispose();
-            
+
             if (!File.Exists(MockerConfig)) File.Create(MockerConfig).Dispose();
         }
 
@@ -124,7 +134,5 @@ public static class Market_Paths
             if (!Directory.Exists(OBJModelsFolder))
                 Directory.CreateDirectory(OBJModelsFolder);
         }
-           
-        
     }
 }

@@ -1228,7 +1228,7 @@ Text: I'm looking for work | Transition: JobOptions | Icon: job_icon
 Available job options:
 Text: We have various job opportunities available. What type of work are you interested in?
 Text: Farming | Command: OpenUI, Quests, Job | Icon: Hoe | Condition: HasItem, Hoe, 1 
-Text: Fishing | Command: OpenUI, Quests, FishingJob | Icon: Fish1 | Condition: Skill, Fishing, 10
+Text: Fishing | Command: OpenUI, Quests, FishingJob | Icon: Fish1 | Condition: SkillMore, Fishing, 10
 ```
 
 Then just attach initial (in our case default) dialogue to NPC UI

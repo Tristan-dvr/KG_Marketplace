@@ -9,7 +9,7 @@ namespace Marketplace.Modules.Quests;
 public static class Quests_Main_Server
 {
     private static void OnInit()
-    { 
+    {
         List<string> profiles = File.ReadAllLines(Market_Paths.QuestProfilesPath).ToList();
         ReadQuestProfiles(profiles);
         List<string> database = File.ReadAllLines(Market_Paths.QuestDatabasePath).ToList();
@@ -25,11 +25,17 @@ public static class Quests_Main_Server
         Utils.print("Quests Profiles Changed. Sending new info to all clients");
     }
 
-    private static void OnQuestDatabaseFileChange()
+    private static IEnumerator DelayMore()
     {
+        yield return new WaitForSeconds(3);
         List<string> database = File.ReadAllLines(Market_Paths.QuestDatabasePath).ToList();
         ReadQuestDatabase(database);
         Utils.print("Quests Database Changed. Sending new info to all clients");
+    }
+    
+    private static void OnQuestDatabaseFileChange()
+    {
+        Marketplace._thistype.StartCoroutine(DelayMore());
     }
 
     private static void OnQuestsEventFileChange()
@@ -38,7 +44,7 @@ public static class Quests_Main_Server
         ReadEventDatabase(events);
         Utils.print("Quests Events Changed. Sending new info to all clients");
     }
-    
+
     private static void ReadQuestProfiles(List<string> profiles)
     {
         Quests_DataTypes.SyncedQuestProfiles.Value.Clear();
@@ -48,7 +54,7 @@ public static class Quests_Main_Server
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
             {
-                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","").ToLower();
+                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
             }
             else
             {
@@ -65,15 +71,14 @@ public static class Quests_Main_Server
                 }
             }
         }
+
         Quests_DataTypes.SyncedQuestProfiles.Update();
     }
 
-    private static int CurrentRevision;
-    private static void ReadQuestDatabase(List<string> profiles)
+
+    private static void ProcessQuestDatabaseProfiles(List<string> profiles)
     {
-        CurrentRevision = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         if (profiles.Count == 0) return;
-        Quests_DataTypes.SyncedQuestData.Value.Clear();
         string dbProfile = null;
         Quests_DataTypes.SpecialQuestTag specialQuestTag = Quests_DataTypes.SpecialQuestTag.None;
         for (int i = 0; i < profiles.Count; i++)
@@ -113,12 +118,14 @@ public static class Quests_Main_Server
                             name = name.Remove(imageIndex, imageEndIndex - imageIndex + 1);
                         }
                     }
+
                     string description = profiles[i + 2];
                     string target = profiles[i + 3];
                     string reward = profiles[i + 4];
                     string cooldown = profiles[i + 5];
                     string restrictions = profiles[i + 6];
-                    if (!(Enum.TryParse(typeString, out Quests_DataTypes.QuestType type) && Enum.IsDefined(typeof(Quests_DataTypes.QuestType), type)))
+                    if (!(Enum.TryParse(typeString, out Quests_DataTypes.QuestType type) &&
+                          Enum.IsDefined(typeof(Quests_DataTypes.QuestType), type)))
                     {
                         dbProfile = null;
                         continue;
@@ -126,7 +133,8 @@ public static class Quests_Main_Server
 
                     string[] rewardsArray = reward.Replace(" ", "").Split('|');
                     int _RewardsAMOUNT = Mathf.Max(1, rewardsArray.Length);
-                    Quests_DataTypes.QuestRewardType[] rewardTypes = new Quests_DataTypes.QuestRewardType[_RewardsAMOUNT];
+                    Quests_DataTypes.QuestRewardType[] rewardTypes =
+                        new Quests_DataTypes.QuestRewardType[_RewardsAMOUNT];
                     string[] RewardPrefabs = new string[_RewardsAMOUNT];
                     int[] RewardLevels = new int[_RewardsAMOUNT];
                     int[] RewardCounts = new int[_RewardsAMOUNT];
@@ -136,13 +144,15 @@ public static class Quests_Main_Server
                         if (!(Enum.TryParse(rwdTypeCheck[0], true,
                                 out rewardTypes[r])))
                         {
-                            Utils.print($"Failed to parse reward type {rewardsArray[r]} in quest {name}. Skipping quest");
+                            Utils.print(
+                                $"Failed to parse reward type {rewardsArray[r]} in quest {name}. Skipping quest");
                             goto GoNextLabel;
                         }
 
                         string[] RewardSplit = rwdTypeCheck[1].Split(',');
 
-                        if (rewardTypes[r] is Quests_DataTypes.QuestRewardType.Battlepass_EXP or Quests_DataTypes.QuestRewardType.EpicMMO_EXP
+                        if (rewardTypes[r] is Quests_DataTypes.QuestRewardType.Battlepass_EXP
+                            or Quests_DataTypes.QuestRewardType.EpicMMO_EXP
                             or Quests_DataTypes.QuestRewardType.MH_EXP)
                         {
                             RewardPrefabs[r] = "NONE";
@@ -179,13 +189,14 @@ public static class Quests_Main_Server
                         TargetPrefabs[t] = TargetSplit[0];
                         TargetLevels[t] = 1;
                         TargetCounts[t] = 1;
-                        
+
                         if (type is Quests_DataTypes.QuestType.Kill && TargetSplit.Length >= 3)
                         {
                             TargetLevels[t] = Mathf.Max(1, Convert.ToInt32(TargetSplit[2]) + 1);
                         }
 
-                        if (type is Quests_DataTypes.QuestType.Craft or Quests_DataTypes.QuestType.Collect && TargetSplit.Length >= 3)
+                        if (type is Quests_DataTypes.QuestType.Craft or Quests_DataTypes.QuestType.Collect &&
+                            TargetSplit.Length >= 3)
                         {
                             TargetLevels[t] = Mathf.Max(1, Convert.ToInt32(TargetSplit[2]));
                         }
@@ -199,7 +210,8 @@ public static class Quests_Main_Server
                     int _TimeLimit = 0;
                     string[] restrictionArray = restrictions.Replace(" ", "").Split('|');
                     int _RestrictionsAMOUNT = Mathf.Max(1, restrictionArray.Length);
-                    Quests_DataTypes.QuestRequirementType[] reqs = new Quests_DataTypes.QuestRequirementType[_RestrictionsAMOUNT];
+                    Quests_DataTypes.QuestRequirementType[] reqs =
+                        new Quests_DataTypes.QuestRequirementType[_RestrictionsAMOUNT];
                     string[] QuestRestriction = new string[_RestrictionsAMOUNT];
                     int[] QuestRestrictionLevel = new int[_RestrictionsAMOUNT];
 
@@ -275,12 +287,29 @@ public static class Quests_Main_Server
                 dbProfile = null;
             }
         }
+    }
+    
+    
+    private static int CurrentRevision;
+    private static void ReadQuestDatabase(List<string> profiles)
+    {
+        CurrentRevision = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        Quests_DataTypes.SyncedQuestData.Value.Clear();
+        ProcessQuestDatabaseProfiles(profiles);
+        string folder = Market_Paths.AdditionalConfigsQuestsFolder;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            profiles = File.ReadAllLines(file).ToList();
+            ProcessQuestDatabaseProfiles(profiles);
+        }
         Quests_DataTypes.SyncedQuestData.Update();
     }
 
     private static void ReadEventDatabase(IReadOnlyList<string> profiles)
     {
         Quests_DataTypes.SyncedQuestsEvents.Value.Clear();
+
         bool ValidateEventArguments(Quests_DataTypes.QuestEventAction action, string args, string QuestID)
         {
             string[] split = args.Split(',');
@@ -300,7 +329,8 @@ public static class Quests_Main_Server
             };
             if (!result)
             {
-                Utils.print($"Arguments for Quest Event: {QuestID} => action {action} are invalid: {args}", ConsoleColor.Red);
+                Utils.print($"Arguments for Quest Event: {QuestID} => action {action} are invalid: {args}",
+                    ConsoleColor.Red);
             }
 
             return result;
@@ -329,7 +359,7 @@ public static class Quests_Main_Server
                     !Enum.IsDefined(typeof(Quests_DataTypes.QuestEventAction), action)) continue;
 
                 string args = actionSplit.Length > 1 ? actionSplit[1] : string.Empty;
-                if(action is not Quests_DataTypes.QuestEventAction.NpcText) args = args.Replace(" ", "");
+                if (action is not Quests_DataTypes.QuestEventAction.NpcText) args = args.Replace(" ", "");
 
                 if (!ValidateEventArguments(action, args, splitProfile)) continue;
                 if (Quests_DataTypes.SyncedQuestsEvents.Value.ContainsKey(splitProfile.GetStableHashCode()))

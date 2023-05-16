@@ -261,7 +261,7 @@ public static class PostMail_UI
         if (_currentProcessedTargetPost.HasOwner())
         {
             var json = JSON.ToJSON(toSend);
-            var owner = _currentProcessedTargetPost.m_owner;
+            var owner = _currentProcessedTargetPost.GetOwner();
             var zdoid = _currentProcessedTargetPost.m_uid;
             ZRoutedRpc.instance.InvokeRoutedRPC(owner, zdoid, "WriteMail", json);
         }
