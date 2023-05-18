@@ -236,3 +236,4 @@ mpasn_notneedglobalkey: Global Key is active
 mpasn_notneedhasbuff: Buff is active
 mpasn_notforvip: Not for <color=#32CD32>VIP</color> users
 mpasn_neednothasitem: You have item
+mpasn_zoneloading: Zone Loading...

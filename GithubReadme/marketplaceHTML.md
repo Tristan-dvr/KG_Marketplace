@@ -795,8 +795,7 @@ Dirt = 3
 <pre><code class="language-plaintext">[ExampleZone]
 Square
 150, 100, 800
-0, 128, 255
-False
+0, 128, 255, false
 NoBuild, NoInteract, PeriodicHealALL = 50
 None
 
@@ -804,8 +803,7 @@ None
 [ZoneWithHigherPriority@2]
 Square
 150, 100, 400
-255, 0, 0
-False
+255, 0, 0, false
 CustomEnvironment = Clear, NoAttack, NoPickaxe, PeriodicDamage = 10
 None
 

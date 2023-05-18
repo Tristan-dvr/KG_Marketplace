@@ -374,6 +374,29 @@ public static class Market_NPC
         private float periodicAnimationTimer;
         private float periodicSoundTimer = 999f;
 
+
+        [HarmonyPatch(typeof(MonoUpdaters), nameof(MonoUpdaters.Update))]
+        private static class MonoUpdaters_Update_Patch
+        {
+            private static void Postfix()
+            {
+                foreach (var ccomponent in ALL)
+                    ccomponent.CustomUpdate();
+            }
+        }
+        
+        [HarmonyPatch(typeof(MonoUpdaters), nameof(MonoUpdaters.FixedUpdate))]
+        private static class MonoUpdaters_FixedUpdate_Patch
+        {
+            private static void Postfix()
+            {
+                foreach (var ccomponent in ALL)
+                    ccomponent.CustomFixedUpdate();
+            }
+        }
+        
+
+
         private void OnDestroy()
         {
             ALL.Remove(this);
@@ -409,7 +432,7 @@ public static class Market_NPC
             }
         }
 
-        private void Update()
+        private void CustomUpdate()
         {
             PatrolTime += Time.deltaTime;
             if (znv.m_zdo == null || !znv.IsOwner() || PatrolArray is not { Length: > 1 } || PatrolTime < 2f) return;
@@ -471,7 +494,7 @@ public static class Market_NPC
             }
         }
 
-        private void FixedUpdate()
+        private void CustomFixedUpdate()
         {
             if (!znv || znv.m_zdo == null) return;
             if (!Player.m_localPlayer) return;

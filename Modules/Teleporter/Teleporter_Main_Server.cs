@@ -19,9 +19,9 @@ public static class Teleporter_Main_Server
         string[] files = Directory.GetFiles(Market_Paths.TeleporterPinsFolder, "*.png", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            string name = Path.GetFileName(file);
+            string name = Path.GetFileNameWithoutExtension(file);
             byte[] data = File.ReadAllBytes(file);
-            Teleporter_DataTypes.TeleporterSprites.Value.Add(name, new Teleporter_DataTypes.TransferBytes(){array = data});
+            Teleporter_DataTypes.TeleporterSprites.Value[name] = new Teleporter_DataTypes.TransferBytes(){array = data};
         }
         Teleporter_DataTypes.TeleporterSprites.Update();
     }

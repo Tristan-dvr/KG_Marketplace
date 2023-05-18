@@ -29,12 +29,12 @@ namespace Dummiesman
                 //do size check
                 byte ddsSizeCheck = ddsBytes[4];
                 if (ddsSizeCheck != 124)
-                    throw new System.Exception("Invalid DDS header. Structure length is incrrrect."); //this header byte should be 124 for DDS image files
+                    throw new Exception("Invalid DDS header. Structure length is incrrrect."); //this header byte should be 124 for DDS image files
 
                 //verify we have a readable tex
                 byte DXTType = ddsBytes[87];
                 if (DXTType != 49 && DXTType != 53)
-                    throw new System.Exception("Cannot load DDS due to an unsupported pixel format. Needs to be DXT1 or DXT5.");
+                    throw new Exception("Cannot load DDS due to an unsupported pixel format. Needs to be DXT1 or DXT5.");
 
                 int height = ddsBytes[13] * 256 + ddsBytes[12];
                 int width = ddsBytes[17] * 256 + ddsBytes[16];
@@ -51,7 +51,7 @@ namespace Dummiesman
 
                 return texture;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("An error occured while loading DirectDraw Surface: " + ex.Message);
             }

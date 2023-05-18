@@ -121,9 +121,9 @@ public static class Buffer_UI
         tempBuffData.Clear();
         AllElements.ForEach(UnityEngine.Object.Destroy);
         AllElements.Clear();
-        if (!IsVisible() || !Buffer_DataTypes.ALLBufferProfiles.ContainsKey(CurrentProfile)) return;
+        if (!IsVisible() || !Buffer_DataTypes.ClientSideBufferProfiles.ContainsKey(CurrentProfile)) return;
         Dictionary<string, List<Buffer_DataTypes.BufferBuffData>> tempDictionary = new();
-        foreach (Buffer_DataTypes.BufferBuffData buff in Buffer_DataTypes.ALLBufferProfiles[CurrentProfile])
+        foreach (Buffer_DataTypes.BufferBuffData buff in Buffer_DataTypes.ClientSideBufferProfiles[CurrentProfile])
         {
             string group = buff.BuffGroup;
             if (string.IsNullOrEmpty(group)) group = "No Group";
@@ -169,7 +169,7 @@ public static class Buffer_UI
     public static void Reload()
     {
         if (!IsVisible()) return;
-        if (!Buffer_DataTypes.ALLBufferProfiles.ContainsKey(CurrentProfile))
+        if (!Buffer_DataTypes.ClientSideBufferProfiles.ContainsKey(CurrentProfile))
             Hide();
         else
             CreateElements();
@@ -177,7 +177,7 @@ public static class Buffer_UI
 
     public static void Show(string profile, string _npcName)
     {
-        if (!Buffer_DataTypes.ALLBufferProfiles.ContainsKey(profile)) return;
+        if (!Buffer_DataTypes.ClientSideBufferProfiles.ContainsKey(profile)) return;
         UI.SetActive(true);
         NPCName.text = string.IsNullOrEmpty(_npcName) ? Localization.instance.Localize("$mpasn_Buffer") : _npcName;
         CurrentProfile = profile;

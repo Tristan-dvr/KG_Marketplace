@@ -151,12 +151,14 @@ namespace Marketplace
 
             string fName = Path.GetFileName(e.Name);
 
-            string folderPath = Path.GetDirectoryName(e.FullPath);
-            if (folderPath == Market_Paths.AdditionalConfigsQuestsFolder)
+            string folderPath = Path.GetDirectoryName(e.FullPath)!;
+            if (folderPath.Contains(Market_Paths.AdditionalConfigsQuestsFolder))
                 fName = Path.GetFileName(Market_Paths.QuestDatabasePath);
-            else if (folderPath == Market_Paths.AdditionalConfigsDialoguesFolder)
+            else if (folderPath.Contains(Market_Paths.AdditionalConfigsDialoguesFolder))
                 fName = Path.GetFileName(Market_Paths.NpcDialoguesConfig);
-            
+            else if (folderPath.Contains(Market_Paths.AdditionalCondfigsTerritoriesFolder))
+                fName = Path.GetFileName(Market_Paths.TerritoriesConfigPath);
+
             if (!FSW_Lookup.TryGetValue(fName!, out var action)) return;
             if (!ZNet.instance || !ZNet.instance.IsServer())
             {

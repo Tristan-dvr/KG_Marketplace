@@ -8,7 +8,7 @@ public static class Buffer_DataTypes
         new(Marketplace.configSync, "bufferBuffs", new List<BufferBuffData>());
 
     public static readonly List<BufferBuffData> AllCustomBuffs = new();
-    public static readonly Dictionary<string, List<BufferBuffData>> ALLBufferProfiles = new();
+    public static readonly Dictionary<string, List<BufferBuffData>> ClientSideBufferProfiles = new();
 
     public static readonly WhatToModify[] BufferModifyList = (WhatToModify[])Enum.GetValues(typeof(WhatToModify));
     
@@ -111,6 +111,7 @@ public static class Buffer_DataTypes
 
         public bool Init()
         {
+            if(AllCustomBuffs.Contains(this)) return true;
             GameObject obj = ZNetScene.instance.GetPrefab(SpritePrefab);
             GameObject neededItemPrefab = ZNetScene.instance.GetPrefab(NeededPrefab);
             if(!neededItemPrefab) return false;

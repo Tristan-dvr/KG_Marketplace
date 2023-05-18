@@ -12,8 +12,7 @@ public static class Quests_Main_Server
     {
         List<string> profiles = File.ReadAllLines(Market_Paths.QuestProfilesPath).ToList();
         ReadQuestProfiles(profiles);
-        List<string> database = File.ReadAllLines(Market_Paths.QuestDatabasePath).ToList();
-        ReadQuestDatabase(database);
+        ReadQuestDatabase();
         List<string> events = File.ReadAllLines(Market_Paths.QuestEventsPath).ToList();
         ReadEventDatabase(events);
     }
@@ -28,8 +27,7 @@ public static class Quests_Main_Server
     private static IEnumerator DelayMore()
     {
         yield return new WaitForSeconds(3);
-        List<string> database = File.ReadAllLines(Market_Paths.QuestDatabasePath).ToList();
-        ReadQuestDatabase(database);
+        ReadQuestDatabase();
         Utils.print("Quests Database Changed. Sending new info to all clients");
     }
     
@@ -76,7 +74,7 @@ public static class Quests_Main_Server
     }
 
 
-    private static void ProcessQuestDatabaseProfiles(List<string> profiles)
+    private static void ProcessQuestDatabaseProfiles(IReadOnlyList<string> profiles)
     {
         if (profiles.Count == 0) return;
         string dbProfile = null;
@@ -291,10 +289,11 @@ public static class Quests_Main_Server
     
     
     private static int CurrentRevision;
-    private static void ReadQuestDatabase(List<string> profiles)
+    private static void ReadQuestDatabase()
     {
         CurrentRevision = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         Quests_DataTypes.SyncedQuestData.Value.Clear();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestDatabasePath).ToList();
         ProcessQuestDatabaseProfiles(profiles);
         string folder = Market_Paths.AdditionalConfigsQuestsFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);

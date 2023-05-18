@@ -54,9 +54,10 @@ public static class Market_Paths
     private static string MockerFolder => Path.Combine(MainPath, "ItemMocker");
     public static string MockerConfig => Path.Combine(MockerFolder, "ItemMocker.cfg");
 
-    public static string AdditionalConfigsFolder => Path.Combine(MainPath, "AdditionalConfigs");
+    private static string AdditionalConfigsFolder => Path.Combine(MainPath, "AdditionalConfigs");
     public static string AdditionalConfigsQuestsFolder => Path.Combine(AdditionalConfigsFolder, "Quests");
     public static string AdditionalConfigsDialoguesFolder => Path.Combine(AdditionalConfigsFolder, "Dialogues");
+    public static string AdditionalCondfigsTerritoriesFolder => Path.Combine(AdditionalConfigsFolder, "Territories");
 
     private static void OnInit()
     {
@@ -82,6 +83,8 @@ public static class Market_Paths
                 Directory.CreateDirectory(AdditionalConfigsQuestsFolder);
             if (!Directory.Exists(AdditionalConfigsDialoguesFolder))
                 Directory.CreateDirectory(AdditionalConfigsDialoguesFolder);
+            if (!Directory.Exists(AdditionalCondfigsTerritoriesFolder))
+                Directory.CreateDirectory(AdditionalCondfigsTerritoriesFolder);
 
             if (!File.Exists(QuestProfilesPath)) File.Create(QuestProfilesPath).Dispose();
             if (!File.Exists(QuestEventsPath)) File.Create(QuestEventsPath).Dispose();

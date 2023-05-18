@@ -113,8 +113,8 @@ namespace Dummiesman
                     break;
                 case ".crn":
                     byte[] crnBytes = textureBytes;
-                    ushort crnWidth = System.BitConverter.ToUInt16(new byte[2] { crnBytes[13], crnBytes[12] }, 0);
-                    ushort crnHeight = System.BitConverter.ToUInt16(new byte[2] { crnBytes[15], crnBytes[14] }, 0);
+                    ushort crnWidth = BitConverter.ToUInt16(new byte[2] { crnBytes[13], crnBytes[12] }, 0);
+                    ushort crnHeight = BitConverter.ToUInt16(new byte[2] { crnBytes[15], crnBytes[14] }, 0);
                     byte crnFormatByte = crnBytes[18];
 
                     var crnTextureFormat = UnityEngine.TextureFormat.RGB24;

@@ -148,7 +148,7 @@ public static class Quests_Main_Client
             {
                 if (quest.Value.Init())
                 {
-                    Quests_DataTypes.AllQuests.Add(quest.Key, quest.Value);
+                    Quests_DataTypes.AllQuests[quest.Key] = quest.Value;
                 }
                 else
                 {

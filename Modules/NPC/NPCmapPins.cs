@@ -1,9 +1,11 @@
-﻿using Marketplace.Modules.Quests;
+﻿using System.Diagnostics.CodeAnalysis;
+using Marketplace.Modules.Quests;
 
 namespace Marketplace.Modules.NPC;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Last, "OnInit")]
+[SuppressMessage("ReSharper", "IteratorNeverReturns")]
 public static class Market_NPC_MapPins
 {
     private const string npcToSearchPrefabName = "MarketPlaceNPCpinned";

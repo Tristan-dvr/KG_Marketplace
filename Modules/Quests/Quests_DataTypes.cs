@@ -583,6 +583,7 @@ public static class Quests_DataTypes
             string[] split = score.Split(',');
             for (int i = 0; i < split.Length; i++)
             {
+                if (i >= AcceptedQuests[UID].ScoreArray.Length) break;
                 AcceptedQuests[UID].ScoreArray[i] = Convert.ToInt32(split[i]);
             }
 

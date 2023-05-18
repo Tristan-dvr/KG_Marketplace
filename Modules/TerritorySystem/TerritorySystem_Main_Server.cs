@@ -10,28 +10,17 @@ public static class TerritorySystem_Main_Server
 {
     private static void OnInit()
     {
-        List<string> territories = File.ReadAllLines(Market_Paths.TerritoriesConfigPath).ToList();
-        ReadServerTerritoryDatabase(territories);
+        ReadServerTerritoryDatabase();
     }
 
     private static void OnTerritoryConfigChange()
     {
-        List<string> territories = File.ReadAllLines(Market_Paths.TerritoriesConfigPath).ToList();
-        try
-        {
-            ReadServerTerritoryDatabase(territories);
-        }
-        catch
-        {
-            // ignored
-        }
-
+        ReadServerTerritoryDatabase();
         Utils.print("Territory Changed. Sending new info to all clients");
     }
 
-    private static void ReadServerTerritoryDatabase(List<string> profiles)
+    private static void ProcessTerritoryConfig(IReadOnlyList<string> profiles)
     {
-        TerritorySystem_DataTypes.TerritoriesData.Value.Clear();
         string splitProfile = "default";
         int zonePrio = 1;
         for (int i = 0; i < profiles.Count; i++)
@@ -191,6 +180,20 @@ public static class TerritorySystem_Main_Server
                     Utils.print($"Error loading zone profile {splitProfile} : {ex}", ConsoleColor.Red);
                 }
             }
+        }
+    }
+
+    private static void ReadServerTerritoryDatabase()
+    {
+        TerritorySystem_DataTypes.TerritoriesData.Value.Clear();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TerritoriesConfigPath).ToList();
+        ProcessTerritoryConfig(profiles);
+        string folder = Market_Paths.AdditionalCondfigsTerritoriesFolder;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            profiles = File.ReadAllLines(file).ToList();
+            ProcessTerritoryConfig(profiles);
         }
 
         TerritorySystem_DataTypes.TerritoriesData.Value.Sort((x, y) => y.Priority.CompareTo(x.Priority));

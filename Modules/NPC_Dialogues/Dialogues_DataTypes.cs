@@ -30,7 +30,7 @@ public static class Dialogues_DataTypes
         PingMap,
         AddPin
     }
-
+    
     private enum OptionCondition
     {
         HasItem,
@@ -65,6 +65,7 @@ public static class Dialogues_DataTypes
             public string[] Commands;
             public string[] Conditions;
             public bool AlwaysVisible = true;
+            public Color Color = Color.white;
         }
 
         public void Serialize(ref ZPackage pkg)
@@ -82,14 +83,13 @@ public static class Dialogues_DataTypes
                 {
                     pkg.Write(command ?? "");
                 }
-
                 pkg.Write(option.Conditions.Length);
                 foreach (string condition in option.Conditions)
                 {
                     pkg.Write(condition ?? "");
                 }
-
                 pkg.Write(option.AlwaysVisible);
+                pkg.Write(global::Utils.ColorToVec3(option.Color));
             }
         }
 
@@ -122,6 +122,7 @@ public static class Dialogues_DataTypes
                 }
 
                 Options[i].AlwaysVisible = pkg.ReadBool();
+                Options[i].Color = global::Utils.Vec3ToColor(pkg.ReadVector3());
             }
         }
     }
@@ -139,6 +140,7 @@ public static class Dialogues_DataTypes
             public Action<Market_NPC.NPCcomponent> Command;
             public Dialogue_Condition<string> Condition;
             public bool AlwaysVisible;
+            public Color Color = Color.white;
 
             public bool CheckCondition(out string reason)
             {
@@ -214,8 +216,8 @@ public static class Dialogues_DataTypes
                                     int spawnLevel = Mathf.Max(1, int.Parse(split[3]) + 1);
                                     for (int i = 0; i < spawnAmount; i++)
                                     {
-                                        float randomX = UnityEngine.Random.Range(-15, 15);
-                                        float randomZ = UnityEngine.Random.Range(-15, 15);
+                                        float randomX = Random.Range(-15, 15);
+                                        float randomZ = Random.Range(-15, 15);
                                         Vector3 randomPos = new Vector3(spawnPos.x + randomX, spawnPos.y,
                                             spawnPos.z + randomZ);
                                         float height = ZoneSystem.instance.GetSolidHeight(randomPos);
@@ -525,7 +527,8 @@ public static class Dialogues_DataTypes
                     NextUID = raw.Options[i].NextUID,
                     Command = TryParseCommand(raw.Options[i].Commands),
                     Condition = TryParseCondition(raw.Options[i].Conditions),
-                    AlwaysVisible = raw.Options[i].AlwaysVisible
+                    AlwaysVisible = raw.Options[i].AlwaysVisible,
+                    Color = raw.Options[i].Color
                 };
             }
 

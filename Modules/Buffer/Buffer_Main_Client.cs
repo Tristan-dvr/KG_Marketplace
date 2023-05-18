@@ -32,25 +32,24 @@ public static class Buffer_Main_Client
     private static void OnBufferUpdate()
     {
         if(!ZNetScene.instance) return;
-        Buffer_DataTypes.ALLBufferProfiles.Clear();
+        Buffer_DataTypes.ClientSideBufferProfiles.Clear();
         foreach (Buffer_DataTypes.BufferBuffData buff in Buffer_DataTypes.AllCustomBuffs)
         {
             ObjectDB.instance.m_StatusEffects.Remove(buff.GetMain());
         }
-
         Buffer_DataTypes.AllCustomBuffs.Clear();
         try
         {
             foreach (KeyValuePair<string, string> kvp in Buffer_DataTypes.BufferProfiles.Value)
             {
-                Buffer_DataTypes.ALLBufferProfiles.Add(kvp.Key, new List<Buffer_DataTypes.BufferBuffData>());
+                Buffer_DataTypes.ClientSideBufferProfiles.Add(kvp.Key, new List<Buffer_DataTypes.BufferBuffData>());
                 foreach (string split in kvp.Value.Split(','))
                 {
                     if (string.IsNullOrEmpty(split)) continue;
                     if (Buffer_DataTypes.BufferBuffs.Value.Find(d => d.UniqueName.ToLower() == split.ToLower()) is var find and not null)
                     {
                         if (find.Init())
-                            Buffer_DataTypes.ALLBufferProfiles[kvp.Key].Add(find);
+                            Buffer_DataTypes.ClientSideBufferProfiles[kvp.Key].Add(find);
                     }
                 }
             }

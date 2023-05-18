@@ -11,7 +11,7 @@ public static class Dialogues_UI
     private static Text Dialogue_Text;
     private static Transform Content;
 
-    
+
     private static CanvasGroup CanvasAlpha;
     private static readonly Dictionary<int, Action> HotbarActions = new();
 
@@ -148,13 +148,17 @@ public static class Dialogues_UI
             element.transform.Find("Indexer/Text").GetComponent<Text>().text = (++c).ToString();
             if (option.Icon != null)
                 element.transform.Find("Text/Icon").GetComponent<Image>().sprite = option.Icon;
-            
+            element.GetComponent<Image>().color = option.Color;
+            element.transform.Find("Indexer").GetComponent<Image>().color = option.Color;
+
             if (alwaysVisibleCheck)
             {
                 UnityEngine.Object.Destroy(element.GetComponent<Button>());
                 element.GetComponent<Image>().color = Color.red;
                 element.transform.Find("Indexer").GetComponent<Image>().color = Color.red;
-                if(!string.IsNullOrWhiteSpace(reason)) element.transform.Find("Text").GetComponent<Text>().text += $"\n<color=red>[</color>{reason}<color=red>]</color>";
+                if (!string.IsNullOrWhiteSpace(reason))
+                    element.transform.Find("Text").GetComponent<Text>().text +=
+                        $"\n<color=red>[</color>{reason}<color=red>]</color>";
                 continue;
             }
 

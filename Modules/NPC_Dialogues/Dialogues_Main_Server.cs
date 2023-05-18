@@ -20,10 +20,11 @@ public class Dialogues_Main_Server
         Command,
         Icon,
         Condition,
-        AlwaysVisible
+        AlwaysVisible,
+        Color
     }
 
-    private static void ProcessDialogueProfiles(List<string> profiles)
+    private static void ProcessDialogueProfiles(IReadOnlyList<string> profiles)
     {
         Dialogues_DataTypes.RawDialogue dialogue = null;
         List<Dialogues_DataTypes.RawDialogue.RawPlayerOption> options = null;
@@ -41,7 +42,7 @@ public class Dialogues_Main_Server
                         dialogue = null;
                     }
 
-                    string splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","").ToLower();
+                    string splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
                     dialogue = new Dialogues_DataTypes.RawDialogue
                     {
                         UID = splitProfile.Replace(@"\n", "\n")
@@ -57,9 +58,10 @@ public class Dialogues_Main_Server
                     }
                     else
                     {
-                        Dialogues_DataTypes.RawDialogue.RawPlayerOption option = new Dialogues_DataTypes.RawDialogue.RawPlayerOption();
+                        Dialogues_DataTypes.RawDialogue.RawPlayerOption option =
+                            new Dialogues_DataTypes.RawDialogue.RawPlayerOption();
                         List<string> commands = new List<string>();
-                        List<string> conditions = new List<string>(); 
+                        List<string> conditions = new List<string>();
                         string[] split = profiles[i].Split('|');
                         foreach (string s in split)
                         {
@@ -86,8 +88,15 @@ public class Dialogues_Main_Server
                                 case DataType.AlwaysVisible:
                                     option.AlwaysVisible = bool.Parse(enumCheck[1].Replace(" ", ""));
                                     break;
+                                case DataType.Color:
+                                    string[] colorSplit = enumCheck[1].Split(',');
+                                    if (colorSplit.Length != 3) continue;
+                                    option.Color = new Color32(byte.Parse(colorSplit[0]), byte.Parse(colorSplit[1]),
+                                        byte.Parse(colorSplit[2]), 255);
+                                    break;
                             }
                         }
+
                         option.Commands = commands.ToArray();
                         option.Conditions = conditions.ToArray();
                         options.Add(option);
@@ -107,10 +116,10 @@ public class Dialogues_Main_Server
             Dialogues_DataTypes.SyncedDialoguesData.Value.Add(dialogue);
         }
     }
-    
+
     private static void ReadDialoguesData()
     {
-        List<string> profiles = File.ReadAllLines(Market_Paths.NpcDialoguesConfig).ToList();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.NpcDialoguesConfig).ToList();
         Dialogues_DataTypes.SyncedDialoguesData.Value.Clear();
         ProcessDialogueProfiles(profiles);
         string folder = Market_Paths.AdditionalConfigsDialoguesFolder;
@@ -120,7 +129,7 @@ public class Dialogues_Main_Server
             profiles = File.ReadAllLines(file).ToList();
             ProcessDialogueProfiles(profiles);
         }
-        
+
         Dialogues_DataTypes.SyncedDialoguesData.Update();
     }
 

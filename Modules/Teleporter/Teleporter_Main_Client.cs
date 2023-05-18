@@ -210,13 +210,21 @@ public static class Teleporter_Main_Client
             yield return null;
         }
 
+        float messageTimer = 1f;
         while (!ZNetScene.instance.IsAreaReady(Player.m_localPlayer.transform.position))
         {
+            messageTimer -= Time.deltaTime;
             if (!p || p.IsDead())
             {
                 ZNetScene.instance.Destroy(mainEffect); 
                 TeleporterJump = false;
                 yield break;
+            }
+            
+            if (messageTimer <= 0f)
+            {
+                messageTimer = 1f;
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$mpasn_zoneloading".Localize());
             }
             yield return null;
         }

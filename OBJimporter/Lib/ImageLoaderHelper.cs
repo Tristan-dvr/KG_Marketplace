@@ -14,7 +14,7 @@ namespace Dummiesman
         /// <returns>The verified texture</returns>
         public static Texture2D VerifyFormat(Texture2D tex)
         {
-            if (tex.format != UnityEngine.TextureFormat.ARGB32 && tex.format != UnityEngine.TextureFormat.RGBA32 && tex.format != UnityEngine.TextureFormat.DXT5)
+            if (tex.format != TextureFormat.ARGB32 && tex.format != TextureFormat.RGBA32 && tex.format != TextureFormat.DXT5)
                 return tex;
 
             //get pixels
@@ -34,7 +34,7 @@ namespace Dummiesman
             //if it's not a valid format return a new 24bpp image
             if (!validFormat)
             {
-                var tex24 = new Texture2D(tex.width, tex.height, UnityEngine.TextureFormat.RGB24, tex.mipmapCount > 0);
+                var tex24 = new Texture2D(tex.width, tex.height, TextureFormat.RGB24, tex.mipmapCount > 0);
                 tex24.SetPixels32(pixels);
                 tex24.Apply(true);
                 return tex24;

@@ -4,10 +4,10 @@ public static class TerritorySystem_DataTypes
 {
     internal static readonly CustomSyncedValue<List<Territory>> TerritoriesData =
         new(Marketplace.configSync, "territoryData", new List<Territory>());
-
+    
     public static readonly TerritoryFlags[] AllTerritoryFlagsArray =
         (TerritoryFlags[])Enum.GetValues(typeof(TerritoryFlags));
-
+    
     public static readonly AdditionalTerritoryFlags[] AllAdditionaTerritoryFlagsArray =
         (AdditionalTerritoryFlags[])Enum.GetValues(typeof(AdditionalTerritoryFlags));
     
@@ -27,7 +27,7 @@ public static class TerritorySystem_DataTypes
             pkg.Write(Name ?? "");
             pkg.Write(R);
             pkg.Write(G);
-            pkg.Write(B);
+            pkg.Write(B);   
             pkg.Write(Radius);
             pkg.Write(ShowExternalWater);
             pkg.Write(Priority);

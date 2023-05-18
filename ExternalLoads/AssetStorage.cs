@@ -73,14 +73,14 @@ public static class AssetStorage
         monsterTex.LoadImage(Convert.FromBase64String(ResourcesBase64.PlaceholderMonster));
         PlaceholderMonsterIcon = Sprite.Create(monsterTex, new Rect(0, 0, monsterTex.width, monsterTex.height),
             Vector2.zero);
-        Texture2D def = new Texture2D(1, 1); 
+        Texture2D def = new Texture2D(1, 1);
         def.LoadImage(Convert.FromBase64String(ResourcesBase64.defaultPortal));
         PortalIconDefault = Sprite.Create(def, new Rect(0, 0, def.width, def.height), new Vector2(0, 0));
         FreeTakeEffect = asset.LoadAsset<GameObject>("BattlepassEffectFree");
         PremiumTakeEffect = asset.LoadAsset<GameObject>("BattlepassEffectPremium");
         foreach (string file in Directory.GetFiles(Market_Paths.CachedImagesFolder, "*.png", SearchOption.TopDirectoryOnly))
         {
-            string fileName = Path.GetFileName(file);
+            string fileName = Path.GetFileNameWithoutExtension(file);
             byte[] data = File.ReadAllBytes(file);
             Texture2D tex = new Texture2D(1, 1);
             tex.LoadImage(data);

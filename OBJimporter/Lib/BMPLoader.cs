@@ -546,7 +546,7 @@ namespace B83.Image.BMP
         {
             ulong val = 0UL;
             if (aCount <= 0 || aCount > 32)
-                throw new System.ArgumentOutOfRangeException("aCount", "aCount must be between 1 and 32 inclusive");
+                throw new ArgumentOutOfRangeException("aCount", "aCount must be between 1 and 32 inclusive");
             for (int i = aCount - 1; i >= 0; i--)
                 val |= ((ulong)ReadBit() << i);
             return val;
