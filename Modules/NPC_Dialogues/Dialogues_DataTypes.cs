@@ -326,24 +326,16 @@ public static class Dialogues_DataTypes
                             case OptionCondition.SkillMore:
                                 result += (out string reason) =>
                                 {
-                                    string localizedSkill = Enum.TryParse(split[1], out Skills.SkillType _)
-                                        ? Localization.instance.Localize("$skill_" + split[1].ToLower())
-                                        : Localization.instance.Localize($"$skill_" +
-                                                                         Mathf.Abs(split[1].GetStableHashCode()));
                                     reason =
-                                        $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{localizedSkill} {split[2]}</color>";
+                                        $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{Utils.LocalizeSkill(split[1])} {split[2]}</color>";
                                     return Utils.GetPlayerSkillLevelCustom(split[1]) >= int.Parse(split[2]);
                                 };
                                 break;
                             case OptionCondition.SkillLess:
                                 result += (out string reason) =>
                                 {
-                                    string localizedSkill = Enum.TryParse(split[1], out Skills.SkillType _)
-                                        ? Localization.instance.Localize("$skill_" + split[1].ToLower())
-                                        : Localization.instance.Localize($"$skill_" +
-                                                                         Mathf.Abs(split[1].GetStableHashCode()));
                                     reason =
-                                        $"{Localization.instance.Localize("$mpasn_toomuchskilllevel")}: <color=#00ff00>{localizedSkill} {split[2]}</color>";
+                                        $"{Localization.instance.Localize("$mpasn_toomuchskilllevel")}: <color=#00ff00>{Utils.LocalizeSkill(split[1])} {split[2]}</color>";
                                     return Utils.GetPlayerSkillLevelCustom(split[1]) < int.Parse(split[2]);
                                 };
                                 break;

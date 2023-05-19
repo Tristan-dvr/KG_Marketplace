@@ -74,6 +74,7 @@ public static class Trader_DataTypes
         public string OriginalItemName;
         public string ItemPrefab;
         public bool IsMonster;
+        public bool IsSkill;
         public int Level = 1;
         public bool DisplayStars;
 

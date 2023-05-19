@@ -16,6 +16,7 @@ public static class PostMail_Main_Client
         PostMail_UI.Init();
         PostMail_Prefab = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplacePostMail");
         PostMail_Prefab.AddComponent<PostMailComponent>();
+        PostMail_Prefab.GetComponent<Piece>().m_name = "$marketplace_mailbox";
         Icon = PostMail_Prefab.GetComponent<Piece>().m_icon;
         Marketplace.Global_Updator += Update;
         Global_Values._container.ValueChanged += ResetMailpostRecipe;

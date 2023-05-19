@@ -87,7 +87,7 @@ public static class Trader_UI
             }
         }
     }
-    
+
     [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
     [ClientOnlyPatch]
     private static class TraderUIFix
@@ -146,8 +146,9 @@ public static class Trader_UI
                 bool breakLoop =
                     data.NeededItems.Any(item =>
                         !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName)) ||
-                    data.ResultItems.Any(item =>
-                        !item.IsMonster && !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName));
+                    data.ResultItems.Any(item => !item.IsSkill &&
+                                                 !item.IsMonster &&
+                                                 !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName));
                 if (breakLoop) continue;
             }
 
@@ -199,11 +200,16 @@ public static class Trader_UI
                 string stars = data.ResultItems[i].DisplayStars ? $" <color=#00ff00>({starCount}★)</color>" : "";
                 transform.transform.Find("Text").GetComponent<Text>().text =
                     $"{data.ResultItems[i].ItemName}{stars}\n<color=yellow>x{data.ResultItems[i].Count * ModifierValues[CurrentModifier]}</color>";
-                transform.transform.Find("Icon").GetComponent<Image>().sprite = data.ResultItems[i].GetIcon();
+                transform.transform.Find("Icon").GetComponent<Image>().sprite = data.ResultItems[i].IsSkill
+                    ? Utils.GetSkillIcon(data.ResultItems[i].ItemPrefab)
+                    : data.ResultItems[i].GetIcon();
                 transform.GetComponent<UITooltip>().m_topic = data.ResultItems[i].ItemName;
                 if (data.ResultItems[i].IsMonster)
                     transform.GetComponent<UITooltip>().m_text =
                         Localization.instance.Localize("$mpasn_tooltip_pet");
+                else if (data.ResultItems[i].IsSkill)
+                    transform.GetComponent<UITooltip>().m_text =
+                        Localization.instance.Localize("$mpasn_Skill_EXP");
                 else
                     transform.GetComponent<UITooltip>().m_text = ItemDrop.ItemData.GetTooltip(
                         ZNetScene.instance.GetPrefab(data.ResultItems[i].ItemPrefab).GetComponent<ItemDrop>()
@@ -260,6 +266,13 @@ public static class Trader_UI
         logMessage += "for => ";
         foreach (Trader_DataTypes.TraderItem resultItem in data.ResultItems)
         {
+            if (resultItem.IsSkill)
+            {
+                Utils.IncreaseSkillEXP(resultItem.ItemPrefab, resultItem.Count * ModifierValues[CurrentModifier]);
+                logMessage += $"x{resultItem.Count * ModifierValues[CurrentModifier]} {resultItem.ItemName}, ";
+                continue;
+            }
+
             GameObject prefab = ZNetScene.instance.GetPrefab(resultItem.ItemPrefab);
             if (!resultItem.IsMonster)
             {
@@ -308,7 +321,8 @@ public static class Trader_UI
                 for (int i = 0; i < resultItem.Count * ModifierValues[CurrentModifier]; i++)
                 {
                     GameObject go = Object.Instantiate(prefab,
-                        Player.m_localPlayer.transform.position - Player.m_localPlayer.transform.forward * 3f + Vector3.up * 1f,
+                        Player.m_localPlayer.transform.position - Player.m_localPlayer.transform.forward * 3f +
+                        Vector3.up * 1f,
                         Quaternion.identity);
                     go.GetComponent<Character>().SetLevel(resultItem.Level);
                     Tameable tame = go.GetComponent<Tameable>();
@@ -340,7 +354,7 @@ public static class Trader_UI
             CreateElementsNew();
         }
     }
-    
+
 
     public static void Show(string profile, string _npcName)
     {

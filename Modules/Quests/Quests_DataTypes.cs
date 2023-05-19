@@ -326,10 +326,7 @@ public static class Quests_DataTypes
                             .m_name);
                         break;
                     case QuestRewardType.Skill or QuestRewardType.Skill_EXP:
-                        LocalizedReward[i] = Enum.TryParse(RewardPrefab[i], out Skills.SkillType _)
-                            ? Localization.instance.Localize("$skill_" + RewardPrefab[i].ToLower())
-                            : Localization.instance.Localize(
-                                $"$skill_" + Mathf.Abs(RewardPrefab[i].GetStableHashCode()));
+                        LocalizedReward[i] = Utils.LocalizeSkill(RewardPrefab[i]);
                         break;
                     case QuestRewardType.EpicMMO_EXP or QuestRewardType.Battlepass_EXP or QuestRewardType.MH_EXP:
                         LocalizedReward[i] = "";
@@ -672,37 +669,7 @@ public static class Quests_DataTypes
                     if (Utils.GetPlayerSkillLevelCustom(quest.RewardPrefab[i]) >
                         (Marketplace.TempProfessionsType != null ? 0 : -1))
                     {
-                        Skills.Skill skill;
-                        if (!Enum.TryParse(quest.RewardPrefab[i], out Skills.SkillType found))
-                        {
-                            skill = Player.m_localPlayer.m_skills.GetSkill(
-                                (Skills.SkillType)Mathf.Abs(quest.RewardPrefab[i].GetStableHashCode()));
-                        }
-                        else
-                        {
-                            skill = Player.m_localPlayer.m_skills.GetSkill(found);
-                        }
-
-                        if (skill != null)
-                        {
-                            float expToAdd = quest.RewardCount[i];
-                            while (expToAdd > 0)
-                            {
-                                float nextLevelRequirement = skill.GetNextLevelRequirement();
-                                if (skill.m_accumulator + expToAdd >= nextLevelRequirement)
-                                {
-                                    expToAdd -= nextLevelRequirement - skill.m_accumulator;
-                                    skill.m_accumulator = 0;
-                                    skill.m_level++;
-                                    skill.m_level = Mathf.Clamp(skill.m_level, 0f, 100f);
-                                }
-                                else
-                                {
-                                    skill.m_accumulator += expToAdd;
-                                    expToAdd = 0;
-                                }
-                            }
-                        }
+                       Utils.IncreaseSkillEXP(quest.RewardPrefab[i], quest.RewardCount[i]);
                     }
                 }
             }

@@ -23,14 +23,14 @@ public static class Trader_Main_Client
         InitTraderItems();
         Trader_UI.Reload();
     }
-    
+
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     [ClientOnlyPatch]
     private static class ZNetScene_Awake_Patch
     {
         private static void Postfix() => InitTraderItems();
     }
-    
+
     public static void InitTraderItems()
     {
         Trader_DataTypes.ClientSideItemList.Clear();
@@ -49,6 +49,7 @@ public static class Trader_Main_Client
                         continue;
                     ItemDrop.ItemData neededItem = neededItemPrefab.GetComponent<ItemDrop>().m_itemData;
                     NI.IsMonster = false;
+                    NI.IsSkill = false;
                     NI.DisplayStars = neededItem.m_shared.m_maxQuality > 1;
                     NI.SetIcon(neededItem.m_shared.m_icons[0]);
                     NI.OriginalItemName = neededItem.m_shared.m_name;
@@ -59,7 +60,17 @@ public static class Trader_Main_Client
                 foreach (Trader_DataTypes.TraderItem RI in value.ResultItems)
                 {
                     GameObject resultItemPrefab = ZNetScene.instance.GetPrefab(RI.ItemPrefab);
-                    if (!resultItemPrefab) continue;
+                    if (!resultItemPrefab)
+                    {
+                        RI.SetIcon(AssetStorage.AssetStorage.NullSprite);
+                        RI.ItemName = Utils.LocalizeSkill(RI.ItemPrefab) + " EXP";
+                        RI.IsMonster = false;
+                        RI.IsSkill = true;
+                        RI.DisplayStars = false;
+                        _ResultItems.Add(RI);
+                        continue;
+                    }
+
                     if (resultItemPrefab.GetComponent<ItemDrop>())
                     {
                         ItemDrop.ItemData resultItem = resultItemPrefab.GetComponent<ItemDrop>().m_itemData;
@@ -68,6 +79,7 @@ public static class Trader_Main_Client
                         RI.OriginalItemName = resultItem.m_shared.m_name;
                         RI.ItemName = Localization.instance.Localize(RI.OriginalItemName);
                         RI.IsMonster = false;
+                        RI.IsSkill = false;
                     }
                     else if (resultItemPrefab.GetComponent<Character>())
                     {
@@ -78,6 +90,7 @@ public static class Trader_Main_Client
                         RI.ItemName = Localization.instance.Localize(c.m_name ?? "Default");
                         RI.IsMonster = true;
                         RI.DisplayStars = true;
+                        RI.IsSkill = false;
                     }
 
                     _ResultItems.Add(RI);
@@ -87,6 +100,7 @@ public static class Trader_Main_Client
                     newTraderItems.Add(new Trader_DataTypes.TraderData()
                         { NeedToKnow = value.NeedToKnow, NeededItems = _NeededItems, ResultItems = _ResultItems });
             }
+
             Trader_DataTypes.ClientSideItemList[kvp.Key] = newTraderItems;
         }
     }

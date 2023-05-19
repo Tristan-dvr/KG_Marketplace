@@ -403,6 +403,67 @@ public static class Utils
         return Player.m_localPlayer.m_skills.GetSkillLevel(skill);
     }
 
+    public static string LocalizeSkill(string name)
+    {
+        return Enum.TryParse(name, out Skills.SkillType _)
+            ? Localization.instance.Localize("$skill_" + name.ToLower())
+            : Localization.instance.Localize($"$skill_" + Mathf.Abs(name.GetStableHashCode()));
+    }
+
+    public static Sprite GetSkillIcon(string name)
+    {
+        if (!Enum.TryParse(name, out Skills.SkillType skill))
+        {
+            Skills.SkillDef SkillDef = Player.m_localPlayer.m_skills.GetSkillDef(
+                (Skills.SkillType)Mathf.Abs(name.GetStableHashCode()));
+            if (SkillDef == null)
+            {
+                return AssetStorage.AssetStorage.NullSprite;
+            }
+
+            return SkillDef.m_icon;
+        }
+        else
+        {
+            Skills.Skill SkillDef = Player.m_localPlayer.m_skills.GetSkill(skill);
+            return SkillDef.m_info.m_icon;
+        }
+    }
+
+    public static void IncreaseSkillEXP(string name, float expToAdd)
+    {
+        Skills.Skill skill;
+        if (!Enum.TryParse(name, out Skills.SkillType found))
+        {
+            skill = Player.m_localPlayer.m_skills.GetSkill(
+                (Skills.SkillType)Mathf.Abs(name.GetStableHashCode()));
+        }
+        else
+        {
+            skill = Player.m_localPlayer.m_skills.GetSkill(found);
+        }
+
+        if (skill != null)
+        {
+            while (expToAdd > 0)
+            {
+                float nextLevelRequirement = skill.GetNextLevelRequirement();
+                if (skill.m_accumulator + expToAdd >= nextLevelRequirement)
+                {
+                    expToAdd -= nextLevelRequirement - skill.m_accumulator;
+                    skill.m_accumulator = 0;
+                    skill.m_level++;
+                    skill.m_level = Mathf.Clamp(skill.m_level, 0f, 100f);
+                }
+                else
+                {
+                    skill.m_accumulator += expToAdd;
+                    expToAdd = 0;
+                }
+            }
+        }
+    }
+
     public static bool HasFlagFast(this Quests_DataTypes.SpecialQuestTag value,
         Quests_DataTypes.SpecialQuestTag flag)
     {
@@ -432,8 +493,8 @@ public static class Utils
     {
         return (flag & other) != 0;
     }
-    
-    
+
+
     public static string ToTime(this int seconds)
     {
         TimeSpan t = TimeSpan.FromSeconds(seconds);
@@ -442,8 +503,9 @@ public static class Utils
         if (t.Hours > 0) result += $"{t.Hours:D2}h ";
         if (t.Minutes > 0) result += $"{t.Minutes:D2}m ";
         result += $"{t.Seconds:D2}s";
-        return  result;
+        return result;
     }
+
     public static string ToTime(this long seconds)
     {
         TimeSpan t = TimeSpan.FromSeconds(seconds);
@@ -452,9 +514,9 @@ public static class Utils
         if (t.Hours > 0) result += $"{t.Hours:D2}h ";
         if (t.Minutes > 0) result += $"{t.Minutes:D2}m ";
         result += $"{t.Seconds:D2}s";
-        return  result;
+        return result;
     }
-        
+
     public static string ToTimeNoS(this long seconds)
     {
         TimeSpan t = TimeSpan.FromSeconds(seconds);
@@ -462,13 +524,11 @@ public static class Utils
         if (t.Days > 0) result += $"{t.Days:D2}d ";
         if (t.Hours > 0) result += $"{t.Hours:D2}h ";
         if (t.Minutes > 0) result += $"{t.Minutes:D2}m ";
-        return  result;
+        return result;
     }
-    
+
     public static string Localize(this string text)
     {
         return string.IsNullOrEmpty(text) ? string.Empty : Localization.instance.Localize(text);
     }
-    
-    
 }

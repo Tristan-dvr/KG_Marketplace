@@ -232,24 +232,7 @@ public static class Quests_UIs
                             quest.RewardLevel[i], false);
                         break;
                     case Quests_DataTypes.QuestRewardType.Skill or Quests_DataTypes.QuestRewardType.Skill_EXP:
-                        if (!Enum.TryParse(quest.RewardPrefab[i], out Skills.SkillType skill))
-                        {
-                            Skills.SkillDef SkillDef = Player.m_localPlayer.m_skills.GetSkillDef(
-                                (Skills.SkillType)Mathf.Abs(quest.RewardPrefab[i].GetStableHashCode()));
-                            if (SkillDef == null)
-                            {
-                                rewardImage.sprite = AssetStorage.AssetStorage.NullSprite;
-                                break;
-                            }
-
-                            rewardImage.sprite = SkillDef.m_icon;
-                        }
-                        else
-                        {
-                            Skills.Skill SkillDef = Player.m_localPlayer.m_skills.GetSkill(skill);
-                            rewardImage.sprite = SkillDef.m_info.m_icon;
-                        }
-
+                        rewardImage.sprite = Utils.GetSkillIcon(quest.RewardPrefab[i]);
                         tooltip.m_topic = quest.GetLocalizedReward(i);
                         tooltip.m_text = Localization.instance.Localize(
                                              quest.RewardType[i] is Quests_DataTypes.QuestRewardType.Skill_EXP
