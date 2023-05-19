@@ -253,13 +253,8 @@ public static class Battlepass_Main_Client
                 }
                 else
                 {
-                    Sprite resultIcon = Utils.GetSkillIcon(passElement.ItemNames[i]);
-                    string name = Enum.TryParse(passElement.ItemNames[i], out Skills.SkillType _)
-                        ? Localization.instance.Localize("$skill_" + passElement.ItemNames[i].ToLower())
-                        : Localization.instance.Localize(
-                            $"$skill_" + Mathf.Abs(passElement.ItemNames[i].GetStableHashCode()));
-                    passElement.SetLocalized(name);
-                    passElement.AddSprite(resultIcon);
+                    passElement.SetLocalized(Utils.LocalizeSkill(passElement.ItemNames[i]));
+                    passElement.AddSprite(Utils.GetSkillIcon(passElement.ItemNames[i]));
                     passElement.AddString(" (<color=#00ff00>Skill</color>)");
                 }
             }
