@@ -46,7 +46,7 @@ public static class Battlepass_Main_Server
         Battlepass_DataTypes.SyncedBattlepassData.Value.PremiumRewards =
             new List<Battlepass_DataTypes.BattlePassElement>();
         Battlepass_DataTypes.SyncedBattlepassData.Value._revision = Random.Range(int.MinValue, int.MaxValue);
-        List<string> freeData = File.ReadAllLines(Market_Paths.BattlepassFreeRewardsPath).ToList();
+        IReadOnlyList<string> freeData = File.ReadAllLines(Market_Paths.BattlepassFreeRewardsPath);
         if (freeData.Count > 0)
         {
             HashSet<int> TakenOrders = new();
@@ -119,7 +119,7 @@ public static class Battlepass_Main_Server
         }
 
 
-        List<string> premiumData = File.ReadAllLines(Market_Paths.BattlepassPremiumRewardsPath).ToList();
+        IReadOnlyList<string> premiumData = File.ReadAllLines(Market_Paths.BattlepassPremiumRewardsPath);
         if (premiumData.Count > 0)
         {
             HashSet<int> TakenOrders = new();

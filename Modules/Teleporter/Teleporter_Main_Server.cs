@@ -28,7 +28,7 @@ public static class Teleporter_Main_Server
     
     private static void ReadServerTeleporterProfile()
     {
-        List<string> profiles = File.ReadAllLines(Market_Paths.TeleporterPinsConfig).ToList();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TeleporterPinsConfig);
         Teleporter_DataTypes.TeleporterDataServer.Value.Clear();
         string splitProfile = "default";
         for (int i = 0; i < profiles.Count; i++)

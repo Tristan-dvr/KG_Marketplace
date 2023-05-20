@@ -51,13 +51,12 @@ public static class Market_Paths
 
     public static string MainConfig => Path.Combine(MainPath, "MarketPlace.cfg");
 
-    private static string MockerFolder => Path.Combine(MainPath, "ItemMocker");
-    public static string MockerConfig => Path.Combine(MockerFolder, "ItemMocker.cfg");
-
     private static string AdditionalConfigsFolder => Path.Combine(MainPath, "AdditionalConfigs");
     public static string AdditionalConfigsQuestsFolder => Path.Combine(AdditionalConfigsFolder, "Quests");
     public static string AdditionalConfigsDialoguesFolder => Path.Combine(AdditionalConfigsFolder, "Dialogues");
     public static string AdditionalCondfigsTerritoriesFolder => Path.Combine(AdditionalConfigsFolder, "Territories");
+
+    public static string PlayerTagsConfig => Path.Combine(MainPath, "PlayerTags.cfg");
 
     private static void OnInit()
     {
@@ -75,8 +74,6 @@ public static class Market_Paths
                 Directory.CreateDirectory(TeleporterPinsFolder);
             if (!Directory.Exists(DistancedUIFolder))
                 Directory.CreateDirectory(DistancedUIFolder);
-            if (!Directory.Exists(MockerFolder))
-                Directory.CreateDirectory(MockerFolder);
             if (!Directory.Exists(AdditionalConfigsFolder))
                 Directory.CreateDirectory(AdditionalConfigsFolder);
             if (!Directory.Exists(AdditionalConfigsQuestsFolder))
@@ -125,7 +122,7 @@ public static class Market_Paths
             if (!File.Exists(GamblerConfig)) File.Create(GamblerConfig).Dispose();
             if (!File.Exists(NpcDialoguesConfig)) File.Create(NpcDialoguesConfig).Dispose();
 
-            if (!File.Exists(MockerConfig)) File.Create(MockerConfig).Dispose();
+            if (!File.Exists(PlayerTagsConfig)) File.Create(PlayerTagsConfig).Dispose();
         }
 
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Client or Marketplace.WorkingAs.Both)

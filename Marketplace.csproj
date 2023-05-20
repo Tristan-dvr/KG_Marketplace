@@ -340,6 +340,9 @@
         <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Client.cs" />
         <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Server.cs" />
         <Compile Include="Modules\NPC_Dialogues\Dialogues_UI.cs" />
+        <Compile Include="Modules\PlayersTag\PlayersTag_DataTypes.cs" />
+        <Compile Include="Modules\PlayersTag\PlayerTags_Main_Server.cs" />
+        <Compile Include="Modules\PlayersTag\PlayerTag_Main_Client.cs" />
         <Compile Include="Modules\PostMail\PostMail_DataTypes.cs" />
         <Compile Include="Modules\PostMail\PostMail_Main_Client.cs" />
         <Compile Include="Modules\PostMail\PostMail_Pin.cs" />

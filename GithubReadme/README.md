@@ -1057,12 +1057,14 @@ The player options can have the following attributes:
 
 - `AlwaysVisible`: Indicates that the player option is always visible, regardless of conditions.
 
+- `Color`: Represents the color of the player option text.
+
 Dialogue may have multiple attributes split by | (pipe) character. For example:
 
 ```
 [UniqueProfileName]
 NPC text
-Text: Option1 | Transition: UniqueProfileName2 | Command: Damage, 20 | Icon: Hammer | Condition: NotFinished, QuestId | AlwaysVisible: true
+Text: Option1 | Transition: UniqueProfileName2 | Command: Damage, 20 | Command: GiveItem, Coins, 50 | Icon: Hammer | Condition: NotFinished, QuestId | AlwaysVisible: false | Color: 255, 128, 0
 Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: SwordIron | Condition: NotFinished, QuestId | AlwaysVisible: true
 ```
 

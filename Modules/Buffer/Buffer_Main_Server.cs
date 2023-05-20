@@ -12,9 +12,9 @@ public static class Buffer_Main_Server
     {
         try
         {
-            List<string> profiles = File.ReadAllLines(Market_Paths.BufferProfilesConfig).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.BufferProfilesConfig);
             ReadBufferProfiles(profiles);
-            List<string> database = File.ReadAllLines(Market_Paths.BufferDatabaseConfig).ToList();
+            IReadOnlyList<string> database = File.ReadAllLines(Market_Paths.BufferDatabaseConfig);
             ReadBufferDatabase(database);
         }
         catch (Exception ex)
@@ -27,9 +27,9 @@ public static class Buffer_Main_Server
     {
         try
         {
-            List<string> profiles = File.ReadAllLines(Market_Paths.BufferProfilesConfig).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.BufferProfilesConfig);
             ReadBufferProfiles(profiles);
-            List<string> database = File.ReadAllLines(Market_Paths.BufferDatabaseConfig).ToList();
+            IReadOnlyList<string> database = File.ReadAllLines(Market_Paths.BufferDatabaseConfig);
             ReadBufferDatabase(database);
         }
         catch (Exception ex)
@@ -41,7 +41,7 @@ public static class Buffer_Main_Server
     }
 
 
-    private static void ReadBufferProfiles(List<string> profiles)
+    private static void ReadBufferProfiles(IReadOnlyList<string> profiles)
     {
         Buffer_DataTypes.BufferProfiles.Value.Clear();
         string splitProfile = "default";
@@ -64,7 +64,7 @@ public static class Buffer_Main_Server
         Buffer_DataTypes.BufferProfiles.Update();
     }
 
-    private static void ReadBufferDatabase(List<string> profiles)
+    private static void ReadBufferDatabase(IReadOnlyList<string> profiles)
     {
         Buffer_DataTypes.BufferBuffs.Value.Clear();
         string dbProfile = null;

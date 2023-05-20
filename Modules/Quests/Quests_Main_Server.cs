@@ -10,16 +10,16 @@ public static class Quests_Main_Server
 {
     private static void OnInit()
     {
-        List<string> profiles = File.ReadAllLines(Market_Paths.QuestProfilesPath).ToList();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestProfilesPath);
         ReadQuestProfiles(profiles);
         ReadQuestDatabase();
-        List<string> events = File.ReadAllLines(Market_Paths.QuestEventsPath).ToList();
+        IReadOnlyList<string> events = File.ReadAllLines(Market_Paths.QuestEventsPath);
         ReadEventDatabase(events);
     }
 
     private static void OnQuestsProfilesFileChange()
     {
-        List<string> profiles = File.ReadAllLines(Market_Paths.QuestProfilesPath).ToList();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestProfilesPath);
         ReadQuestProfiles(profiles);
         Utils.print("Quests Profiles Changed. Sending new info to all clients");
     }
@@ -38,12 +38,12 @@ public static class Quests_Main_Server
 
     private static void OnQuestsEventFileChange()
     {
-        List<string> events = File.ReadAllLines(Market_Paths.QuestEventsPath).ToList();
+        IReadOnlyList<string> events = File.ReadAllLines(Market_Paths.QuestEventsPath);
         ReadEventDatabase(events);
         Utils.print("Quests Events Changed. Sending new info to all clients");
     }
 
-    private static void ReadQuestProfiles(List<string> profiles)
+    private static void ReadQuestProfiles(IReadOnlyList<string> profiles)
     {
         Quests_DataTypes.SyncedQuestProfiles.Value.Clear();
         string splitProfile = "default";
@@ -293,7 +293,7 @@ public static class Quests_Main_Server
     {
         CurrentRevision = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         Quests_DataTypes.SyncedQuestData.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestDatabasePath).ToList();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestDatabasePath);
         ProcessQuestDatabaseProfiles(profiles);
         string folder = Market_Paths.AdditionalConfigsQuestsFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);

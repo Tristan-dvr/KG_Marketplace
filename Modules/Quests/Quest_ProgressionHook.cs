@@ -302,11 +302,13 @@ public static class Quest_ProgressionHook
         private static IEnumerable<CodeInstruction> TanspileRecipeQuest(IEnumerable<CodeInstruction> code)
         {
             MethodInfo method = AccessTools.DeclaredMethod(typeof(TranspileRecipeQuestTest), nameof(ChangeRecipeName));
+            bool isDone = false;
             foreach (CodeInstruction instruction in code)
             {
                 yield return instruction;
-                if (instruction.opcode == OpCodes.Stloc_2)
+                if (instruction.opcode == OpCodes.Stloc_2 && !isDone)
                 {
+                    isDone = true;
                     yield return new CodeInstruction(OpCodes.Ldarg_2);
                     yield return new CodeInstruction(OpCodes.Ldloca_S, 2);
                     yield return new CodeInstruction(OpCodes.Ldarg_3);

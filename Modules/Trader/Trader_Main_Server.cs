@@ -20,7 +20,7 @@ public static class Trader_Main_Server
     
      private static void ReadServerTraderProfiles()
     {
-        List<string> profiles = File.ReadAllLines(Market_Paths.TraderConfig).ToList();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TraderConfig);
         Trader_DataTypes.SyncedTraderItemList.Value.Clear();
         string splitProfile = "default";
         bool _NeedToKnow = false;

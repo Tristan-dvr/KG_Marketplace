@@ -54,7 +54,7 @@ public class Dialogues_Main_Server
                     if (dialogue == null) continue;
                     if (dialogue.Text == null)
                     {
-                        dialogue.Text = profiles[i];
+                        dialogue.Text = profiles[i].Replace(@"\n", "\n");
                     }
                     else
                     {
@@ -119,7 +119,7 @@ public class Dialogues_Main_Server
 
     private static void ReadDialoguesData()
     {
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.NpcDialoguesConfig).ToList();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.NpcDialoguesConfig);
         Dialogues_DataTypes.SyncedDialoguesData.Value.Clear();
         ProcessDialogueProfiles(profiles);
         string folder = Market_Paths.AdditionalConfigsDialoguesFolder;

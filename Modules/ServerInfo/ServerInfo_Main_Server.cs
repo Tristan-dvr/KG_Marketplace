@@ -21,7 +21,7 @@ public static class ServerInfo_Main_Server
 
     private static void ReadServerInfoProfiles()
     {
-        List<string> profiles = File.ReadAllLines(Market_Paths.ServerInfoConfig).ToList();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.ServerInfoConfig);
         ServerInfo_DataTypes.ServerInfoData.Value.Clear();
         string splitProfile = "default";
         List<ServerInfo_DataTypes.ServerInfoQueue.Info> _infoQueue = new();

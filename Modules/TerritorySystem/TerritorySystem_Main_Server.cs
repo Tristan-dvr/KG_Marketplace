@@ -186,7 +186,7 @@ public static class TerritorySystem_Main_Server
     private static void ReadServerTerritoryDatabase()
     {
         TerritorySystem_DataTypes.TerritoriesData.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TerritoriesConfigPath).ToList();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TerritoriesConfigPath);
         ProcessTerritoryConfig(profiles);
         string folder = Market_Paths.AdditionalCondfigsTerritoriesFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);

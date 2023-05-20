@@ -20,7 +20,7 @@ public static class Gambler_Main_Server
 
     private static void ReadGamblerProfiles()
     {
-        List<string> list = File.ReadAllLines(Market_Paths.GamblerConfig).ToList();
+        IReadOnlyList<string> list = File.ReadAllLines(Market_Paths.GamblerConfig);
         ReadGamblerProfiles(list);
         ClientClearData();
     }
@@ -36,7 +36,7 @@ public static class Gambler_Main_Server
         }
     }
 
-    private static void ReadGamblerProfiles(List<string> profiles)
+    private static void ReadGamblerProfiles(IReadOnlyList<string> profiles)
     {
         Gambler_DataTypes.SyncedGamblerData.Value.Clear();
         string splitProfile = "default";

@@ -674,9 +674,8 @@ public class ItemInfo : IEnumerable<ItemData>
         {
             ZNetView netView = item.GetComponent<ZNetView>();
             ZDO? zdo = netView && netView.IsValid() ? netView.GetZDO() : null;
-
-            if (zdo == null || !(ZDOExtraData.s_ints.TryGetValue(zdo.m_uid, out var ints) &&
-                                 ints.ContainsKey("dataCount".GetStableHashCode())))
+            string s = nameof(netView);
+            if (zdo == null || zdo.GetInt(ZDOVars.s_dataCount, -1) == -1)
             {
                 item.m_itemData.m_customData = new Dictionary<string, string>(prefab.GetComponent<ItemDrop>().m_itemData.m_customData);
                 if (zdo is not null)

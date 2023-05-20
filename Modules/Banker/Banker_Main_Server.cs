@@ -35,7 +35,7 @@ public static class Banker_Main_Server
 
     private static void ReadServerBankerProfiles()
     {
-        List<string> profiles = File.ReadAllLines(Market_Paths.BankerFile).ToList();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.BankerFile);
         Banker_DataTypes.SyncedBankerProfiles.Value.Clear();
         string splitProfile = "default";
         for (int i = 0; i < profiles.Count; i++)
