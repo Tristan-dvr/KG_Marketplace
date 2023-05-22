@@ -72,7 +72,7 @@ public static class Teleporter_Main_Server
                         speed =  _speed
                     };
 
-                    if (Teleporter_DataTypes.TeleporterDataServer.Value.TryGetValue(splitProfile, out var value))
+                    if (Teleporter_DataTypes.TeleporterDataServer.Value.TryGetValue(splitProfile, out List<Teleporter_DataTypes.TeleporterData> value))
                     {
                         value.Add(pinnerData);
                     }

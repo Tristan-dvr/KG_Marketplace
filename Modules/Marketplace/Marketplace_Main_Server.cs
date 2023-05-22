@@ -8,12 +8,10 @@ namespace Marketplace.Modules.Marketplace_NPC;
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Marketplace_Main_Server
 {
-    public static ConfigEntry<int> LastIDConfig;
     private static Dictionary<string, int> PlayersIncome = new();
     
     private static void OnInit()
     {
-        LastIDConfig = Marketplace._thistype.Config.Bind("DO NOT TOUCH", "LAST UID", 1000000);
         Market_Paths.ServerMarketDataJSON.DecryptOldData();
         string data = Market_Paths.ServerMarketDataJSON.ReadClear();
         if (!string.IsNullOrWhiteSpace(data)) Marketplace_DataTypes.ServerMarketPlaceData.Value = JSON.ToObject<List<Marketplace_DataTypes.ServerMarketSendData>>(data);
@@ -130,15 +128,14 @@ public static class Marketplace_Main_Server
                 Marketplace_DataTypes.ServerMarketPlaceData.Value.Remove(findData);
                 string json = JSON.ToJSON(findData);
                 ZRoutedRpc.instance.InvokeRoutedRPC(sender, "KGmarket BuyItemAnswer", json);
-                
                 int leftOver = quantity - findData.Count;
+                goldValue = findData.Count * findData.Price;
                 if (leftOver > 0)
                 {
                     Marketplace_DataTypes.ServerMarketSendData mockData = new Marketplace_DataTypes.ServerMarketSendData
                         { Count = leftOver * findData.Price, ItemPrefab = Global_Values._container.Value._serverCurrency, Quality = 1 };
                     string jsonLeftOver = JSON.ToJSON(mockData);
                     ZRoutedRpc.instance.InvokeRoutedRPC(sender, "KGmarket BuyItemAnswer", jsonLeftOver);
-                    goldValue -= leftOver * findData.Price;
                 }
             }
             else

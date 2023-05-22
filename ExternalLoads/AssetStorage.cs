@@ -33,15 +33,7 @@ public static class AssetStorage
     public static GameObject Teleporter_VFX2;
 
     public static AudioSource AUsrc;
-
-    private enum MarkerType
-    {
-        Marker3D = 1,
-        Marker2D = 2,
-        None = 3
-    }
-
-    private static ConfigEntry<MarkerType> QuestMarker;
+    
 
     // ReSharper disable once UnusedMember.Global
     private static void OnInit()
@@ -56,8 +48,7 @@ public static class AssetStorage
         WoodTex = asset.LoadAsset<Texture>("cbimage");
         Teleporter_VFX1 = asset.LoadAsset<GameObject>("MarketplaceTP_1");
         Teleporter_VFX2 = asset.LoadAsset<GameObject>("MarketplaceTP_2");
-        QuestMarker = Marketplace._thistype.Config.Bind("General", "Quest Marker Type", MarkerType.Marker3D);
-        MarketplaceQuestTargetIcon = asset.LoadAsset<GameObject>("MarketplaceQuestTargetIcon" + (int)QuestMarker.Value);
+        MarketplaceQuestTargetIcon = asset.LoadAsset<GameObject>("MarketplaceQuestTargetIcon1");
         MarketplaceQuestQuestionIcon = asset.LoadAsset<GameObject>("MarketplaceQuestionMark");
         Texture2D epicMMOTex = new Texture2D(1, 1);
         epicMMOTex.LoadImage(Convert.FromBase64String(OtherModsAPI.Epic_Mmo_Base));

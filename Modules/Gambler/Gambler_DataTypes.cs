@@ -15,7 +15,7 @@ public static class Gambler_DataTypes
         {
             pkg.Write(MAXROLLS);
             pkg.Write(Data.Count);
-            foreach (var item in Data)
+            foreach (Item item in Data)
             {
                 pkg.Write(item.Prefab ?? "");
                 pkg.Write(item.Min);

@@ -22,11 +22,11 @@ public static class PhotoManager
         public Sprite GetSprite(string prefab, Sprite defaultValue, int level)
         {
             int initHashcode = prefab.GetStableHashCode();
-            if (CachedSprites.TryGetValue(initHashcode, out var sprite))
+            if (CachedSprites.TryGetValue(initHashcode, out Sprite sprite))
                 return sprite;
             level = Mathf.Clamp(level, 1, 3);
             int hashcode = prefab.GetStableHashCode() + level;
-            if (CachedSprites.TryGetValue(hashcode, out var sprite1))
+            if (CachedSprites.TryGetValue(hashcode, out Sprite sprite1))
                 return sprite1;
             return defaultValue;
         }

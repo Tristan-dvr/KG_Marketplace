@@ -272,7 +272,7 @@ public static class Market_NPC
             _tt = t;
             try
             {
-                if (Cache.TryGetValue(_name, out var value))
+                if (Cache.TryGetValue(_name, out Sprite value))
                 {
                     _sprite = value;
                     HasImage = true;
@@ -380,7 +380,7 @@ public static class Market_NPC
         {
             private static void Postfix()
             {
-                foreach (var ccomponent in ALL)
+                foreach (NPCcomponent ccomponent in ALL)
                     ccomponent.CustomUpdate();
             }
         }
@@ -390,7 +390,7 @@ public static class Market_NPC
         {
             private static void Postfix()
             {
-                foreach (var ccomponent in ALL)
+                foreach (NPCcomponent ccomponent in ALL)
                     ccomponent.CustomFixedUpdate();
             }
         }
@@ -527,7 +527,7 @@ public static class Market_NPC
                     if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGperiodicSound")))
                     {
                         if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(znv.m_zdo.GetString("KGperiodicSound"),
-                                out var sound))
+                                out AudioClip sound))
                             NPC_SoundSource.PlayOneShot(sound);
                     }
                 }

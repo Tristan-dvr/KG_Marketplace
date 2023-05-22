@@ -756,8 +756,7 @@ public static class Marketplace_UI
         BUYTAB.transform.Find("AFTERPRESS/SetQuantity").GetComponent<InputField>().text = "-999";
         SkipQuantityCheck = false;
         SkipNextSound = true;
-        BUYTAB.transform.Find("AFTERPRESS/SetQuantity").GetComponent<InputField>().text =
-            CurrentBuyData.Price.ToString();
+        BUYTAB.transform.Find("AFTERPRESS/SetQuantity").GetComponent<InputField>().text = CurrentBuyData.Count.ToString();
         foreach (GameObject obj in CurrentGameObjects)
             obj.GetComponent<Image>().color = new Color(0.3f, 0.3f, 0.3f, 0.7803922f);
 

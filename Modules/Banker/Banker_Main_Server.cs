@@ -48,7 +48,7 @@ public static class Banker_Main_Server
             else
             {
                 int test = profiles[i].Replace(" ", "").GetStableHashCode();
-                if (Banker_DataTypes.SyncedBankerProfiles.Value.TryGetValue(splitProfile, out var value))
+                if (Banker_DataTypes.SyncedBankerProfiles.Value.TryGetValue(splitProfile, out List<int> value))
                 {
                     value.Add(test);
                 }
@@ -113,7 +113,7 @@ public static class Banker_Main_Server
         string userID = peer.m_socket.GetHostName();
 
         if (userID == "0") return;
-        if (BankerServerSideData.TryGetValue(userID, out var value))
+        if (BankerServerSideData.TryGetValue(userID, out Dictionary<int, int> value))
         {
             string data = JSON.ToJSON(value);
             ZPackage pkg = new();

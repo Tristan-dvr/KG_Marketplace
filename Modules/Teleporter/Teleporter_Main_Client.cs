@@ -54,7 +54,7 @@ public static class Teleporter_Main_Client
             if (item)
                 icon = item.GetComponent<ItemDrop>().m_itemData.m_shared.m_icons[0];
             else
-                icon = AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(data.sprite, out var sprite)
+                icon = AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(data.sprite, out Sprite sprite)
                     ?  sprite
                     :  AssetStorage.AssetStorage.PortalIconDefault;
             pinData.m_icon = icon;

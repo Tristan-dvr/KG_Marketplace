@@ -175,7 +175,7 @@ public static class Quest_ProgressionHook
         {
             MethodInfo method =
                 AccessTools.Method(typeof(HookBuildQuest), nameof(PlacedPiece), new[] { typeof(GameObject) });
-            foreach (var instruction in instructions)
+            foreach (CodeInstruction instruction in instructions)
             {
                 yield return instruction;
                 if (instruction.opcode == OpCodes.Stloc_3)
@@ -186,30 +186,15 @@ public static class Quest_ProgressionHook
             }
         }
     }
-    
-    private class StickQuestionMark : MonoBehaviour
-    {
-        private Transform _transform;
 
-        private void Awake()
-        {
-            _transform = transform.Find("MPASNquest");
-        }
-
-        private void LateUpdate()
-        {
-            _transform.position = transform.position + Vector3.up * 2.25f;
-        }
-    }
-    
-    [HarmonyPatch(typeof(Character), nameof(Character.Start))]
+    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.Start))]
     [ClientOnlyPatch]
     private static class Character_Awake_Quest
     {
-        private static void Postfix(Character __instance)
+        private static void Postfix(Humanoid __instance)
         {
             float radius = __instance.m_collider.radius;
-            float height = __instance.m_collider.height + 2f;
+            float height = __instance.m_collider.height - 1.7f;
             GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon, __instance.transform);
             go.name = "MPASNquest";
             go.transform.localPosition += Vector3.up * height;
@@ -226,7 +211,6 @@ public static class Quest_ProgressionHook
         {
             __instance.gameObject.AddComponent<Pickable_Hook>();
             GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon, __instance.transform);
-            go.transform.position += Vector3.up * 2.25f;
             go.name = "MPASNquest";
             go.SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
         }
@@ -239,10 +223,8 @@ public static class Quest_ProgressionHook
         private static void Postfix(ItemDrop __instance)
         {
             GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon, __instance.transform);
-            go.transform.position += Vector3.up * 2.25f;
             go.name = "MPASNquest";
             go.SetActive(false);
-            __instance.gameObject.AddComponent<StickQuestionMark>();
         }
     }
 

@@ -48,7 +48,7 @@ public static class KG_Chat
         {
             Texture2D tex = new Texture2D(2, 2);
             tex.LoadImage(File.ReadAllBytes(spritesheetPath_New));
-            foreach (var ugui in original_KG_Chat.GetComponentsInChildren<TextMeshProUGUI>(true))
+            foreach (TextMeshProUGUI ugui in original_KG_Chat.GetComponentsInChildren<TextMeshProUGUI>(true))
             {
                 ugui.spriteAsset.spriteSheet = tex;
                 ugui.spriteAsset.material.SetTexture(ShaderUtilities.ID_MainTex, tex);
@@ -103,10 +103,10 @@ public static class KG_Chat
 
         public void OnDrag(PointerEventData eventData)
         {
-            var vec = -eventData.delta;
-            var sizeDelta = dragRect.sizeDelta + new Vector2(34f * dragRect.localScale.x, 0f);
+            Vector2 vec = -eventData.delta;
+            Vector2 sizeDelta = dragRect.sizeDelta + new Vector2(34f * dragRect.localScale.x, 0f);
             vec.x /= sizeDelta.x;
-            var resized = dragRect.localScale + new Vector3(vec.x, vec.x, 0);
+            Vector3 resized = dragRect.localScale + new Vector3(vec.x, vec.x, 0);
             resized.x = Mathf.Clamp(resized.x, 0.5f, 1.5f);
             resized.y = Mathf.Clamp(resized.y, 0.5f, 1.5f);
             resized.z = 1f;
@@ -143,7 +143,7 @@ public static class KG_Chat
             UI_X = Marketplace._thistype.Config.Bind("KG Chat", "UI_posX", -15f, "UI X position");
             UI_Y = Marketplace._thistype.Config.Bind("KG Chat", "UI_posY", 60f, "UI Y position");
             dragRect = transform.parent.parent.parent.GetComponent<RectTransform>();
-            var configPos = new Vector2(UI_X.Value, UI_Y.Value);
+            Vector2 configPos = new Vector2(UI_X.Value, UI_Y.Value);
             dragRect.anchoredPosition = configPos;
             Markers[0] = dragRect.transform.Find("LeftTop");
             Markers[1] = dragRect.transform.Find("RightTop");
@@ -156,7 +156,7 @@ public static class KG_Chat
 
         public void OnDrag(PointerEventData eventData)
         {
-            var vec = dragRect.anchoredPosition + eventData.delta / dragRect.lossyScale * dragRect.localScale;
+            Vector2 vec = dragRect.anchoredPosition + eventData.delta / dragRect.lossyScale * dragRect.localScale;
             Vector2 lastPos = dragRect.anchoredPosition;
             dragRect.anchoredPosition = vec;
             if (CheckMarkersOutsideScreen(new Vector2(Screen.width, Screen.height)))
@@ -165,7 +165,7 @@ public static class KG_Chat
 
         private bool CheckMarkersOutsideScreen(Vector2 screen)
         {
-            foreach (var marker in Markers)
+            foreach (Transform marker in Markers)
             {
                 float markerX = marker.position.x;
                 float markerY = marker.position.y;
@@ -431,8 +431,8 @@ public static class KG_Chat
                 _muteSoundsButton.transform.Find("TF").gameObject.SetActive(!useTypeSound.Value);
             });
 
-            var bgone = transform.Find("CHATWINDOW/Background/Upper Background");
-            var bgtwo = transform.Find("CHATWINDOW/Input Field/Lower Background");
+            Transform bgone = transform.Find("CHATWINDOW/Background/Upper Background");
+            Transform bgtwo = transform.Find("CHATWINDOW/Input Field/Lower Background");
             bgone.GetComponent<Image>().color = new Color(0, 0, 0, Transparency_Map[kgchat_Transparency.Value]);
             bgtwo.GetComponent<Image>().color = new Color(0, 0, 0, Transparency_Map[kgchat_Transparency.Value]);
 
@@ -472,8 +472,8 @@ public static class KG_Chat
 
         private void FillEmojis()
         {
-            var button = Emojis_Tab.Find("Emoji");
-            foreach (var em in Emoji_Map)
+            Transform button = Emojis_Tab.Find("Emoji");
+            foreach (KeyValuePair<string, string> em in Emoji_Map)
             {
                 Button newButton = Instantiate(button, Emojis_Tab).GetComponent<Button>();
                 newButton.gameObject.SetActive(true);
@@ -535,7 +535,7 @@ public static class KG_Chat
         private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
         {
             bool isdone = false;
-            foreach (var instruction in instructions)
+            foreach (CodeInstruction instruction in instructions)
             {
                 yield return instruction;
                 if (instruction.opcode == OpCodes.Stloc_0 && !isdone)
@@ -559,7 +559,7 @@ public static class KG_Chat
         {
             const string targetClass = "<>c__DisplayClass12_0";
             const string targetMethod = "<OnNewChatMessage>b__2";
-            var type = typeof(Chat).GetNestedTypes(BindingFlags.NonPublic)
+            Type type = typeof(Chat).GetNestedTypes(BindingFlags.NonPublic)
                 .FirstOrDefault(t => t.Name == targetClass);
             textField = AccessTools.Field(type, "text");
             return AccessTools.Method(type, targetMethod);
@@ -575,8 +575,8 @@ public static class KG_Chat
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> code)
         {
-            var targetField = AccessTools.Field(typeof(Chat), nameof(Chat.m_hideTimer));
-            foreach (var instruction in code)
+            FieldInfo targetField = AccessTools.Field(typeof(Chat), nameof(Chat.m_hideTimer));
+            foreach (CodeInstruction instruction in code)
             {
                 yield return instruction;
                 if (instruction.opcode == OpCodes.Stfld && instruction.operand == targetField)

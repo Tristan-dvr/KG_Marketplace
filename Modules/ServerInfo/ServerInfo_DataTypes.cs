@@ -27,7 +27,7 @@ public static class ServerInfo_DataTypes
         public void Serialize(ref ZPackage pkg)
         {
             pkg.Write(infoQueue.Count);
-            foreach (var info in infoQueue)
+            foreach (Info info in infoQueue)
             {
                 pkg.Write((int)info.Type);
                 pkg.Write(info.Text ?? "");

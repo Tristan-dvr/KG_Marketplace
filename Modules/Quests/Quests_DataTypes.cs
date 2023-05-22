@@ -440,13 +440,13 @@ public static class Quests_DataTypes
                 {
                     int reqID = CheckQuest.QuestRequirementPrefab[i].ToLower().GetStableHashCode();
                     type = QuestRequirementType.NotFinished;
-                    if (AcceptedQuests.TryGetValue(reqID, out var quest))
+                    if (AcceptedQuests.TryGetValue(reqID, out Quest quest))
                     {
                         message = $"$mpasn_questtaken: <color=#00ff00>{quest.Name}</color>".Localize();
                         return false;
                     }
 
-                    if (AllQuests.TryGetValue(reqID, out var _) && IsOnCooldown(reqID, out _))
+                    if (AllQuests.TryGetValue(reqID, out Quest _) && IsOnCooldown(reqID, out _))
                     {
                         message = $"$mpasn_needtofinishquest: <color=#00ff00>{AllQuests[reqID].Name}</color>"
                             .Localize();

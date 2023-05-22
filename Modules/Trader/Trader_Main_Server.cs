@@ -66,7 +66,7 @@ public static class Trader_Main_Server
                                     Level = int.Parse(test[4])
                                 }.ToList()
                             };
-                            if (Trader_DataTypes.SyncedTraderItemList.Value.TryGetValue(splitProfile, out var value))
+                            if (Trader_DataTypes.SyncedTraderItemList.Value.TryGetValue(splitProfile, out List<Trader_DataTypes.TraderData> value))
                             {
                                 value.Add(traderData);
                             }
@@ -98,7 +98,7 @@ public static class Trader_Main_Server
                                     }
                                 }
                             };
-                            if (Trader_DataTypes.SyncedTraderItemList.Value.TryGetValue(splitProfile, out var value))
+                            if (Trader_DataTypes.SyncedTraderItemList.Value.TryGetValue(splitProfile, out List<Trader_DataTypes.TraderData> value))
                             {
                                 value.Add(traderData);
                             }
@@ -149,7 +149,7 @@ public static class Trader_Main_Server
                         string[] result = test[1].Split(',');
                         FillTrader(traderData.NeededItems, needed);
                         FillTrader(traderData.ResultItems, result);
-                        if (Trader_DataTypes.SyncedTraderItemList.Value.TryGetValue(splitProfile, out var value)) 
+                        if (Trader_DataTypes.SyncedTraderItemList.Value.TryGetValue(splitProfile, out List<Trader_DataTypes.TraderData> value)) 
                         {
                             value.Add(traderData);
                         }

@@ -260,9 +260,9 @@ public static class PostMail_UI
         Player.m_localPlayer.m_inventory.RemoveItem(item);
         if (_currentProcessedTargetPost.HasOwner())
         {
-            var json = JSON.ToJSON(toSend);
-            var owner = _currentProcessedTargetPost.GetOwner();
-            var zdoid = _currentProcessedTargetPost.m_uid;
+            string json = JSON.ToJSON(toSend);
+            long owner = _currentProcessedTargetPost.GetOwner();
+            ZDOID zdoid = _currentProcessedTargetPost.m_uid;
             ZRoutedRpc.instance.InvokeRoutedRPC(owner, zdoid, "WriteMail", json);
         }
         else

@@ -362,7 +362,7 @@ public static class Quests_UIs
 
             List<int> enumerationTarget = IsJournal
                 ? Quests_DataTypes.AcceptedQuests.Keys.ToList()
-                : (Quests_DataTypes.SyncedQuestProfiles.Value.TryGetValue(CurrentProfile, out var value)
+                : (Quests_DataTypes.SyncedQuestProfiles.Value.TryGetValue(CurrentProfile, out List<int> value)
                     ? value
                     : new List<int>());
 
@@ -555,13 +555,13 @@ public static class Quests_UIs
 
         private static IEnumerator UpdateTimedQuests()
         {
-            var yield = new WaitForSeconds(1f);
+            WaitForSeconds yield = new WaitForSeconds(1f);
             HashSet<int> toRemove = new();
             while (true)
             {
                 yield return yield;
                 if (!Player.m_localPlayer) continue;
-                foreach (var quest in Quests_DataTypes.AcceptedQuests)
+                foreach (KeyValuePair<int, Quests_DataTypes.Quest> quest in Quests_DataTypes.AcceptedQuests)
                 {
                     if (quest.Value.TimeLimit <= 0) continue;
                     long timeLeft = CalculateTimeLeft(quest.Value);
@@ -571,7 +571,7 @@ public static class Quests_UIs
                     }
                     else
                     {
-                        if (UpdateData.TryGetValue(quest.Value, out var value))
+                        if (UpdateData.TryGetValue(quest.Value, out GameObject value))
                         {
                             value.transform.Find("QuestName").GetComponent<Text>().text =
                                     $"<color=yellow> [ {quest.Value.Name} ]</color>".Localize() +
@@ -618,7 +618,7 @@ public static class Quests_UIs
             }
 
             Show();
-            foreach (var go in UpdateData)
+            foreach (KeyValuePair<Quests_DataTypes.Quest, GameObject> go in UpdateData)
             {
                 UnityEngine.Object.Destroy(go.Value);
             }

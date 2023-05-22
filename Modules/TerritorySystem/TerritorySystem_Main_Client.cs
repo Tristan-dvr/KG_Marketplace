@@ -791,7 +791,7 @@ public static class TerritorySystem_Main_Client
     {
         private static bool Prefix(Vector3 spawnPoint)
         {
-            foreach (var territory in TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.NoMonsters])
+            foreach (TerritorySystem_DataTypes.Territory territory in TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.NoMonsters])
             {
                 if (territory.IsInside(spawnPoint))
                     return false;

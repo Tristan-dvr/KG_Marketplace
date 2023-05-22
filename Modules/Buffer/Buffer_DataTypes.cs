@@ -131,7 +131,7 @@ public static class Buffer_DataTypes
             }
             else
             {
-                if (AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(SpritePrefab, out var sprite))
+                if (AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(SpritePrefab, out Sprite sprite))
                 {
                     Icon = sprite;
                 }

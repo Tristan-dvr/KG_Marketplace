@@ -35,7 +35,7 @@ public static class ServerInfo_Main_Client
     private static IEnumerator LoadQuestImages(IEnumerable<ServerInfo_DataTypes.ServerInfoQueue.Info> urls)
     {
         yield return new WaitForSeconds(3f);
-        foreach (var url in urls)
+        foreach (ServerInfo_DataTypes.ServerInfoQueue.Info url in urls)
         {
             if (string.IsNullOrEmpty(url.Text)) continue; 
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(url.Text);
@@ -44,7 +44,7 @@ public static class ServerInfo_Main_Client
             {
                 Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                 if (texture == null || texture.width == 0 || texture.height == 0) continue;
-                var newTempTexture = new Texture2D(texture.width, texture.height);
+                Texture2D newTempTexture = new Texture2D(texture.width, texture.height);
                 newTempTexture.SetPixels(texture.GetPixels());
                 newTempTexture.Apply();
                 Sprite sprite = Sprite.Create(newTempTexture, new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);

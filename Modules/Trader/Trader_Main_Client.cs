@@ -35,7 +35,7 @@ public static class Trader_Main_Client
     {
         Trader_DataTypes.ClientSideItemList.Clear();
         if (!ZNetScene.instance) return;
-        foreach (var kvp in Trader_DataTypes.SyncedTraderItemList.Value)
+        foreach (KeyValuePair<string, List<Trader_DataTypes.TraderData>> kvp in Trader_DataTypes.SyncedTraderItemList.Value)
         {
             List<Trader_DataTypes.TraderData> newTraderItems = new List<Trader_DataTypes.TraderData>();
             foreach (Trader_DataTypes.TraderData value in kvp.Value)

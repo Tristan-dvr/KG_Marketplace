@@ -68,7 +68,7 @@ namespace Marketplace
                     WorkingAs.Server => x.Key.type != Market_Autoload.Type.Client,
                     _ => true
                 });
-            foreach (var autoload in toAutoload)
+            foreach (KeyValuePair<Market_Autoload, Type> autoload in toAutoload)
             {
                 if (autoload.Key.OnWatcherNames != null && autoload.Key.OnWatcherMethods != null &&
                     autoload.Key.OnWatcherNames.Length == autoload.Key.OnWatcherMethods.Length)
@@ -159,7 +159,7 @@ namespace Marketplace
             else if (folderPath.Contains(Market_Paths.AdditionalCondfigsTerritoriesFolder))
                 fName = Path.GetFileName(Market_Paths.TerritoriesConfigPath);
 
-            if (!FSW_Lookup.TryGetValue(fName!, out var action)) return;
+            if (!FSW_Lookup.TryGetValue(fName!, out Action action)) return;
             if (!ZNet.instance || !ZNet.instance.IsServer())
             {
                 Utils.print($"FSW: Not a server, ignoring ({e.Name})", ConsoleColor.Red);

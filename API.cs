@@ -215,7 +215,7 @@ public static class ClientSide
         out int flags,
         out int additionalFlags)
     {
-        foreach (var territory in TerritorySystem_Main_Client.TerritoriesByFlags[
+        foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_Main_Client.TerritoriesByFlags[
                      (TerritorySystem_DataTypes.TerritoryFlags)flag])
         {
             if (!territory.IsInside(pos)) continue;
@@ -236,7 +236,7 @@ public static class ClientSide
         out int flags,
         out int additionalFlags)
     {
-        foreach (var territory in TerritorySystem_Main_Client.TerritoriesByFlags_Additional[
+        foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_Main_Client.TerritoriesByFlags_Additional[
                      (TerritorySystem_DataTypes.AdditionalTerritoryFlags)flag])
         {
             if (!territory.IsInside(pos)) continue;

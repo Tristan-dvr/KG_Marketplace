@@ -23,7 +23,7 @@ public static class Dialogues_UI
     private static void ResetFitters()
     {
         Canvas.ForceUpdateCanvases();
-        foreach (var fitter in UI.GetComponentsInChildren<ContentSizeFitter>())
+        foreach (ContentSizeFitter fitter in UI.GetComponentsInChildren<ContentSizeFitter>())
         {
             fitter.enabled = false;
             fitter.enabled = true;
@@ -57,7 +57,7 @@ public static class Dialogues_UI
         for (int i = 0; i < hotbarKeys.Length; ++i)
         {
             if (!Input.GetKeyDown(hotbarKeys[i])) continue;
-            if (HotbarActions.TryGetValue(i + 1, out var action))
+            if (HotbarActions.TryGetValue(i + 1, out Action action))
             {
                 action();
             }
@@ -66,7 +66,7 @@ public static class Dialogues_UI
 
     private static void Default()
     {
-        foreach (var element in Elements)
+        foreach (GameObject element in Elements)
         {
             UnityEngine.Object.Destroy(element);
         }
@@ -113,7 +113,7 @@ public static class Dialogues_UI
     public static bool LoadDialogue(Market_NPC.NPCcomponent npc, string UID)
     {
         Default();
-        if (!Dialogues_DataTypes.ClientReadyDialogues.TryGetValue(UID, out var dialogue))
+        if (!Dialogues_DataTypes.ClientReadyDialogues.TryGetValue(UID, out Dialogues_DataTypes.Dialogue dialogue))
         {
             Hide(true);
             return false;
@@ -131,7 +131,7 @@ public static class Dialogues_UI
         NPC_Name.text = name;
         Dialogue_Text.text = "\"" + Localization.instance.Localize(dialogue.Text) + "\"";
         int c = 0;
-        foreach (var option in dialogue.Options)
+        foreach (Dialogues_DataTypes.Dialogue.PlayerOption option in dialogue.Options)
         {
             bool alwaysVisibleCheck = false;
             if (!option.CheckCondition(out string reason))
@@ -142,7 +142,7 @@ public static class Dialogues_UI
                     continue;
             }
 
-            var element = UnityEngine.Object.Instantiate(Dialogue_Element, Content);
+            GameObject element = UnityEngine.Object.Instantiate(Dialogue_Element, Content);
             Elements.Add(element);
             element.transform.Find("Text").GetComponent<Text>().text = Localization.instance.Localize(option.Text);
             element.transform.Find("Indexer/Text").GetComponent<Text>().text = (++c).ToString();

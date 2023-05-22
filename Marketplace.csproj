@@ -340,6 +340,7 @@
         <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Client.cs" />
         <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Server.cs" />
         <Compile Include="Modules\NPC_Dialogues\Dialogues_UI.cs" />
+        <Compile Include="Modules\PieceSaver\PieceSaver.cs" />
         <Compile Include="Modules\PlayersTag\PlayersTag_DataTypes.cs" />
         <Compile Include="Modules\PlayersTag\PlayerTags_Main_Server.cs" />
         <Compile Include="Modules\PlayersTag\PlayerTag_Main_Client.cs" />
@@ -499,6 +500,7 @@
       <Content Include="GithubReadme\node_modules\uc.micro\README.md" />
       <Content Include="GithubReadme\README.md" />
       <Content Include="ILRepack.targets" />
+      <EmbeddedResource Include="Resources\kg_piecesaver" />
       <Content Include="ThunderstorePackage\icon.png" />
       <Content Include="ThunderstorePackage\manifest.json" />
       <Content Include="ThunderstorePackage\README.md" />

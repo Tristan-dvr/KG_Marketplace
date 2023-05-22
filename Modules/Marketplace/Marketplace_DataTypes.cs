@@ -2,10 +2,10 @@
 
 public static class Marketplace_DataTypes
 {
-    internal static readonly CustomSyncedValue<List<ServerMarketSendData>> ServerMarketPlaceData = 
+    internal static readonly CustomSyncedValue<List<ServerMarketSendData>> ServerMarketPlaceData =
         new(Marketplace.configSync, "marketplaceData", new List<ServerMarketSendData>());
-    
-    
+
+
     public class ServerMarketSendData : ISerializableParameter
     {
         public int UID;
@@ -39,13 +39,16 @@ public static class Marketplace_DataTypes
             CUSTOMdata = other.CUSTOMdata;
             CrafterName = other.CrafterName;
             CrafterID = other.CrafterID;
-            UID = Marketplace_Main_Server.LastIDConfig.Value;
-            Marketplace_Main_Server.LastIDConfig.Value++;
-            Marketplace._thistype.Config.Save();
+
+            UID = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            while (Marketplace_DataTypes.ServerMarketPlaceData.Value.Find(x => x.UID == UID) != null)
+                UID = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         }
-        
-        public string ItemName => ZNetScene.instance.GetPrefab(ItemPrefab) is {} item ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name : ItemPrefab;
-        
+
+        public string ItemName => ZNetScene.instance.GetPrefab(ItemPrefab) is { } item
+            ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name
+            : ItemPrefab;
+
         public void Serialize(ref ZPackage pkg)
         {
             pkg.Write(UID);
@@ -54,7 +57,7 @@ public static class Marketplace_DataTypes
             pkg.Write(Price);
             pkg.Write(SellerName ?? "");
             pkg.Write(SellerUserID ?? "");
-            pkg.Write((int) ItemCategory);
+            pkg.Write((int)ItemCategory);
             pkg.Write(Quality);
             pkg.Write(Variant);
             pkg.Write(CrafterName ?? "");
@@ -70,7 +73,7 @@ public static class Marketplace_DataTypes
             Price = pkg.ReadInt();
             SellerName = pkg.ReadString();
             SellerUserID = pkg.ReadString();
-            ItemCategory = (ItemData_ItemCategory) pkg.ReadInt();
+            ItemCategory = (ItemData_ItemCategory)pkg.ReadInt();
             Quality = pkg.ReadInt();
             Variant = pkg.ReadInt();
             CrafterName = pkg.ReadString();
@@ -78,8 +81,8 @@ public static class Marketplace_DataTypes
             CUSTOMdata = pkg.ReadString();
         }
     }
-    
-    
+
+
     public class ClientMarketSendData
     {
         public string ItemPrefab;
@@ -92,10 +95,12 @@ public static class Marketplace_DataTypes
         public string CUSTOMdata = "{}";
         public string CrafterName = "";
         public long CrafterID;
-        
-        public string ItemName => ZNetScene.instance.GetPrefab(ItemPrefab) is {} item ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name : ItemPrefab;
-        
+
+        public string ItemName => ZNetScene.instance.GetPrefab(ItemPrefab) is { } item
+            ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name
+            : ItemPrefab;
     }
+
     public enum ItemData_ItemCategory
     {
         ALL,
@@ -104,12 +109,14 @@ public static class Marketplace_DataTypes
         CONSUMABLE,
         TOOLS,
         RESOURCES
-    } 
+    }
+
     public enum MarketMode
     {
         BUY,
         SELL
     }
+
     public enum SortBy
     {
         None,
@@ -118,10 +125,10 @@ public static class Marketplace_DataTypes
         Price,
         Seller
     }
+
     public enum SortType
     {
         UP,
         DOWN
     }
-    
 }

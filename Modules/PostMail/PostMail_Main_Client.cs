@@ -184,7 +184,7 @@ public static class PostMail_Main_Client
             {
             }
             if (AllMails.Count == 0) return;
-            foreach (var mail in AllMails)
+            foreach (ZDO mail in AllMails)
             {
                 if (!mail.IsValid() || mail.m_uid == _znv.m_zdo.m_uid) continue;
                 Minimap.PinData pinData = new Minimap.PinData
@@ -237,7 +237,7 @@ public static class PostMail_Main_Client
                 Vector3 pos = __instance.ScreenToWorldPoint(Input.mousePosition);
                 Minimap.PinData closestPin = Utils.GetCustomPin(PinType, pos,
                     __instance.m_removeRadius * (__instance.m_largeZoom * 2f));
-                if (closestPin != null && PinMapper.TryGetValue(closestPin.m_pos, out var zdo))
+                if (closestPin != null && PinMapper.TryGetValue(closestPin.m_pos, out ZDO zdo))
                 {
                     PostMail_UI.ShowSend(zdo);
                     __instance.SetMapMode(Minimap.MapMode.Small);

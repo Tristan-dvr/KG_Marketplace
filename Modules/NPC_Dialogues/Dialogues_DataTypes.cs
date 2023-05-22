@@ -73,7 +73,7 @@ public static class Dialogues_DataTypes
             pkg.Write(UID ?? "default");
             pkg.Write(Text ?? "");
             pkg.Write(Options.Length);
-            foreach (var option in Options)
+            foreach (RawPlayerOption option in Options)
             {
                 pkg.Write(option.Text ?? "");
                 pkg.Write(option.Icon ?? "");
@@ -146,7 +146,7 @@ public static class Dialogues_DataTypes
             {
                 reason = "";
                 if (Condition == null) return true;
-                foreach (var cast in Condition.GetInvocationList().Cast<Dialogue_Condition<string>>())
+                foreach (Dialogue_Condition<string> cast in Condition.GetInvocationList().Cast<Dialogue_Condition<string>>())
                 {
                     if (!cast(out reason)) return false;
                 }
@@ -282,7 +282,7 @@ public static class Dialogues_DataTypes
                                     Vector3 pos = new Vector3(int.Parse(split[2]), int.Parse(split[3]), int.Parse(split[4]));
                                     long sender = Random.Range(-10000, 10000);
                                     Chat.instance.AddInworldText(null, sender , pos, Talker.Type.Ping, new(){ Name = "", Gamertag = "", NetworkUserId = ""}, "");
-                                    var worldText = Chat.instance.FindExistingWorldText(sender);
+                                    Chat.WorldTextInstance worldText = Chat.instance.FindExistingWorldText(sender);
                                     if (worldText != null)
                                         worldText.m_text = split[1];
                                     Minimap.instance.ShowPointOnMap(pos);
@@ -355,7 +355,7 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest))
+                                    if (Quests_DataTypes.AllQuests.TryGetValue(reqID, out Quests_DataTypes.Quest reqQuest))
                                         reason =
                                             $"{Localization.instance.Localize("$mpasn_questfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
                                     return !Quests_DataTypes.Quest.IsOnCooldown(reqID, out _);
@@ -446,7 +446,7 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest) ||
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out Quests_DataTypes.Quest reqQuest) ||
                                         !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID))
                                         return false;
                                     reason =
@@ -459,7 +459,7 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest) ||
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out Quests_DataTypes.Quest reqQuest) ||
                                         !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID))
                                         return false;
                                     reason =
@@ -472,7 +472,7 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest))
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out Quests_DataTypes.Quest reqQuest))
                                         return false;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_questnottaken")}: <color=#00ff00>{reqQuest.Name}</color>";
@@ -484,7 +484,7 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out var reqQuest))
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out Quests_DataTypes.Quest reqQuest))
                                         return false;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{reqQuest.Name}</color>";

@@ -140,7 +140,7 @@ public static class Quests_Main_Client
         private static void InitRawQuests()
         {
             if (!Player.m_localPlayer || Quests_DataTypes.SyncedQuestData.Value.Count == 0) return;
-            var questsRevision = Quests_DataTypes.SyncedQuestData.Value.ElementAt(0).Value._revision;
+            int questsRevision = Quests_DataTypes.SyncedQuestData.Value.ElementAt(0).Value._revision;
             if (LatestRevision == questsRevision) return;
             LatestRevision = questsRevision;
 
@@ -174,7 +174,7 @@ public static class Quests_Main_Client
                 {
                     Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                     if (texture == null || texture.width == 0 || texture.height == 0) continue;
-                    var newTempTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
+                    Texture2D newTempTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
                     newTempTexture.SetPixels(texture.GetPixels());
                     newTempTexture.Apply();
                     Sprite sprite = Sprite.Create(newTempTexture, new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);

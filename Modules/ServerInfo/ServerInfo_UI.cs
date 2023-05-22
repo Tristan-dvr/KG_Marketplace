@@ -35,25 +35,25 @@ public static class ServerInfo_UI
         }
 
         const int maxX = 700;
-        var origText = Content.Find("Text");
-        var origImage = Content.Find("Image");
+        Transform origText = Content.Find("Text");
+        Transform origImage = Content.Find("Image");
 
         for (int i = 2; i < Content.childCount; i++)
             UnityEngine.Object.Destroy(Content.GetChild(i).gameObject);
 
-        foreach (var q in ServerInfo_DataTypes.ServerInfoData.Value[CurrentProfile].infoQueue)
+        foreach (ServerInfo_DataTypes.ServerInfoQueue.Info q in ServerInfo_DataTypes.ServerInfoData.Value[CurrentProfile].infoQueue)
         {
             if (q.Type == ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Text)
             {
-                var text = UnityEngine.Object.Instantiate(origText, Content);
+                Transform text = UnityEngine.Object.Instantiate(origText, Content);
                 text.gameObject.SetActive(true);
                 text.GetComponent<Text>().text = q.Text;
             }
             else
             {
-                var image = UnityEngine.Object.Instantiate(origImage, Content);
+                Transform image = UnityEngine.Object.Instantiate(origImage, Content);
                 image.gameObject.SetActive(true);
-                var sprite = q.GetSprite();
+                Sprite sprite = q.GetSprite();
                 image.GetComponent<Image>().sprite = sprite;
                 if (sprite != null)
                     image.GetComponent<RectTransform>().sizeDelta = new Vector2(Mathf.Min(maxX, sprite.texture.width),
@@ -62,7 +62,7 @@ public static class ServerInfo_UI
         }
 
         Canvas.ForceUpdateCanvases();
-        var AllFilters = UI.GetComponentsInChildren<ContentSizeFitter>().ToList();
+        List<ContentSizeFitter> AllFilters = UI.GetComponentsInChildren<ContentSizeFitter>().ToList();
         AllFilters.ForEach(filter => filter.enabled = false);
         AllFilters.ForEach(filter => filter.enabled = true);
     }
