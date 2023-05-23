@@ -179,6 +179,10 @@ Paypal: <a href="mailto:war3spells@gmail.com">war3spells@gmail.com</a></p>
 <td>8.6.3</td>
 <td>Posted / updated NPC Dialogues + Territory System guides on site<br/>Added config option to specify banker interest items (All by default)<br/>Added config option to set mailbox item wait time<br/>Fixed gambler code<br/>Now working with wackydb 2.0 (beta) cloned items</td>
 </tr>
+<tr>
+<td>8.7.0</td>
+<td>Added new PieceSaver structure/system<br/>Added players tag system<br/>Traders now can sell Skill EXP<br/>Added new folder: AdditionalConfigs with Quests/Dialogues/Territories folders where you can put additional .cfg files for corresponding NPC type (so you don’t flood your main config file and split / manage it better)<br/>Added Color attribute to dialogues<br/>Added new dialogues commands / conditions<br/>Added &lt;image=link&gt; tag for server info<br/>Now if server info tag named [OnPlayerJoin] it will show UI when player first joins server<br/>Bugfixes / optimizations</td>
+</tr>
 </tbody>
 </table>
 </details>
@@ -876,11 +880,14 @@ Player Option 2
 <li>
 <p><code>AlwaysVisible</code>: Indicates that the player option is always visible, regardless of conditions.</p>
 </li>
+<li>
+<p><code>Color</code>: Represents the color of the player option text.</p>
+</li>
 </ul>
 <p>Dialogue may have multiple attributes split by | (pipe) character. For example:</p>
 <pre><code>[UniqueProfileName]
 NPC text
-Text: Option1 | Transition: UniqueProfileName2 | Command: Damage, 20 | Icon: Hammer | Condition: NotFinished, QuestId | AlwaysVisible: true
+Text: Option1 | Transition: UniqueProfileName2 | Command: Damage, 20 | Command: GiveItem, Coins, 50 | Icon: Hammer | Condition: NotFinished, QuestId | AlwaysVisible: false | Color: 255, 128, 0
 Text: Option2 | Transition: UniqueProfileName3 | Command: Heal, 20 | Icon: SwordIron | Condition: NotFinished, QuestId | AlwaysVisible: true
 </code></pre>
 <hr>

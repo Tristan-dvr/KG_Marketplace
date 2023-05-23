@@ -20,7 +20,6 @@ namespace Marketplace.Modules.NPC;
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Normal, "OnInit")]
 public static class Market_NPC
 {
-    private static bool EnableAI;
     private static GameObject NPC;
     private static GameObject PinnedNPC;
     private static readonly int SkinColor = Shader.PropertyToID("_SkinColor");
@@ -169,13 +168,6 @@ public static class Market_NPC
             if (__instance.m_input.text.ToLower() == "pos")
             {
                 __instance.AddString($"Position: {Player.m_localPlayer.transform.position}");
-                return false;
-            }
-
-            if (__instance.m_input.text.ToLower() == "mpasn ai")
-            {
-                EnableAI = !EnableAI;
-                __instance.AddString($"AI: {EnableAI}");
                 return false;
             }
 

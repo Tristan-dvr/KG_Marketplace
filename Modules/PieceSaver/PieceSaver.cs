@@ -1,8 +1,7 @@
 ﻿using UnityEngine.Rendering;
-
-
 namespace Marketplace.Modules.PieceSaver;
 
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit")]
 public static class PieceSaver
 {
@@ -21,6 +20,7 @@ public static class PieceSaver
         PieceSaverCrystalPrefab = asset.LoadAsset<GameObject>("kg_PieceSaverCrystal");
         PieceSaverCrystalPrefab.AddComponent<PieceSaverCrystal>();
         pieceSaverMaterial = asset.LoadAsset<Material>("kg_PieceSaverMaterial");
+        Global_Values._container.ValueChanged += ResetCrystalRecipe;
     }
 
     private static AssetBundle GetAssetBundle(string filename)
@@ -29,6 +29,40 @@ public static class PieceSaver
         string resourceName = execAssembly.GetManifestResourceNames().Single(str => str.EndsWith(filename));
         using Stream stream = execAssembly.GetManifestResourceStream(resourceName);
         return AssetBundle.LoadFromStream(stream);
+    }
+    
+    private static void ResetCrystalRecipe()
+    {
+        if (!ZNetScene.instance) return;
+        try
+        {
+            List<Piece.Requirement> reqs = new();
+            string recipeStr = Global_Values._container.Value._pieceSaverRecipe.Replace(" ", "");
+            string[] split = recipeStr.Split(',');
+            for (int i = 0; i < split.Length; i += 2)
+            {
+                string name = split[i];
+                int amount = int.Parse(split[i + 1]);
+                reqs.Add(new Piece.Requirement()
+                {
+                    m_amount = amount,
+                    m_resItem = ObjectDB.instance.GetItemPrefab(name.GetStableHashCode()).GetComponent<ItemDrop>()
+                });
+            }
+
+            PieceSaverCrystalPrefab.GetComponent<Piece>().m_resources = reqs.ToArray();
+        }
+        catch
+        {
+            PieceSaverCrystalPrefab.GetComponent<Piece>().m_resources = new[]
+            {
+                new Piece.Requirement()
+                {
+                    m_amount = 1,
+                    m_resItem = ObjectDB.instance.GetItemPrefab("SwordCheat").GetComponent<ItemDrop>()
+                }
+            };
+        }
     }
 
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
@@ -42,15 +76,7 @@ public static class PieceSaver
             PieceTable hammer = __instance.GetPrefab("Hammer").GetComponent<ItemDrop>().m_itemData.m_shared.m_buildPieces;
             if (!hammer.m_pieces.Contains(PieceSaverCrystalPrefab))
                 hammer.m_pieces.Add(PieceSaverCrystalPrefab);
-            
-            PieceSaverCrystalPrefab.GetComponent<Piece>().m_resources = new[]
-            {
-                new Piece.Requirement
-                {
-                    m_resItem = __instance.GetPrefab("Crystal").GetComponent<ItemDrop>(),
-                    m_amount = 20,
-                }
-            };
+            ResetCrystalRecipe();
         }
     }
     
@@ -217,15 +243,11 @@ public static class PieceSaver
             if (Player.m_debugMode) return true;
             foreach (Piece.Requirement requirement in piece.m_resources)
                 if (Player.m_localPlayer.m_inventory.CountItems(requirement.m_resItem.m_itemData.m_shared.m_name) <
-                    requirement.m_amount)
-                    return false;
+                    requirement.m_amount) return false;
 
             if (removeOnTrue)
-            {
                 foreach (Piece.Requirement requirement in piece.m_resources)
-                    Player.m_localPlayer.m_inventory.RemoveItem(requirement.m_resItem.m_itemData.m_shared.m_name,
-                        requirement.m_amount);
-            }
+                    Player.m_localPlayer.m_inventory.RemoveItem(requirement.m_resItem.m_itemData.m_shared.m_name, requirement.m_amount);
 
             return true;
         }
@@ -278,8 +300,7 @@ public static class PieceSaver
             if (!PieceSaverCrystal.IsCrystalNear(__instance.transform.position)) return;
             if (!__instance.m_piece || __instance.m_piece.GetCreator() == 0 || !__instance.m_piece.m_canBeRemoved) return;
             string prefab = global::Utils.GetPrefabName(__instance.m_piece.gameObject);
-            GameObject saver = UnityEngine.Object.Instantiate(PieceSaverPrefab, __instance.transform.position,
-                __instance.transform.rotation);
+            GameObject saver = UnityEngine.Object.Instantiate(PieceSaverPrefab, __instance.transform.position, __instance.transform.rotation);
             saver.GetComponent<PieceSaver_Component>().Setup(prefab, __instance.m_piece.GetCreator());
         }
     }

@@ -62,6 +62,7 @@ public static class Global_Values
         public string _mailPostRecipe = "";
         public int _mailPostWaitTime;
         public string _mailPostExcludeItems = "";
+        public string _pieceSaverRecipe = "";
 
 
         public void Serialize(ref ZPackage pkg)
@@ -83,6 +84,7 @@ public static class Global_Values
             pkg.Write( _mailPostRecipe ?? "");
             pkg.Write(_mailPostWaitTime);
             pkg.Write(_mailPostExcludeItems ?? "");
+            pkg.Write(_pieceSaverRecipe ?? "");
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -104,6 +106,7 @@ public static class Global_Values
             _mailPostRecipe = pkg.ReadString();
             _mailPostWaitTime = pkg.ReadInt();
             _mailPostExcludeItems = pkg.ReadString();
+            _pieceSaverRecipe = pkg.ReadString();
         }
     }
 
@@ -176,6 +179,7 @@ public static class Global_Values
         _container.Value._mailPostRecipe = SearchOption("MailPostRecipe", "SwordCheat,1", "Recipe for Mailpost creation");
         _container.Value._mailPostWaitTime = SearchOption("MailPostWaitTime", 5, "Mailpost wait time (minutes)");
         _container.Value._mailPostExcludeItems = SearchOption("MailPostExcludeItems", "Items Here", "Mailpost exclude items (with coma)");
+        _container.Value._pieceSaverRecipe = SearchOption("PieceSaverRecipe", "SwordCheat,1", "Recipe for Piece Saver Crystal creation");
         _container.Update();
     }
 

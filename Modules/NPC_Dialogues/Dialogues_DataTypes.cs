@@ -11,7 +11,7 @@ public static class Dialogues_DataTypes
 
     internal static readonly Dictionary<string, Dialogue> ClientReadyDialogues = new();
 
-    public delegate bool Dialogue_Condition<T>(out T reason);
+    public delegate bool Dialogue_Condition(out string reason);
 
     private enum OptionCommand
     {
@@ -21,6 +21,7 @@ public static class Dialogues_DataTypes
         GiveItem,
         RemoveItem,
         Spawn,
+        SpawnXYZ,
         Teleport,
         RemoveQuest,
         Damage,
@@ -138,7 +139,7 @@ public static class Dialogues_DataTypes
             public Sprite Icon;
             public string NextUID;
             public Action<Market_NPC.NPCcomponent> Command;
-            public Dialogue_Condition<string> Condition;
+            public Dialogue_Condition Condition;
             public bool AlwaysVisible;
             public Color Color = Color.white;
 
@@ -146,7 +147,7 @@ public static class Dialogues_DataTypes
             {
                 reason = "";
                 if (Condition == null) return true;
-                foreach (Dialogue_Condition<string> cast in Condition.GetInvocationList().Cast<Dialogue_Condition<string>>())
+                foreach (Dialogue_Condition cast in Condition.GetInvocationList().Cast<Dialogue_Condition>())
                 {
                     if (!cast(out reason)) return false;
                 }
@@ -209,21 +210,38 @@ public static class Dialogues_DataTypes
                                 result += (_) =>
                                 {
                                     string spawnPrefab = split[1];
-                                    Vector3 spawnPos = Player.m_localPlayer.transform.position;
                                     GameObject spawn = ZNetScene.instance.GetPrefab(spawnPrefab);
                                     if (!spawn || !spawn.GetComponent<Character>()) return;
+                                    Vector3 spawnPos = Player.m_localPlayer.transform.position;
                                     int spawnAmount = int.Parse(split[2]);
                                     int spawnLevel = Mathf.Max(1, int.Parse(split[3]) + 1);
                                     for (int i = 0; i < spawnAmount; i++)
                                     {
                                         float randomX = Random.Range(-15, 15);
                                         float randomZ = Random.Range(-15, 15);
-                                        Vector3 randomPos = new Vector3(spawnPos.x + randomX, spawnPos.y,
-                                            spawnPos.z + randomZ);
-                                        float height = ZoneSystem.instance.GetSolidHeight(randomPos);
-                                        randomPos.y = height;
-                                        GameObject newSpawn = UnityEngine.Object.Instantiate(spawn, randomPos,
-                                            Quaternion.identity);
+                                        Vector3 randomPos = new Vector3(spawnPos.x + randomX, spawnPos.y, spawnPos.z + randomZ);
+                                        Utils.CustomFindFloor(randomPos, out randomPos.y, 3f);
+                                        GameObject newSpawn = UnityEngine.Object.Instantiate(spawn, randomPos, Quaternion.identity);
+                                        newSpawn.GetComponent<Character>().SetLevel(spawnLevel);
+                                    }
+                                };
+                                break;
+                            case OptionCommand.SpawnXYZ:
+                                result += (_) =>
+                                {
+                                    string spawnPrefab = split[1];
+                                    GameObject spawn = ZNetScene.instance.GetPrefab(spawnPrefab);
+                                    if (!spawn || !spawn.GetComponent<Character>()) return;
+                                    int spawnAmount = int.Parse(split[2]);
+                                    int spawnLevel = Mathf.Max(1, int.Parse(split[3]) + 1);
+                                    Vector3 spawnPoint = new Vector3(int.Parse(split[4]), int.Parse(split[5]), int.Parse(split[6]));
+                                    int maxDistance = int.Parse(split[7]);
+                                    for (int i = 0; i < spawnAmount; i++)
+                                    {
+                                        float randomX = Random.Range(-maxDistance, maxDistance);
+                                        float randomZ = Random.Range(-maxDistance, maxDistance);
+                                        Vector3 randomPos = new Vector3(spawnPoint.x + randomX, spawnPoint.y, spawnPoint.z + randomZ);
+                                        GameObject newSpawn = UnityEngine.Object.Instantiate(spawn, randomPos, Quaternion.identity);
                                         newSpawn.GetComponent<Character>().SetLevel(spawnLevel);
                                     }
                                 };
@@ -306,14 +324,13 @@ public static class Dialogues_DataTypes
                     Utils.print($"Error while parsing dialogue command ({command}):\n{ex}");
                 }
             }
-
             return result;
         }
 
 
-        private static Dialogue_Condition<string> TryParseCondition(IEnumerable<string> conditions)
+        private static Dialogue_Condition TryParseCondition(IEnumerable<string> conditions)
         {
-            Dialogue_Condition<string> result = null;
+            Dialogue_Condition result = null;
             foreach (string condition in conditions)
             {
                 try

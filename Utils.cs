@@ -107,9 +107,9 @@ public static class Utils
         }
     }
 
-    public static void CustomFindFloor(Vector3 p, out float height)
+    public static void CustomFindFloor(Vector3 p, out float height, float offset = 1f)
     {
-        height = Physics.SphereCast(p + Vector3.up * 1f, 0.05f, Vector3.down, out RaycastHit hitInfo, 100f,
+        height = Physics.SphereCast(p + Vector3.up * offset, 0.05f, Vector3.down, out RaycastHit hitInfo, 100f,
             ZoneSystem.instance.m_solidRayMask)
             ? hitInfo.point.y
             : 0.0f;
