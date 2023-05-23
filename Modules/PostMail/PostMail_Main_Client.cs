@@ -76,7 +76,8 @@ public static class PostMail_Main_Client
                 reqs.Add(new Piece.Requirement()
                 {
                     m_amount = amount,
-                    m_resItem = ObjectDB.instance.GetItemPrefab(name.GetStableHashCode()).GetComponent<ItemDrop>()
+                    m_resItem = ObjectDB.instance.GetItemPrefab(name.GetStableHashCode()).GetComponent<ItemDrop>(),
+                    m_recover = false
                 });
             }
 
@@ -89,7 +90,8 @@ public static class PostMail_Main_Client
                 new Piece.Requirement()
                 {
                     m_amount = 1,
-                    m_resItem = ObjectDB.instance.GetItemPrefab("SwordCheat").GetComponent<ItemDrop>()
+                    m_resItem = ObjectDB.instance.GetItemPrefab("SwordCheat").GetComponent<ItemDrop>(),
+                    m_recover = false
                 }
             };
         }
