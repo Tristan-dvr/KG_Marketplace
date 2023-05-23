@@ -48,7 +48,7 @@ public static class AssetStorage
         WoodTex = asset.LoadAsset<Texture>("cbimage");
         Teleporter_VFX1 = asset.LoadAsset<GameObject>("MarketplaceTP_1");
         Teleporter_VFX2 = asset.LoadAsset<GameObject>("MarketplaceTP_2");
-        MarketplaceQuestTargetIcon = asset.LoadAsset<GameObject>("MarketplaceQuestTargetIcon1");
+        MarketplaceQuestTargetIcon = asset.LoadAsset<GameObject>("MarketplaceQuestTargetIcon");
         MarketplaceQuestQuestionIcon = asset.LoadAsset<GameObject>("MarketplaceQuestionMark");
         Texture2D epicMMOTex = new Texture2D(1, 1);
         epicMMOTex.LoadImage(Convert.FromBase64String(OtherModsAPI.Epic_Mmo_Base));

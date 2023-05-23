@@ -76,9 +76,13 @@ public static class Market_NPC
     private static void OnInit()
     {
         NPC = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketPlaceNPC");
-        NPC.AddComponent<NPCcomponent>();
-        NPC.transform.Find("TMP").gameObject.AddComponent<TextComponent>();
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
+        NPC.AddComponent<NPCcomponent>();
+        NPC.transform.Find("TMP").gameObject.AddComponent<TextComponent>(); 
+        foreach (Animator animator in NPC.GetComponentsInChildren<Animator>(true))
+        {
+            if (animator.gameObject.name == "WomanNPC") animator.gameObject.AddComponent<CustomLookAt>();
+        }
         NPCUI.Init();
         NPCLoader_UI.Init();
         Marketplace.Global_Updator += UpdateNPCGUI;
