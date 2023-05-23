@@ -124,7 +124,7 @@ public static class Transmogrification_UI
         
         if (item == null)
         {
-            if (Transmogrification_Client_Main.FilteredTransmogData[CurrentProfile]
+            if (Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile]
                     .TryGetValue((ItemDrop.ItemData.ItemType)999, out List<Transmogrification_DataTypes.TransmogItem_Data> anyCategoryNoItem) &&
                 anyCategoryNoItem.Count > 0)
             {
@@ -149,7 +149,7 @@ public static class Transmogrification_UI
 
             foreach (ItemDrop.ItemData.ItemType type in AvaliableTypes)
             {
-                if (!Transmogrification_Client_Main.FilteredTransmogData[CurrentProfile]
+                if (!Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile]
                         .TryGetValue(type, out List<Transmogrification_DataTypes.TransmogItem_Data> categoryData) ||
                     categoryData.Count <= 0) continue;
                 GameObject element = UnityEngine.Object.Instantiate(Category_Element, Category_Content);
@@ -177,7 +177,7 @@ public static class Transmogrification_UI
 
         ItemDrop.ItemData.ItemType category = item.m_shared.m_itemType;
 
-        if (Transmogrification_Client_Main.FilteredTransmogData[CurrentProfile]
+        if (Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile]
                 .TryGetValue((ItemDrop.ItemData.ItemType)999, out List<Transmogrification_DataTypes.TransmogItem_Data> anyCategory) &&
             anyCategory.Count > 0)
         {
@@ -223,7 +223,7 @@ public static class Transmogrification_UI
             }
         }
 
-        if (Transmogrification_Client_Main.FilteredTransmogData[CurrentProfile].TryGetValue(category, out List<Transmogrification_DataTypes.TransmogItem_Data> itemCategory) &&
+        if (Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile].TryGetValue(category, out List<Transmogrification_DataTypes.TransmogItem_Data> itemCategory) &&
             itemCategory.Count > 0)
         {
             GameObject element = UnityEngine.Object.Instantiate(Category_Element, Category_Content);
@@ -384,7 +384,7 @@ public static class Transmogrification_UI
 
     public static void Show(string profile, string _npcName)
     {
-        if (!Transmogrification_Client_Main.FilteredTransmogData.ContainsKey(profile)) return;
+        if (!Transmogrification_Main_Client.FilteredTransmogData.ContainsKey(profile)) return;
         CurrentProfile = profile;
         UI.transform.Find("Canvas/Header/Text").GetComponent<Text>().text = _npcName;
         CurrentChoosenItem = null;

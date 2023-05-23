@@ -58,6 +58,8 @@ public static class Market_Paths
 
     public static string PlayerTagsConfig => Path.Combine(MainPath, "PlayerTags.cfg");
 
+    public static string TransmogrificationConfig => Path.Combine(MainPath, "TransmogrificationProfiles.cfg");
+    
     private static void OnInit()
     {
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server or Marketplace.WorkingAs.Both)
@@ -123,6 +125,7 @@ public static class Market_Paths
             if (!File.Exists(NpcDialoguesConfig)) File.Create(NpcDialoguesConfig).Dispose();
 
             if (!File.Exists(PlayerTagsConfig)) File.Create(PlayerTagsConfig).Dispose();
+            if (!File.Exists(TransmogrificationConfig)) File.Create(TransmogrificationConfig).Dispose();
         }
 
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Client or Marketplace.WorkingAs.Both)
