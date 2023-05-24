@@ -1,8 +1,8 @@
 ﻿using ItemDataManager;
-
-
 namespace Marketplace.Jewelcrafting_API;
 
+
+[UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit")]
 public static class Jewelcrafting_Helper
 {
@@ -71,7 +71,7 @@ public static class Jewelcrafting_Helper
             return;
         bool isGemValid(string gem) => GemsByTier.Values.Any(tier => tier.Contains(gem));
         int counter = 0;
-        const int maxGems = 4;
+        const int maxGems = 5;
         string result = "";
         foreach (string gem in gems)
         {
@@ -86,7 +86,7 @@ public static class Jewelcrafting_Helper
     public static void AddRandomGemsToItem(ItemDrop.ItemData item, int maxTier, Range maxGemsRange)
     {
         int maxGems = UnityEngine.Random.Range(maxGemsRange.min, maxGemsRange.max + 1);
-        maxGems = Mathf.Clamp(maxGems, 1, 4);
+        maxGems = Mathf.Clamp(maxGems, 1, 5);
         string[] gems = new string[maxGems];
         for (int i = 0; i < maxGems; ++i)
             gems[i] = GetRandomGem(maxTier);
