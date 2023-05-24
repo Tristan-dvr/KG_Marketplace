@@ -809,7 +809,7 @@ public class ForeignItemInfo : IEnumerable<object>
     public string Mod => (string?)foreignItemInfo.GetType().GetProperty(nameof(Mod))?.GetValue(foreignItemInfo) ?? "";
     public ItemDrop.ItemData ItemData { get; private set; }
 
-    private readonly object foreignItemInfo;
+    public readonly object foreignItemInfo;
 
     public string? this[string key]
     {
@@ -862,7 +862,7 @@ public class ForeignItemInfo : IEnumerable<object>
 
     public T? Add<T>(string key = "") where T : class, new() =>
         call(nameof(Add), new object[] { key }, new[] { typeof(string) }, typeof(T)) as T;
-
+    
     public T? Get<T>(string key = "") where T : class =>
         call(nameof(Get), new object[] { key }, new[] { typeof(string) }, typeof(T)) as T;
 

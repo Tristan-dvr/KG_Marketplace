@@ -81,7 +81,16 @@ public static class Market_NPC
         NPC.transform.Find("TMP").gameObject.AddComponent<TextComponent>(); 
         foreach (Animator animator in NPC.GetComponentsInChildren<Animator>(true))
         {
-            if (animator.gameObject.name == "WomanNPC") animator.gameObject.AddComponent<CustomLookAt>();
+            if (animator.gameObject.name == "WomanNPC")
+            {
+                animator.gameObject.AddComponent<CustomLookAt>();
+
+                var mesh = animator.gameObject.GetComponentInChildren<SkinnedMeshRenderer>(true);
+                foreach (var material in mesh.materials)
+                {
+                    material.shader = Shader.Find("Custom/Creature");
+                }
+            }
         }
         NPCUI.Init();
         NPCLoader_UI.Init();
@@ -119,7 +128,7 @@ public static class Market_NPC
                 GameObject inactive = new GameObject("InactiveMPASN");
                 Object.DontDestroyOnLoad(inactive);
                 inactive.SetActive(false);
-                PinnedNPC = Object.Instantiate(NPC, inactive.transform);
+                PinnedNPC = Object.Instantiate(NPC, inactive.transform); 
                 PinnedNPC.name = "MarketPlaceNPCpinned";
                 hammer.GetComponent<ItemDrop>().m_itemData.m_shared.m_buildPieces.m_pieces.Add(PinnedNPC);
                 PinnedNPC.GetComponent<Piece>().m_name += " <color=#00FFFF>(Map Pin Visible)</color>";
@@ -136,6 +145,10 @@ public static class Market_NPC
             GameObject teleporter = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_TELEPORTER");
             __instance.m_namedPrefabs.Add(teleporter.name.GetStableHashCode(), teleporter);
             GameObject defaultnpc = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_DEFAULTNPC");
+            foreach (var material in defaultnpc.GetComponentInChildren<SkinnedMeshRenderer>().materials)
+            {
+                material.shader = Shader.Find("Custom/Creature");
+            }
             __instance.m_namedPrefabs.Add(defaultnpc.name.GetStableHashCode(), defaultnpc);
         }
     }
@@ -341,7 +354,7 @@ public static class Market_NPC
 
                 currentLookAt = Vector3.MoveTowards(currentLookAt, target, Time.deltaTime * speed);
                 animator.SetLookAtPosition(currentLookAt);
-                animator.SetLookAtWeight(1f, 0.5f, 1f, 0f);
+                animator.SetLookAtWeight(1f, 0.1f, 1f, 0f);
             }
         }
     }

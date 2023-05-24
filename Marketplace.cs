@@ -6,6 +6,8 @@ namespace Marketplace
 {
     [BepInPlugin(GUID, PluginName, PluginVersion)]
     [BepInDependency("org.bepinex.plugins.groups", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("org.bepinex.plugins.jewelcrafting", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("Soulcatcher", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInIncompatibility("org.bepinex.plugins.valheim_plus")]
     public class Marketplace : BaseUnityPlugin
     {
@@ -76,7 +78,7 @@ namespace Marketplace
                     for (int i = 0; i < autoload.Key.OnWatcherNames.Length; i++)
                     {
                         MethodInfo configWatcherMethod = autoload.Value.GetMethod(autoload.Key.OnWatcherMethods[i],
-                            BindingFlags.NonPublic | BindingFlags.Static);
+                            BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public);
                         if (configWatcherMethod == null)
                             Utils.print(
                                 $"Error loading {autoload.Value.Name} class, method {autoload.Key.OnWatcherMethods[i]} not found",
@@ -88,7 +90,7 @@ namespace Marketplace
                 }
 
                 MethodInfo method = autoload.Value.GetMethod(autoload.Key.InitMethod ?? "None",
-                    BindingFlags.NonPublic | BindingFlags.Static);
+                    BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public);
                 if (method == null)
                 {
                     Utils.print(
@@ -114,6 +116,14 @@ namespace Marketplace
                     WorkingAs.Client => t.GetCustomAttribute<ServerOnlyPatch>() == null,
                     WorkingAs.Server => t.GetCustomAttribute<ClientOnlyPatch>() == null,
                     _ => true
+                }).Where(t =>
+                {
+                    if (t.GetCustomAttribute<ConditionalPatch>() == null) return true;
+                    ConditionalPatch conditionalPatch = t.GetCustomAttribute<ConditionalPatch>();
+                    MethodInfo method = t.GetMethod(conditionalPatch.Condition, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public);
+                    if (method != null) return (bool)method.Invoke(null, null);
+                    Utils.print($"Error loading {t.Name} conditional patch, method {conditionalPatch.Condition} not found", ConsoleColor.Red);
+                    return false;
                 }).Do(type => _harmony.CreateClassProcessor(type).Patch());
         }
 

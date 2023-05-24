@@ -1,4 +1,6 @@
-﻿namespace Marketplace;
+﻿using System.Runtime.CompilerServices;
+
+namespace Marketplace;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class Market_Autoload : Attribute
@@ -32,3 +34,10 @@ public class ClientOnlyPatch : Attribute{}
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class ServerOnlyPatch : Attribute{}
+
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public class ConditionalPatch : Attribute
+{
+    public readonly string Condition;
+    public ConditionalPatch(string Condition = "Condition") => this.Condition = Condition;
+}
