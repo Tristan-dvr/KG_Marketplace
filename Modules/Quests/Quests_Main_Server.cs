@@ -30,7 +30,7 @@ public static class Quests_Main_Server
         ReadQuestDatabase();
         Utils.print("Quests Database Changed. Sending new info to all clients");
     }
-    
+
     private static void OnQuestDatabaseFileChange()
     {
         Marketplace._thistype.StartCoroutine(DelayMore());
@@ -146,7 +146,7 @@ public static class Quests_Main_Server
                                 $"Failed to parse reward type {rewardsArray[r]} in quest {name}. Skipping quest");
                             goto GoNextLabel;
                         }
-
+                        
                         string[] RewardSplit = rwdTypeCheck[1].Split(',');
 
                         if (rewardTypes[r] is Quests_DataTypes.QuestRewardType.Battlepass_EXP
@@ -171,6 +171,8 @@ public static class Quests_Main_Server
                         }
                     }
 
+                    
+                    
                     if (type is not Quests_DataTypes.QuestType.Talk)
                     {
                         target = target.Replace(" ", "");
@@ -286,9 +288,10 @@ public static class Quests_Main_Server
             }
         }
     }
-    
-    
+
+
     private static int CurrentRevision;
+
     private static void ReadQuestDatabase()
     {
         CurrentRevision = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
@@ -302,6 +305,7 @@ public static class Quests_Main_Server
             profiles = File.ReadAllLines(file).ToList();
             ProcessQuestDatabaseProfiles(profiles);
         }
+
         Quests_DataTypes.SyncedQuestData.Update();
     }
 

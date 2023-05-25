@@ -300,7 +300,6 @@
         <Compile Include="FixPossibleErrors.cs" />
         <Compile Include="GlobalUsings.cs" />
         <Compile Include="ItemDataManager_Modified.cs" />
-        <Compile Include="Jewelcrafting_API\Jewelcrafting_Helper.cs" />
         <Compile Include="Logger.cs" />
         <Compile Include="Marketplace.cs" />
         <Compile Include="Modules\Banker\Banker_DataTypes.cs" />

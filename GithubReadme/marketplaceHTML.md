@@ -181,7 +181,7 @@ Paypal: <a href="mailto:war3spells@gmail.com">war3spells@gmail.com</a></p>
 </tr>
 <tr>
 <td>8.7.0</td>
-<td>Added new PieceSaver structure/system<br/>Added players tag system<br/>Traders now can sell Skill EXP<br/>Added new folder: AdditionalConfigs with Quests/Dialogues/Territories folders where you can put additional .cfg files for corresponding NPC type (so you don’t flood your main config file and split / manage it better)<br/>Added Color attribute to dialogues<br/>Added new dialogues commands / conditions<br/>Added &lt;image=link&gt; tag for server info<br/>Now if server info tag named [OnPlayerJoin] it will show UI when player first joins server<br/>Bugfixes / optimizations<br/>Transmogrification is now a free feature</td>
+<td>Added new PieceSaver structure/system<br/>Added players tag system<br/>Traders now can sell Skill EXP<br/>Added new folder: AdditionalConfigs with Quests/Dialogues/Territories folders where you can put additional .cfg files for corresponding NPC type (so you don’t flood your main config file and split / manage it better)<br/>Added Color attribute to dialogues<br/>Added new dialogues commands / conditions<br/>Added &lt;image=link&gt; tag for server info<br/>Now if server info tag named [OnPlayerJoin] it will show UI when player first joins server<br/>Bugfixes / optimizations<br/>Transmogrification is now a free feature<br/>Added Transmog to DistancedUI<br/>Now you can use ! sign before dialogue condition to simply reverse it</td>
 </tr>
 </tbody>
 </table>

@@ -77,7 +77,7 @@ public static class Quests_DataTypes
         Pet,
         EpicMMO_EXP,
         Battlepass_EXP,
-        MH_EXP
+        MH_EXP,
     }
 
 
@@ -283,9 +283,7 @@ public static class Quests_DataTypes
             for (int i = 0; i < RewardsAMOUNT; ++i)
             {
                 GameObject rewardPrefab = ZNetScene.instance.GetPrefab(RewardPrefab[i]);
-                if (!rewardPrefab && RewardType[i] is not QuestRewardType.Skill and not QuestRewardType.Skill_EXP
-                        and not QuestRewardType.EpicMMO_EXP and not QuestRewardType.Battlepass_EXP
-                        and not QuestRewardType.MH_EXP)
+                if (!rewardPrefab && RewardType[i] is QuestRewardType.Item or QuestRewardType.Pet)
                 {
                     STOP = true;
                 }

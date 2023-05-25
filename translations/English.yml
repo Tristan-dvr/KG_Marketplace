@@ -238,3 +238,5 @@ mpasn_notforvip: Not for <color=#32CD32>VIP</color> users
 mpasn_neednothasitem: You have item
 mpasn_zoneloading: Zone Loading...
 marketplace_mailbox: Mailbox
+mpasn_JC_Item: Jewelcrafting Item
+mpasn_JC_RandomItem: Jewelcrafting Random Item

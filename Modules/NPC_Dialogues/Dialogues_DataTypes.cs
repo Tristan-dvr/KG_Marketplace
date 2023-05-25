@@ -31,25 +31,32 @@ public static class Dialogues_DataTypes
         PingMap,
         AddPin
     }
-    
+
+    private const int reverseFlag = 1 << 31;
+
+    private static OptionCondition Reverse(this OptionCondition condition)
+    {
+        return (OptionCondition)((int)condition ^ reverseFlag);
+    }
+
     private enum OptionCondition
     {
-        HasItem,
-        NotHasItem,
-        HasBuff,
-        NotHasBuff,
-        SkillMore,
-        SkillLess,
-        GlobalKey,
-        NotGlobalKey,
-        IsVIP,
-        NotIsVIP,
-        HasQuest,
-        NotHasQuest,
-        QuestProgressDone,
-        QuestProgressNotDone,
-        QuestNotFinished,
-        QuestFinished
+        HasItem = 1,
+        NotHasItem = 1 | reverseFlag,
+        HasBuff = 2,
+        NotHasBuff = 2 | reverseFlag,
+        SkillMore = 3,
+        SkillLess = 3 | reverseFlag,
+        GlobalKey = 4,
+        NotGlobalKey = 4 | reverseFlag,
+        IsVIP = 5,
+        NotIsVIP = 5 | reverseFlag,
+        HasQuest = 6,
+        NotHasQuest = 6 | reverseFlag,
+        QuestProgressDone = 7,
+        QuestProgressNotDone = 7 | reverseFlag,
+        QuestNotFinished = 8,
+        QuestFinished = 8 | reverseFlag,
     }
 
     public class RawDialogue : ISerializableParameter
@@ -84,11 +91,13 @@ public static class Dialogues_DataTypes
                 {
                     pkg.Write(command ?? "");
                 }
+
                 pkg.Write(option.Conditions.Length);
                 foreach (string condition in option.Conditions)
                 {
                     pkg.Write(condition ?? "");
                 }
+
                 pkg.Write(option.AlwaysVisible);
                 pkg.Write(global::Utils.ColorToVec3(option.Color));
             }
@@ -161,7 +170,7 @@ public static class Dialogues_DataTypes
             Action<Market_NPC.NPCcomponent> result = null;
             foreach (string command in commands)
             {
-                try
+                try 
                 {
                     string[] split = command.Split(',');
                     if (Enum.TryParse(split[0], true, out OptionCommand optionCommand))
@@ -219,9 +228,11 @@ public static class Dialogues_DataTypes
                                     {
                                         float randomX = Random.Range(-15, 15);
                                         float randomZ = Random.Range(-15, 15);
-                                        Vector3 randomPos = new Vector3(spawnPos.x + randomX, spawnPos.y, spawnPos.z + randomZ);
+                                        Vector3 randomPos = new Vector3(spawnPos.x + randomX, spawnPos.y,
+                                            spawnPos.z + randomZ);
                                         Utils.CustomFindFloor(randomPos, out randomPos.y, 3f);
-                                        GameObject newSpawn = UnityEngine.Object.Instantiate(spawn, randomPos, Quaternion.identity);
+                                        GameObject newSpawn =
+                                            UnityEngine.Object.Instantiate(spawn, randomPos, Quaternion.identity);
                                         newSpawn.GetComponent<Character>().SetLevel(spawnLevel);
                                     }
                                 };
@@ -234,14 +245,17 @@ public static class Dialogues_DataTypes
                                     if (!spawn || !spawn.GetComponent<Character>()) return;
                                     int spawnAmount = int.Parse(split[2]);
                                     int spawnLevel = Mathf.Max(1, int.Parse(split[3]) + 1);
-                                    Vector3 spawnPoint = new Vector3(int.Parse(split[4]), int.Parse(split[5]), int.Parse(split[6]));
+                                    Vector3 spawnPoint = new Vector3(int.Parse(split[4]), int.Parse(split[5]),
+                                        int.Parse(split[6]));
                                     int maxDistance = int.Parse(split[7]);
                                     for (int i = 0; i < spawnAmount; i++)
                                     {
                                         float randomX = Random.Range(-maxDistance, maxDistance);
                                         float randomZ = Random.Range(-maxDistance, maxDistance);
-                                        Vector3 randomPos = new Vector3(spawnPoint.x + randomX, spawnPoint.y, spawnPoint.z + randomZ);
-                                        GameObject newSpawn = UnityEngine.Object.Instantiate(spawn, randomPos, Quaternion.identity);
+                                        Vector3 randomPos = new Vector3(spawnPoint.x + randomX, spawnPoint.y,
+                                            spawnPoint.z + randomZ);
+                                        GameObject newSpawn =
+                                            UnityEngine.Object.Instantiate(spawn, randomPos, Quaternion.identity);
                                         newSpawn.GetComponent<Character>().SetLevel(spawnLevel);
                                     }
                                 };
@@ -283,7 +297,11 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCommand.GiveBuff:
-                                result += (_) => { Player.m_localPlayer.GetSEMan().AddStatusEffect(split[1].GetStableHashCode(), true); };
+                                result += (_) =>
+                                {
+                                    Player.m_localPlayer.GetSEMan()
+                                        .AddStatusEffect(split[1].GetStableHashCode(), true);
+                                };
                                 break;
                             case OptionCommand.FinishQuest:
                                 result += (_) =>
@@ -297,9 +315,11 @@ public static class Dialogues_DataTypes
                             case OptionCommand.PingMap:
                                 result += (_) =>
                                 {
-                                    Vector3 pos = new Vector3(int.Parse(split[2]), int.Parse(split[3]), int.Parse(split[4]));
+                                    Vector3 pos = new Vector3(int.Parse(split[2]), int.Parse(split[3]),
+                                        int.Parse(split[4]));
                                     long sender = Random.Range(-10000, 10000);
-                                    Chat.instance.AddInworldText(null, sender , pos, Talker.Type.Ping, new(){ Name = "", Gamertag = "", NetworkUserId = ""}, "");
+                                    Chat.instance.AddInworldText(null, sender, pos, Talker.Type.Ping,
+                                        new() { Name = "", Gamertag = "", NetworkUserId = "" }, "");
                                     Chat.WorldTextInstance worldText = Chat.instance.FindExistingWorldText(sender);
                                     if (worldText != null)
                                         worldText.m_text = split[1];
@@ -310,7 +330,8 @@ public static class Dialogues_DataTypes
                             case OptionCommand.AddPin:
                                 result += (_) =>
                                 {
-                                    Vector3 pos = new Vector3(int.Parse(split[2]), int.Parse(split[3]), int.Parse(split[4]));
+                                    Vector3 pos = new Vector3(int.Parse(split[2]), int.Parse(split[3]),
+                                        int.Parse(split[4]));
                                     Minimap.instance.AddPin(pos, Market_NPC_MapPins.PINTYPENPC, split[1], true, false);
                                     Minimap.instance.ShowPointOnMap(pos);
                                     Minimap.instance.m_largeZoom = 0.1f;
@@ -324,6 +345,7 @@ public static class Dialogues_DataTypes
                     Utils.print($"Error while parsing dialogue command ({command}):\n{ex}");
                 }
             }
+
             return result;
         }
 
@@ -336,8 +358,15 @@ public static class Dialogues_DataTypes
                 try
                 {
                     string[] split = condition.Split(',');
+                    bool reverse = false;
+                    if (split[0][0] == '!')
+                    {
+                        reverse = true;
+                        split[0] = split[0].Substring(1);
+                    }
                     if (Enum.TryParse(split[0], true, out OptionCondition optionCondition))
                     {
+                        if (reverse) optionCondition = optionCondition.Reverse();
                         switch (optionCondition)
                         {
                             case OptionCondition.SkillMore:
@@ -372,7 +401,8 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (Quests_DataTypes.AllQuests.TryGetValue(reqID, out Quests_DataTypes.Quest reqQuest))
+                                    if (Quests_DataTypes.AllQuests.TryGetValue(reqID,
+                                            out Quests_DataTypes.Quest reqQuest))
                                         reason =
                                             $"{Localization.instance.Localize("$mpasn_questfinished")}: <color=#00ff00>{reqQuest.Name}</color>";
                                     return !Quests_DataTypes.Quest.IsOnCooldown(reqID, out _);
@@ -463,7 +493,8 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out Quests_DataTypes.Quest reqQuest) ||
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID,
+                                            out Quests_DataTypes.Quest reqQuest) ||
                                         !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID))
                                         return false;
                                     reason =
@@ -476,7 +507,8 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out Quests_DataTypes.Quest reqQuest) ||
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID,
+                                            out Quests_DataTypes.Quest reqQuest) ||
                                         !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID))
                                         return false;
                                     reason =
@@ -489,7 +521,8 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out Quests_DataTypes.Quest reqQuest))
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID,
+                                            out Quests_DataTypes.Quest reqQuest))
                                         return false;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_questnottaken")}: <color=#00ff00>{reqQuest.Name}</color>";
@@ -501,7 +534,8 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
-                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID, out Quests_DataTypes.Quest reqQuest))
+                                    if (!Quests_DataTypes.AllQuests.TryGetValue(reqID,
+                                            out Quests_DataTypes.Quest reqQuest))
                                         return false;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{reqQuest.Name}</color>";

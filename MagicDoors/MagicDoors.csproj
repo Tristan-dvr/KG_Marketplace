@@ -68,9 +68,6 @@
         <Reference Include="ItemManager">
           <HintPath>..\Libs\ItemManager.dll</HintPath>
         </Reference>
-        <Reference Include="Jewelcrafting">
-          <HintPath>..\Libs\Jewelcrafting.dll</HintPath>
-        </Reference>
         <Reference Include="KeyManager">
           <HintPath>..\Libs\KeyManager.dll</HintPath>
         </Reference>

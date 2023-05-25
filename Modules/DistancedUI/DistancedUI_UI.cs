@@ -6,6 +6,7 @@ using Marketplace.Modules.Quests;
 using Marketplace.Modules.ServerInfo;
 using Marketplace.Modules.Teleporter;
 using Marketplace.Modules.Trader;
+using Marketplace.Modules.Transmogrification;
 using UnityEngine.EventSystems;
 
 namespace Marketplace.Modules.DistancedUI;
@@ -22,6 +23,7 @@ public static class DistancedUI_UI
             Buffer,
             Quests,
             Info,
+            Transmogrification
         }
 
         private static GameObject UI;
@@ -51,6 +53,7 @@ public static class DistancedUI_UI
             { NPCtype_Internal.Buffer, "$mpasn_Buffer" },
             { NPCtype_Internal.Quests, "$mpasn_Quests" },
             { NPCtype_Internal.Info, "$mpasn_Info" },
+            { NPCtype_Internal.Transmogrification, "$mpasn_Transmog" }
         };
 
         public static void Init()
@@ -75,6 +78,7 @@ public static class DistancedUI_UI
             Icons[NPCtype_Internal.Buffer] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("buffer_pm");
             Icons[NPCtype_Internal.Quests] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("quests_pm");
             Icons[NPCtype_Internal.Info] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("info_pm");
+            Icons[NPCtype_Internal.Transmogrification] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("transmog_pm");
             UI.transform.Find("Canvas/Open/View/Marketplace").GetComponent<Button>().onClick
                 .AddListener(() => ClickOpen(NPCtype_Internal.Marketplace));
             UI.transform.Find("Canvas/Open/View/Trader").GetComponent<Button>().onClick
@@ -91,6 +95,8 @@ public static class DistancedUI_UI
                 .AddListener(() => ClickOpen(NPCtype_Internal.Quests));
             UI.transform.Find("Canvas/Open/View/Info").GetComponent<Button>().onClick
                 .AddListener(() => ClickOpen(NPCtype_Internal.Info));
+            UI.transform.Find("Canvas/Open/View/Transmogrification").GetComponent<Button>().onClick
+                .AddListener(() => ClickOpen(NPCtype_Internal.Transmogrification));
 
             Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Marketplace").GetComponent<Image>());
             Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Trader").GetComponent<Image>());
@@ -100,6 +106,7 @@ public static class DistancedUI_UI
             Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Buffer").GetComponent<Image>());
             Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Quests").GetComponent<Image>());
             Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Info").GetComponent<Image>());
+            Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Transmogrification").GetComponent<Image>());
 
             foreach (Image image in Buttons_Images)
             {
@@ -159,16 +166,18 @@ public static class DistancedUI_UI
                 NPCtype_Internal.Buffer => DistancedUI_DataType.CurrentPremiumSystemData.Value.BufferProfiles,
                 NPCtype_Internal.Quests => DistancedUI_DataType.CurrentPremiumSystemData.Value.QuestProfiles,
                 NPCtype_Internal.Info => DistancedUI_DataType.CurrentPremiumSystemData.Value.InfoProfiles,
+                NPCtype_Internal.Transmogrification => DistancedUI_DataType.CurrentPremiumSystemData.Value.TransmogrificationProfiles
             };
             List<string> source = type switch
             {
                 NPCtype_Internal.Trader => Trader_DataTypes.ClientSideItemList.Keys.ToList(),
                 NPCtype_Internal.Banker => Banker_DataTypes.SyncedBankerProfiles.Value.Keys.ToList(),
                 NPCtype_Internal.Teleporter => Teleporter_DataTypes.TeleporterDataServer.Value.Keys.ToList(),
-                NPCtype_Internal.Gambler => Gambler_DataTypes.SyncedGamblerData.Value.Keys.ToList(),
+                NPCtype_Internal.Gambler => Gambler_DataTypes.SyncedGamblerData.Value.Keys.ToList(), 
                 NPCtype_Internal.Buffer => Buffer_DataTypes.ClientSideBufferProfiles.Keys.ToList(),
                 NPCtype_Internal.Quests => Quests_DataTypes.SyncedQuestProfiles.Value.Keys.ToList(),
                 NPCtype_Internal.Info => ServerInfo_DataTypes.ServerInfoData.Value.Keys.ToList(),
+                NPCtype_Internal.Transmogrification => Transmogrification_DataTypes.TransmogData.Value.Keys.ToList()
             };
 
             foreach (string item in premiumSource)
@@ -225,6 +234,9 @@ public static class DistancedUI_UI
                     break;
                 case NPCtype_Internal.Info:
                     ServerInfo_UI.Show(profile, _NPCname);
+                    break;
+                case NPCtype_Internal.Transmogrification:
+                    Transmogrification_UI.Show(profile, _NPCname);
                     break;
             }
         }

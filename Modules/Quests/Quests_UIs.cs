@@ -1,5 +1,4 @@
 ﻿using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
 
@@ -210,6 +209,7 @@ public static class Quests_UIs
                 }
 
                 UITooltip tooltip = rewardGO.GetComponentInChildren<UITooltip>();
+
                 tooltip.m_topic = "Reward";
                 tooltip.m_text = "";
                 switch (quest.RewardType[i])
@@ -574,11 +574,12 @@ public static class Quests_UIs
                         if (UpdateData.TryGetValue(quest.Value, out GameObject value))
                         {
                             value.transform.Find("QuestName").GetComponent<Text>().text =
-                                    $"<color=yellow> [ {quest.Value.Name} ]</color>".Localize() +
-                                    $"\n (<color=red>{CalculateTimeLeft(quest.Value).ToTime()}</color>)";
+                                $"<color=yellow> [ {quest.Value.Name} ]</color>".Localize() +
+                                $"\n (<color=red>{CalculateTimeLeft(quest.Value).ToTime()}</color>)";
                         }
                     }
                 }
+
                 foreach (int id in toRemove)
                 {
                     string questName = Quests_DataTypes.AcceptedQuests[id].Name.Localize();

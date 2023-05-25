@@ -4,7 +4,8 @@ using Marketplace.Paths;
 namespace Marketplace.Modules.DistancedUI;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "DistancedUI.cfg" }, new[] { "OnConfigChange" })]
+[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "DistancedUI.cfg" },
+    new[] { "OnConfigChange" })]
 public static class DistanceUI_Main_Server
 {
     private static ConfigFile PremiumSystem_Config;
@@ -18,6 +19,7 @@ public static class DistanceUI_Main_Server
     private static ConfigEntry<string> BufferProfiles_PremiumSystem;
     private static ConfigEntry<string> QuestProfiles_PremiumSystem;
     private static ConfigEntry<string> InfoProfiles_PremiumSystem;
+    private static ConfigEntry<string> TransmogrificationProfiles_PremiumSystem;
 
     private static void OnInit()
     {
@@ -42,6 +44,9 @@ public static class DistanceUI_Main_Server
             PremiumSystem_Config.Bind("PremiumSystem", "QuestProfiles", "Profiles here with ,", "Quest profiles");
         InfoProfiles_PremiumSystem =
             PremiumSystem_Config.Bind("PremiumSystem", "InfoProfiles", "Profiles here with ,", "Info profiles");
+        TransmogrificationProfiles_PremiumSystem = 
+            PremiumSystem_Config.Bind("PremiumSystem", "TransmogrificationProfiles", "Profiles here with ,", "Transmogrification profiles");
+
         ReadPremiumSystemData();
     }
 
@@ -61,6 +66,7 @@ public static class DistanceUI_Main_Server
             BufferProfiles = BufferProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
             QuestProfiles = QuestProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
             InfoProfiles = InfoProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
+            TransmogrificationProfiles = TransmogrificationProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList()
         };
     }
 
