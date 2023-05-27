@@ -1,4 +1,5 @@
-﻿using Marketplace.Modules.NPC;
+﻿using Marketplace_APIs;
+using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
 using Random = UnityEngine.Random;
 
@@ -29,17 +30,17 @@ public static class Dialogues_DataTypes
         GiveBuff,
         FinishQuest,
         PingMap,
-        AddPin
+        AddPin,
+        AddEpicMMOExp,
+        AddCozyheimExp,
     }
 
-    private const int reverseFlag = 1 << 31;
+    private const byte reverseFlag = 1 << 7;
 
-    private static OptionCondition Reverse(this OptionCondition condition)
-    {
-        return (OptionCondition)((int)condition ^ reverseFlag);
-    }
+    private static OptionCondition Reverse(this OptionCondition condition) =>
+        (OptionCondition)((byte)condition ^ reverseFlag);
 
-    private enum OptionCondition
+    private enum OptionCondition : byte
     {
         HasItem = 1,
         NotHasItem = 1 | reverseFlag,
@@ -55,8 +56,12 @@ public static class Dialogues_DataTypes
         NotHasQuest = 6 | reverseFlag,
         QuestProgressDone = 7,
         QuestProgressNotDone = 7 | reverseFlag,
-        QuestNotFinished = 8,
-        QuestFinished = 8 | reverseFlag,
+        QuestFinished = 8,
+        QuestNotFinished = 8 | reverseFlag,
+        EpicMMOLevelMore = 9,
+        EpicMMOLevelLess = 9 | reverseFlag,
+        CozyheimLevelMore = 10,
+        CozyheimLevelLess = 10 | reverseFlag,
     }
 
     public class RawDialogue : ISerializableParameter
@@ -170,7 +175,7 @@ public static class Dialogues_DataTypes
             Action<Market_NPC.NPCcomponent> result = null;
             foreach (string command in commands)
             {
-                try 
+                try
                 {
                     string[] split = command.Split(',');
                     if (Enum.TryParse(split[0], true, out OptionCommand optionCommand))
@@ -337,6 +342,20 @@ public static class Dialogues_DataTypes
                                     Minimap.instance.m_largeZoom = 0.1f;
                                 };
                                 break;
+                            case OptionCommand.AddEpicMMOExp:
+                                result += (_) =>
+                                {
+                                    int exp = int.Parse(split[1]);
+                                    EpicMMOSystem_API.AddExp(exp);
+                                };
+                                break;
+                            case OptionCommand.AddCozyheimExp:
+                                result += (_) =>
+                                {
+                                    int exp = int.Parse(split[1]);
+                                    Cozyheim_LevelingSystem.AddExp(exp);
+                                };
+                                break;
                         }
                     }
                 }
@@ -364,6 +383,7 @@ public static class Dialogues_DataTypes
                         reverse = true;
                         split[0] = split[0].Substring(1);
                     }
+
                     if (Enum.TryParse(split[0], true, out OptionCondition optionCondition))
                     {
                         if (reverse) optionCondition = optionCondition.Reverse();
@@ -401,6 +421,14 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
+
+                                    if (Quests_DataTypes.AcceptedQuests.TryGetValue(reqID,
+                                            out Quests_DataTypes.Quest quest))
+                                    {
+                                        reason = $"$mpasn_questtaken: <color=#00ff00>{quest.Name}</color>".Localize();
+                                        return false;
+                                    }
+
                                     if (Quests_DataTypes.AllQuests.TryGetValue(reqID,
                                             out Quests_DataTypes.Quest reqQuest))
                                         reason =
@@ -540,6 +568,34 @@ public static class Dialogues_DataTypes
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_questtaken")}: <color=#00ff00>{reqQuest.Name}</color>";
                                     return !Quests_DataTypes.AcceptedQuests.ContainsKey(reqID);
+                                };
+                                break;
+                            case OptionCondition.EpicMMOLevelMore:
+                                result += (out string reason) =>
+                                {
+                                    reason = $"{Localization.instance.Localize("$mpasn_needepicmmolevel")}: <color=#00ff00>{split[1]}</color>";
+                                    return EpicMMOSystem_API.GetLevel() >= int.Parse(split[1]);
+                                };
+                                break;
+                            case OptionCondition.EpicMMOLevelLess:
+                                result += (out string reason) =>
+                                {
+                                    reason = $"{Localization.instance.Localize("$mpasn_toomuchepicmmolevel")}: <color=#00ff00>{split[1]}</color>";
+                                    return EpicMMOSystem_API.GetLevel() < int.Parse(split[1]);
+                                };
+                                break;
+                            case OptionCondition.CozyheimLevelMore:
+                                result += (out string reason) =>
+                                {
+                                    reason = $"{Localization.instance.Localize("$mpasn_needcozyheimlevel")}: <color=#00ff00>{split[1]}</color>";
+                                    return Cozyheim_LevelingSystem.GetLevel() >= int.Parse(split[1]);
+                                };
+                                break;
+                            case OptionCondition.CozyheimLevelLess:
+                                result += (out string reason) =>
+                                {
+                                    reason = $"{Localization.instance.Localize("$mpasn_toomuchcozyheimlevel")}: <color=#00ff00>{split[1]}</color>";
+                                    return Cozyheim_LevelingSystem.GetLevel() < int.Parse(split[1]);
                                 };
                                 break;
                         }

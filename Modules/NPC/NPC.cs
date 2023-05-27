@@ -162,7 +162,6 @@ public static class Market_NPC
             GameObject odin = __instance.GetPrefab("odin");
             if (odin?.GetComponent<Animator>() is not { } anim) return;
             Object.Destroy(anim);
-            odin.transform.Find("visual").gameObject.AddComponent<Animator>();
         }
     }
 

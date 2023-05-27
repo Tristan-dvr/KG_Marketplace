@@ -1,5 +1,6 @@
 ﻿using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using Marketplace_APIs;
 using Marketplace.Base64;
 using Marketplace.Paths;
 using UnityEngine.Networking;
@@ -19,6 +20,7 @@ public static class AssetStorage
     public static Sprite PlaceholderMonsterIcon;
     public static Sprite PlaceholderGamblerIcon;
     public static Sprite EpicMMO_Exp;
+    public static Sprite Cozyheim_Exp;
     public static Sprite Battlepass_EXP_Icon;
     public static Sprite MH_Exp_Icon;
     public static Sprite NullSprite;
@@ -51,13 +53,16 @@ public static class AssetStorage
         MarketplaceQuestTargetIcon = asset.LoadAsset<GameObject>("MarketplaceQuestTargetIcon");
         MarketplaceQuestQuestionIcon = asset.LoadAsset<GameObject>("MarketplaceQuestionMark");
         Texture2D epicMMOTex = new Texture2D(1, 1);
-        epicMMOTex.LoadImage(Convert.FromBase64String(OtherModsAPI.Epic_Mmo_Base));
+        epicMMOTex.LoadImage(Convert.FromBase64String(ResourcesBase64.EpicMMO_Icon));
         EpicMMO_Exp = Sprite.Create(epicMMOTex, new Rect(0, 0, epicMMOTex.width, epicMMOTex.height), Vector2.zero);
         Texture2D mh_texture = new Texture2D(1, 1);
-        mh_texture.LoadImage(Convert.FromBase64String(OtherModsAPI.MH_Exp_Base));
+        mh_texture.LoadImage(Convert.FromBase64String(ResourcesBase64.MagicHeim_Icon));
         MH_Exp_Icon = Sprite.Create(mh_texture, new Rect(0, 0, mh_texture.width, mh_texture.height), Vector2.zero);
         Texture2D gamblerTex = new Texture2D(1, 1);
         gamblerTex.LoadImage(Convert.FromBase64String(ResourcesBase64.PlacholderGambler));
+        Texture2D cozyheimTex = new Texture2D(1, 1);
+        cozyheimTex.LoadImage(Convert.FromBase64String(ResourcesBase64.Cozyheim_LevelingSystem_Icon));
+        Cozyheim_Exp = Sprite.Create(cozyheimTex, new Rect(0, 0, cozyheimTex.width, cozyheimTex.height), Vector2.zero);
         PlaceholderGamblerIcon = Sprite.Create(gamblerTex, new Rect(0, 0, gamblerTex.width, gamblerTex.height),
             Vector2.zero);
         Texture2D monsterTex = new Texture2D(1, 1);

@@ -258,6 +258,12 @@ public static class Quests_UIs
                         tooltip.m_text = Localization.instance.Localize("$mpasn_tooltip_mh ") + "x" +
                                          quest.RewardCount[i];
                         break;
+                    case Quests_DataTypes.QuestRewardType.Cozyheim_EXP:
+                        rewardImage.sprite = AssetStorage.AssetStorage.Cozyheim_Exp;
+                        tooltip.m_topic = Localization.instance.Localize("$mpasn_Cozyheim_EXP");
+                        tooltip.m_text = Localization.instance.Localize("$mpasn_tooltip_cozyheim ") + "x" +
+                                         quest.RewardCount[i];
+                        break;
                 }
             }
 

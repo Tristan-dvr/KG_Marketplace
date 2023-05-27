@@ -14,7 +14,7 @@ public static class Gambler_Main_Client
     private static void OnGamblerUpdate()
     {
         GamblerInit();
-        if (Gambler_UI.IsPanelVisible() && Gambler_UI.CurrentStatus == Gambler_UI.Status.Idle)
+        if (Gambler_UI.IsPanelVisible() && Gambler_UI.CurrentStatus == Gambler_UI.Status.Idle) 
         {
             Gambler_UI.Reload();
         }
@@ -28,7 +28,7 @@ public static class Gambler_Main_Client
     }
     
     [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
-    [ClientOnlyPatch]
+    [ClientOnlyPatch, HarmonyPriority(-10000)]
     private static class ZNetScene_Awake_Patch
     {
         private static void Postfix() => GamblerInit();

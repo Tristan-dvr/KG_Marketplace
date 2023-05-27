@@ -1,8 +1,8 @@
 ﻿namespace Marketplace.Modules.PostMail;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
-public static class PostMail_Main_Client
+[Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Normal, "OnInit")]
+public static class PostMail_Main_Both
 {
     private static GameObject PostMail_Prefab;
     private static Sprite Icon;
@@ -13,8 +13,9 @@ public static class PostMail_Main_Client
 
     private static void OnInit()
     {
-        PostMail_UI.Init();
         PostMail_Prefab = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplacePostMail");
+        if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
+        PostMail_UI.Init();
         PostMail_Prefab.AddComponent<PostMailComponent>();
         PostMail_Prefab.GetComponent<Piece>().m_name = "$marketplace_mailbox";
         Icon = PostMail_Prefab.GetComponent<Piece>().m_icon;
@@ -31,15 +32,14 @@ public static class PostMail_Main_Client
             Menu.instance.OnClose();
         }
     }
-
-
+    
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
-    [ClientOnlyPatch]
     private static class ZNetScene_Awake_Patch
     {
         private static void Postfix(ZNetScene __instance)
         {
             __instance.m_namedPrefabs[PostMail_Prefab.name.GetStableHashCode()] = PostMail_Prefab;
+            if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
             GameObject hammer = __instance.GetPrefab("Hammer");
             if (!hammer.GetComponent<ItemDrop>().m_itemData.m_shared.m_buildPieces.m_pieces.Contains(PostMail_Prefab))
                 hammer.GetComponent<ItemDrop>().m_itemData.m_shared.m_buildPieces.m_pieces.Add(PostMail_Prefab);
@@ -185,6 +185,7 @@ public static class PostMail_Main_Client
             while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(PrefabToSearch, AllMails, ref amount))
             {
             }
+
             if (AllMails.Count == 0) return;
             foreach (ZDO mail in AllMails)
             {

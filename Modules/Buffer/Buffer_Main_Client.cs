@@ -23,7 +23,7 @@ public static class Buffer_Main_Client
     }
     
     [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
-    [ClientOnlyPatch]
+    [ClientOnlyPatch, HarmonyPriority(-10000)]
     private static class ZNetScene_Awake_Patch
     {
         private static void Postfix() => OnBufferUpdate();

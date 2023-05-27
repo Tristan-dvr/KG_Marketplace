@@ -52,7 +52,7 @@ public static class PostMail_UI
     {
         if (_currentlyProcessedMail == null || !_currentlyProcessedMail.IsValid()) return;
         List<PostMail_DataTypes.MailData> data =
-            PostMail_Main_Client.PostMailComponent.TryReadMailFromZDO(_currentlyProcessedMail);
+            PostMail_Main_Both.PostMailComponent.TryReadMailFromZDO(_currentlyProcessedMail);
         foreach (Transform child in Content)
         {
             UnityEngine.Object.Destroy(child.gameObject);
@@ -227,7 +227,7 @@ public static class PostMail_UI
     private static void SendItem()
     {
         if (_currentProcessedTargetPost == null || !_currentProcessedTargetPost.IsValid()) return;
-        if (PostMail_Main_Client.PostMailComponent.TryReadMailFromZDO(_currentProcessedTargetPost).Count >= 30)
+        if (PostMail_Main_Both.PostMailComponent.TryReadMailFromZDO(_currentProcessedTargetPost).Count >= 30)
         {
             MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "Mailbox is full");
             return;
@@ -268,9 +268,9 @@ public static class PostMail_UI
         else
         {
             List<PostMail_DataTypes.MailData> zdoMails =
-                PostMail_Main_Client.PostMailComponent.TryReadMailFromZDO(_currentProcessedTargetPost);
+                PostMail_Main_Both.PostMailComponent.TryReadMailFromZDO(_currentProcessedTargetPost);
             zdoMails.Add(toSend);
-            PostMail_Main_Client.PostMailComponent.WriteMailToZDO(_currentProcessedTargetPost, zdoMails);
+            PostMail_Main_Both.PostMailComponent.WriteMailToZDO(_currentProcessedTargetPost, zdoMails);
         }
 
         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "Mail Sent");

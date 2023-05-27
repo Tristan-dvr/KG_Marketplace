@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Marketplace_APIs;
 using Marketplace.Modules.Battlepass;
 using Marketplace.Modules.NPC;
 
@@ -54,6 +55,7 @@ public static class Quests_DataTypes
         GlobalKey,
         EpicMMO_Level,
         MH_Level,
+        Cozyheim_Level,
         HasItem,
         IsVIP,
         Time
@@ -78,6 +80,7 @@ public static class Quests_DataTypes
         EpicMMO_EXP,
         Battlepass_EXP,
         MH_EXP,
+        Cozyheim_EXP
     }
 
 
@@ -308,6 +311,7 @@ public static class Quests_DataTypes
             LocalizedTarget = new string[TargetAMOUNT];
             for (int i = 0; i < RewardsAMOUNT; ++i)
             {
+                LocalizedReward[i] = "";
                 GameObject rewardPrefab = ZNetScene.instance.GetPrefab(RewardPrefab[i]);
                 switch (RewardType[i])
                 {
@@ -325,9 +329,6 @@ public static class Quests_DataTypes
                         break;
                     case QuestRewardType.Skill or QuestRewardType.Skill_EXP:
                         LocalizedReward[i] = Utils.LocalizeSkill(RewardPrefab[i]);
-                        break;
-                    case QuestRewardType.EpicMMO_EXP or QuestRewardType.Battlepass_EXP or QuestRewardType.MH_EXP:
-                        LocalizedReward[i] = "";
                         break;
                 }
             }
@@ -504,7 +505,22 @@ public static class Quests_DataTypes
                     message =
                         $"{Localization.instance.Localize("$mpasn_needepicmmolevel")}: <color=#00ff00>{requiredLevel_EpicMMO}</color>";
                     type = QuestRequirementType.EpicMMO_Level;
-                    bool result = OtherModsAPI.EpicMMOSystem_API.GetLevel() >= requiredLevel_EpicMMO;
+                    bool result = EpicMMOSystem_API.GetLevel() >= requiredLevel_EpicMMO;
+                    if (result)
+                    {
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.Cozyheim_Level)
+                {
+                    if (!int.TryParse(CheckQuest.QuestRequirementPrefab[i], out int requiredLevel_Cozyheim)) continue;
+                    message =
+                        $"{Localization.instance.Localize("$mpasn_needcozyheimlevel")}: <color=#00ff00>{requiredLevel_Cozyheim}</color>";
+                    type = QuestRequirementType.Cozyheim_Level;
+                    bool result = Cozyheim_LevelingSystem.GetLevel() >= requiredLevel_Cozyheim;
                     if (result)
                     {
                         continue;
@@ -519,7 +535,7 @@ public static class Quests_DataTypes
                     message =
                         $"{Localization.instance.Localize("$mpasn_needmhlevel")}: <color=#00ff00>{requiredLevel_MH}</color>";
                     type = QuestRequirementType.MH_Level;
-                    bool result = OtherModsAPI.MH_API.GetLevel() >= requiredLevel_MH;
+                    bool result = MH_API.GetLevel() >= requiredLevel_MH;
                     if (result)
                     {
                         continue;
@@ -632,13 +648,19 @@ public static class Quests_DataTypes
             {
                 if (quest.RewardType[i] is QuestRewardType.EpicMMO_EXP)
                 {
-                    OtherModsAPI.EpicMMOSystem_API.AddExp(quest.RewardCount[i]);
+                    EpicMMOSystem_API.AddExp(quest.RewardCount[i]);
+                    continue;
+                }
+
+                if (quest.RewardType[i] is QuestRewardType.Cozyheim_EXP)
+                {
+                    Cozyheim_LevelingSystem.AddExp(quest.RewardCount[i]);
                     continue;
                 }
 
                 if (quest.RewardType[i] is QuestRewardType.MH_EXP)
                 {
-                    OtherModsAPI.MH_API.AddEXP(quest.RewardCount[i]);
+                    MH_API.AddEXP(quest.RewardCount[i]);
                     continue;
                 }
 

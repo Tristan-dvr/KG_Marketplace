@@ -79,9 +79,9 @@ mpasn_needglobalkey: Need global key
 mpasn_target: Target
 mpasn_reward: Reward
 mpasn_youfinishedquest: You finished quest
-mpasn_EpicMMO_EXP: Epic MMO EXP
+mpasn_EpicMMO_EXP: <color=yellow>EpicMMO</color> EXP
 mpasn_Battlepass_EXP: Battlepass EXP
-mpasn_needepicmmolevel: Need Epic MMO level
+mpasn_needepicmmolevel: Need <color=yellow>EpicMMO</color> level
 mpasn_inventory: Inventory
 mpasn_duration: Duration
 mpasn_bufferbuy: Buy
@@ -148,37 +148,37 @@ mpasn_periodicdamage: Periodic Damage
 mpasn_increasedamagePlayer: Increased Damage (Player)
 mpasn_increasedamageMonsters: Increased Damage (Monsters)
 mpasn_nomonsters: No Monsters
-mpasn_movementspeedmultiplier: Movement Speed Mulitplier 
+mpasn_movementspeedmultiplier: Movement Speed Mulitplier
 mpasn_nodeathpenalty: No Death Skill Penalty
 mpasn_noportals: Can't Use Portals
 mpasn_infinitefuel: Infinite Fuel
 mpasn_nointeractitems: No Iteract Items
 mpasn_nointeractcraftingstations: No Interact Crafting Station
 mpasn_nointeractitemstands: No Interact Itemstands
-mpasn_nointeractchests: No Interact Chests 
+mpasn_nointeractchests: No Interact Chests
 mpasn_nointeractdoors: No Interact Doors
-mpasn_nostructuresupport: No Structure Support 
+mpasn_nostructuresupport: No Structure Support
 mpasn_nointeractportals: No Interact Portals
 mpasn_noitemloss: No Item Loss on Death
 mpasn_npcloader: NPC Loader
 mpasn_save: Save
-mpasn_gamblebutton : GAMBLE
+mpasn_gamblebutton: GAMBLE
 mpasn_gambleryouhaveachance: You have a chance of getting
 mpasn_itemsperroll: Items Per Roll
 mpasn_questfinished: You already finished quest
 mpasn_questtaken: You already took quest
-mpasn_transmog_onehandedweapon : One Handed Weapons
-mpasn_transmog_twohandedweapon : Two Handed Weapons
-mpasn_transmog_bow : Bows
-mpasn_transmog_shield : Shields
-mpasn_transmog_any : Any
-mpasn_transmog_helmet : Helmets
-mpasn_transmog_chest : Chests
-mpasn_transmog_legs : Legs
-mpasn_transmog_shoulder : Capes
-mpasn_transmog_tool : Tools
-mpasn_transmog_utility : Utility
-mpasn_transmog_price: Price  
+mpasn_transmog_onehandedweapon: One Handed Weapons
+mpasn_transmog_twohandedweapon: Two Handed Weapons
+mpasn_transmog_bow: Bows
+mpasn_transmog_shield: Shields
+mpasn_transmog_any: Any
+mpasn_transmog_helmet: Helmets
+mpasn_transmog_chest: Chests
+mpasn_transmog_legs: Legs
+mpasn_transmog_shoulder: Capes
+mpasn_transmog_tool: Tools
+mpasn_transmog_utility: Utility
+mpasn_transmog_price: Price
 mpasn_transmog_eff1: Azure Ashes
 mpasn_transmog_eff2: Burning Low
 mpasn_transmog_eff3: Cyan Wrap
@@ -187,42 +187,42 @@ mpasn_transmog_eff5: Angel Touch
 mpasn_transmog_eff6: Purple Flame
 mpasn_transmog_eff7: Burning High
 mpasn_transmog_eff8: Turbulence
-mpasn_transmog_eff9: Radiation 
+mpasn_transmog_eff9: Radiation
 mpasn_transmog_eff10: Loki's Anger
 mpasn_transmog_eff11: Phantom
 mpasn_transmog_eff12: Golden Age
 mpasn_transmog_eff13: Ice Menace
-mpasn_transmog_eff14: Cyan Breathe 
+mpasn_transmog_eff14: Cyan Breathe
 mpasn_transmog_eff15: Lightning Strike
 mpasn_transmog_eff16: Tranquility
 mpasn_transmog_eff17: Magic Arise
 mpasn_transmog_eff18: Water
 mpasn_transmog_eff19: Energy Flow
 mpasn_transmog_eff20: Lightning Menace
-mpasn_transmog_transmogrifiedinfo : Transmogrified into
+mpasn_transmog_transmogrifiedinfo: Transmogrified into
 mpasn_tooltip_pet: Creature will spawn tamed if it can be
-mpasn_tooltip_epicmmo: Adds EpicMMO Experience
+mpasn_tooltip_epicmmo: Adds <color=yellow>EpicMMO</color> Experience
 mpasn_tooltip_battlepass: Adds Battlepass Experience
 mpasn_tooltip_addskilllevel: Adds Skill Level
 mpasn_tooltip_addskillexp: Adds Skill Experience
 mpasn_questjournal: Quest Journal
-mpasn_infiniteeitr : Infinite Eitr
-mpasn_infinitestamina : Infinite Stamina
-mpasn_nomistlandsmist : No Mistlands Mist 
-mpasn_transmog_twohandedweaponleft : Two Handed Weapons (Left Hand)
+mpasn_infiniteeitr: Infinite Eitr
+mpasn_infinitestamina: Infinite Stamina
+mpasn_nomistlandsmist: No Mistlands Mist
+mpasn_transmog_twohandedweaponleft: Two Handed Weapons (Left Hand)
 mpasn_transmog_eff0: No Effect
 mpasn_transmog_eff21: Any Effect
-mpasn_needmhlevel : Need <color=#00FFFF>Magic</color><color=yellow>Heim</color> level
+mpasn_needmhlevel: Need <color=#00FFFF>Magic</color><color=yellow>Heim</color> level
 mpasn_MH_EXP: <color=#00FFFF>Magic</color><color=yellow>Heim</color> Experience
 mpasn_tooltip_mh: Adds <color=#00FFFF>Magic</color><color=yellow>Heim</color> Experience
-kg_banker_putall: Put All 
-mpasn_periodicanimation : Periodic Animation
-mpasn_periodicanimationtime : Periodic Animation Time
+kg_banker_putall: Put All
+mpasn_periodicanimation: Periodic Animation
+mpasn_periodicanimationtime: Periodic Animation Time
 mpasn_currency: Currency
 mpasn_onlyforvip: Only for <color=#32CD32>VIP</color> users
 mpasn_messages: Messages
-mpasn_periodicsound : Periodic Sound
-mpasn_periodicsoundtime : Periodic Sound Time
+mpasn_periodicsound: Periodic Sound
+mpasn_periodicsoundtime: Periodic Sound Time
 mpasn_setnpcdialogue: Attach NPC Dialogue
 mpasn_needhasbuff: Need Buff
 mpasn_nocreaturedrops: No Creature Drops
@@ -240,3 +240,8 @@ mpasn_zoneloading: Zone Loading...
 marketplace_mailbox: Mailbox
 mpasn_JC_Item: Jewelcrafting Item
 mpasn_JC_RandomItem: Jewelcrafting Random Item
+mpasn_Cozyheim_EXP: <color=yellow>Cozyheim</color> Experience
+mpasn_tooltip_cozyheim: Adds <color=yellow>Cozyheim</color> Experience
+mpasn_needcozyheimlevel: Need <color=yellow>Cozyheim</color> level
+mpasn_toomuchepicmmolevel: Too much <color=yellow>EpicMMO</color> level
+mpasn_toomuchcozyheimlevel: Too much <color=yellow>Cozyheim</color> level

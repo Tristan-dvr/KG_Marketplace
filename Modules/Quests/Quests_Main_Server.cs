@@ -146,12 +146,13 @@ public static class Quests_Main_Server
                                 $"Failed to parse reward type {rewardsArray[r]} in quest {name}. Skipping quest");
                             goto GoNextLabel;
                         }
-                        
+
                         string[] RewardSplit = rwdTypeCheck[1].Split(',');
 
                         if (rewardTypes[r] is Quests_DataTypes.QuestRewardType.Battlepass_EXP
                             or Quests_DataTypes.QuestRewardType.EpicMMO_EXP
-                            or Quests_DataTypes.QuestRewardType.MH_EXP)
+                            or Quests_DataTypes.QuestRewardType.MH_EXP 
+                            or Quests_DataTypes.QuestRewardType.Cozyheim_EXP)
                         {
                             RewardPrefabs[r] = "NONE";
                             RewardCounts[r] = int.Parse(RewardSplit[0]);
@@ -171,8 +172,7 @@ public static class Quests_Main_Server
                         }
                     }
 
-                    
-                    
+
                     if (type is not Quests_DataTypes.QuestType.Talk)
                     {
                         target = target.Replace(" ", "");

@@ -297,6 +297,9 @@
         <Compile Include="DiscordStuff\DiscordConnetor.cs" />
         <Compile Include="ExternalLoads\AsmLoad_UnityCode.cs" />
         <Compile Include="ExternalLoads\AssetStorage.cs" />
+        <Compile Include="OtherModsAPIs\Cozyheim_LevelingSystem.cs" />
+        <Compile Include="OtherModsAPIs\EpicMMO.cs" />
+        <Compile Include="OtherModsAPIs\MagicHeim.cs" />
         <Compile Include="FixPossibleErrors.cs" />
         <Compile Include="GlobalUsings.cs" />
         <Compile Include="ItemDataManager_Modified.cs" />
@@ -340,12 +343,11 @@
         <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Client.cs" />
         <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Server.cs" />
         <Compile Include="Modules\NPC_Dialogues\Dialogues_UI.cs" />
-        <Compile Include="Modules\PieceSaver\PieceSaver.cs" />
         <Compile Include="Modules\PlayersTag\PlayersTag_DataTypes.cs" />
         <Compile Include="Modules\PlayersTag\PlayerTags_Main_Server.cs" />
         <Compile Include="Modules\PlayersTag\PlayerTag_Main_Client.cs" />
         <Compile Include="Modules\PostMail\PostMail_DataTypes.cs" />
-        <Compile Include="Modules\PostMail\PostMail_Main_Client.cs" />
+        <Compile Include="Modules\PostMail\PostMail_Main_Both.cs" />
         <Compile Include="Modules\PostMail\PostMail_Pin.cs" />
         <Compile Include="Modules\PostMail\PostMail_UI.cs" />
         <Compile Include="Modules\Quests\Quests_DataTypes.cs" />
@@ -371,7 +373,6 @@
         <Compile Include="Modules\Transmogrification\Transmogrification_Main_Client.cs" />
         <Compile Include="Modules\Transmogrification\Transmogrification_DataTypes.cs" />
         <Compile Include="Modules\Transmogrification\Transmogrification_UI.cs" />
-        <Compile Include="OtherModsAPI.cs" />
         <Compile Include="Paths\Paths.cs" />
         <Compile Include="PrefabPhotoManager.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
@@ -501,7 +502,6 @@
       <Content Include="GithubReadme\node_modules\uc.micro\README.md" />
       <Content Include="GithubReadme\README.md" />
       <Content Include="ILRepack.targets" />
-      <EmbeddedResource Include="Resources\kg_piecesaver" />
       <Content Include="ThunderstorePackage\icon.png" />
       <Content Include="ThunderstorePackage\manifest.json" />
       <Content Include="ThunderstorePackage\README.md" />
