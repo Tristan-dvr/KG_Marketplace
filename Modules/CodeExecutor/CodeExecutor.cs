@@ -31,6 +31,12 @@ public static class CodeExecutor
             }
         }
         AppDomain.CurrentDomain.AssemblyLoad += (_, args) => { codeExecutor.ReferenceAssembly(args.LoadedAssembly); };
+        codeExecutor.Run("using System;");
+        codeExecutor.Run("using System.Collections.Generic;");
+        codeExecutor.Run("using System.Linq;");
+        codeExecutor.Run("using System.Text;");
+        codeExecutor.Run("using UnityEngine;");
+        codeExecutor.Run("using UnityEngine.UI;");
         object _ = null; 
         codeExecutor.Compile(@"Marketplace.Utils.print(""Code Executor Init"");")?.Invoke(ref _);
     }
