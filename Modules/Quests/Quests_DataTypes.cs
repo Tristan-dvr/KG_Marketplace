@@ -43,7 +43,8 @@ public static class Quests_DataTypes
         Damage,
         Heal,
         PlaySound,
-        NpcText
+        NpcText,
+        ExecuteScript
     }
 
     public enum QuestRequirementType
@@ -1128,6 +1129,9 @@ public static class Quests_DataTypes
             {
                 switch (action)
                 {
+                    case QuestEventAction.ExecuteScript:
+                        CodeExecutor.CodeExecutor.ExecuteScript(split[0]);
+                        break;
                     case QuestEventAction.GiveItem:
                         string itemPrefab = split[0];
                         GameObject prefab = ZNetScene.instance.GetPrefab(itemPrefab);

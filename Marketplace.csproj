@@ -76,6 +76,22 @@
         <Reference Include="MagicHeimUnityCode">
           <HintPath>Resources\Marketplace_TransmogCode.dll</HintPath>
         </Reference>
+        <Reference Include="mcs">
+          <HintPath>bin\Debug\mcs.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CodeAnalysis, Version=4.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+          <HintPath>packages\Microsoft.CodeAnalysis.Common.4.6.0\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=4.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+          <HintPath>packages\Microsoft.CodeAnalysis.CSharp.4.6.0\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CodeAnalysis.CSharp.Scripting, Version=4.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+          <HintPath>packages\Microsoft.CodeAnalysis.CSharp.Scripting.4.6.0\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.Scripting.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CodeAnalysis.Scripting, Version=4.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+          <HintPath>packages\Microsoft.CodeAnalysis.Scripting.Common.4.6.0\lib\netstandard2.0\Microsoft.CodeAnalysis.Scripting.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CSharp" />
         <Reference Include="Mono.Cecil">
           <HintPath>Libs\Mono.Cecil.dll</HintPath>
         </Reference>
@@ -88,9 +104,35 @@
         <Reference Include="MonoMod.Utils">
           <HintPath>Libs\MonoMod.Utils.dll</HintPath>
         </Reference>
+        <Reference Include="mscorlib" />
         <Reference Include="System" />
+        <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+          <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Collections.Immutable, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Collections.Immutable.7.0.0\lib\net462\System.Collections.Immutable.dll</HintPath>
+        </Reference>
         <Reference Include="System.Core" />
         <Reference Include="System.Data" />
+        <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+          <HintPath>packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Numerics" />
+        <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Reflection.Metadata, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Reflection.Metadata.7.0.0\lib\net462\System.Reflection.Metadata.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Text.Encoding.CodePages, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Text.Encoding.CodePages.7.0.0\lib\net462\System.Text.Encoding.CodePages.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+          <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+        </Reference>
         <Reference Include="System.Xml" />
         <Reference Include="Unity.TextMeshPro">
           <HintPath>Libs\Unity.TextMeshPro.dll</HintPath>
@@ -297,6 +339,9 @@
         <Compile Include="DiscordStuff\DiscordConnetor.cs" />
         <Compile Include="ExternalLoads\AsmLoad_UnityCode.cs" />
         <Compile Include="ExternalLoads\AssetStorage.cs" />
+        <Compile Include="Modules\CodeExecutor\CodeExecutor.cs" />
+        <Compile Include="Modules\CodeExecutor\Scripts_DataTypes.cs" />
+        <Compile Include="Modules\CodeExecutor\Scripts_Main_Server.cs" />
         <Compile Include="OtherModsAPIs\Cozyheim_LevelingSystem.cs" />
         <Compile Include="OtherModsAPIs\EpicMMO.cs" />
         <Compile Include="OtherModsAPIs\MagicHeim.cs" />
@@ -524,6 +569,7 @@
     </Target>
     
     <ItemGroup>
+      <None Include="App.config" />
       <None Include="packages.config" />
     </ItemGroup>
     
@@ -535,6 +581,11 @@
       <TypeScriptCompile Include="GithubReadme\node_modules\entities\lib\generated\decode-data-html.d.ts" />
       <TypeScriptCompile Include="GithubReadme\node_modules\entities\lib\generated\decode-data-xml.d.ts" />
       <TypeScriptCompile Include="GithubReadme\node_modules\entities\lib\index.d.ts" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Analyzer Include="packages\Microsoft.CodeAnalysis.Analyzers.3.3.4\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+      <Analyzer Include="packages\Microsoft.CodeAnalysis.Analyzers.3.3.4\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <Import Project="packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />

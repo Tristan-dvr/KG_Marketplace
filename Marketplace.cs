@@ -1,5 +1,6 @@
 ﻿using LocalizationManager;
 using Marketplace.Paths;
+using Microsoft.CSharp;
 using UnityEngine.Rendering;
 
 namespace Marketplace
@@ -20,7 +21,7 @@ namespace Marketplace
         public static Action Global_Updator;
         public static Action Global_FixedUpdator;
         public static Action Global_OnGUI_Updator;
-        public static Type TempJewelcraftingType;   
+        public static Type TempJewelcraftingType;
         public static Type TempProfessionsType;
 
         public static readonly ConfigSync configSync = new(GUID)
@@ -116,15 +117,9 @@ namespace Marketplace
                     WorkingAs.Client => t.GetCustomAttribute<ServerOnlyPatch>() == null,
                     WorkingAs.Server => t.GetCustomAttribute<ClientOnlyPatch>() == null,
                     _ => true
-                }).Where(t =>
-                {
-                    if (t.GetCustomAttribute<ConditionalPatch>() == null) return true;
-                    ConditionalPatch conditionalPatch = t.GetCustomAttribute<ConditionalPatch>();
-                    MethodInfo method = t.GetMethod(conditionalPatch.Condition, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public);
-                    if (method != null) return (bool)method.Invoke(null, null);
-                    Utils.print($"Error loading {t.Name} conditional patch, method {conditionalPatch.Condition} not found", ConsoleColor.Red);
-                    return false;
-                }).Do(type => _harmony.CreateClassProcessor(type).Patch());
+                })
+                .Where(t => t.GetCustomAttribute<ConditionalPatch>() is not {} cond || cond.Check(t))
+                .Do(type => _harmony.CreateClassProcessor(type).Patch());
         }
 
         private void Update() => Global_Updator?.Invoke();
@@ -144,7 +139,7 @@ namespace Marketplace
                     SynchronizingObject = ThreadingHelper.SynchronizingObject
                 };
                 FSW.Changed += MarketplaceConfigChanged;
-                Utils.print("FSW started");
+                Utils.print("FSW started"); 
             }
             catch (Exception ex)
             {
@@ -168,6 +163,8 @@ namespace Marketplace
                 fName = Path.GetFileName(Market_Paths.NpcDialoguesConfig);
             else if (folderPath.Contains(Market_Paths.AdditionalCondfigsTerritoriesFolder))
                 fName = Path.GetFileName(Market_Paths.TerritoriesConfigPath);
+            else if (folderPath.Contains(Market_Paths.ScriptsFolder))
+                fName = "ScriptFile.cs";
 
             if (!FSW_Lookup.TryGetValue(fName!, out Action action)) return;
             if (!ZNet.instance || !ZNet.instance.IsServer())

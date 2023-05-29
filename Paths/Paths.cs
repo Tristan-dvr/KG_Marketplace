@@ -59,7 +59,9 @@ public static class Market_Paths
     public static string PlayerTagsConfig => Path.Combine(MainPath, "PlayerTags.cfg");
 
     public static string TransmogrificationConfig => Path.Combine(MainPath, "TransmogrificationProfiles.cfg");
-    
+
+    public static string ScriptsFolder => Path.Combine(MainPath, "Scripts");
+
     private static void OnInit()
     {
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server or Marketplace.WorkingAs.Both)
@@ -84,6 +86,8 @@ public static class Market_Paths
                 Directory.CreateDirectory(AdditionalConfigsDialoguesFolder);
             if (!Directory.Exists(AdditionalCondfigsTerritoriesFolder))
                 Directory.CreateDirectory(AdditionalCondfigsTerritoriesFolder);
+            if (!Directory.Exists(ScriptsFolder))
+                Directory.CreateDirectory(ScriptsFolder);
 
             if (!File.Exists(QuestProfilesPath)) File.Create(QuestProfilesPath).Dispose();
             if (!File.Exists(QuestEventsPath)) File.Create(QuestEventsPath).Dispose();

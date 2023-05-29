@@ -33,6 +33,7 @@ public static class Dialogues_DataTypes
         AddPin,
         AddEpicMMOExp,
         AddCozyheimExp,
+        ExecuteScript
     }
 
     private const byte reverseFlag = 1 << 7;
@@ -182,6 +183,12 @@ public static class Dialogues_DataTypes
                     {
                         switch (optionCommand)
                         {
+                            case OptionCommand.ExecuteScript:
+                                result += (_) =>
+                                {
+                                    CodeExecutor.CodeExecutor.ExecuteScript(split[1]);
+                                };
+                                break;
                             case OptionCommand.OpenUI:
                                 result += (npc) => npc.OpenUIForType(
                                     split.Length > 1 ? split[1] : null,

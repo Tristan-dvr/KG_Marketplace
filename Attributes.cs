@@ -38,6 +38,15 @@ public class ServerOnlyPatch : Attribute{}
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class ConditionalPatch : Attribute
 {
-    public readonly string Condition;
+    private readonly string Condition;
     public ConditionalPatch(string Condition = "Condition") => this.Condition = Condition;
+    public bool Check(Type t)
+    {
+        MethodInfo method = AccessTools.Method(t, Condition);
+        if (method != null) return (bool)method.Invoke(null, null);
+        Utils.print($"Error loading {t.Name} conditional patch, method {Condition} not found", ConsoleColor.Red);
+        return false;
+    }
+    
+    
 }
