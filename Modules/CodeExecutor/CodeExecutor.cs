@@ -37,7 +37,7 @@ public static class CodeExecutor
 
     private static void ExecuteCode(string code)
     {
-        var method = codeExecutor.Compile(code);
+        var method = codeExecutor.Compile(code); 
         object toRef = null;
         method?.Invoke(ref toRef);
         string result = sw.ToString();
