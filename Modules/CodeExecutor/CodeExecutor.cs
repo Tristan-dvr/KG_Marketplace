@@ -1,10 +1,6 @@
-﻿using System.Text;
-using Mono.CSharp;
-
+﻿using Mono.CSharp;
 namespace Marketplace.Modules.CodeExecutor;
-
-[UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit")]
+[UsedImplicitly, Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit")]
 public static class CodeExecutor
 {
     private static Evaluator codeExecutor;
@@ -24,21 +20,21 @@ public static class CodeExecutor
         CompilerContext context = new(settings, new StreamReportPrinter(sw));
         codeExecutor = new(context);
         foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
-        {
             if (asm.GetName().Name is not "mscorlib" and not "System.Core" and not "System" and not "System.Xml")
-            {
                 codeExecutor.ReferenceAssembly(asm);
-            }
-        }
         AppDomain.CurrentDomain.AssemblyLoad += (_, args) => { codeExecutor.ReferenceAssembly(args.LoadedAssembly); };
         codeExecutor.Run("using System;");
         codeExecutor.Run("using System.Collections.Generic;");
+        codeExecutor.Run("using System.Globalization;");
+        codeExecutor.Run("using System.IO;");
         codeExecutor.Run("using System.Linq;");
         codeExecutor.Run("using System.Text;");
+        codeExecutor.Run("using System.Reflection;");
         codeExecutor.Run("using UnityEngine;");
         codeExecutor.Run("using UnityEngine.UI;");
+        codeExecutor.Run("using HarmonyLib;");
         object _ = null; 
-        codeExecutor.Compile(@"Marketplace.Utils.print(""Code Executor Init"");")?.Invoke(ref _);
+        codeExecutor.Compile(@"Marketplace.Utils.print(""Code Executor Init"")")?.Invoke(ref _);
     }
 
     private static void ExecuteCode(string code)

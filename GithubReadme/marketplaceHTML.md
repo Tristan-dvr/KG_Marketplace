@@ -181,7 +181,7 @@ Paypal: <a href="mailto:war3spells@gmail.com">war3spells@gmail.com</a></p>
 </tr>
 <tr>
 <td>8.7.0</td>
-<td>Added new PieceSaver structure/system<br/>Added players tag system<br/>Traders now can sell Skill EXP<br/>Added new folder: AdditionalConfigs with Quests/Dialogues/Territories folders where you can put additional .cfg files for corresponding NPC type (so you don’t flood your main config file and split / manage it better)<br/>Added Color attribute to dialogues<br/>Added new dialogues commands / conditions<br/>Added &lt;image=link&gt; tag for server info<br/>Now if server info tag named [OnPlayerJoin] it will show UI when player first joins server<br/>Bugfixes / optimizations<br/>Transmogrification is now a free feature<br/>Added Transmog to DistancedUI<br/>Now you can use ! sign before dialogue condition to simply reverse it</td>
+<td>Added players tag system<br/>Traders now can sell Skill EXP<br/>Added new folder: AdditionalConfigs with Quests/Dialogues/Territories folders where you can put additional .cfg files for corresponding NPC type (so you don’t flood your main config file and split / manage it better)<br/>Added Color attribute to dialogues<br/>Added new dialogues commands / conditions<br/>Added &lt;image=link&gt; tag for server info<br/>Now if server info tag named [OnPlayerJoin] it will show UI when player first joins server<br/>Bugfixes / optimizations<br/>Transmogrification is now a free feature<br/>Added Transmog to DistancedUI<br/>Now you can use ! sign before dialogue condition to simply reverse it</td>
 </tr>
 </tbody>
 </table>
@@ -199,6 +199,7 @@ Now you can add your own localization. For that download file: <a href="Marketpl
 <li><a href="https://youtu.be/hUU_bPCwFeE">https://youtu.be/hUU_bPCwFeE</a> (part three)</li>
 <li><a href="https://youtu.be/ZgoeYVpEcI4">https://youtu.be/ZgoeYVpEcI4</a> (part four)</li>
 <li><a href="https://youtu.be/xdj2CccUYhk">https://youtu.be/xdj2CccUYhk</a> (part five)</li>
+<li><a href="https://youtu.be/0COuBKO3Gpg">https://youtu.be/0COuBKO3Gpg</a> (part six - Dialogues)</li>
 </ol>
 </p>
 </details>
@@ -1137,7 +1138,6 @@ Text: Fishing | Command: OpenUI, Quests, FishingJob | Icon: Fish1 | Condition: S
 <p> 
 <p>Transmogrification is a system that allows your players to give their equipment any other item appearance in game.</p>
 <p>As server admin you can configure which npc / profile will give which skins to use.</p>
-<p>Transmogrification is a Paid-feature in Marketplace so in order to use it you need to buy access. If you want to use it please contact KG#7777 (discord).</p>
 <p>In order to start configuring the system go to marketplace folder and open TransmogrificationProfiles.cfg.</p>
 <p>Data Format:</p>
 <pre><code>[ProfileName]

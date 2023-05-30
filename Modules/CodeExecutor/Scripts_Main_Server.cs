@@ -6,10 +6,7 @@ namespace Marketplace.Modules.CodeExecutor;
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Last, "OnInit", new[]{"ScriptFile.cs"}, new[]{"OnScriptsUpdate"})]
 public static class Scripts_Main_Server
 {
-    private static void OnInit()
-    {
-        ReadScripts();
-    }
+    private static void OnInit() => ReadScripts();
 
     private static void ReadScripts()
     {

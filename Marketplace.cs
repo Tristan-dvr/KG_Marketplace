@@ -118,7 +118,7 @@ namespace Marketplace
                     WorkingAs.Server => t.GetCustomAttribute<ClientOnlyPatch>() == null,
                     _ => true
                 })
-                .Where(t => t.GetCustomAttribute<ConditionalPatch>() is not {} cond || cond.Check(t))
+                .Where(t => t.GetCustomAttribute<ConditionalPatch>() is not { } cond || cond.Check(t))
                 .Do(type => _harmony.CreateClassProcessor(type).Patch());
         }
 
@@ -139,7 +139,7 @@ namespace Marketplace
                     SynchronizingObject = ThreadingHelper.SynchronizingObject
                 };
                 FSW.Changed += MarketplaceConfigChanged;
-                Utils.print("FSW started"); 
+                Utils.print("FSW started");
             }
             catch (Exception ex)
             {
@@ -148,13 +148,13 @@ namespace Marketplace
         }
 
         private static readonly Dictionary<string, Action> FSW_Lookup = new();
-        private static DateTime LastConfigChangeTime;
+        private static readonly Dictionary<string, DateTime> LastConfigChangeTime = new();
 
         private static void MarketplaceConfigChanged(object sender, FileSystemEventArgs e)
         {
             if (e.ChangeType != WatcherChangeTypes.Changed) return;
 
-            string fName = Path.GetFileName(e.Name);
+            string fName = Path.GetFileName(e.Name)!;
 
             string folderPath = Path.GetDirectoryName(e.FullPath)!;
             if (folderPath.Contains(Market_Paths.AdditionalConfigsQuestsFolder))
@@ -166,15 +166,15 @@ namespace Marketplace
             else if (folderPath.Contains(Market_Paths.ScriptsFolder))
                 fName = "ScriptFile.cs";
 
-            if (!FSW_Lookup.TryGetValue(fName!, out Action action)) return;
+            if (!FSW_Lookup.TryGetValue(fName, out Action action)) return;
             if (!ZNet.instance || !ZNet.instance.IsServer())
             {
                 Utils.print($"FSW: Not a server, ignoring ({e.Name})", ConsoleColor.Red);
                 return;
             }
-
-            if (LastConfigChangeTime > DateTime.Now.AddSeconds(-5)) return;
-            LastConfigChangeTime = DateTime.Now;
+            if (!LastConfigChangeTime.ContainsKey(fName)) LastConfigChangeTime[fName] = DateTime.MinValue;
+            if (LastConfigChangeTime[fName] > DateTime.Now.AddSeconds(-5)) return;
+            LastConfigChangeTime[fName] = DateTime.Now;
             Utils.DelayedAction(action);
         }
     }
