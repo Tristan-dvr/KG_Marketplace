@@ -40,7 +40,6 @@ public static class Market_NPC
     private static class FejdStartup_Awake_Patch
     {
         private static bool done;
-
         private static void Postfix(FejdStartup __instance)
         {
             if (!done)
@@ -84,7 +83,6 @@ public static class Market_NPC
             if (animator.gameObject.name == "WomanNPC")
             {
                 animator.gameObject.AddComponent<CustomLookAt>();
-
                 var mesh = animator.gameObject.GetComponentInChildren<SkinnedMeshRenderer>(true);
                 foreach (var material in mesh.materials)
                 {
@@ -321,15 +319,18 @@ public static class Market_NPC
     {
         private Animator animator;
         private Vector3 currentLookAt = Vector3.zero;
+        private ZNetView _znet;
 
         private void Awake()
         {
+            _znet = GetComponentInParent<ZNetView>();
             animator = GetComponent<Animator>();
             currentLookAt = transform.position + transform.forward * 4f + Vector3.up * 1.2f;
         }
 
         private void OnAnimatorIK(int layerIndex)
         {
+            if(!_znet.IsValid()) return;
             if (animator && Player.m_localPlayer)
             {
                 float speed = 2f;
@@ -371,7 +372,7 @@ public static class Market_NPC
         public GameObject pastOverrideModel;
         public NPCType _currentNpcType;
 
-        private ZSyncAnimation zanim;
+        public ZSyncAnimation zanim;
         private TMP_Text canvas;
         public AudioSource NPC_SoundSource;
         private bool WasClose;
@@ -518,15 +519,14 @@ public static class Market_NPC
                 if (periodicAnimationTimer >= znv.m_zdo.GetFloat("KGperiodicAnimationTime"))
                 {
                     periodicAnimationTimer = 0;
-                    if (pastOverrideModel && !string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGperiodicAnimation")))
+                    if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGperiodicAnimation")))
                     {
-                        pastOverrideModel.GetComponent<Animator>()
-                            ?.SetTrigger(znv.m_zdo.GetString("KGperiodicAnimation"));
+                        zanim.SetTrigger(znv.m_zdo.GetString("KGperiodicAnimation"));
                     }
                 }
             }
 
-            if (znv.IsOwner() && znv.m_zdo.GetFloat("KGperiodicSoundTime") > 0)
+            if (znv.m_zdo.GetFloat("KGperiodicSoundTime") > 0)
             {
                 periodicSoundTimer += Time.fixedDeltaTime;
                 if (periodicSoundTimer >= znv.m_zdo.GetFloat("KGperiodicSoundTime"))
@@ -555,11 +555,9 @@ public static class Market_NPC
                                 znv.m_zdo.GetString("KGgreetingText"), false);
                         }
 
-                        if (pastOverrideModel &&
-                            !string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGgreetingAnimation")))
+                        if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGgreetingAnimation")))
                         {
-                            pastOverrideModel.GetComponent<Animator>()
-                                ?.SetTrigger(znv.m_zdo.GetString("KGgreetingAnimation"));
+                            zanim.SetTrigger(znv.m_zdo.GetString("KGgreetingAnimation"));
                         }
                     }
                 }
@@ -577,10 +575,9 @@ public static class Market_NPC
                                 znv.m_zdo.GetString("KGbyeText"), false);
                         }
 
-                        if (pastOverrideModel && !string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGbyeAnimation")))
+                        if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGbyeAnimation")))
                         {
-                            pastOverrideModel.GetComponent<Animator>()
-                                ?.SetTrigger(znv.m_zdo.GetString("KGbyeAnimation"));
+                            zanim.SetTrigger(znv.m_zdo.GetString("KGbyeAnimation"));
                         }
                     }
                 }
@@ -613,7 +610,6 @@ public static class Market_NPC
                 znv.Register("KGmarket overridename", new Action<long, string>(OverrideName));
                 znv.Register("KGmarket overridemodel", new Action<long, string>(OverrideModel));
                 znv.Register("KGmarket fashion", new Action<long, string>(FashionApply));
-                znv.Register("KGmarket GetDamage", PlayStaggerAnimation);
                 znv.Register("KGmarket GetPatrolData", new Action<long, string>(GetPatrolData));
             }
 
@@ -715,9 +711,9 @@ public static class Market_NPC
 
         public bool Interact(Humanoid user, bool hold, bool alt)
         {
-            if (pastOverrideModel && !string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGinteractAnimation")))
+            if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGinteractAnimation")))
             {
-                pastOverrideModel.GetComponent<Animator>()?.SetTrigger(znv.m_zdo.GetString("KGinteractAnimation"));
+                zanim.SetTrigger(znv.m_zdo.GetString("KGinteractAnimation"));
             }
 
             string interactAudio = znv.m_zdo.GetString("KGinteractSound");
@@ -967,7 +963,12 @@ public static class Market_NPC
             canvas.transform.localPosition += new Vector3(0, KGtextDistance, 0);
 
             if (!TryOverrideModel(ref newModelName, out _))
-                transform.Find(_currentNpcType.ToString()).gameObject.SetActive(true);
+            {
+                Transform t = transform.Find(_currentNpcType.ToString());
+                t.gameObject.SetActive(true);
+                zanim.m_animator = t.GetComponentInChildren<Animator>(true);
+            }
+                
         }
 
         private void OverrideName(long sender, string newName)
@@ -1175,7 +1176,7 @@ public static class Market_NPC
         private bool TryOverrideModel(ref string prefab, out bool isFemale, bool EquipItems = true)
         {
             bool overrideHumanoid = false;
-            _isPlayerModel = false;
+            _isPlayerModel = false; 
 
             if (pastOverrideModel) Destroy(pastOverrideModel);
             zanim.enabled = false;
@@ -1437,17 +1438,9 @@ public static class Market_NPC
 
         public void Damage(HitData hit)
         {
-            znv.InvokeRPC(ZNetView.Everybody, "KGmarket GetDamage", new object[] { null });
+            zanim.SetTrigger("stagger");
         }
-
-        private void PlayStaggerAnimation(long sender)
-        {
-            if (!pastOverrideModel) return;
-            Animator anim = pastOverrideModel.GetComponent<Animator>();
-            if (!anim) return;
-            anim.speed = 1f;
-            anim.SetTrigger(Stagger);
-        }
+        
 
         public DestructibleType GetDestructibleType()
         {

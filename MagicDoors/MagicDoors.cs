@@ -10,7 +10,6 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
 
-
 namespace MagicDoors
 {
     [BepInPlugin(GUID, GUID, VERSION)]

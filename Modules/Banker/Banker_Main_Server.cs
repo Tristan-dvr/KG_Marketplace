@@ -21,7 +21,6 @@ public static class Banker_Main_Server
         if (Global_Values.BankerIncomeTime > 0)
         {
             Marketplace._thistype.StartCoroutine(BankerIncome());
-            Utils.print("Started Banker Income Coroutine");
         }
 
         ReadServerBankerProfiles();

@@ -33,7 +33,8 @@ public static class Dialogues_DataTypes
         AddPin,
         AddEpicMMOExp,
         AddCozyheimExp,
-        ExecuteScript
+        ExecuteScript,
+        PlayAnimation
     }
 
     private const byte reverseFlag = 1 << 7;
@@ -183,6 +184,12 @@ public static class Dialogues_DataTypes
                     {
                         switch (optionCommand)
                         {
+                            case OptionCommand.PlayAnimation:
+                                result += (npc) =>
+                                {
+                                    npc.zanim.SetTrigger(split[1]);
+                                };
+                                break;
                             case OptionCommand.ExecuteScript:
                                 result += (_) =>
                                 {

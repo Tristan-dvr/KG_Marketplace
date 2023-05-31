@@ -139,7 +139,6 @@ namespace Marketplace
                     SynchronizingObject = ThreadingHelper.SynchronizingObject
                 };
                 FSW.Changed += MarketplaceConfigChanged;
-                Utils.print("FSW started");
             }
             catch (Exception ex)
             {
