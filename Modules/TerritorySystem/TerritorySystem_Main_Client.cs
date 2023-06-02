@@ -331,8 +331,8 @@ public static class TerritorySystem_Main_Client
                     foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.TerritoriesData
                                  .Value.Where(t => t.DrawOnMap).OrderBy(t => t.Priority))
                     {
+                        Color32 MainColor = territory.GetColor();
                         Vector2 center = territory.Pos();
-                        Color color = territory.GetColor();
                         bool externalWater = territory.ShowExternalWater;
                         int y = Mathf.Clamp(Mathf.RoundToInt((territory.Type switch
                         {
@@ -370,7 +370,47 @@ public static class TerritorySystem_Main_Client
                             for (; x < endX; x++)
                             {
                                 int idx = y * textureSize + x;
-                                mapColors[idx] = color;
+                                if (territory.UsingGradient)
+                                {
+                                    mapColors[idx] = territory.GradientType switch
+                                    {
+                                        TerritorySystem_DataTypes.GradientType.FromCenter => territory
+                                            .GetGradientFromCenter(new Vector2((x - 1024) * pixelSize,
+                                                (y - 1024) * pixelSize)),
+                                        TerritorySystem_DataTypes.GradientType.ToCenter => territory
+                                            .GetGradientFromCenter(
+                                                new Vector2((x - 1024) * pixelSize, (y - 1024) * pixelSize), true),
+                                        
+                                        TerritorySystem_DataTypes.GradientType.LeftRight => territory.GetGradientX(
+                                            (x - 1024) * pixelSize),
+                                        TerritorySystem_DataTypes.GradientType.RightLeft => territory.GetGradientX(
+                                            (x - 1024) * pixelSize, true),
+                                        
+                                        TerritorySystem_DataTypes.GradientType.BottomTop => territory.GetGradientY(
+                                            (y - 1024) * pixelSize),
+                                        TerritorySystem_DataTypes.GradientType.TopBottom => territory.GetGradientY(
+                                            (y - 1024) * pixelSize, true),
+
+                                        TerritorySystem_DataTypes.GradientType.BottomLeftTopRight =>
+                                            territory.GetGradientXY(new Vector2((x - 1024) * pixelSize,
+                                                (y - 1024) * pixelSize)),
+                                        TerritorySystem_DataTypes.GradientType.TopRightBottomLeft =>
+                                            territory.GetGradientXY(
+                                                new Vector2((x - 1024) * pixelSize, (y - 1024) * pixelSize), true),
+                                        
+                                        TerritorySystem_DataTypes.GradientType.BottomRightTopLeft =>
+                                            territory.GetGradientXY_2(new Vector2((x - 1024) * pixelSize,
+                                                (y - 1024) * pixelSize)),
+                                        TerritorySystem_DataTypes.GradientType.TopLeftBottomRight =>
+                                            territory.GetGradientXY_2(
+                                                new Vector2((x - 1024) * pixelSize, (y - 1024) * pixelSize), true)
+                                    };
+                                }
+                                else
+                                {
+                                    mapColors[idx] = MainColor;
+                                }
+
                                 if (externalWater)
                                 {
                                     heightColors[idx] = new Color(Mathf.Clamp(heightColors[idx].r, 29f, 89), 0, 0);
@@ -791,11 +831,13 @@ public static class TerritorySystem_Main_Client
     {
         private static bool Prefix(Vector3 spawnPoint)
         {
-            foreach (TerritorySystem_DataTypes.Territory territory in TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.NoMonsters])
+            foreach (TerritorySystem_DataTypes.Territory territory in TerritoriesByFlags[
+                         TerritorySystem_DataTypes.TerritoryFlags.NoMonsters])
             {
                 if (territory.IsInside(spawnPoint))
                     return false;
             }
+
             return true;
         }
     }

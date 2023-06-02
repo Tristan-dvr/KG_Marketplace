@@ -15,173 +15,215 @@ Paypal: <a href="mailto:war3spells@gmail.com">war3spells@gmail.com</a></p>
 <thead>
 <tr>
 <th>Version</th>
+<th style="text-align:left"></th>
 <th>Changes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>7.7.1</td>
+<td style="text-align:left"></td>
 <td>1) Now skill level as quest REWARD will not give skill levels if skill level is 0 (professions)<br/>2) Now all configs (including discord config, territory config and MAIN config (that also got changed) ) updating in server runtime without restart<br/>3) Changed discord connector config so you can write your own messages using {0] {1} {2} string formatting<br/>4) Fixed some patrol errors<br/>5) NPC that visible on map will be displayed as quest complete icon if its Talk quest target<br/>6) Fixed bug where every player would be an owner of any admin zone<br/>New territory flags<br/>7) NPC’s now can move if you set their patrol data (example: X0, Y0, X1, Y1, X2, Y2 and so on)<br/>8) Added new NPC name <icon> tag that allows you to add icon to NPC (exampe: <icon>Hammer</icon>), icon may be in-game monster, item or teleporter icon<br/>9) Added caching of teleporter icons<br/>10) Added /zones command to show zones in world<br/>11) Added F8 client GUI to create/remove/edit zones<br/>12) Added new NPC that’s visible on map<br/>13) Added caching of quest descriptions<br/>14) Quests now may have multiple restrictions</td>
 </tr>
 <tr>
 <td>7.7.2-7.7.6</td>
+<td style="text-align:left"></td>
 <td>1) Small bugfixes<br/>2) Fixed npc patrol dropping underground because of no collision check<br/>3) Added isModed = true flag for valheim<br/>4) New territory flags were added: CustomPaint, LimitZoneHeight</td>
 </tr>
 <tr>
 <td>7.7.7</td>
+<td style="text-align:left"></td>
 <td>1) Max accepted quest count now controlled by option in serverside<br/>2) Updated accepted quests UI. Added scrollview so you can see a lot of quests now. Also accepted quests UI now expandable in height if you drag its bottom border<br/>3) Fixed visible on map npc icon giving error<br/>4) Fixed patrol npc skyrocket in sky</td>
 </tr>
 <tr>
 <td>7.7.8</td>
+<td style="text-align:left"></td>
 <td>1) Fixed Jewelcrafting incompatibility<br/>2) Added new API methods for my server control bot</td>
 </tr>
 <tr>
 <td>7.7.9-7.8.2</td>
+<td style="text-align:left"></td>
 <td>1) Added new mechanic: Battlepass. (Still it test so no guides atm)<br/>2) Fixed marketplace default NPC models being able to go through (model collider issues)<br/>3) Added marketplace comptibility with ANY EIDF (Extended Item Data Framework) mod, such as my Transmogrification, Jewelcrafting, EpicLoot and so on<br/>4) Items in marketplace now have tooltip in right side with item stats and additional mod effects<br/>5) Added new quest Requirement: HasItem. Example: HasItem: Coins, 500<br/>6) Added new territory flags: LimitZoneHeight, CustomPaint<br/>7) Some additional optimizations<br/>8) Quest system improvements in terms of serverside crashes</td>
 </tr>
 <tr>
 <td>7.8.3</td>
+<td style="text-align:left"></td>
 <td>1) Changed marketplace fonts and optimized UI<br/>2) Battlepass fixes<br/>3) Webhooks now having <color> richtext removed</td>
 </tr>
 <tr>
 <td>7.8.4</td>
+<td style="text-align:left"></td>
 <td>1) Added german + portugese languages support<br/>2) HOTFIX for bug that doesn’t allow mod to work</td>
 </tr>
 <tr>
 <td>7.8.5</td>
+<td style="text-align:left"></td>
 <td>1) Fixed cooking skill bug<br/>2) Fixed marketplace UI sorting by itemname/price/amount/seller text disappear on click</td>
 </tr>
 <tr>
 <td>7.8.6</td>
+<td style="text-align:left"></td>
 <td>1) Added Korean language support<br/>2) Fixed possible EIDF item dupe</td>
 </tr>
 <tr>
 <td>7.8.7</td>
+<td style="text-align:left"></td>
 <td>1) Now collect and craft quests may also have target level<br/>2) Fixed JC api<br/>3) Added new trader UI buttons: x1, x5, x10, x100</td>
 </tr>
 <tr>
 <td>7.8.8</td>
+<td style="text-align:left"></td>
 <td>Fixed Previous Version</td>
 </tr>
 <tr>
 <td>7.8.9</td>
+<td style="text-align:left"></td>
 <td>Fixed kill quest sometimes giving double reward</td>
 </tr>
 <tr>
 <td>7.9.0</td>
+<td style="text-align:left"></td>
 <td>Fixed problem where item with 5 sockets were shown as 4 sockets max</td>
 </tr>
 <tr>
 <td>7.9.1-7.9.2</td>
+<td style="text-align:left"></td>
 <td>1) Bugfixes<br/>Increase max marketplace pric to 10 mil</td>
 </tr>
 <tr>
 <td>7.9.3</td>
+<td style="text-align:left"></td>
 <td>Fixed new Jewelcrafting mod version problem with marketplace display</td>
 </tr>
 <tr>
 <td>7.9.4</td>
+<td style="text-align:left"></td>
 <td>NPC’s now may have interact sound<br/>New Territory Flag: SnowMask (makes ground with snow only)<br/>New Territory Flag: NoItemLoss. On death inventory kept with player<br/>Bugfixes<br/>Added <speed> tag to Teleporter spot name (read Teleporter guides)<br/>Moved all system Guides to separated github page because of char limit</td>
 </tr>
 <tr>
 <td>7.9.5-7.9.6</td>
+<td style="text-align:left"></td>
 <td>Fixed an issue with disconnecting players after few hours</td>
 </tr>
 <tr>
 <td>7.9.7</td>
+<td style="text-align:left"></td>
 <td>Added 3 new options in NPC Fasion Menu: Text Font, Text Size, Test Height Offset</td>
 </tr>
 <tr>
 <td>7.9.8</td>
+<td style="text-align:left"></td>
 <td>Now Admins using Debug Mod can remove slots (even Expired one’s) from marketplace by clicking “X” button in end of each slot</td>
 </tr>
 <tr>
 <td>7.9.9</td>
+<td style="text-align:left"></td>
 <td>Fixed small marketplace bug on trying to sell items<br/>Now “NPC Model Override” can be literally ANYTHING in game: Piece objects (structures), Itemdrops, trees and so on<br/>Please use new model override feature on your own risk since its not being tested yet and may cause a lot of bugs. DO NOT USE VFX’s as model override or model will be gone. If you somehow failed NPC model override then write it chat /npc remove . That will cause all near NPC’s (5 meter range) be removed</td>
 </tr>
 <tr>
 <td>7.9.10</td>
+<td style="text-align:left"></td>
 <td>Fixed KeyManager problem for server using same IP</td>
 </tr>
 <tr>
 <td>8.0.0</td>
+<td style="text-align:left"></td>
 <td>1) Bugfixes<br/>2) Added new Premium System: Distanced UI that can use NPC profiles without interacting with NPCs. To use go to MarketplaceKG/PremiumSystem/ folder to  edit .cfg file. Hotkey to open UI is L. Alt + ~<br/>3) Added new NPC UI : Save/Load. Opens with C + Interact. Allows you to save NPC appearance and then load it back on another NPC. To save ALL NPCs in your location write /npc save in chat<br/>4) Replaced old localization on LocalizationManager. Now you can add your own localization. For that download file: <a href="https://pastebin.com/7z08xMQq">https://pastebin.com/7z08xMQq</a> . Place it into Valheim/BepInEx/config/ folder and name it MarketplaceAndServerNPCs.YOURLANGUAGE.yml . Then you can translate lines to make your own language localization</td>
 </tr>
 <tr>
 <td>8.0.2</td>
+<td style="text-align:left"></td>
 <td>Added few log lines for PremiumSystem</td>
 </tr>
 <tr>
 <td>8.1.0</td>
+<td style="text-align:left"></td>
 <td><span style="color:red;">BEFORE INSTALLING 8.1.0 VERSION MAKE SURE TO REMOVE ALL ITEMS FROM MARKETPLACE SINCE AFTER UPDATE IT WILL REMOVE ITEMS OWNERSHIP FROM ALL USERS. ALSO DO THE SAME FOR ALL PLAYER CREATED TERRITORIES<br/></span>New NPC (System) Added: Transmogrification (Paid feature only)<br/>New System added: Quest Events<br/>New quest reward added: Skill_EXP<br/>New quest restriction added: NotFinished<br/>Bugfixes<br/>Now NPC Sounds are mp3 files instead of wav<br/>Now Territories with at least one color less than 0 wont be displayed on map<br/>Added tooltips on hover on any quest reward or trader item<br/>If you will write [questID=autocomplete] then quest will be considered finished without completing it in NPC UI, it will be completed immediately when your quest target is done<br/></td>
 </tr>
 <tr>
 <td>8.1.1</td>
+<td style="text-align:left"></td>
 <td>Returned Quest Journal (a little changed)<br/>Fixed NPC sound reverb problem<br/>Fixed player getting skill experience while attacking NPC</td>
 </tr>
 <tr>
 <td>8.1.2</td>
+<td style="text-align:left"></td>
 <td>Fixed critical bug that didn’t allow players to join server</td>
 </tr>
 <tr>
 <td>8.2.0</td>
+<td style="text-align:left"></td>
 <td>Now mod compatible with mistlands update<br/>Updated NPC + NPC Fashion UI’s<br/>Now Marketplace also saves Crafter Name + Crafter ID<br/>Updated transmog to use ItemDataManager. After update all transmogrified items will be nullified. But because of using ItemDataManager now transmog wont disappear when you upgrade an item + will have much less bugs (armor stand ad so on)<br/>New Territory flags added: NoMist, InfiniteEitr, InfiniteStamina<br/>Small Localization update</td>
 </tr>
 <tr>
 <td>8.2.1</td>
+<td style="text-align:left"></td>
 <td>Fixed quest autocomplete tag problem on most quest types. Now it properly works on all Kill, Collect, Craft, Build type quests</td>
 </tr>
 <tr>
 <td>8.2.3</td>
+<td style="text-align:left"></td>
 <td>Fixed Jewelcrafting compatibility. <br/>Added new VFX id: 21 to Transmogrification that allows people to chooce any effect manually. <br/>Fixed player territories map showup issue</td>
 </tr>
 <tr>
 <td>8.2.4</td>
+<td style="text-align:left"></td>
 <td>Added MagicHeim API (Quest Reward Add MagicHeim EXP, Quest Restriction MagicHeim Level)<br/>Fixed compatibility issue with Marketplace Territories and Jere’s ExpandWorld</td>
 </tr>
 <tr>
 <td>8.2.6</td>
+<td style="text-align:left"></td>
 <td>Updated to latest Valheim live version<br/>Added new &lt;image=link&gt; tag for quest name to show preview image<br/>Added PutAll button to Banker<br/>Added Periodic animation to NPC Fashion UI<br/>Fixed Premium UI syncing<br/>Added new territory flag: NoCreatureDrops</td>
 </tr>
 <tr>
 <td>8.2.7</td>
+<td style="text-align:left"></td>
 <td>Added new trader format, now Trader may have up to 5 items to exchange in left and right side, also left side items may now also have level required<br/>Quests now may have multiple targets per one quest as rewards and requirements (same format with adding)<br/>Reworked Marketplace UI visuals<br/>Fixed a bug where marketplace prevented items from being able to change rotation / roll<br/>Some code optimizations<br/>Now if you press RIGHT mouse button on “Receive Income” button in Marketplace then income will be added directly to your banker</td>
 </tr>
 <tr>
 <td>8.2.8</td>
+<td style="text-align:left"></td>
 <td>All data in DO NOT TOUCH folder now decrypted. Keep in mind that you can’t change that in runtime and if you edit .json file then do it on your own risk<br/>Changed NPC Save / Load UI, changed Marketplace UI, changed Premium UI<br/>Added IsVIP restriction for quests (quest will be shown only for VIP’s)<br/>Fixed trader NeedToKnowMaterial items appear if player doesn’t know materials<br/>Now you can buy particular amount of items from stack in Marketplace<br/>Updated KeyManager<br/>Items in Marketplace cannot be Expired anymore</td>
 </tr>
 <tr>
 <td>8.3.0</td>
+<td style="text-align:left"></td>
 <td>Updated for new Valheim version<br/>Bugfixes<br/>Added  Marketplace_GOBLIN, Marketplace_SKELETON, Marketplace_QUESTBOARD, Marketplace_TELEPORTER, Marketplace_DEFAULTNPC as separated models that you can use to override NPC model</td>
 </tr>
 <tr>
 <td>8.3.2</td>
+<td style="text-align:left"></td>
 <td>Quest descriptions now may have \n as new line<br/>Territory minimap text fix<br/>Fixed NPC save/load UI problems<br/>Fixed Teleporter map names showup</td>
 </tr>
 <tr>
 <td>8.3.3</td>
+<td style="text-align:left"></td>
 <td>Added Groups API for Kill type quests</td>
 </tr>
 <tr>
 <td>8.4.0</td>
+<td style="text-align:left"></td>
 <td>Player Territories removed. Please do not install this version until you replace Player Territories module on something else (Azumatt wards / e.t.c) (TerritoryDatabase is same and working, just not the players one)<br/>Added KGchat as part of marketplace. Its enabled by default but you can turn it off in Main config on serverside. You can replace KGchat emojis in BepInEx/Config/MarketplaceEmojis. You will find spritesheet_original.png there, change pics on what you need and rename it to spritesheet.png<br/>Added 2 new fields to fashion UI: Periodic Sound + Periodic Sound Time<br/>Added new quest event: NpcText<br/>Optimized mod by rewriting it almost from scratch. Now mod is open-source, check: <a href="https://github.com/war3i4i/Marketplace">https://github.com/war3i4i/Marketplace</a> for code<br/>Added API for territories so other mods may use it (check github)<br/>NPC’s now won’t show up in hammer menu if Debug Mode is turned off<br/><br/>Transmogrification system access has changed (now transmogrification is a separated DLL). If you bought Transmog access before this patch please contact me in discord KG#7777 so i can send you mod to enable Transmog</td>
 </tr>
 <tr>
 <td>8.5.0</td>
+<td style="text-align:left"></td>
 <td>New system added: NPC Dialogue (guide soon)<br/>New system added: Item Mocking (guide soon)<br/>Fixed banker multiplier bug<br/>Fixed KGchat text overflow</td>
 </tr>
 <tr>
 <td>8.6.0</td>
+<td style="text-align:left"></td>
 <td>New system added: Mailbox<br/>Finished NPC Dialogues system<br/>Bugfixes<br/>Fixed Banker interest not working<br/>Now Marketplace can use SOME of its features locally on client (to enable set config option to true on clientside)<br/>New Quest Restriction - Time: value, allows quest to be time limited<br/>Added NPC font support for chinese symbols and other languages special symbols<br/></td>
 </tr>
 <tr>
 <td>8.6.3</td>
+<td style="text-align:left"></td>
 <td>Posted / updated NPC Dialogues + Territory System guides on site<br/>Added config option to specify banker interest items (All by default)<br/>Added config option to set mailbox item wait time<br/>Fixed gambler code<br/>Now working with wackydb 2.0 (beta) cloned items</td>
 </tr>
 <tr>
 <td>8.7.0</td>
-<td>Added players tag system<br/>Traders now can sell Skill EXP<br/>Added new folder: AdditionalConfigs with Quests/Dialogues/Territories folders where you can put additional .cfg files for corresponding NPC type (so you don’t flood your main config file and split / manage it better)<br/>Added Color attribute to dialogues<br/>Added new dialogues commands / conditions<br/>Added &lt;image=link&gt; tag for server info<br/>Now if server info tag named [OnPlayerJoin] it will show UI when player first joins server<br/>Bugfixes / optimizations<br/>Transmogrification is now a free feature<br/>Added Transmog to DistancedUI<br/>Now you can use ! sign before dialogue condition to simply reverse it</td>
+<td style="text-align:left"></td>
+<td>Added players tag system<br/>Traders now can sell Skill EXP<br/>Added new folder: AdditionalConfigs with Quests/Dialogues/Territories folders where you can put additional .cfg files for corresponding NPC type (so you don’t flood your main config file and split / manage it better)<br/>Added Color attribute to dialogues<br/>Added new dialogues commands / conditions<br/>Added &lt;image=link&gt; tag for server info<br/>Now if server info tag named [OnPlayerJoin] it will show UI when player first joins server<br/>Bugfixes / optimizations<br/>Transmogrification is now a free feature<br/>Added Transmog to DistancedUI<br/>Now you can use ! sign before dialogue condition to simply reverse it<br/>Added C# script execution for dialogues + quests events<br/>Added gradients for Territory System colors</td>
 </tr>
 </tbody>
 </table>

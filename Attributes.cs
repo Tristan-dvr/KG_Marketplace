@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Marketplace;
+﻿namespace Marketplace;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class Market_Autoload : Attribute
@@ -27,7 +25,6 @@ public class Market_Autoload : Attribute
         this.OnWatcherMethods = OnWatcherMethods;
     }
 }
-
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class ClientOnlyPatch : Attribute{}

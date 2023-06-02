@@ -1,11 +1,14 @@
 ﻿using Mono.CSharp;
+
 namespace Marketplace.Modules.CodeExecutor;
+
 [UsedImplicitly, Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit")]
 public static class CodeExecutor
 {
     private static Evaluator codeExecutor;
     private static readonly StringBuilder builder = new();
     private static readonly StringWriter sw = new StringWriter(builder);
+
     private static void OnInit()
     {
         CompilerSettings settings = new()
@@ -33,13 +36,13 @@ public static class CodeExecutor
         codeExecutor.Run("using UnityEngine;");
         codeExecutor.Run("using UnityEngine.UI;");
         codeExecutor.Run("using HarmonyLib;");
-        object _ = null; 
+        object _ = null;
         codeExecutor.Compile(@"Marketplace.Utils.print(""Code Executor Init"")")?.Invoke(ref _);
     }
-
+    
     private static void ExecuteCode(string code)
     {
-        var method = codeExecutor.Compile(code); 
+        var method = codeExecutor.Compile(code);
         object toRef = null;
         method?.Invoke(ref toRef);
         string result = sw.ToString();
@@ -47,7 +50,7 @@ public static class CodeExecutor
         Utils.print($"Code execution result:\n{result}", ConsoleColor.Red);
         builder.Clear();
     }
-    
+
     public static void ExecuteScript(string name)
     {
         name = name.ToLower();

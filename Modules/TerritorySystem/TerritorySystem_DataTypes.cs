@@ -4,15 +4,15 @@ public static class TerritorySystem_DataTypes
 {
     internal static readonly CustomSyncedValue<List<Territory>> TerritoriesData =
         new(Marketplace.configSync, "territoryData", new List<Territory>());
-    
+
     public static readonly TerritoryFlags[] AllTerritoryFlagsArray =
         (TerritoryFlags[])Enum.GetValues(typeof(TerritoryFlags));
-    
+
     public static readonly AdditionalTerritoryFlags[] AllAdditionaTerritoryFlagsArray =
         (AdditionalTerritoryFlags[])Enum.GetValues(typeof(AdditionalTerritoryFlags));
-    
+
     //serialization part
-    
+
     public partial class Territory : ISerializableParameter
     {
         public void Serialize(ref ZPackage pkg)
@@ -27,7 +27,7 @@ public static class TerritorySystem_DataTypes
             pkg.Write(Name ?? "");
             pkg.Write(R);
             pkg.Write(G);
-            pkg.Write(B);   
+            pkg.Write(B);
             pkg.Write(Radius);
             pkg.Write(ShowExternalWater);
             pkg.Write(Priority);
@@ -43,6 +43,11 @@ public static class TerritorySystem_DataTypes
             pkg.Write(AddMonsterLevel);
             pkg.Write((int)PaintGround);
             pkg.Write(DrawOnMap);
+            pkg.Write(R_End);
+            pkg.Write(G_End);
+            pkg.Write(B_End);
+            pkg.Write(UsingGradient);
+            pkg.Write((int)GradientType);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -73,9 +78,14 @@ public static class TerritorySystem_DataTypes
             AddMonsterLevel = pkg.ReadInt();
             PaintGround = (PaintType)pkg.ReadInt();
             DrawOnMap = pkg.ReadBool();
+            R_End = pkg.ReadInt();
+            G_End = pkg.ReadInt();
+            B_End = pkg.ReadInt();
+            UsingGradient = pkg.ReadBool();
+            GradientType = (GradientType)pkg.ReadInt();
         }
     }
- 
+
     //main part
     public partial class Territory
     {
@@ -91,8 +101,12 @@ public static class TerritorySystem_DataTypes
         public int R;
         public int G;
         public int B;
+        public int R_End = -1;
+        public int G_End = -1;
+        public int B_End = -1;
+        public bool UsingGradient;
         public int Radius;
-        public bool ShowExternalWater;
+        public bool ShowExternalWater = true;
         public int Priority;
         public float PeriodicHealValue;
         public float PeriodicDamageValue;
@@ -106,6 +120,7 @@ public static class TerritorySystem_DataTypes
         public int AddMonsterLevel;
         public PaintType PaintGround;
         public bool DrawOnMap;
+        public GradientType GradientType = GradientType.FromCenter;
 
 
         public static Territory GetCurrentTerritory(Vector3 pos)
@@ -135,6 +150,64 @@ public static class TerritorySystem_DataTypes
         public Color32 GetColor()
         {
             return new Color32((byte)R, (byte)G, (byte)B, 255);
+        }
+
+        private Color32 CalculateGradient(float t)
+        {
+            Color32 start = GetColor();
+            Color32 end = new Color32((byte)R_End, (byte)G_End, (byte)B_End, 255);
+            return Color32.Lerp(start, end, t);
+        }
+
+        public Color32 GetGradientX(float x, bool reverse = false)
+        {
+            float startX = Pos().x - Radius;
+            float endX = Pos().x + Radius;
+            float t = Mathf.Clamp01((x - startX) / (endX - startX));
+            if (reverse) t = 1 - t;
+            return CalculateGradient(t);
+        }
+
+        public Color32 GetGradientY(float y, bool reverse = false)
+        {
+            float startY = Pos().y - Radius;
+            float endY = Pos().y + Radius;
+            float t = Mathf.Clamp01((y - startY) / (endY - startY));
+            if (reverse) t = 1 - t;
+            return CalculateGradient(t);
+        }
+
+        public Color32 GetGradientXY(Vector2 pos, bool reverse = false)
+        {
+            float startX = Pos().x - Radius;
+            float endX = Pos().x + Radius;
+            float startY = Pos().y - Radius;
+            float endY = Pos().y + Radius;
+            float tX = Mathf.Clamp01((pos.x - startX) / (endX - startX));
+            float tY = Mathf.Clamp01((pos.y - startY) / (endY - startY));
+            float t = (tX + tY) / 2;
+            if (reverse) t = 1 - t;
+            return CalculateGradient(t);
+        }
+
+        public Color32 GetGradientXY_2(Vector2 pos, bool reverse = false)
+        {
+            float startX = Pos().x + Radius;
+            float endX = Pos().x - Radius;
+            float startY = Pos().y - Radius;
+            float endY = Pos().y + Radius;
+            float tX = Mathf.Clamp01((pos.x - startX) / (endX - startX));
+            float tY = Mathf.Clamp01((pos.y - startY) / (endY - startY));
+            float t = (tX + tY) / 2;
+            if (reverse) t = 1 - t;
+            return CalculateGradient(t);
+        }
+
+        public Color32 GetGradientFromCenter(Vector2 pos, bool reverse = false)
+        {
+            float t = Mathf.Clamp01(Vector2.Distance(pos, Pos()) / Radius);
+            if (reverse) t = 1 - t;
+            return CalculateGradient(t);
         }
 
 
@@ -184,7 +257,7 @@ public static class TerritorySystem_DataTypes
                     return mouse.x >= p.x - Radius && mouse.x <= p.x + Radius && mouse.y >= p.y - Radius &&
                            mouse.y <= p.y + Radius;
                 case TerritoryType.Circle:
-                    return Vector2.Distance(p, mouse) <= Radius; 
+                    return Vector2.Distance(p, mouse) <= Radius;
                 case TerritoryType.Custom:
                     return mouse.x >= p.x && mouse.x <= p.x + Xlength && mouse.y >= p.y && mouse.y <= p.y + Ylength;
                 default:
@@ -199,13 +272,13 @@ public static class TerritorySystem_DataTypes
         }
 
         public string GetTerritoryFlags()
-        { 
+        {
             string ret = "";
             foreach (TerritoryFlags flag in AllTerritoryFlagsArray)
             {
                 if (!Flags.HasFlagFast(flag)) continue;
                 if (LocalizedTerritoryFlags.TryGetValue(flag, out string territoryFlag))
-                    ret += Localization.instance.Localize(territoryFlag); 
+                    ret += Localization.instance.Localize(territoryFlag);
             }
 
             foreach (AdditionalTerritoryFlags flag in AllAdditionaTerritoryFlagsArray)
@@ -225,6 +298,20 @@ public static class TerritorySystem_DataTypes
         Circle,
         Square,
         Custom
+    }
+
+    public enum GradientType
+    {
+        FromCenter,
+        ToCenter,
+        LeftRight,
+        RightLeft,
+        TopBottom,
+        BottomTop,
+        BottomRightTopLeft,
+        TopRightBottomLeft,
+        BottomLeftTopRight,
+        TopLeftBottomRight
     }
 
     public enum PaintType

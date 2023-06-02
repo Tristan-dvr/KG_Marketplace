@@ -65,7 +65,31 @@ public static class TerritorySystem_Main_Server
                     }
 
 
-                    string[] rgb = profiles[i + 2].Replace(" ", "").Split(',');
+                    List<string> rgb = profiles[i + 2].Replace(" ", "").Split(',').ToList();
+
+                    // draw water
+                    for (int tf = 0; tf < rgb.Count; ++tf)
+                    {
+                        if (rgb[tf].ToLower() is "true" or "false")
+                        {
+                            newTerritory.ShowExternalWater = Convert.ToBoolean(rgb[tf]);
+                            rgb.RemoveAt(tf);
+                            break;
+                        }
+                    }
+                    
+                    // find gradient type
+                    for (int tf = 0; tf < rgb.Count; ++tf)
+                    {
+                        if (!int.TryParse(rgb[tf], out _) && Enum.TryParse(rgb[tf], true, out TerritorySystem_DataTypes.GradientType gradient))
+                        {
+                            newTerritory.GradientType = gradient;
+                            rgb.RemoveAt(tf);
+                            break;
+                        }
+                    }
+                    
+                   
 
                     newTerritory.R = Convert.ToInt32(rgb[0]);
                     newTerritory.G = Convert.ToInt32(rgb[1]);
@@ -77,9 +101,17 @@ public static class TerritorySystem_Main_Server
                     newTerritory.G = Mathf.Clamp(newTerritory.G, 0, 255);
                     newTerritory.B = Mathf.Clamp(newTerritory.B, 0, 255);
 
-                    newTerritory.ShowExternalWater = true;
-                    if (rgb.Length == 4)
-                        newTerritory.ShowExternalWater = Convert.ToBoolean(rgb[3]);
+                    newTerritory.R_End = rgb.Count > 3 ? Convert.ToInt32(rgb[3]) : -1;
+                    newTerritory.G_End = rgb.Count > 4 ? Convert.ToInt32(rgb[4]) : -1;
+                    newTerritory.B_End = rgb.Count > 5 ? Convert.ToInt32(rgb[5]) : -1;
+
+                    newTerritory.UsingGradient =
+                        newTerritory.R_End >= 0 && newTerritory.G_End >= 0 && newTerritory.B_End >= 0;
+
+                    newTerritory.R_End = Mathf.Clamp(newTerritory.R_End, 0, 255);
+                    newTerritory.G_End = Mathf.Clamp(newTerritory.G_End, 0, 255);
+                    newTerritory.B_End = Mathf.Clamp(newTerritory.B_End, 0, 255);
+
 
                     TerritorySystem_DataTypes.TerritoryFlags flags = TerritorySystem_DataTypes.TerritoryFlags.None;
                     TerritorySystem_DataTypes.AdditionalTerritoryFlags additionalflags =
