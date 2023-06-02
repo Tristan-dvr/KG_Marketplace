@@ -77,19 +77,32 @@ public static class TerritorySystem_Main_Server
                             break;
                         }
                     }
-                    
+
                     // find gradient type
                     for (int tf = 0; tf < rgb.Count; ++tf)
                     {
-                        if (!int.TryParse(rgb[tf], out _) && Enum.TryParse(rgb[tf], true, out TerritorySystem_DataTypes.GradientType gradient))
+                        if (!int.TryParse(rgb[tf], out _) && Enum.TryParse(rgb[tf], true,
+                                out TerritorySystem_DataTypes.GradientType gradient))
                         {
                             newTerritory.GradientType = gradient;
                             rgb.RemoveAt(tf);
                             break;
                         }
                     }
-                    
-                   
+
+                    // find exp value
+                    for (int tf = 0; tf < rgb.Count; ++tf)
+                    {
+                        if (rgb[tf].ToLower().Contains("exp:"))
+                        {
+                            string val = rgb[tf].Split(':')[1];
+                            if (!float.TryParse(val, NumberStyles.AllowDecimalPoint,
+                                    CultureInfo.InvariantCulture, out float exp)) continue;
+                            newTerritory.ExponentialValue = exp;
+                            rgb.RemoveAt(tf);
+                            break;
+                        }
+                    }
 
                     newTerritory.R = Convert.ToInt32(rgb[0]);
                     newTerritory.G = Convert.ToInt32(rgb[1]);
