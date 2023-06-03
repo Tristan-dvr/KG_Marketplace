@@ -134,7 +134,6 @@ public static class Quest_ProgressionHook
         private static void QuestKillEvent(long sender, string prefab, int level, Vector3 pos, bool ownerRPC)
         {
             if (!Player.m_localPlayer) return;
-            GameEvents.OnCharacterKill?.Invoke(prefab,level, pos);
             if (Global_Values._container.Value._allowKillQuestsInParty && ownerRPC && Groups.API.IsLoaded() &&
                 Groups.API.GroupPlayers() is { Count: > 1 } group)
                 foreach (PlayerReference member in group)
