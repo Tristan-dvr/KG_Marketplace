@@ -11,16 +11,24 @@ public static class ServerInfo_Main_Client
         ServerInfo_UI.Init();
         ServerInfo_DataTypes.ServerInfoData.ValueChanged += OnInfoUpdate;
         Marketplace.Global_Updator += Update;
+        GameEvents.OnPlayerFirstSpawn += OnPlayerFirstSpawn;
+    }
+
+    private static void OnPlayerFirstSpawn()
+    {
+        if (ServerInfo_DataTypes.ServerInfoData.Value.ContainsKey("onplayerfirstspawn"))
+            ServerInfo_UI.Show("onplayerfirstspawn", "");
     }
 
     private static void Update()
-    {
+    { 
         if (!Input.GetKeyDown(KeyCode.Escape) || !ServerInfo_UI.IsPanelVisible()) return;
         ServerInfo_UI.Hide();
         Menu.instance.OnClose();
     }
 
     private static Coroutine LoadImagesRoutine;
+
     private static void OnInfoUpdate()
     {
         if (LoadImagesRoutine != null)
@@ -28,7 +36,7 @@ public static class ServerInfo_Main_Client
         LoadImagesRoutine = Marketplace._thistype.StartCoroutine(LoadQuestImages(
             ServerInfo_DataTypes.ServerInfoData.Value.Values.SelectMany(x => x.infoQueue)
                 .Where(x => x.Type == ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Image)));
-        
+
         if (ServerInfo_UI.IsPanelVisible()) ServerInfo_UI.Reload();
     }
 
@@ -37,7 +45,7 @@ public static class ServerInfo_Main_Client
         yield return new WaitForSeconds(3f);
         foreach (ServerInfo_DataTypes.ServerInfoQueue.Info url in urls)
         {
-            if (string.IsNullOrEmpty(url.Text)) continue; 
+            if (string.IsNullOrEmpty(url.Text)) continue;
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(url.Text);
             yield return request.SendWebRequest();
             if (!request.isNetworkError && !request.isHttpError)
@@ -47,36 +55,10 @@ public static class ServerInfo_Main_Client
                 Texture2D newTempTexture = new Texture2D(texture.width, texture.height);
                 newTempTexture.SetPixels(texture.GetPixels());
                 newTempTexture.Apply();
-                Sprite sprite = Sprite.Create(newTempTexture, new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
+                Sprite sprite = Sprite.Create(newTempTexture,
+                    new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
                 url.SetSprite(sprite);
             }
         }
     }
-    
-    
-    [HarmonyPatch(typeof(Player),nameof(Player.SetLocalPlayer))]
-    private static class Player_SetLocalPlayer_Patch
-    {
-        private static void Postfix()
-        {
-            if (FejdStartup_Awake_Patch.ShowInfoOnStartup)
-            {
-                FejdStartup_Awake_Patch.ShowInfoOnStartup = false;
-
-                if (ServerInfo_DataTypes.ServerInfoData.Value.ContainsKey("onplayerjoin"))
-                    ServerInfo_UI.Show("onplayerjoin", "");
-            }
-        }
-    }
-    
-    
-    [HarmonyPatch(typeof(FejdStartup),nameof(FejdStartup.Awake))]
-    private static class FejdStartup_Awake_Patch
-    {
-        public static bool ShowInfoOnStartup = true;
-        private static void Postfix() => ShowInfoOnStartup = true;
-    }
-    
-    
-    
 }

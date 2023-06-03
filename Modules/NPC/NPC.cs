@@ -440,7 +440,7 @@ public static class Market_NPC
                 PatrolArray = null;
             }
         }
-
+        
         private void CustomUpdate()
         {
             PatrolTime += Time.deltaTime;

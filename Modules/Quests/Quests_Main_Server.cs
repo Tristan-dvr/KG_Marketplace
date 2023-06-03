@@ -328,7 +328,6 @@ public static class Quests_Main_Server
                 Quests_DataTypes.QuestEventAction.RemoveQuest => count == 1,
                 Quests_DataTypes.QuestEventAction.PlaySound => count == 1,
                 Quests_DataTypes.QuestEventAction.NpcText => count >= 1,
-                Quests_DataTypes.QuestEventAction.ExecuteScript => count == 1,
                 _ => false
             };
             if (!result)

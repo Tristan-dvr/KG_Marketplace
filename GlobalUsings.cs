@@ -1,7 +1,4 @@
 // Global using directives
-
-
-
 global using System;
 global using System.Collections;
 global using System.Collections.Generic;
@@ -18,4 +15,4 @@ global using MonoMod.Utils;
 global using ServerSync;
 global using TMPro;
 global using UnityEngine;
-global using UnityEngine.UI;  
+global using UnityEngine.UI;

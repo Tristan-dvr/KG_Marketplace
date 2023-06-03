@@ -33,7 +33,6 @@ public static class Dialogues_DataTypes
         AddPin,
         AddEpicMMOExp,
         AddCozyheimExp,
-        ExecuteScript,
         PlayAnimation
     }
 
@@ -188,12 +187,6 @@ public static class Dialogues_DataTypes
                                 result += (npc) =>
                                 {
                                     npc.zanim.SetTrigger(split[1]);
-                                };
-                                break;
-                            case OptionCommand.ExecuteScript:
-                                result += (_) =>
-                                {
-                                    CodeExecutor.CodeExecutor.ExecuteScript(split[1]);
                                 };
                                 break;
                             case OptionCommand.OpenUI:

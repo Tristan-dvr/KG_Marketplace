@@ -339,9 +339,7 @@
         <Compile Include="DiscordStuff\DiscordConnetor.cs" />
         <Compile Include="ExternalLoads\AsmLoad_UnityCode.cs" />
         <Compile Include="ExternalLoads\AssetStorage.cs" />
-        <Compile Include="Modules\CodeExecutor\CodeExecutor.cs" />
-        <Compile Include="Modules\CodeExecutor\Scripts_DataTypes.cs" />
-        <Compile Include="Modules\CodeExecutor\Scripts_Main_Server.cs" />
+        <Compile Include="GameEvents.cs" />
         <Compile Include="OtherModsAPIs\Cozyheim_LevelingSystem.cs" />
         <Compile Include="OtherModsAPIs\EpicMMO.cs" />
         <Compile Include="OtherModsAPIs\MagicHeim.cs" />

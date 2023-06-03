@@ -162,8 +162,6 @@ namespace Marketplace
                 fName = Path.GetFileName(Market_Paths.NpcDialoguesConfig);
             else if (folderPath.Contains(Market_Paths.AdditionalCondfigsTerritoriesFolder))
                 fName = Path.GetFileName(Market_Paths.TerritoriesConfigPath);
-            else if (folderPath.Contains(Market_Paths.ScriptsFolder))
-                fName = "ScriptFile.cs";
 
             if (!FSW_Lookup.TryGetValue(fName, out Action action)) return;
             if (!ZNet.instance || !ZNet.instance.IsServer())
