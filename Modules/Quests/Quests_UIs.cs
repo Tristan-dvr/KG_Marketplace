@@ -132,7 +132,7 @@ public static class Quests_UIs
                 PreviewImage.sprite = quest.GetPreviewSprite;
             }
 
-            for (int i = quest.TargetAMOUNT - 1; i >= 0; --i)
+            for (int i = quest.TargetAmount - 1; i >= 0; --i)
             {
                 Image TargetImage = UnityEngine.Object.Instantiate(QuestTarget, TargetContent).transform
                     .Find("TargetImage")
@@ -189,7 +189,7 @@ public static class Quests_UIs
                 }
             }
 
-            for (int i = 0; i < quest.RewardsAMOUNT; ++i)
+            for (int i = 0; i < quest.RewardsAmount; ++i)
             {
                 GameObject rewardGO = UnityEngine.Object.Instantiate(RewardGO, RewardTransform);
                 TOREMOVE.Add(rewardGO);
@@ -490,7 +490,7 @@ public static class Quests_UIs
             Transform InitialObject = go.transform.Find("Duplicate");
             InitialObject.gameObject.SetActive(false);
 
-            for (int i = 0; i < data.TargetAMOUNT; ++i)
+            for (int i = 0; i < data.TargetAmount; ++i)
             {
                 GameObject newGo = UnityEngine.Object.Instantiate(InitialObject.gameObject, go.transform);
                 newGo.name = i.ToString();
@@ -526,7 +526,7 @@ public static class Quests_UIs
             if (!UpdateData.ContainsKey(data)) return;
             GameObject go = UpdateData[data];
 
-            for (int i = 0; i < data.TargetAMOUNT; ++i)
+            for (int i = 0; i < data.TargetAmount; ++i)
             {
                 go.transform.Find($"{i}/Score").GetComponent<Text>().text =
                     $"[{data.ScoreArray[i]}/{data.TargetCount[i]}]";

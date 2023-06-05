@@ -253,20 +253,20 @@ public static class Quests_Main_Server
 
                     Quests_DataTypes.Quest quest = new()
                     {
-                        RewardsAMOUNT = _RewardsAMOUNT,
+                        RewardsAmount = _RewardsAMOUNT,
                         Type = type,
                         RewardType = rewardTypes,
                         Name = name,
                         Description = description,
-                        TargetAMOUNT = _targetsCount,
+                        TargetAmount = _targetsCount,
                         TargetPrefab = TargetPrefabs,
                         TargetCount = TargetCounts,
                         TargetLevel = TargetLevels,
                         RewardPrefab = RewardPrefabs,
                         RewardCount = RewardCounts,
-                        ResetTime = int.Parse(cooldown),
+                        Cooldown = int.Parse(cooldown),
                         RewardLevel = RewardLevels,
-                        RequirementsAMOUNT = _RestrictionsAMOUNT,
+                        RequirementsAmount = _RestrictionsAMOUNT,
                         RequirementType = reqs,
                         QuestRequirementPrefab = QuestRestriction,
                         QuestRequirementLevel = QuestRestrictionLevel,
@@ -379,5 +379,6 @@ public static class Quests_Main_Server
         }
 
         Quests_DataTypes.SyncedQuestsEvents.Update();
+        
     }
 }

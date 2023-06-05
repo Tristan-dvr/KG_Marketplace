@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Marketplace_APIs;
+﻿using Marketplace_APIs;
 using Marketplace.Modules.Battlepass;
 using Marketplace.Modules.NPC;
 
@@ -125,16 +124,16 @@ public static class Quests_DataTypes
             pkg.Write((int)SpecialTag);
             pkg.Write(Name ?? "");
             pkg.Write(Description ?? "");
-            pkg.Write(TargetAMOUNT);
-            for (int i = 0; i < TargetAMOUNT; i++)
+            pkg.Write(TargetAmount);
+            for (int i = 0; i < TargetAmount; i++)
             {
                 pkg.Write(TargetPrefab[i] ?? "");
                 pkg.Write(TargetCount[i]);
                 pkg.Write(TargetLevel[i]);
             }
 
-            pkg.Write(RewardsAMOUNT);
-            for (int i = 0; i < RewardsAMOUNT; i++)
+            pkg.Write(RewardsAmount);
+            for (int i = 0; i < RewardsAmount; i++)
             {
                 pkg.Write((int)RewardType[i]);
                 pkg.Write(RewardPrefab[i] ?? "");
@@ -142,8 +141,8 @@ public static class Quests_DataTypes
                 pkg.Write(RewardLevel[i]);
             }
 
-            pkg.Write(RequirementsAMOUNT);
-            for (int i = 0; i < RequirementsAMOUNT; i++)
+            pkg.Write(RequirementsAmount);
+            for (int i = 0; i < RequirementsAmount; i++)
             {
                 pkg.Write((int)RequirementType[i]);
                 pkg.Write(QuestRequirementPrefab[i] ?? "");
@@ -151,7 +150,7 @@ public static class Quests_DataTypes
             }
 
             pkg.Write(PreviewImage ?? "");
-            pkg.Write(ResetTime);
+            pkg.Write(Cooldown);
             pkg.Write(_revision);
             pkg.Write(TimeLimit);
         }
@@ -163,23 +162,23 @@ public static class Quests_DataTypes
             SpecialTag = (SpecialQuestTag)pkg.ReadInt();
             Name = pkg.ReadString();
             Description = pkg.ReadString();
-            TargetAMOUNT = pkg.ReadInt();
-            TargetPrefab = new string[TargetAMOUNT];
-            TargetCount = new int[TargetAMOUNT];
-            TargetLevel = new int[TargetAMOUNT];
-            for (int i = 0; i < TargetAMOUNT; i++)
+            TargetAmount = pkg.ReadInt();
+            TargetPrefab = new string[TargetAmount];
+            TargetCount = new int[TargetAmount];
+            TargetLevel = new int[TargetAmount];
+            for (int i = 0; i < TargetAmount; i++)
             {
                 TargetPrefab[i] = pkg.ReadString();
                 TargetCount[i] = pkg.ReadInt();
                 TargetLevel[i] = pkg.ReadInt();
             }
 
-            RewardsAMOUNT = pkg.ReadInt();
-            RewardType = new QuestRewardType[RewardsAMOUNT];
-            RewardPrefab = new string[RewardsAMOUNT];
-            RewardCount = new int[RewardsAMOUNT];
-            RewardLevel = new int[RewardsAMOUNT];
-            for (int i = 0; i < RewardsAMOUNT; i++)
+            RewardsAmount = pkg.ReadInt();
+            RewardType = new QuestRewardType[RewardsAmount];
+            RewardPrefab = new string[RewardsAmount];
+            RewardCount = new int[RewardsAmount];
+            RewardLevel = new int[RewardsAmount];
+            for (int i = 0; i < RewardsAmount; i++)
             {
                 RewardType[i] = (QuestRewardType)pkg.ReadInt();
                 RewardPrefab[i] = pkg.ReadString();
@@ -187,11 +186,11 @@ public static class Quests_DataTypes
                 RewardLevel[i] = pkg.ReadInt();
             }
 
-            RequirementsAMOUNT = pkg.ReadInt();
-            RequirementType = new QuestRequirementType[RequirementsAMOUNT];
-            QuestRequirementPrefab = new string[RequirementsAMOUNT];
-            QuestRequirementLevel = new int[RequirementsAMOUNT];
-            for (int i = 0; i < RequirementsAMOUNT; i++)
+            RequirementsAmount = pkg.ReadInt();
+            RequirementType = new QuestRequirementType[RequirementsAmount];
+            QuestRequirementPrefab = new string[RequirementsAmount];
+            QuestRequirementLevel = new int[RequirementsAmount];
+            for (int i = 0; i < RequirementsAmount; i++)
             {
                 RequirementType[i] = (QuestRequirementType)pkg.ReadInt();
                 QuestRequirementPrefab[i] = pkg.ReadString();
@@ -199,7 +198,7 @@ public static class Quests_DataTypes
             }
 
             PreviewImage = pkg.ReadString();
-            ResetTime = pkg.ReadInt();
+            Cooldown = pkg.ReadInt();
             _revision = pkg.ReadInt();
             TimeLimit = pkg.ReadInt();
         }
@@ -213,21 +212,21 @@ public static class Quests_DataTypes
         public SpecialQuestTag SpecialTag;
         public string Name;
         public string Description;
-        public int TargetAMOUNT;
+        public int TargetAmount;
         public string[] TargetPrefab;
         public int[] TargetCount;
         public int[] TargetLevel;
-        public int RewardsAMOUNT;
+        public int RewardsAmount;
         public QuestRewardType[] RewardType;
         public string[] RewardPrefab;
         public int[] RewardCount;
         public int[] RewardLevel;
-        public int RequirementsAMOUNT;
+        public int RequirementsAmount;
         public QuestRequirementType[] RequirementType;
         public string[] QuestRequirementPrefab;
         public int[] QuestRequirementLevel;
         public string PreviewImage;
-        public int ResetTime;
+        public int Cooldown;
         public int TimeLimit;
 
 
@@ -248,16 +247,16 @@ public static class Quests_DataTypes
             result.AppendLine($"Quest Target: {TargetPrefab}");
             result.AppendLine($"Quest Target Amount: {TargetCount}");
             result.AppendLine($"Quest Target Level: {TargetLevel}");
-            result.AppendLine($"Quest Cooldown (Ingame Days): {ResetTime}");
+            result.AppendLine($"Quest Cooldown (Ingame Days): {Cooldown}");
             result.AppendLine("Quest Rewards:");
-            for (int i = 0; i < RewardsAMOUNT; i++)
+            for (int i = 0; i < RewardsAmount; i++)
             {
                 result.AppendLine(
                     $"{i + 1}) Quest Reward Type: {RewardType[i]} | Quest Reward Prefab: {RewardPrefab[i]} | Quest Reward Amount: {RewardCount[i]} | Quest Reward Level: {RewardLevel[i]}");
             }
 
             result.AppendLine($"Quest Requirements:");
-            for (int i = 0; i < RequirementsAMOUNT; i++)
+            for (int i = 0; i < RequirementsAmount; i++)
             {
                 result.AppendLine(
                     $"{i + 1}) Quest Requirement Type: {RequirementType[i]} | Quest Requirement Prefab: {QuestRequirementPrefab[i]} | Quest Requirement Level: {QuestRequirementLevel[i]}");
@@ -270,7 +269,7 @@ public static class Quests_DataTypes
 
         public bool IsComplete()
         {
-            for (int i = 0; i < TargetAMOUNT; ++i)
+            for (int i = 0; i < TargetAmount; ++i)
                 if (ScoreArray[i] < TargetCount[i])
                     return false;
             return true;
@@ -283,7 +282,7 @@ public static class Quests_DataTypes
         public bool Init()
         {
             bool STOP = false;
-            for (int i = 0; i < RewardsAMOUNT; ++i)
+            for (int i = 0; i < RewardsAmount; ++i)
             {
                 GameObject rewardPrefab = ZNetScene.instance.GetPrefab(RewardPrefab[i]);
                 if (!rewardPrefab && RewardType[i] is QuestRewardType.Item or QuestRewardType.Pet)
@@ -294,7 +293,7 @@ public static class Quests_DataTypes
 
             if (Type != QuestType.Talk)
             {
-                for (int i = 0; i < TargetAMOUNT; ++i)
+                for (int i = 0; i < TargetAmount; ++i)
                 {
                     GameObject targetPrefab = ZNetScene.instance.GetPrefab(TargetPrefab[i]);
                     if (!targetPrefab)
@@ -307,9 +306,9 @@ public static class Quests_DataTypes
 
 
             if (STOP) return false;
-            LocalizedReward = new string[RewardsAMOUNT];
-            LocalizedTarget = new string[TargetAMOUNT];
-            for (int i = 0; i < RewardsAMOUNT; ++i)
+            LocalizedReward = new string[RewardsAmount];
+            LocalizedTarget = new string[TargetAmount];
+            for (int i = 0; i < RewardsAmount; ++i)
             {
                 LocalizedReward[i] = "";
                 GameObject rewardPrefab = ZNetScene.instance.GetPrefab(RewardPrefab[i]);
@@ -335,7 +334,7 @@ public static class Quests_DataTypes
 
             if (Type is QuestType.Talk)
             {
-                for (int i = 0; i < TargetAMOUNT; ++i)
+                for (int i = 0; i < TargetAmount; ++i)
                 {
                     LocalizedTarget[i] = Utils.RichTextFormatting(TargetPrefab[i]);
                 }
@@ -346,7 +345,7 @@ public static class Quests_DataTypes
 
             if (Type is QuestType.Collect or QuestType.Craft)
             {
-                for (int i = 0; i < TargetAMOUNT; ++i)
+                for (int i = 0; i < TargetAmount; ++i)
                 {
                     GameObject targetPrefab = ZNetScene.instance.GetPrefab(TargetPrefab[i]);
                     if (!targetPrefab.GetComponent<ItemDrop>()) return false;
@@ -360,7 +359,7 @@ public static class Quests_DataTypes
 
             if (Type == QuestType.Kill)
             {
-                for (int i = 0; i < TargetAMOUNT; ++i)
+                for (int i = 0; i < TargetAmount; ++i)
                 {
                     GameObject targetPrefab = ZNetScene.instance.GetPrefab(TargetPrefab[i]);
                     if (!targetPrefab.GetComponent<Character>()) return false;
@@ -373,7 +372,7 @@ public static class Quests_DataTypes
 
             if (Type == QuestType.Harvest)
             {
-                for (int i = 0; i < TargetAMOUNT; ++i)
+                for (int i = 0; i < TargetAmount; ++i)
                 {
                     GameObject targetPrefab = ZNetScene.instance.GetPrefab(TargetPrefab[i]);
                     if (!targetPrefab.GetComponent<Pickable>()) return false;
@@ -387,7 +386,7 @@ public static class Quests_DataTypes
 
             if (Type == QuestType.Build)
             {
-                for (int i = 0; i < TargetAMOUNT; ++i)
+                for (int i = 0; i < TargetAmount; ++i)
                 {
                     GameObject targetPrefab = ZNetScene.instance.GetPrefab(TargetPrefab[i]);
                     if (!targetPrefab.GetComponent<Piece>()) return false;
@@ -410,8 +409,8 @@ public static class Quests_DataTypes
             type = QuestRequirementType.None;
             if (!AllQuests.ContainsKey(UID) || !Player.m_localPlayer) return false;
             Quest CheckQuest = AllQuests[UID];
-            if (CheckQuest.RequirementsAMOUNT <= 0) return true;
-            for (int i = 0; i < CheckQuest.RequirementsAMOUNT; i++)
+            if (CheckQuest.RequirementsAmount <= 0) return true;
+            for (int i = 0; i < CheckQuest.RequirementsAmount; i++)
             {
                 if (string.IsNullOrEmpty(CheckQuest.QuestRequirementPrefab[i]) ||
                     CheckQuest.RequirementType[i] is QuestRequirementType.None) continue;
@@ -580,7 +579,7 @@ public static class Quests_DataTypes
             string cooldown = "[MPASN]questCD=" + UID;
             if (!Player.m_localPlayer.m_customData.ContainsKey(cooldown)) return false;
             int day = Convert.ToInt32(Player.m_localPlayer.m_customData[cooldown]);
-            left = (day + AllQuests[UID].ResetTime) - EnvMan.instance.GetCurrentDay();
+            left = (day + AllQuests[UID].Cooldown) - EnvMan.instance.GetCurrentDay();
             return left > 0;
         }
 
@@ -589,7 +588,7 @@ public static class Quests_DataTypes
             if (!Player.m_localPlayer) return;
             if (AcceptedQuests.ContainsKey(UID) || !AllQuests.ContainsKey(UID)) return;
             AcceptedQuests[UID] = AllQuests[UID];
-            AcceptedQuests[UID].ScoreArray = new int[AcceptedQuests[UID].TargetAMOUNT];
+            AcceptedQuests[UID].ScoreArray = new int[AcceptedQuests[UID].TargetAmount];
 
             string[] split = score.Split(',');
             for (int i = 0; i < split.Length; i++)
@@ -625,7 +624,7 @@ public static class Quests_DataTypes
             Quest quest = AcceptedQuests[UID];
             if (quest.Type is QuestType.Collect)
             {
-                for (int i = 0; i < quest.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.TargetAmount; ++i)
                 {
                     GameObject prefab = ZNetScene.instance.GetPrefab(quest.TargetPrefab[i]);
                     if (Utils.CustomCountItems(prefab.name, quest.TargetLevel[i]) < quest.TargetCount[i]) return;
@@ -633,7 +632,7 @@ public static class Quests_DataTypes
 
                 AcceptedQuests.Remove(UID);
 
-                for (int i = 0; i < quest.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.TargetAmount; ++i)
                 {
                     GameObject prefab = ZNetScene.instance.GetPrefab(quest.TargetPrefab[i]);
                     Utils.CustomRemoveItems(prefab.name, quest.TargetCount[i], quest.TargetLevel[i]);
@@ -644,7 +643,7 @@ public static class Quests_DataTypes
                 AcceptedQuests.Remove(UID);
             }
 
-            for (int i = 0; i < quest.RewardsAMOUNT; ++i)
+            for (int i = 0; i < quest.RewardsAmount; ++i)
             {
                 if (quest.RewardType[i] is QuestRewardType.EpicMMO_EXP)
                 {
@@ -779,7 +778,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Kill && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab && level >= quest.Value.TargetLevel[i])
@@ -814,7 +813,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Talk && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == NPCName)
@@ -834,7 +833,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Kill && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab && level >= quest.Value.TargetLevel[i])
@@ -853,7 +852,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Craft && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab && level == quest.Value.TargetLevel[i])
@@ -910,7 +909,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Harvest && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab)
@@ -929,7 +928,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Collect && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab &&
@@ -949,7 +948,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Build && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab)
@@ -968,7 +967,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Craft && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab && level == quest.Value.TargetLevel[i])
@@ -1002,7 +1001,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Build && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab)
@@ -1030,7 +1029,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Talk && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == name)
@@ -1055,7 +1054,7 @@ public static class Quests_DataTypes
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(q =>
                          q.Value.Type == QuestType.Harvest && !q.Value.IsComplete()))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     if (quest.Value.IsComplete(i)) continue;
                     if (quest.Value.TargetPrefab[i] == prefab)
@@ -1091,7 +1090,7 @@ public static class Quests_DataTypes
             HashSet<int> ToAutocomplete = new();
             foreach (KeyValuePair<int, Quest> quest in AcceptedQuests.Where(t => t.Value.Type == QuestType.Collect))
             {
-                for (int i = 0; i < quest.Value.TargetAMOUNT; ++i)
+                for (int i = 0; i < quest.Value.TargetAmount; ++i)
                 {
                     quest.Value.ScoreArray[i] =
                         Utils.CustomCountItems(quest.Value.TargetPrefab[i], quest.Value.TargetLevel[i]);

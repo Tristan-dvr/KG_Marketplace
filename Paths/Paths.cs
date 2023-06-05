@@ -29,6 +29,7 @@ public static class Market_Paths
     public static string ServerMarketDataJSON => Path.Combine(DataFolder, "MarketplaceData.json");
     public static string MarketPlayersIncomeJSON => Path.Combine(DataFolder, "PlayersIncome.json");
     public static string MarketPlayerMessagesJSON => Path.Combine(DataFolder, "PlayerMessages.json");
+    public static string MarketLeaderboardJSON => Path.Combine(DataFolder, "Leaderboard.json");
 
     public static string TeleporterPinsFolder => Path.Combine(MainPath, "MapPinsIcons");
     public static string TeleporterPinsConfig => Path.Combine(MainPath, "TeleportHubProfiles.cfg");
@@ -59,6 +60,9 @@ public static class Market_Paths
     public static string PlayerTagsConfig => Path.Combine(MainPath, "PlayerTags.cfg");
 
     public static string TransmogrificationConfig => Path.Combine(MainPath, "TransmogrificationProfiles.cfg");
+    
+    
+    public static string TitlesProfiles => Path.Combine(MainPath, "LeaderboardTitles.cfg");
 
     private static void OnInit()
     {
@@ -105,6 +109,7 @@ public static class Market_Paths
             if (!File.Exists(BankerFile)) File.Create(BankerFile).Dispose();
             if (!File.Exists(BankerDataJSONFile)) File.Create(BankerDataJSONFile).Dispose();
             if (!File.Exists(TeleporterPinsConfig)) File.Create(TeleporterPinsConfig).Dispose();
+            if (!File.Exists(MarketLeaderboardJSON)) File.Create(MarketLeaderboardJSON).Dispose();
             if (!File.Exists(TraderConfig)) File.Create(TraderConfig).Dispose();
             if (!File.Exists(ServerInfoConfig)) File.Create(ServerInfoConfig).Dispose();
             if (!File.Exists(TerritoriesConfigPath)) File.Create(TerritoriesConfigPath).Dispose();
@@ -126,6 +131,7 @@ public static class Market_Paths
 
             if (!File.Exists(PlayerTagsConfig)) File.Create(PlayerTagsConfig).Dispose();
             if (!File.Exists(TransmogrificationConfig)) File.Create(TransmogrificationConfig).Dispose();
+            if (!File.Exists(TitlesProfiles)) File.Create(TitlesProfiles).Dispose();
         }
 
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Client or Marketplace.WorkingAs.Both)

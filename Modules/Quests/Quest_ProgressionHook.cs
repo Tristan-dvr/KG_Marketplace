@@ -23,6 +23,7 @@ public static class Quest_ProgressionHook
         KeyValuePair<Recipe, ItemDrop.ItemData> recipe = InventoryGui.instance.m_selectedRecipe;
         string CraftedItemName = recipe.Key.m_item?.gameObject.name;
         if (string.IsNullOrEmpty(CraftedItemName)) return;
+        GameEvents.OnItemCrafted?.Invoke(CraftedItemName, recipe.Value?.m_quality ?? 1);
         Quests_DataTypes.Quest.TryAddRewardCraft(CraftedItemName, recipe.Value?.m_quality ?? 1);
     }
 
@@ -134,6 +135,7 @@ public static class Quest_ProgressionHook
         private static void QuestKillEvent(long sender, string prefab, int level, Vector3 pos, bool ownerRPC)
         {
             if (!Player.m_localPlayer) return;
+            GameEvents.OnCreatureKilled?.Invoke(prefab, level);
             if (Global_Values._container.Value._allowKillQuestsInParty && ownerRPC && Groups.API.IsLoaded() &&
                 Groups.API.GroupPlayers() is { Count: > 1 } group)
                 foreach (PlayerReference member in group)
@@ -164,7 +166,9 @@ public static class Quest_ProgressionHook
         public static void PlacedPiece(GameObject obj)
         {
             if (obj?.GetComponent<Piece>() is not { } piece) return;
-            if (Quests_DataTypes.Quest.TryAddRewardBuild(global::Utils.GetPrefabName(piece.gameObject)) && piece.m_nview &&
+            string pieceName = global::Utils.GetPrefabName(piece.gameObject);
+            GameEvents.OnStructureBuilt?.Invoke(pieceName);
+            if (Quests_DataTypes.Quest.TryAddRewardBuild(pieceName) && piece.m_nview &&
                 piece.m_nview.m_zdo != null)
             {
                 piece.m_nview.m_zdo.Set("MPASNquestBuild", true);

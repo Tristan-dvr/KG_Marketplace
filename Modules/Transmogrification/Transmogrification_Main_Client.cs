@@ -135,7 +135,6 @@ public static class Transmogrification_Main_Client
                 if (!isRagdoll)
                 {
                     //////////LEFT ITEM
-
                     TempItem LeftItem = p!.m_leftItem.T_Data();
                     visEq.SetLeftItem(LeftItem.ReplacedPrefab, LeftItem.Variant);
                     ///////////RIGHT ITEM

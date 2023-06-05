@@ -385,6 +385,7 @@ public static class Market_NPC
 
 
         [HarmonyPatch(typeof(MonoUpdaters), nameof(MonoUpdaters.Update))]
+        [ClientOnlyPatch]
         private static class MonoUpdaters_Update_Patch
         {
             private static void Postfix()
@@ -395,6 +396,7 @@ public static class Market_NPC
         }
         
         [HarmonyPatch(typeof(MonoUpdaters), nameof(MonoUpdaters.FixedUpdate))]
+        [ClientOnlyPatch]
         private static class MonoUpdaters_FixedUpdate_Patch
         {
             private static void Postfix()
@@ -453,7 +455,7 @@ public static class Market_NPC
                 zanim.SetFloat(Character.s_forwardSpeed, ForwardSpeed * 1.5f);
             int currentPatrolPoint = znv.m_zdo.GetInt(LatestPatrolPoint);
             Vector2 currentPos = new Vector2(transform.position.x, transform.position.z);
-            Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint],
+            Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint], 
                 Time.deltaTime * ForwardSpeed);
             Vector3 targetPoint = new Vector3(move.x, transform.position.y, move.y);
             Utils.CustomFindFloor(targetPoint, out float height);
@@ -1438,9 +1440,9 @@ public static class Market_NPC
 
         public void Damage(HitData hit)
         {
-            zanim.SetTrigger("stagger");
+            if(!znv.IsValid() || !zanim.m_animator) return;
+            zanim?.SetTrigger("stagger");
         }
-        
 
         public DestructibleType GetDestructibleType()
         {
