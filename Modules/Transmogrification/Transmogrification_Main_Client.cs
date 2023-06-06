@@ -28,9 +28,17 @@ public static class Transmogrification_Main_Client
         Transmogrification_UI.Hide();
         Menu.instance.OnClose();
     }
+    
+    [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
+    [ClientOnlyPatch]
+    private static class ZNetScene_Awake_Patch
+    {
+        private static void Postfix() => InitTransmogData();
+    }
 
     private static void InitTransmogData()
     {
+        if(!ZNetScene.instance) return;
         FilteredTransmogData.Clear();
         int count = 0;
         foreach (KeyValuePair<string, List<Transmogrification_DataTypes.TransmogItem_Data>> profile in
