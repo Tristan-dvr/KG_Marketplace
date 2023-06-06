@@ -245,3 +245,5 @@ mpasn_tooltip_cozyheim: Adds <color=yellow>Cozyheim</color> Experience
 mpasn_needcozyheimlevel: Need <color=yellow>Cozyheim</color> level
 mpasn_toomuchepicmmolevel: Too much <color=yellow>EpicMMO</color> level
 mpasn_toomuchcozyheimlevel: Too much <color=yellow>Cozyheim</color> level
+mpasn_needtitle: Need Title
+mpasn_dontneedtitle: You have Title

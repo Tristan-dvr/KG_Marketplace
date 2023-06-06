@@ -30,6 +30,7 @@ public static class Leaderboard_Server_Main
 
     private static void RPC_ReceiveLeaderboardEvent(long sender, int type, ZPackage pkg)
     {
+        if(!Global_Values._container.Value._useLeaderboard) return;
         Leaderboard_DataTypes.TriggerType triggerType = (Leaderboard_DataTypes.TriggerType)type;
         ZNetPeer peer = ZNet.instance.GetPeer(sender);
         if (peer == null) return;
@@ -82,8 +83,8 @@ public static class Leaderboard_Server_Main
     {
         while (true)
         {
-            yield return new WaitForSecondsRealtime(5 * 2);
-            if (!ZNet.instance || !ZNet.instance.IsServer()) continue;
+            yield return new WaitForSecondsRealtime(5 * 60);
+            if (!ZNet.instance || !ZNet.instance.IsServer() || !Global_Values._container.Value._useLeaderboard) continue;
             File.WriteAllText(Market_Paths.MarketLeaderboardJSON,
                 JSON.ToNiceJSON(Leaderboard_DataTypes.ServersidePlayersLeaderboard));
             SendToPlayers();
@@ -93,8 +94,9 @@ public static class Leaderboard_Server_Main
     private static void SendToPlayers()
     {
         Leaderboard_DataTypes.SyncedClientLeaderboard.Value.Clear();
-        
-        foreach (KeyValuePair<string, Leaderboard_DataTypes.Player_Leaderboard> leaderboard in Leaderboard_DataTypes.ServersidePlayersLeaderboard)
+
+        foreach (KeyValuePair<string, Leaderboard_DataTypes.Player_Leaderboard> leaderboard in Leaderboard_DataTypes
+                     .ServersidePlayersLeaderboard)
         {
             Leaderboard_DataTypes.Client_Leaderboard newLeaderboard = new()
             {
@@ -102,17 +104,19 @@ public static class Leaderboard_Server_Main
                 ItemsCrafted = leaderboard.Value.ItemsCrafted.Sum(x => x.Value),
                 KilledCreatures = leaderboard.Value.KilledCreatures.Sum(x => x.Value),
                 BuiltStructures = leaderboard.Value.BuiltStructures.Sum(x => x.Value),
+                KilledPlayers = leaderboard.Value.KilledPlayers,
                 Died = leaderboard.Value.DeathAmount,
                 MapExplored = leaderboard.Value.MapExplored,
                 Titles = new()
             };
             foreach (var title in Leaderboard_DataTypes.AllTitles)
             {
-                if(title.Check(leaderboard.Key)) newLeaderboard.Titles.Add(new()
-                    { Name = title.Name, Description = title.Description, Color = title.Color, Score = title.Score});
+                if (title.Check(leaderboard.Key)) newLeaderboard.Titles.Add(title.ID);
             }
+
             Leaderboard_DataTypes.SyncedClientLeaderboard.Value.Add(leaderboard.Key, newLeaderboard);
         }
+
         Leaderboard_DataTypes.SyncedClientLeaderboard.Update();
     }
 
@@ -127,7 +131,7 @@ public static class Leaderboard_Server_Main
             {
                 currentTitle = new Leaderboard_DataTypes.Title
                 {
-                    Name = profiles[i].Replace("[", "").Replace("]", "")
+                    ID = profiles[i].Replace("[", "").Replace("]", "").ToLower().GetStableHashCode()
                 };
             }
             else
@@ -136,15 +140,21 @@ public static class Leaderboard_Server_Main
                 try
                 {
                     string type = profiles[i];
-                    string description = profiles[i + 1];
-                    string prefabParse = profiles[i + 2];
-                    string color = profiles[i + 3];
-                    string tierParse = profiles[i + 4];
-                    
-                    if (!Enum.TryParse(type, out Leaderboard_DataTypes.TriggerType triggerType)) continue;
+                    string name = profiles[i + 1];
+                    string description = profiles[i + 2];
+                    string prefabParse = profiles[i + 3];
+                    string color = profiles[i + 4];
+                    string tierParse = profiles[i + 5];
+
+                    if (!Enum.TryParse(type, out Leaderboard_DataTypes.TriggerType triggerType))
+                    {
+                        i += 5;
+                        continue;
+                    }
                     currentTitle.Type = triggerType;
+                    currentTitle.Name = name;
                     currentTitle.Description = description;
-                    
+
                     if (triggerType is Leaderboard_DataTypes.TriggerType.ItemsCrafted
                         or Leaderboard_DataTypes.TriggerType.MonstersKilled
                         or Leaderboard_DataTypes.TriggerType.StructuresBuilt)
@@ -157,7 +167,7 @@ public static class Leaderboard_Server_Main
                     {
                         currentTitle.MinAmount = int.Parse(prefabParse);
                     }
-                    
+
                     string[] colorSplit = color.Replace(" ", "").Split(',');
                     currentTitle.Color = new Color32(byte.Parse(colorSplit[0]), byte.Parse(colorSplit[1]),
                         byte.Parse(colorSplit[2]), 255);
@@ -168,10 +178,25 @@ public static class Leaderboard_Server_Main
                 catch (Exception ex)
                 {
                     Utils.print($"Failed to parse title {currentTitle.Name}: {ex.Message}", ConsoleColor.Red);
+                    i += 5;
                 }
             }
         }
+        
         Leaderboard_DataTypes.AllTitles = Leaderboard_DataTypes.AllTitles.OrderByDescending(x => x.Score).ToList();
+        Leaderboard_DataTypes.SyncedClientTitles.Value.Clear();
+        foreach (var title in Leaderboard_DataTypes.AllTitles)
+        {
+            Leaderboard_DataTypes.SyncedClientTitles.Value.Add(new()
+            {
+                ID = title.ID,
+                Name = title.Name,
+                Description = title.Description,
+                Color = title.Color,
+                Score = title.Score
+            });
+        }
+        Leaderboard_DataTypes.SyncedClientTitles.Update();
     }
 
     private static void OnTitlesFileChange()

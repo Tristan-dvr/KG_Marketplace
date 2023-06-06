@@ -1,4 +1,5 @@
 ﻿using Marketplace_APIs;
+using Marketplace.Modules.Leaderboard;
 using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
 using Random = UnityEngine.Random;
@@ -63,6 +64,8 @@ public static class Dialogues_DataTypes
         EpicMMOLevelLess = 9 | reverseFlag,
         CozyheimLevelMore = 10,
         CozyheimLevelLess = 10 | reverseFlag,
+        HasTitle = 11,
+        NotHasTitle = 11 | reverseFlag,
     }
 
     public class RawDialogue : ISerializableParameter
@@ -396,6 +399,20 @@ public static class Dialogues_DataTypes
                         if (reverse) optionCondition = optionCondition.Reverse();
                         switch (optionCondition)
                         {
+                            case OptionCondition.HasTitle:
+                                result += (out string reason) =>
+                                {
+                                    reason = $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetTitleName(split[1])}</color>";
+                                    return LeaderBoard_Main_Client.HasTitle(split[1]);
+                                };
+                                break;
+                            case OptionCondition.NotHasTitle:
+                                result += (out string reason) =>
+                                {
+                                    reason = $"{Localization.instance.Localize("$mpasn_dontneedtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetTitleName(split[1])}</color>";
+                                    return !LeaderBoard_Main_Client.HasTitle(split[1]);
+                                };
+                                break;
                             case OptionCondition.SkillMore:
                                 result += (out string reason) =>
                                 {

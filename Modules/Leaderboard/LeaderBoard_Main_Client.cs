@@ -28,10 +28,35 @@ public static class LeaderBoard_Main_Client
             Leaderboard_UI.Hide();
             Menu.instance.OnClose();
         }
+
+        if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.L))
+        {
+            if (Leaderboard_UI.IsVisible())
+            {
+                Leaderboard_UI.Hide();
+            }
+            else
+            {
+                 Leaderboard_UI.Show();
+            }
+        }
+    }
+
+    public static bool HasTitle(string titleID)
+    {
+        int toId = titleID.Replace(" ", "").ToLower().GetStableHashCode();
+        return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(Global_Values._localUserID, out var LB) && LB.Titles.Contains(toId);
+    }
+
+    public static string GetTitleName(string titleID)
+    {
+        int toId = titleID.Replace(" ", "").ToLower().GetStableHashCode();
+        return Leaderboard_DataTypes.SyncedClientTitles.Value.Find(x => x.ID == toId)?.Name ?? titleID;
     }
 
     private static void SendToServer(Leaderboard_DataTypes.TriggerType type, params object[] args)
     {
+        if(!Global_Values._container.Value._useLeaderboard) return;
         switch (type)
         {
             case Leaderboard_DataTypes.TriggerType.MonstersKilled:
@@ -42,7 +67,7 @@ public static class LeaderBoard_Main_Client
                 pkg.Write((string)args[0]);
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(),
                     "Marketplace_Leaderboard_Receive", (int)type, pkg);
-                return; 
+                return;
             case Leaderboard_DataTypes.TriggerType.Died:
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(),
                     "Marketplace_Leaderboard_Receive", (int)type, new ZPackage());
@@ -57,34 +82,34 @@ public static class LeaderBoard_Main_Client
                 return;
         }
     }
-    
+
     [HarmonyPatch(typeof(Player), nameof(Player.Update))]
     [ClientOnlyPatch]
     private static class Player_Update_Patch
     {
         private static float _time;
-        
+
         private static void Postfix(Player __instance)
         {
-            if (__instance != Player.m_localPlayer || !Minimap.instance) return;
+            if (!Global_Values._container.Value._useLeaderboard || __instance != Player.m_localPlayer || !Minimap.instance) return;
             _time += Time.deltaTime;
             if (_time >= 3 * 60)
             {
                 int length = Minimap.instance.m_explored.Length;
                 int trueAmount = 0;
-                Parallel.ForEach(Partitioner.Create(0, length), new(){MaxDegreeOfParallelism = Environment.ProcessorCount / 2}, range =>
-                {
-                    int localCount = 0;
-                    for (int i = range.Item1; i < range.Item2; i++)
-                        if (Minimap.instance.m_explored[i])
-                            ++localCount;
-                    Interlocked.Add(ref trueAmount, localCount);
-                });
+                Parallel.ForEach(Partitioner.Create(0, length),
+                    new() { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 }, range =>
+                    {
+                        int localCount = 0;
+                        for (int i = range.Item1; i < range.Item2; i++)
+                            if (Minimap.instance.m_explored[i])
+                                ++localCount;
+                        Interlocked.Add(ref trueAmount, localCount);
+                    });
                 float exploration = (float)trueAmount / Minimap.instance.m_explored.Length;
                 exploration = (float)Math.Round(exploration * 100, 2);
                 SendToServer(Leaderboard_DataTypes.TriggerType.Explored, exploration);
             }
-
         }
     }
 }

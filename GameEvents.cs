@@ -52,9 +52,8 @@ public static class GameEvents
             {
                 if (hit.GetAttacker() is { } killer)
                 {
-                    string prefabName = global::Utils.GetPrefabName(killer.gameObject);
-                    Utils.print($"Dead from {prefabName}. GO is {killer.gameObject}");
-                    KilledBy?.Invoke(global::Utils.GetPrefabName(killer.gameObject));
+                    string prefabName = killer.IsPlayer() ? "PLAYER_" + ((Player)killer).GetPlayerName() : global::Utils.GetPrefabName(killer.gameObject);
+                    KilledBy?.Invoke(prefabName);
                 }
             }
         }

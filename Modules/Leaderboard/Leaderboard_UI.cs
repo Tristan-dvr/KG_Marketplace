@@ -5,6 +5,7 @@ using Object = UnityEngine.Object;
 public static class Leaderboard_UI
 {
     private static GameObject UI;
+    private static GameObject Main;
     private static SortBy CurrentSort;
     private static GameObject Element;
     private static Transform Content;
@@ -13,13 +14,14 @@ public static class Leaderboard_UI
     private static Transform AchievementContent;
     private static Text PageText;
 
-    public static bool IsVisible() => UI && UI.activeSelf;
+    public static bool IsVisible() => Main && Main.activeSelf;
 
     private enum SortBy
     {
         CreaturesKilled,
         BuiltStructures,
         ItemsCrafted,
+        PlayersKilled,
         Died,
         MapExplored,
         TotalAchievements
@@ -35,6 +37,7 @@ public static class Leaderboard_UI
     public static void Init()
     {
         UI = Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceLeaderboardUI"));
+        Main = UI.transform.Find("GO").gameObject;
         Element = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceLB_PlayerElement");
         Object.DontDestroyOnLoad(UI);
         Transform buttonsTransform = UI.transform.Find("GO/Header_Buttons");
@@ -44,6 +47,7 @@ public static class Leaderboard_UI
         SortButtons.Add(SortBy.Died, buttonsTransform.Find("Died").GetComponent<Button>());
         SortButtons.Add(SortBy.MapExplored, buttonsTransform.Find("MapExplored").GetComponent<Button>());
         SortButtons.Add(SortBy.TotalAchievements, buttonsTransform.Find("TotalAchievements").GetComponent<Button>());
+        SortButtons.Add(SortBy.PlayersKilled, buttonsTransform.Find("PlayersKilled").GetComponent<Button>());
         foreach (var button in SortButtons)
             button.Value.onClick.AddListener(() =>
             {
@@ -58,8 +62,29 @@ public static class Leaderboard_UI
         Achievements = UI.transform.Find("Achievements").gameObject;
         AchievementsElement = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_Achievement_Element");
         AchievementContent = Achievements.transform.Find("Scroll Rect/Viewport/Content");
+        UI.transform.Find("Open").GetComponent<Button>().onClick.AddListener(() =>
+        {
+            AssetStorage.AssetStorage.AUsrc.Play();
+            if (IsVisible()) Hide();
+            else Show();
+        });
         UI.SetActive(false);
+        Main.SetActive(false);
+        Achievements.SetActive(false);
         SetSortBy(SortBy.TotalAchievements);
+        Global_Values._container.ValueChanged += OnChange;
+    }
+
+    private static void OnChange()
+    {
+        if (Global_Values._container.Value._useLeaderboard)
+        {
+            ShowTF();
+        }
+        else
+        {
+            HideTF();
+        }
     }
 
     private static void NextPage()
@@ -86,7 +111,7 @@ public static class Leaderboard_UI
     {
         CurrentSort = sort;
         foreach (var button in SortButtons)
-            button.Value.GetComponent<Text>().color = Color.yellow;
+            button.Value.GetComponent<Text>().color = new Color(0.9137256f, 0.8627452f, 0.007843138f);
         SortButtons[sort].GetComponent<Text>().color = Color.green;
 
         List<Leaderboard_DataTypes.Client_Leaderboard> valuesOnly =
@@ -99,6 +124,7 @@ public static class Leaderboard_UI
             SortBy.Died => valuesOnly.OrderByDescending(x => x.Died).ToList(),
             SortBy.MapExplored => valuesOnly.OrderByDescending(x => x.MapExplored).ToList(),
             SortBy.TotalAchievements => valuesOnly.OrderByDescending(x => x.Titles.Count).ToList(),
+            SortBy.PlayersKilled => valuesOnly.OrderByDescending(x => x.KilledPlayers).ToList(),
         };
         int maxPage = Mathf.CeilToInt(SortedList.Count / (float)MaxPerPage);
         PageText.text = $"{CurrentPage}/{maxPage}";
@@ -106,11 +132,12 @@ public static class Leaderboard_UI
 
     private static void Default()
     {
+        Main.SetActive(false);
         Achievements.SetActive(false);
         CurrentPage = 1;
         CurrentSelectedElement = null;
         SetSortBy(SortBy.TotalAchievements);
-    } 
+    }
 
     private static void CreateElements()
     {
@@ -139,8 +166,15 @@ public static class Leaderboard_UI
             element.transform.Find("BuiltStructures").GetComponent<Text>().text = data.BuiltStructures.ToString();
             element.transform.Find("ItemsCrafted").GetComponent<Text>().text = data.ItemsCrafted.ToString();
             element.transform.Find("Died").GetComponent<Text>().text = data.Died.ToString();
+            element.transform.Find("PlayersKilled").GetComponent<Text>().text = data.KilledPlayers.ToString();
             element.transform.Find("MapExplored").GetComponent<Text>().text = data.MapExplored + "%";
-            element.transform.Find("TotalAchievements").GetComponent<Text>().text = data.Titles.Sum(x => x.Score).ToString();
+
+            int overallScore = 0;
+            foreach (var title in data.Titles)
+                overallScore += Leaderboard_DataTypes.SyncedClientTitles.Value.Find(x => x.ID == title) is { } t
+                    ? t.Score
+                    : 0;
+            element.transform.Find("TotalAchievements").GetComponent<Text>().text = overallScore.ToString();
 
             element.transform.Find(CurrentSort.ToString()).GetComponent<Text>().color = Color.green;
 
@@ -155,7 +189,8 @@ public static class Leaderboard_UI
         foreach (Transform child in Content)
             if (child.gameObject != CurrentSelectedElement)
                 child.Find("fill").GetComponent<Image>().color = Color.white;
-        go.transform.Find("fill").GetComponent<Image>().color = new Color(0.44f, 1f, 0.51f);
+        if (go != CurrentSelectedElement)
+            go.transform.Find("fill").GetComponent<Image>().color = new Color(0.44f, 1f, 0.51f);
     }
 
     private static void OnHoverEnd()
@@ -164,7 +199,7 @@ public static class Leaderboard_UI
             if (child.gameObject != CurrentSelectedElement)
                 child.Find("fill").GetComponent<Image>().color = Color.white;
     }
-    
+
     private static void OnElementClick(GameObject go, Leaderboard_DataTypes.Client_Leaderboard board)
     {
         AssetStorage.AssetStorage.AUsrc.Play();
@@ -175,6 +210,7 @@ public static class Leaderboard_UI
             Achievements.SetActive(false);
             return;
         }
+
         if (CurrentSelectedElement != null)
             CurrentSelectedElement.transform.Find("fill").GetComponent<Image>().color = Color.white;
         CurrentSelectedElement = go;
@@ -190,32 +226,56 @@ public static class Leaderboard_UI
         Achievements.transform.Find("Achievements").GetComponent<Text>().text = board.PlayerName + "\nAchievements";
         foreach (var title in board.Titles)
         {
+            if (Leaderboard_DataTypes.SyncedClientTitles.Value.Find(x => x.ID == title) is not { } t) continue;
             var element = Object.Instantiate(AchievementsElement, AchievementContent);
-            element.GetComponent<Image>().color = new Color(title.Color.r, title.Color.g, title.Color.b, 0.2f);
-            element.transform.Find("color").GetComponent<Image>().color = title.Color;
-            element.transform.Find("Name").GetComponent<Text>().text = title.Name;
-            element.transform.Find("Name").GetComponent<Text>().color = title.Color;
-            element.transform.Find("Description").GetComponent<Text>().text = "(" + title.Description + ")";
+            element.GetComponent<Image>().color = new Color(t.Color.r, t.Color.g, t.Color.b, 0.2f);
+            element.transform.Find("color").GetComponent<Image>().color = t.Color;
+            element.transform.Find("Name").GetComponent<Text>().text = t.Name;
+            element.transform.Find("Name").GetComponent<Text>().color = t.Color;
+            element.transform.Find("Description").GetComponent<Text>().text = "(" + t.Description + ")";
         }
     }
-    
+
     public static void Show()
     {
-        UI.SetActive(true);
+        if (!Global_Values._container.Value._useLeaderboard) return;
         Default();
+        Main.SetActive(true);
         CreateElements();
     }
 
     public static void Hide()
     {
-        UI.SetActive(false);
+        Main.SetActive(false);
+        Achievements.SetActive(false);
     }
 
+    private static void ShowTF()
+    {
+        UI.SetActive(true);
+        Default();
+    }
+
+    private static void HideTF()
+    {
+        UI.SetActive(false);
+        Default();
+    }
 
     [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
     [ClientOnlyPatch]
     private static class Menu_IsVisible_Patch
     {
         private static void Postfix(ref bool __result) => __result |= IsVisible();
+    }
+
+    [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
+    [ClientOnlyPatch]
+    private static class Menu_OnLogoutYes_Patch
+    {
+        private static void Postfix()
+        {
+            HideTF();
+        }
     }
 }
