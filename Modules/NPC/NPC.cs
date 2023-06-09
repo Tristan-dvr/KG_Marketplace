@@ -1,4 +1,5 @@
-﻿using Marketplace.Modules.Banker;
+﻿using Marketplace.Base64;
+using Marketplace.Modules.Banker;
 using Marketplace.Modules.Buffer;
 using Marketplace.Modules.Feedback;
 using Marketplace.Modules.Gambler;
@@ -380,7 +381,7 @@ public static class Market_NPC
         private float MaxSpeed;
         private float ForwardSpeed;
         private float PatrolTime;
-        private float periodicAnimationTimer;
+        private float periodicAnimationTimer = 999f;
         private float periodicSoundTimer = 999f;
 
 
@@ -824,7 +825,7 @@ public static class Market_NPC
                 znv.m_zdo.Set("KGnpcScale", scaleFloat);
             }
 
-            periodicAnimationTimer = 0f;
+            periodicAnimationTimer = 999f;
             periodicSoundTimer = 999f;
             string prefab = znv.m_zdo.GetString("KGnpcModelOverride");
             if (TryOverrideModel(ref prefab, out bool isFemale, false))
@@ -1622,7 +1623,7 @@ public static class Market_NPC
                 PeriodicSound = npc.znv.m_zdo.GetString("KGperiodicSound"),
                 PeriodicSoundTime =
                     npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture),
-                IMAGE = PhotoManager.__instance.NPC_Photo(npc)
+                IMAGE = ResourcesBase64.PlaceholderMonster
             };
             string json = JSON.ToNiceJSON(newData);
             File.WriteAllText(filePath, json);
@@ -1678,7 +1679,7 @@ public static class Market_NPC
                 PeriodicSound = _currentNPC.znv.m_zdo.GetString("KGperiodicSound"),
                 PeriodicSoundTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicSoundTime")
                     .ToString(CultureInfo.InvariantCulture),
-                IMAGE = PhotoManager.__instance.NPC_Photo(_currentNPC)
+                IMAGE = ResourcesBase64.PlaceholderMonster
             };
             string json = JSON.ToNiceJSON(newData);
             File.WriteAllText(filePath, json);

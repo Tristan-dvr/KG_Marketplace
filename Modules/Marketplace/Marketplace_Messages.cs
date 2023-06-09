@@ -162,8 +162,8 @@ public static class Marketplace_Messages
             if (buyer != seller)
             {
                 int applyTaxes = Global_Values._container.Value._vipPlayerList.Contains(seller) ? Global_Values._container.Value._vipmarketTaxes : Global_Values._container.Value._marketTaxes;
-                int value = howMany * data.Price;
-                value = (int)(value - value * (applyTaxes / 100f)); 
+                long value = howMany * data.Price;
+                value = (long)(value - value * (applyTaxes / 100f)); 
                 
                 if (PlayerMessages.ContainsKey(seller))
                     PlayerMessages[seller] =

@@ -549,7 +549,7 @@ public static class Marketplace_UI
         }
 
         SELLTAB.Find("AFTERPRESS/BUTTON/Text").GetComponent<Text>().text =
-            $"<size=42>{Localization.instance.Localize("$mpasn_sellmarketplace")}</size>\n<color=#FF00FF>{Localization.instance.Localize("$mpasn_quantitymarketplace")}: {CurrentQuantity}</color> x <color=yellow>{CurrentPrice}</color>\n<color=#00FFFF>{Localization.instance.Localize("$mpasn_youget")}:</color> <color=yellow>{CurrentQuantity * CurrentPrice} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>";
+            $"<size=42>{Localization.instance.Localize("$mpasn_sellmarketplace")}</size>\n<color=#FF00FF>{Localization.instance.Localize("$mpasn_quantitymarketplace")}: {CurrentQuantity}</color> x <color=yellow>{CurrentPrice}</color>\n<color=#00FFFF>{Localization.instance.Localize("$mpasn_youget")}:</color> <color=yellow>{(long)CurrentQuantity * CurrentPrice} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>";
     }
 
 
