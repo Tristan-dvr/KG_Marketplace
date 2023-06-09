@@ -51,7 +51,7 @@ public static class Market_NPC_MapPins
                 {
                     if (!zdo.IsValid()) continue;
                     string name = zdo.GetString("KGnpcNameOverride");
-                    int type = zdo.GetInt("KGmarketNPC", (int)Market_NPC.NPCType.None);
+                    int type = zdo.GetInt("KGmarketNPC");
                     bool questTarget = Quests_DataTypes.Quest.IsQuestTarget(name);
                     if (string.IsNullOrWhiteSpace(name))
                     {

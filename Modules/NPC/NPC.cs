@@ -59,7 +59,7 @@ public static class Market_NPC
 
     public enum NPCType
     {
-        Marketplace,
+        None,
         Trader,
         Info,
         Teleporter,
@@ -69,7 +69,7 @@ public static class Market_NPC
         Quests,
         Buffer,
         Transmog,
-        None
+        Marketplace
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -601,7 +601,7 @@ public static class Market_NPC
             zanim = GetComponent<ZSyncAnimation>();
             if (znv.m_zdo == null) return;
             canvas = transform.Find("TMP").GetComponent<TMP_Text>();
-            int npcType = znv.m_zdo.GetInt("KGmarketNPC", (int)NPCType.None);
+            int npcType = znv.m_zdo.GetInt("KGmarketNPC");
             if (npcType >= TypeNames.Length) npcType = 0;
             _currentNpcType = (NPCType)npcType;
             if (!znv.m_functions.ContainsKey("KGMarket changeNpcType".GetStableHashCode()))
@@ -1387,7 +1387,7 @@ public static class Market_NPC
 
         private void ChangeNpcType(long sende, int index)
         {
-            if (_currentNpcType == (NPCType)index) return;
+            if (_currentNpcType == (NPCType)index) return; 
             if (znv.IsOwner()) znv.m_zdo.Set("KGmarketNPC", index);
             _currentNpcType = (NPCType)index;
             OverrideModel(0, znv.m_zdo.GetString("KGnpcModelOverride"));
