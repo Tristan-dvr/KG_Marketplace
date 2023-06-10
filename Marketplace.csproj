@@ -553,6 +553,7 @@
       <Content Include="ThunderstorePackage\icon.png" />
       <Content Include="ThunderstorePackage\manifest.json" />
       <Content Include="ThunderstorePackage\README.md" />
+      <EmbeddedResource Include="translations\Chinese.yml" />
       <EmbeddedResource Include="translations\English.yml" />
       <EmbeddedResource Include="Resources\kgmarketplacemod" />
       <EmbeddedResource Include="Resources\Marketplace_TransmogCode.dll" />

@@ -95,6 +95,7 @@ public static class LeaderBoard_Main_Client
             _time += Time.deltaTime;
             if (_time >= 3 * 60)
             {
+                _time = 0;
                 int length = Minimap.instance.m_explored.Length;
                 int trueAmount = 0;
                 Parallel.ForEach(Partitioner.Create(0, length),
