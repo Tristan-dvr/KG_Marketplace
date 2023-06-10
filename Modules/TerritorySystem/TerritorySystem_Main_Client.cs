@@ -54,12 +54,19 @@ public static class TerritorySystem_Main_Client
             if (CurrentTerritory.AdditionalFlags.HasFlagFast(TerritorySystem_DataTypes.AdditionalTerritoryFlags.NoMist))
             {
                 if (ParticleMist.instance.m_ps.emission.enabled)
-                    ParticleMist.instance.m_ps.enableEmission = false;
+                {
+                    var emission = ParticleMist.instance.m_ps.emission;
+                    emission.enabled = false;
+                }
+                    
             }
             else
             {
                 if (!ParticleMist.instance.m_ps.emission.enabled)
-                    ParticleMist.instance.m_ps.enableEmission = true;
+                {
+                    var emission = ParticleMist.instance.m_ps.emission;
+                    emission.enabled = true;
+                }
             }
         }
 
@@ -403,7 +410,9 @@ public static class TerritorySystem_Main_Client
                                                 (y - 1024) * pixelSize)),
                                         TerritorySystem_DataTypes.GradientType.TopLeftBottomRight =>
                                             territory.GetGradientXY_2(
-                                                new Vector2((x - 1024) * pixelSize, (y - 1024) * pixelSize), true)
+                                                new Vector2((x - 1024) * pixelSize, (y - 1024) * pixelSize), true),
+                                        
+                                        _ => MainColor
                                     };
                                 }
                                 else

@@ -166,7 +166,8 @@ public static class DistancedUI_UI
                 NPCtype_Internal.Buffer => DistancedUI_DataType.CurrentPremiumSystemData.Value.BufferProfiles,
                 NPCtype_Internal.Quests => DistancedUI_DataType.CurrentPremiumSystemData.Value.QuestProfiles,
                 NPCtype_Internal.Info => DistancedUI_DataType.CurrentPremiumSystemData.Value.InfoProfiles,
-                NPCtype_Internal.Transmogrification => DistancedUI_DataType.CurrentPremiumSystemData.Value.TransmogrificationProfiles
+                NPCtype_Internal.Transmogrification => DistancedUI_DataType.CurrentPremiumSystemData.Value.TransmogrificationProfiles,
+                _ => new()
             };
             List<string> source = type switch
             {
@@ -177,7 +178,8 @@ public static class DistancedUI_UI
                 NPCtype_Internal.Buffer => Buffer_DataTypes.ClientSideBufferProfiles.Keys.ToList(),
                 NPCtype_Internal.Quests => Quests_DataTypes.SyncedQuestProfiles.Value.Keys.ToList(),
                 NPCtype_Internal.Info => ServerInfo_DataTypes.ServerInfoData.Value.Keys.ToList(),
-                NPCtype_Internal.Transmogrification => Transmogrification_DataTypes.TransmogData.Value.Keys.ToList()
+                NPCtype_Internal.Transmogrification => Transmogrification_DataTypes.TransmogData.Value.Keys.ToList(),
+                _ => new()
             };
 
             foreach (string item in premiumSource)

@@ -362,9 +362,6 @@ public static class Quests_UIs
             TOREMOVE.Clear();
             if (!IsVisible()) return;
             int count = 0;
-            Quests_DataTypes.Quest ForceQuest;
-            int ForceUID;
-            int ForceInt;
 
             List<int> enumerationTarget = IsJournal
                 ? Quests_DataTypes.AcceptedQuests.Keys.ToList()
@@ -465,8 +462,6 @@ public static class Quests_UIs
         private static readonly Dictionary<Quests_DataTypes.Quest, GameObject> UpdateData = new();
         private static readonly List<ContentSizeFitter> AllFilters = new();
         private static Scrollbar MainBar;
-
-        private static readonly float OFFSET = 22f;
 
         public static bool IsVisible()
         {
@@ -631,7 +626,6 @@ public static class Quests_UIs
             }
 
             UpdateData.Clear();
-            int c = 0;
             foreach (KeyValuePair<int, Quests_DataTypes.Quest> quest in Quests_DataTypes.AcceptedQuests.OrderBy(d =>
                          d.Value.Name))
             {

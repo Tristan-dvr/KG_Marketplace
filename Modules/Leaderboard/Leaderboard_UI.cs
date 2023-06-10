@@ -125,6 +125,7 @@ public static class Leaderboard_UI
             SortBy.MapExplored => valuesOnly.OrderByDescending(x => x.MapExplored).ToList(),
             SortBy.TotalAchievements => valuesOnly.OrderByDescending(x => x.Titles.Count).ToList(),
             SortBy.PlayersKilled => valuesOnly.OrderByDescending(x => x.KilledPlayers).ToList(),
+            _ => new()
         };
         int maxPage = Mathf.CeilToInt(SortedList.Count / (float)MaxPerPage);
         PageText.text = $"{CurrentPage}/{maxPage}";

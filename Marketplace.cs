@@ -38,12 +38,12 @@ namespace Marketplace
         }
 
         public static WorkingAs WorkingAsType;
-
+        
         private void Awake()
         {
             WorkingAsType = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null
                 ? WorkingAs.Server
-                : Config.Bind("General", "Use Marketplace Locally", false, "Enable Market Local Usage").Value
+                : Config.Bind("General", "Use Marketplace Locally", false, "Enable Market Local Usage").Value 
                     ? WorkingAs.Both
                     : WorkingAs.Client;
             Utils.print($"Marketplace Working As: {WorkingAsType}");

@@ -140,9 +140,8 @@ public static class Quests_Main_Client
         private static void InitRawQuests()
         {
             if (!Player.m_localPlayer || Quests_DataTypes.SyncedQuestData.Value.Count == 0) return;
-            int questsRevision = Quests_DataTypes.SyncedQuestData.Value.ElementAt(0).Value._revision;
-            if (LatestRevision == questsRevision) return;
-            LatestRevision = questsRevision;
+            if (LatestRevision == Quests_DataTypes.SyncedQuestRevision.Value) return;
+            LatestRevision = Quests_DataTypes.SyncedQuestRevision.Value;
 
             foreach (KeyValuePair<int, Quests_DataTypes.Quest> quest in Quests_DataTypes.SyncedQuestData.Value)
             {
@@ -170,7 +169,7 @@ public static class Quests_Main_Client
                 if (string.IsNullOrEmpty(url.Value)) continue;
                 UnityWebRequest request = UnityWebRequestTexture.GetTexture(url.Value);
                 yield return request.SendWebRequest();
-                if (!request.isNetworkError && !request.isHttpError)
+                if (request.result is UnityWebRequest.Result.Success)
                 {
                     Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                     if (texture == null || texture.width == 0 || texture.height == 0) continue;

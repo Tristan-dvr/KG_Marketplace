@@ -14,7 +14,6 @@ public static class Marketplace_API
     private static readonly MethodInfo MI_IsObjectInsideTerritoryWithFlag;
     private static readonly MethodInfo MI_IsObjectInsideTerritoryWithFlag_Additional;
     private static readonly MethodInfo MI_ResetTraderItems;
-    private static readonly MethodInfo MI_AddTraderItem;
     private static readonly MethodInfo MI_OpenQuestJournal;
 
     [Flags]

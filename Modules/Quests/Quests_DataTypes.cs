@@ -7,6 +7,9 @@ namespace Marketplace.Modules.Quests;
 
 public static class Quests_DataTypes
 {
+    internal static readonly CustomSyncedValue<int> SyncedQuestRevision =
+        new(Marketplace.configSync, "questRevision", 0, CustomSyncedValueBase.Config_Priority.First);
+    
     internal static readonly CustomSyncedValue<Dictionary<int, Quest>> SyncedQuestData =
         new(Marketplace.configSync, "questData", new Dictionary<int, Quest>());
 
@@ -153,7 +156,6 @@ public static class Quests_DataTypes
 
             pkg.Write(PreviewImage ?? "");
             pkg.Write(Cooldown);
-            pkg.Write(_revision);
             pkg.Write(TimeLimit);
         }
 
@@ -201,7 +203,6 @@ public static class Quests_DataTypes
 
             PreviewImage = pkg.ReadString();
             Cooldown = pkg.ReadInt();
-            _revision = pkg.ReadInt();
             TimeLimit = pkg.ReadInt();
         }
     }
@@ -209,7 +210,6 @@ public static class Quests_DataTypes
     //main data part
     public partial class Quest
     {
-        public int _revision;
         public QuestType Type;
         public SpecialQuestTag SpecialTag;
         public string Name;
@@ -242,6 +242,7 @@ public static class Quests_DataTypes
         public override string ToString()
         {
             return "";
+#pragma warning disable CS0162
             StringBuilder result = new();
             result.AppendLine($"\nQuest Name: {Name}");
             result.AppendLine($"Quest Description: {Description}");
@@ -265,6 +266,7 @@ public static class Quests_DataTypes
             }
 
             return result.ToString();
+#pragma warning restore CS0162
         }
 
         public int GetScore(int index) => ScoreArray[index];

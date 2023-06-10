@@ -10,7 +10,6 @@ public static class Marketplace_Messages
     private static int _currentPage;
     public static bool _showMessageBox;
     private static Rect _mainMenuRect;
-    private static Rect _acceptedQuestsRect;
     private static GUIStyle guistylebutton2;
     private static GUIStyle normalField;
 

@@ -354,7 +354,7 @@ public static class Quest_ProgressionHook
             foreach (CodeInstruction instruction in code)
             {
                 yield return instruction;
-                if (instruction.opcode == OpCodes.Callvirt && instruction.operand == method)
+                if (instruction.opcode == OpCodes.Callvirt && ReferenceEquals(instruction.operand, method))
                 {
                     yield return new CodeInstruction(OpCodes.Ldloc_S, 12);
                     yield return new CodeInstruction(OpCodes.Ldloc_S, 11);

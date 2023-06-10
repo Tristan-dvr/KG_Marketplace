@@ -1,4 +1,5 @@
-﻿using Marketplace.Modules.Quests;
+﻿using Marketplace.Modules.Marketplace_NPC;
+using Marketplace.Modules.Quests;
 using Marketplace.UI_OptimizationHandler;
 
 namespace Marketplace.Modules.Battlepass;
@@ -21,7 +22,7 @@ public static class Battlepass_UI
         private const float EXP_BAR_DEFAULT_WIDTH = 330;
         private const float OFFSET_EXPBAR_GLOW = 18f;
         public static int FindMax = -1;
-        private static int LastHashcode = -1;
+    
         private static readonly Sprite[] Icons = new Sprite[3];
 
         private static readonly Dictionary<GameObject, KeyValuePair<int, Battlepass_Main_Client.Type>> AllGO = new();
@@ -208,7 +209,8 @@ public static class Battlepass_UI
             UI_Switch(true);
         }
 
-
+    
+        
         private static void OnShowData()
         {
             Header_Text.text = Battlepass_DataTypes.SyncedBattlepassData.Value.Name;
@@ -241,7 +243,8 @@ public static class Battlepass_UI
                     transform.sprite = Icons[1];
                     c = Color.green;
                     c.a = 0.58f;
-                    glow.startColor = c;
+                    ParticleSystem.MainModule main = glow.main;
+                    main.startColor = c;
                     continue;
                 }
 
@@ -251,13 +254,15 @@ public static class Battlepass_UI
                     transform.sprite = Icons[2];
                     c = Color.yellow;
                     c.a = 0.58f;
-                    glow.startColor = c;
+                    ParticleSystem.MainModule main = glow.main;
+                    main.startColor = c;
                 }
                 else
                 {
                     c = Color.red;
                     c.a = 0.58f;
-                    glow.startColor = c;
+                    ParticleSystem.MainModule main = glow.main;
+                    main.startColor = c;
                     transform.sprite = Icons[0];
                 }
             }

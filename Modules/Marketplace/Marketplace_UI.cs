@@ -944,7 +944,8 @@ public static class Marketplace_UI
                             (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
-                                .Contains(SEARCHVALUE.ToLower())).OrderBy(data => data.SellerName).ToList()
+                                .Contains(SEARCHVALUE.ToLower())).OrderBy(data => data.SellerName).ToList(),
+                    _ => Marketplace_DataTypes.ServerMarketPlaceData.Value
                 };
 
             if (currentSortType == Marketplace_DataTypes.SortType.DOWN)
@@ -982,7 +983,8 @@ public static class Marketplace_UI
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower())).OrderByDescending(data => data.SellerName)
-                        .ToList()
+                        .ToList(),
+                    _ => Marketplace_DataTypes.ServerMarketPlaceData.Value
                 };
 
             if (MySalesOnly)
@@ -1022,7 +1024,8 @@ public static class Marketplace_UI
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower()))
-                        .OrderBy(data => data.Count).ToList()
+                        .OrderBy(data => data.Count).ToList(),
+                     _ => InventorySellData
                 };
 
             if (currentSortType == Marketplace_DataTypes.SortType.DOWN)
@@ -1047,7 +1050,8 @@ public static class Marketplace_UI
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower())).OrderByDescending(data => data.Count)
-                        .ToList()
+                        .ToList(),
+                    _ => InventorySellData
                 };
 
             CurrentMaxPage = (InventorySellDataSORTED.Count - 1) / MAXITEMSPERPAGE + 1;

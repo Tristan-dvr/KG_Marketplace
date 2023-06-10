@@ -327,7 +327,7 @@ public static class KG_Chat
             for (int i = 0; i < list.Count; i++)
             {
                 if (list[i].opcode == OpCodes.Callvirt &&
-                    (list[i].operand == methodInfo || list[i].operand == methodInfo2))
+                    (ReferenceEquals(list[i].operand, methodInfo) || ReferenceEquals(list[i].operand, methodInfo2)))
                 {
                     list[i - 1].opcode = OpCodes.Nop;
                     list[i].opcode = OpCodes.Nop;
@@ -527,7 +527,8 @@ public static class KG_Chat
                 ChatController.SendMode.Say => "/say " + text,
                 ChatController.SendMode.Shout => "/s " + text,
                 ChatController.SendMode.Whisper => "/w " + text,
-                ChatController.SendMode.Group => "/p " + text
+                ChatController.SendMode.Group => "/p " + text,
+                _ => "/say " + text
             };
         }
 
@@ -579,12 +580,12 @@ public static class KG_Chat
             foreach (CodeInstruction instruction in code)
             {
                 yield return instruction;
-                if (instruction.opcode == OpCodes.Stfld && instruction.operand == targetField)
+                if (instruction.opcode == OpCodes.Stfld && ReferenceEquals(instruction.operand, targetField))
                 {
                     yield return new CodeInstruction(OpCodes.Ldarg_0);
                     yield return new CodeInstruction(OpCodes.Call,
                         AccessTools.Method(typeof(EmojiPatch), nameof(StringReplacer)));
-                }
+                } 
             }
         }
     }

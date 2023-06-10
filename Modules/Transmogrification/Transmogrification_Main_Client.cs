@@ -40,7 +40,6 @@ public static class Transmogrification_Main_Client
     {
         if(!ZNetScene.instance) return;
         FilteredTransmogData.Clear();
-        int count = 0;
         foreach (KeyValuePair<string, List<Transmogrification_DataTypes.TransmogItem_Data>> profile in
                  Transmogrification_DataTypes.TransmogData.Value)
         {

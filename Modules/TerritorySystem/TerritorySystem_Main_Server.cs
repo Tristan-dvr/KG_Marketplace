@@ -133,7 +133,6 @@ public static class TerritorySystem_Main_Server
                     float PeriodicDamageValue = 0;
                     float IncreasedPlayerDamageValue = 0;
                     float IncreasedMonsterDamageValue = 0;
-                    float PeriodicHealOwner = 0;
                     string CustomEnvironment = "";
                     float MoveSpeedMultiplier = 0;
                     float OverrideHeight = 0;

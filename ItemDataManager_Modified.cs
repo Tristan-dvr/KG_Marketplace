@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -674,7 +675,6 @@ public class ItemInfo : IEnumerable<ItemData>
         {
             ZNetView netView = item.GetComponent<ZNetView>();
             ZDO? zdo = netView && netView.IsValid() ? netView.GetZDO() : null;
-            string s = nameof(netView);
             if (zdo == null || zdo.GetInt(ZDOVars.s_dataCount, -1) == -1)
             {
                 item.m_itemData.m_customData = new Dictionary<string, string>(prefab.GetComponent<ItemDrop>().m_itemData.m_customData);

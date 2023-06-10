@@ -48,7 +48,7 @@ public static class ServerInfo_Main_Client
             if (string.IsNullOrEmpty(url.Text)) continue;
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(url.Text);
             yield return request.SendWebRequest();
-            if (!request.isNetworkError && !request.isHttpError)
+            if (request.result is UnityWebRequest.Result.Success)
             {
                 Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                 if (texture == null || texture.width == 0 || texture.height == 0) continue;

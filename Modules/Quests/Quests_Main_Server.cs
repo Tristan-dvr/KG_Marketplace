@@ -272,7 +272,6 @@ public static class Quests_Main_Server
                         QuestRequirementLevel = QuestRestrictionLevel,
                         SpecialTag = specialQuestTag,
                         PreviewImage = image,
-                        _revision = CurrentRevision,
                         TimeLimit = _TimeLimit
                     };
                     if (!Quests_DataTypes.SyncedQuestData.Value.ContainsKey(UID))
@@ -288,13 +287,11 @@ public static class Quests_Main_Server
             }
         }
     }
-
-
-    private static int CurrentRevision;
+    
 
     private static void ReadQuestDatabase()
     {
-        CurrentRevision = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        Quests_DataTypes.SyncedQuestRevision.Value = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         Quests_DataTypes.SyncedQuestData.Value.Clear();
         IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestDatabasePath);
         ProcessQuestDatabaseProfiles(profiles);
@@ -307,6 +304,7 @@ public static class Quests_Main_Server
         }
 
         Quests_DataTypes.SyncedQuestData.Update();
+        
     }
 
     private static void ReadEventDatabase(IReadOnlyList<string> profiles)

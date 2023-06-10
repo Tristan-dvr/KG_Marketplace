@@ -251,8 +251,6 @@ public static class Market_NPC
 
     private class TextComponent : MonoBehaviour
     {
-        private Transform t;
-
         private void Update()
         {
             Vector3 rot = Quaternion.LookRotation(GameCamera.instance.transform.forward).eulerAngles;
@@ -1173,13 +1171,11 @@ public static class Market_NPC
 
             AttachArmor(prefab.GetStableHashCode(), joint, capsule);
         }
-
-        private bool _isPlayerModel;
+        
 
         private bool TryOverrideModel(ref string prefab, out bool isFemale, bool EquipItems = true)
         {
             bool overrideHumanoid = false;
-            _isPlayerModel = false; 
 
             if (pastOverrideModel) Destroy(pastOverrideModel);
             zanim.enabled = false;
@@ -1250,7 +1246,10 @@ public static class Market_NPC
                 if (!original) return false;
                 pastOverrideModel = Instantiate(original, transform);
                 foreach (ParticleSystem particleSystem in pastOverrideModel.GetComponentsInChildren<ParticleSystem>())
-                    particleSystem.enableEmission = false;
+                {
+                    var em = particleSystem.emission;
+                    em.enabled = false;
+                }
                 pastOverrideModel.layer = LayerMask.NameToLayer("character");
                 Utils.CopyComponent(col, pastOverrideModel);
                 pastOverrideModel.transform.localPosition = Vector3.zero;
@@ -1310,7 +1309,6 @@ public static class Market_NPC
                         _ = EquipItemsOnModel(helmetJoint, helmetItem, skin) != null;
                         if (prefab == "Player")
                         {
-                            _isPlayerModel = true;
                             if (pastOverrideModel.GetComponent<CustomLookAt>() == null &&
                                 znv.m_zdo.GetInt("KGcraftingAnimation") == 0)
                             {

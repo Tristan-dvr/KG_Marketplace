@@ -177,7 +177,7 @@ public static class Marketplace_Main_Server
             if (PlayersIncome.ContainsKey(sellerUserID))
                 PlayersIncome[sellerUserID] = (int)Math.Min(int.MaxValue, (long)PlayersIncome[sellerUserID] + (int)endValue);
             else
-                PlayersIncome[sellerUserID] = Mathf.Min(int.MaxValue, (int)endValue);
+                PlayersIncome[sellerUserID] = (int)Math.Min(int.MaxValue, (long)endValue);
 
             SavePlayersIncomeAndSendToClients();
             Marketplace_Messages.Messenger.BuyCancelMessage(buyerUserID, sellerUserID, findData, quantity);

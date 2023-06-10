@@ -120,7 +120,7 @@ public static class DiscordStuff
                 await streamWriter.WriteAsync(json);
             }
 
-            httpWebRequest.GetResponseAsync();
+            await httpWebRequest.GetResponseAsync();
         });
     }
 
