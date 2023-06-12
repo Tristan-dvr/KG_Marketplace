@@ -73,6 +73,7 @@ public static class Leaderboard_UI
         Achievements.SetActive(false);
         SetSortBy(SortBy.TotalAchievements);
         Global_Values._container.ValueChanged += OnChange;
+        Localization.instance.Localize(UI.transform);
     }
 
     private static void OnChange()
@@ -123,7 +124,7 @@ public static class Leaderboard_UI
             SortBy.ItemsCrafted => valuesOnly.OrderByDescending(x => x.ItemsCrafted).ToList(),
             SortBy.Died => valuesOnly.OrderByDescending(x => x.Died).ToList(),
             SortBy.MapExplored => valuesOnly.OrderByDescending(x => x.MapExplored).ToList(),
-            SortBy.TotalAchievements => valuesOnly.OrderByDescending(x => x.Titles.Count).ToList(),
+            SortBy.TotalAchievements => valuesOnly.OrderByDescending(x => x.Achievements.Count).ToList(),
             SortBy.PlayersKilled => valuesOnly.OrderByDescending(x => x.KilledPlayers).ToList(),
             _ => new()
         };
@@ -171,8 +172,8 @@ public static class Leaderboard_UI
             element.transform.Find("MapExplored").GetComponent<Text>().text = data.MapExplored + "%";
 
             int overallScore = 0;
-            foreach (var title in data.Titles)
-                overallScore += Leaderboard_DataTypes.SyncedClientTitles.Value.Find(x => x.ID == title) is { } t
+            foreach (var achievement in data.Achievements)
+                overallScore += Leaderboard_DataTypes.SyncedClientAchievements.Value.Find(x => x.ID == achievement) is { } t
                     ? t.Score
                     : 0;
             element.transform.Find("TotalAchievements").GetComponent<Text>().text = overallScore.ToString();
@@ -224,10 +225,10 @@ public static class Leaderboard_UI
         Achievements.SetActive(true);
         foreach (Transform child in AchievementContent)
             Object.Destroy(child.gameObject);
-        Achievements.transform.Find("Achievements").GetComponent<Text>().text = board.PlayerName + "\nAchievements";
-        foreach (var title in board.Titles)
+        Achievements.transform.Find("Achievements").GetComponent<Text>().text = board.PlayerName + "\n$mpasn_LeaderboardAchievements".Localize();
+        foreach (var achievement in board.Achievements)
         {
-            if (Leaderboard_DataTypes.SyncedClientTitles.Value.Find(x => x.ID == title) is not { } t) continue;
+            if (Leaderboard_DataTypes.SyncedClientAchievements.Value.Find(x => x.ID == achievement) is not { } t) continue;
             var element = Object.Instantiate(AchievementsElement, AchievementContent);
             element.GetComponent<Image>().color = new Color(t.Color.r, t.Color.g, t.Color.b, 0.2f);
             element.transform.Find("color").GetComponent<Image>().color = t.Color;

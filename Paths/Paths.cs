@@ -62,7 +62,7 @@ public static class Market_Paths
     public static string TransmogrificationConfig => Path.Combine(MainPath, "TransmogrificationProfiles.cfg");
     
     
-    public static string TitlesProfiles => Path.Combine(MainPath, "LeaderboardTitles.cfg");
+    public static string AchievementsProfiles => Path.Combine(MainPath, "LeaderboardAchievements.cfg");
 
     private static void OnInit()
     {
@@ -131,7 +131,7 @@ public static class Market_Paths
 
             if (!File.Exists(PlayerTagsConfig)) File.Create(PlayerTagsConfig).Dispose();
             if (!File.Exists(TransmogrificationConfig)) File.Create(TransmogrificationConfig).Dispose();
-            if (!File.Exists(TitlesProfiles)) File.Create(TitlesProfiles).Dispose();
+            if (!File.Exists(AchievementsProfiles)) File.Create(AchievementsProfiles).Dispose();
         }
 
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Client or Marketplace.WorkingAs.Both)

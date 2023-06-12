@@ -1,5 +1,4 @@
-﻿using BepInEx.Configuration;
-using Marketplace.Modules.Banker;
+﻿using Marketplace.Modules.Banker;
 using Marketplace.Paths;
 
 namespace Marketplace.Modules.Marketplace_NPC;

@@ -5,10 +5,10 @@ public static class Leaderboard_DataTypes
     internal static readonly CustomSyncedValue<Dictionary<string, Client_Leaderboard>> SyncedClientLeaderboard =
         new(Marketplace.configSync, "clientLeaderboard", new());
     
-    internal static readonly CustomSyncedValue<List<Client_Title>> SyncedClientTitles =
-        new(Marketplace.configSync, "clientTitles", new());
+    internal static readonly CustomSyncedValue<List<Client_Achievement>> SyncedClientAchievements =
+        new(Marketplace.configSync, "clientAchievements", new());
 
-    public static List<Title> AllTitles = new();
+    public static List<Achievement> AllAchievements = new();
     internal static Dictionary<string, Player_Leaderboard> ServersidePlayersLeaderboard = new();
 
     internal class Player_Leaderboard
@@ -17,6 +17,7 @@ public static class Leaderboard_DataTypes
         public Dictionary<string, int> BuiltStructures = new();
         public Dictionary<string, int> ItemsCrafted = new();
         public Dictionary<string, int> KilledBy = new();
+        public Dictionary<string, int> Harvested = new();
         public float MapExplored;
         public int DeathAmount;
         public string PlayerName;
@@ -32,10 +33,11 @@ public static class Leaderboard_DataTypes
         Died,
         KilledBy,
         Explored,
+        Harvested,
         PlayersKilled = 100
     }
 
-    public class Title
+    public class Achievement
     {
         public int ID;
         public string Name;
@@ -62,6 +64,7 @@ public static class Leaderboard_DataTypes
                 TriggerType.Explored => player.MapExplored >= MinAmount,
                 TriggerType.Died => player.DeathAmount >= MinAmount,
                 TriggerType.PlayersKilled => player.KilledPlayers >= MinAmount,
+                TriggerType.Harvested => player.Harvested.TryGetValue(Prefab, out var amount) && amount >= MinAmount,
                 _ => false
             };
         }
@@ -76,7 +79,7 @@ public static class Leaderboard_DataTypes
         public int ItemsCrafted;
         public int Died;
         public float MapExplored;
-        public List<int> Titles;
+        public List<int> Achievements;
         public void Serialize(ref ZPackage pkg)
         {
             pkg.Write(PlayerName ?? "");
@@ -86,10 +89,10 @@ public static class Leaderboard_DataTypes
             pkg.Write(ItemsCrafted);
             pkg.Write(Died);
             pkg.Write(MapExplored);
-            pkg.Write(Titles.Count);
-            foreach (var title in Titles)
+            pkg.Write(Achievements.Count);
+            foreach (var achievement in Achievements)
             {
-                pkg.Write(title);
+                pkg.Write(achievement);
             }
         }
 
@@ -103,16 +106,16 @@ public static class Leaderboard_DataTypes
             Died = pkg.ReadInt();
             MapExplored = pkg.ReadSingle();
             int count = pkg.ReadInt();
-            Titles = new();
+            Achievements = new();
             for (int i = 0; i < count; i++)
             {
-                Titles.Add(pkg.ReadInt());
+                Achievements.Add(pkg.ReadInt());
             }
         }
     }
 
 
-    internal class Client_Title : ISerializableParameter
+    internal class Client_Achievement : ISerializableParameter
     {
         public int ID;
         public string Name;

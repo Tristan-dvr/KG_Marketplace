@@ -12,7 +12,7 @@ public static class Gambler_UI
     private static readonly HashSet<int> Exclude = new();
     private static readonly Dictionary<Transform, Gambler_DataTypes.Item> tempDictionary = new();
     private static Transform Button;
-    private static IEnumerable<int> currentShuffle;
+    private static List<int> currentShuffle;
     private static readonly bool[] Shuffling = new bool[2];
     private static readonly List<Image> ElementsAlpha = new();
     private static readonly List<Transform> ALLELEMENTS = new();
@@ -215,7 +215,7 @@ public static class Gambler_UI
             child.GetChild(2).GetComponent<Image>().sprite = QuestionMarkIcon;
         }
 
-        currentShuffle = Enumerable.Range(0, Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count());
+        currentShuffle = Enumerable.Range(0, Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count()).ToList();
         Exclude.Clear();
         string description =
             $"<size=60>{Localization.instance.Localize("$mpasn_gambleryouhaveachance")}:</size><size=20>\n";
@@ -374,8 +374,7 @@ public static class Gambler_UI
             Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].RequiredItem.Min);
 
         tempDictionary.Clear();
-        IEnumerable<int> range =
-            Enumerable.Range(0, Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count());
+        List<int> range = Enumerable.Range(0, Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count()).ToList();
         HashSet<int> tempExclude = new HashSet<int>();
         foreach (Transform element in Elements)
         {
@@ -383,7 +382,7 @@ public static class Gambler_UI
             int randomValue = range.ElementAt(random);
             tempDictionary[element] = Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data[randomValue];
             tempExclude.Add(randomValue);
-            range = range.Where(val => !tempExclude.Contains(val));
+            range = range.Where(val => !tempExclude.Contains(val)).ToList();
         }
 
         Marketplace._thistype.StartCoroutine(ShuffleMaster(5f));
@@ -440,19 +439,18 @@ public static class Gambler_UI
     {
         if (currentShuffle.Count() <= 1)
         {
-            currentShuffle =
-                Enumerable.Range(0, Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count());
+            currentShuffle = Enumerable.Range(0, Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count()).ToList();
             Exclude.Clear();
         }
 
         int firstRandomValue = Random.Range(0, currentShuffle.Count());
         Transform firstElement = Elements[currentShuffle.ElementAt(firstRandomValue)];
         Exclude.Add(currentShuffle.ElementAt(firstRandomValue));
-        currentShuffle = currentShuffle.Where(value => !Exclude.Contains(value));
+        currentShuffle = currentShuffle.Where(value => !Exclude.Contains(value)).ToList();
         int secondRandomValue = Random.Range(0, currentShuffle.Count());
         Transform secondElement = Elements[currentShuffle.ElementAt(secondRandomValue)];
         Exclude.Add(currentShuffle.ElementAt(secondRandomValue));
-        currentShuffle = currentShuffle.Where(value => !Exclude.Contains(value));
+        currentShuffle = currentShuffle.Where(value => !Exclude.Contains(value)).ToList();
 
         if (Random.value > 0.5f)
         {

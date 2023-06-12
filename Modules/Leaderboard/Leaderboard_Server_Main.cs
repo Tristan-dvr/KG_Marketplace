@@ -1,12 +1,11 @@
-﻿using System.Diagnostics;
-using Marketplace.Paths;
+﻿using Marketplace.Paths;
 
 namespace Marketplace.Modules.Leaderboard;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Last, "OnInit",
-    new[] { "LeaderboardTitles.cfg" },
-    new[] { "OnTitlesFileChange" })]
+    new[] { "LeaderboardAchievements.cfg" },
+    new[] { "OnAchievementsFileChange" })]
 public static class Leaderboard_Server_Main
 {
     private static void OnInit()
@@ -15,7 +14,7 @@ public static class Leaderboard_Server_Main
         if (!string.IsNullOrEmpty(data))
             Leaderboard_DataTypes.ServersidePlayersLeaderboard =
                 JSON.ToObject<Dictionary<string, Leaderboard_DataTypes.Player_Leaderboard>>(data);
-        ReadTitlesProfiles(File.ReadAllLines(Market_Paths.TitlesProfiles));
+        ReadAchievementsProfiles(File.ReadAllLines(Market_Paths.AchievementsProfiles));
         SendToPlayers();
         Marketplace._thistype.StartCoroutine(SaveAndUpdate());
     }
@@ -30,7 +29,7 @@ public static class Leaderboard_Server_Main
 
     private static void RPC_ReceiveLeaderboardEvent(long sender, int type, ZPackage pkg)
     {
-        if(!Global_Values._container.Value._useLeaderboard) return;
+        if (!Global_Values._container.Value._useLeaderboard) return;
         Leaderboard_DataTypes.TriggerType triggerType = (Leaderboard_DataTypes.TriggerType)type;
         ZNetPeer peer = ZNet.instance.GetPeer(sender);
         if (peer == null) return;
@@ -74,6 +73,12 @@ public static class Leaderboard_Server_Main
             case Leaderboard_DataTypes.TriggerType.Explored:
                 Leaderboard_DataTypes.ServersidePlayersLeaderboard[id].MapExplored = pkg.ReadSingle();
                 break;
+            case Leaderboard_DataTypes.TriggerType.Harvested:
+                prefab = pkg.ReadString();
+                if (!Leaderboard_DataTypes.ServersidePlayersLeaderboard[id].Harvested.ContainsKey(prefab))
+                    Leaderboard_DataTypes.ServersidePlayersLeaderboard[id].Harvested.Add(prefab, 1);
+                else Leaderboard_DataTypes.ServersidePlayersLeaderboard[id].Harvested[prefab]++;
+                break;
             default:
                 return;
         }
@@ -84,7 +89,8 @@ public static class Leaderboard_Server_Main
         while (true)
         {
             yield return new WaitForSecondsRealtime(5 * 60);
-            if (!ZNet.instance || !ZNet.instance.IsServer() || !Global_Values._container.Value._useLeaderboard) continue;
+            if (!ZNet.instance || !ZNet.instance.IsServer() ||
+                !Global_Values._container.Value._useLeaderboard) continue;
             File.WriteAllText(Market_Paths.MarketLeaderboardJSON,
                 JSON.ToNiceJSON(Leaderboard_DataTypes.ServersidePlayersLeaderboard));
             SendToPlayers();
@@ -107,11 +113,11 @@ public static class Leaderboard_Server_Main
                 KilledPlayers = leaderboard.Value.KilledPlayers,
                 Died = leaderboard.Value.DeathAmount,
                 MapExplored = leaderboard.Value.MapExplored,
-                Titles = new()
+                Achievements = new()
             };
-            foreach (var title in Leaderboard_DataTypes.AllTitles)
+            foreach (var achievement in Leaderboard_DataTypes.AllAchievements)
             {
-                if (title.Check(leaderboard.Key)) newLeaderboard.Titles.Add(title.ID);
+                if (achievement.Check(leaderboard.Key)) newLeaderboard.Achievements.Add(achievement.ID);
             }
 
             Leaderboard_DataTypes.SyncedClientLeaderboard.Value.Add(leaderboard.Key, newLeaderboard);
@@ -120,23 +126,23 @@ public static class Leaderboard_Server_Main
         Leaderboard_DataTypes.SyncedClientLeaderboard.Update();
     }
 
-    private static void ReadTitlesProfiles(IReadOnlyList<string> profiles)
+    private static void ReadAchievementsProfiles(IReadOnlyList<string> profiles)
     {
-        Leaderboard_DataTypes.AllTitles.Clear();
-        Leaderboard_DataTypes.Title currentTitle = null;
+        Leaderboard_DataTypes.AllAchievements.Clear();
+        Leaderboard_DataTypes.Achievement currentAchievement = null;
         for (int i = 0; i < profiles.Count; i++)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
             {
-                currentTitle = new Leaderboard_DataTypes.Title
+                currentAchievement = new Leaderboard_DataTypes.Achievement
                 {
                     ID = profiles[i].Replace("[", "").Replace("]", "").ToLower().GetStableHashCode()
                 };
             }
             else
             {
-                if (currentTitle == null) continue;
+                if (currentAchievement == null) continue;
                 try
                 {
                     string type = profiles[i];
@@ -151,57 +157,62 @@ public static class Leaderboard_Server_Main
                         i += 5;
                         continue;
                     }
-                    currentTitle.Type = triggerType;
-                    currentTitle.Name = name;
-                    currentTitle.Description = description;
+
+                    currentAchievement.Type = triggerType;
+                    currentAchievement.Name = name;
+                    currentAchievement.Description = description;
 
                     if (triggerType is Leaderboard_DataTypes.TriggerType.ItemsCrafted
                         or Leaderboard_DataTypes.TriggerType.MonstersKilled
-                        or Leaderboard_DataTypes.TriggerType.StructuresBuilt)
+                        or Leaderboard_DataTypes.TriggerType.StructuresBuilt
+                        or Leaderboard_DataTypes.TriggerType.Harvested)
                     {
                         string[] prefabSplit = prefabParse.Replace(" ", "").Split(',');
-                        currentTitle.Prefab = prefabSplit[0];
-                        currentTitle.MinAmount = int.Parse(prefabSplit[1]);
+                        currentAchievement.Prefab = prefabSplit[0];
+                        currentAchievement.MinAmount = int.Parse(prefabSplit[1]);
                     }
                     else
                     {
-                        currentTitle.MinAmount = int.Parse(prefabParse);
+                        currentAchievement.MinAmount = int.Parse(prefabParse);
                     }
 
                     string[] colorSplit = color.Replace(" ", "").Split(',');
-                    currentTitle.Color = new Color32(byte.Parse(colorSplit[0]), byte.Parse(colorSplit[1]),
+                    currentAchievement.Color = new Color32(byte.Parse(colorSplit[0]), byte.Parse(colorSplit[1]),
                         byte.Parse(colorSplit[2]), 255);
-                    currentTitle.Score = int.Parse(tierParse);
-                    Leaderboard_DataTypes.AllTitles.Add(currentTitle);
-                    currentTitle = null;
+                    currentAchievement.Score = int.Parse(tierParse);
+                    Leaderboard_DataTypes.AllAchievements.Add(currentAchievement);
+                    currentAchievement = null;
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Failed to parse title {currentTitle.Name}: {ex.Message}", ConsoleColor.Red);
+                    Utils.print($"Failed to parse achievement {currentAchievement.Name}: {ex.Message}",
+                        ConsoleColor.Red);
                     i += 5;
                 }
             }
         }
-        
-        Leaderboard_DataTypes.AllTitles = Leaderboard_DataTypes.AllTitles.OrderByDescending(x => x.Score).ToList();
-        Leaderboard_DataTypes.SyncedClientTitles.Value.Clear();
-        foreach (var title in Leaderboard_DataTypes.AllTitles)
+
+        Leaderboard_DataTypes.AllAchievements =
+            Leaderboard_DataTypes.AllAchievements.OrderByDescending(x => x.Score).ToList();
+        Leaderboard_DataTypes.SyncedClientAchievements.Value.Clear();
+        foreach (var achievement in Leaderboard_DataTypes.AllAchievements)
         {
-            Leaderboard_DataTypes.SyncedClientTitles.Value.Add(new()
+            Leaderboard_DataTypes.SyncedClientAchievements.Value.Add(new()
             {
-                ID = title.ID,
-                Name = title.Name,
-                Description = title.Description,
-                Color = title.Color,
-                Score = title.Score
+                ID = achievement.ID,
+                Name = achievement.Name,
+                Description = achievement.Description,
+                Color = achievement.Color,
+                Score = achievement.Score
             });
         }
-        Leaderboard_DataTypes.SyncedClientTitles.Update();
+
+        Leaderboard_DataTypes.SyncedClientAchievements.Update();
     }
 
-    private static void OnTitlesFileChange()
+    private static void OnAchievementsFileChange()
     {
-        ReadTitlesProfiles(File.ReadAllLines(Market_Paths.TitlesProfiles));
-        Utils.print("Titles Changed. Sending new info to all clients");
+        ReadAchievementsProfiles(File.ReadAllLines(Market_Paths.AchievementsProfiles));
+        Utils.print("Achievements Changed. Sending new info to all clients");
     }
 }

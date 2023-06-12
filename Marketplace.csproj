@@ -62,9 +62,6 @@
         <Reference Include="Groups">
           <HintPath>Libs\Groups.dll</HintPath>
         </Reference>
-        <Reference Include="GroupsAPI">
-          <HintPath>Libs\GroupsAPI.dll</HintPath>
-        </Reference>
         <Reference Include="ItemManager">
           <HintPath>Libs\ItemManager.dll</HintPath>
         </Reference>

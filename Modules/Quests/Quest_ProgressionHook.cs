@@ -112,7 +112,6 @@ public static class Quest_ProgressionHook
             if (CharacterLastDamageList.ContainsKey(__instance)) CharacterLastDamageList.Remove(__instance);
         }
     }
-    
 
 
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
@@ -129,8 +128,9 @@ public static class Quest_ProgressionHook
         private static void QuestPickup(long sender, string prefab)
         {
             Quests_DataTypes.Quest.TryAddRewardPickup(prefab);
+            GameEvents.OnHarvest?.Invoke(prefab);
         }
-        
+
 
         private static void QuestKillEvent(long sender, string prefab, int level, Vector3 pos, bool ownerRPC)
         {
@@ -199,14 +199,15 @@ public static class Quest_ProgressionHook
         {
             float radius = __instance.m_collider.radius;
             float height = __instance.m_collider.height - 1.7f;
-            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon, __instance.transform);
+            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon,
+                __instance.transform);
             go.name = "MPASNquest";
             go.transform.localPosition += Vector3.up * height;
             go.transform.localScale += new Vector3(radius, radius, radius);
             go.SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
         }
     }
-    
+
     [HarmonyPatch(typeof(Pickable), nameof(Pickable.Awake))]
     [ClientOnlyPatch]
     private static class Pickable_Awake_Quest
@@ -214,7 +215,8 @@ public static class Quest_ProgressionHook
         private static void Postfix(Pickable __instance)
         {
             __instance.gameObject.AddComponent<Pickable_Hook>();
-            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon, __instance.transform);
+            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon,
+                __instance.transform);
             go.name = "MPASNquest";
             go.SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
         }
@@ -226,7 +228,8 @@ public static class Quest_ProgressionHook
     {
         private static void Postfix(ItemDrop __instance)
         {
-            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon, __instance.transform);
+            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon,
+                __instance.transform);
             go.name = "MPASNquest";
             go.SetActive(false);
         }
@@ -238,21 +241,21 @@ public static class Quest_ProgressionHook
     {
         private static void Postfix(ItemDrop __instance)
         {
-            __instance.transform.Find("MPASNquest")?.gameObject.SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
+            __instance.transform.Find("MPASNquest")?.gameObject
+                .SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
         }
     }
-    
-    
+
 
     public class Pickable_Hook : MonoBehaviour
     {
-        private static readonly List<Pickable> pickables = new(); 
+        private static readonly List<Pickable> pickables = new();
         private Pickable pick;
 
         private void Awake()
-        { 
+        {
             ZNetView znv = GetComponent<ZNetView>();
-            if (!znv || !znv.IsValid()) return; 
+            if (!znv || !znv.IsValid()) return;
             pick = GetComponent<Pickable>();
             if (!pick) return;
             pickables.Add(pick);
@@ -262,14 +265,14 @@ public static class Quest_ProgressionHook
         {
             if (pick) pickables.Remove(pick);
         }
-    
+
         public static List<Pickable> GetPickables()
         {
             return pickables;
         }
     }
-    
-    
+
+
     [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.AddRecipeToList))]
     [ClientOnlyPatch]
     private static class TranspileRecipeQuestTest
@@ -303,7 +306,7 @@ public static class Quest_ProgressionHook
             }
         }
     }
-    
+
     [HarmonyPatch(typeof(Piece), nameof(Piece.DropResources))]
     [ClientOnlyPatch]
     private static class Piece_DropResources_Patch
@@ -313,8 +316,8 @@ public static class Quest_ProgressionHook
             return !__instance.m_nview.m_zdo.GetBool("MPASNquestBuild");
         }
     }
-    
-    
+
+
     [HarmonyPatch(typeof(Hud), nameof(Hud.Awake))]
     [ClientOnlyPatch]
     private static class Hud_Awake_Patch
@@ -334,7 +337,7 @@ public static class Quest_ProgressionHook
             go.transform.SetAsLastSibling();
         }
     }
-    
+
     [HarmonyPatch(typeof(Hud), nameof(Hud.UpdatePieceList))]
     [ClientOnlyPatch]
     private static class Hud_UpdatePieceList_Patch
@@ -364,5 +367,4 @@ public static class Quest_ProgressionHook
             }
         }
     }
-    
 }

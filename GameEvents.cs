@@ -1,6 +1,4 @@
-﻿using System.Reflection.Emit;
-
-namespace Marketplace;
+﻿namespace Marketplace;
 
 public static class GameEvents
 {
@@ -9,6 +7,7 @@ public static class GameEvents
     public static Action<string> OnStructureBuilt;
     public static Action<string, int> OnItemCrafted;
     public static Action<string> KilledBy;
+    public static Action<string> OnHarvest;
     public static Action OnPlayerDeath;
 
     [HarmonyPatch(typeof(Player),nameof(Player.SetLocalPlayer))]

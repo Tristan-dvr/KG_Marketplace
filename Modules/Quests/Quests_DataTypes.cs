@@ -501,8 +501,8 @@ public static class Quests_DataTypes
                 if (CheckQuest.RequirementType[i] is QuestRequirementType.HasTitle)
                 {
                     message =
-                        $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetTitleName(CheckQuest.QuestRequirementPrefab[i])}</color>";
-                    bool result = LeaderBoard_Main_Client.HasTitle(CheckQuest.QuestRequirementPrefab[i]);
+                        $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(CheckQuest.QuestRequirementPrefab[i])}</color>";
+                    bool result = LeaderBoard_Main_Client.HasAchievement(CheckQuest.QuestRequirementPrefab[i]);
                     if (result)
                     {
                         continue;

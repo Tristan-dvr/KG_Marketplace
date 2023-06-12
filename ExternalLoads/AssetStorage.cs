@@ -1,6 +1,4 @@
 ﻿using BepInEx.Bootstrap;
-using BepInEx.Configuration;
-using Marketplace_APIs;
 using Marketplace.Base64;
 using Marketplace.Paths;
 using UnityEngine.Networking;

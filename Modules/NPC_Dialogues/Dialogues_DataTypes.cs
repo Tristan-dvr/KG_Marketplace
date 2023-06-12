@@ -402,15 +402,15 @@ public static class Dialogues_DataTypes
                             case OptionCondition.HasTitle:
                                 result += (out string reason) =>
                                 {
-                                    reason = $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetTitleName(split[1])}</color>";
-                                    return LeaderBoard_Main_Client.HasTitle(split[1]);
+                                    reason = $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";
+                                    return LeaderBoard_Main_Client.HasAchievement(split[1]);
                                 };
                                 break;
                             case OptionCondition.NotHasTitle:
                                 result += (out string reason) =>
                                 {
-                                    reason = $"{Localization.instance.Localize("$mpasn_dontneedtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetTitleName(split[1])}</color>";
-                                    return !LeaderBoard_Main_Client.HasTitle(split[1]);
+                                    reason = $"{Localization.instance.Localize("$mpasn_dontneedtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";
+                                    return !LeaderBoard_Main_Client.HasAchievement(split[1]);
                                 };
                                 break;
                             case OptionCondition.SkillMore:

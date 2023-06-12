@@ -1,8 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Marketplace.Paths;
 
 namespace Marketplace.Modules.Leaderboard;
 
@@ -17,6 +15,7 @@ public static class LeaderBoard_Main_Client
         GameEvents.OnStructureBuilt += prefab => SendToServer(Leaderboard_DataTypes.TriggerType.StructuresBuilt, prefab);
         GameEvents.OnItemCrafted += (prefab, _) => SendToServer(Leaderboard_DataTypes.TriggerType.ItemsCrafted, prefab);
         GameEvents.KilledBy += prefab => SendToServer(Leaderboard_DataTypes.TriggerType.KilledBy, prefab);
+        GameEvents.OnHarvest += prefab => SendToServer(Leaderboard_DataTypes.TriggerType.Harvested, prefab);
         Leaderboard_UI.Init();
         Marketplace.Global_Updator += Update;
     }
@@ -37,32 +36,34 @@ public static class LeaderBoard_Main_Client
             }
             else
             {
-                 Leaderboard_UI.Show();
+                Leaderboard_UI.Show();
             }
         }
     }
 
-    public static bool HasTitle(string titleID)
+    public static bool HasAchievement(string achievementID)
     {
-        int toId = titleID.Replace(" ", "").ToLower().GetStableHashCode();
-        return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(Global_Values._localUserID, out var LB) && LB.Titles.Contains(toId);
+        int toId = achievementID.Replace(" ", "").ToLower().GetStableHashCode();
+        return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(Global_Values._localUserID,
+            out var LB) && LB.Achievements.Contains(toId);
     }
 
-    public static string GetTitleName(string titleID)
+    public static string GetAchievementName(string achievementID)
     {
-        int toId = titleID.Replace(" ", "").ToLower().GetStableHashCode();
-        return Leaderboard_DataTypes.SyncedClientTitles.Value.Find(x => x.ID == toId)?.Name ?? titleID;
+        int toId = achievementID.Replace(" ", "").ToLower().GetStableHashCode();
+        return Leaderboard_DataTypes.SyncedClientAchievements.Value.Find(x => x.ID == toId)?.Name ?? achievementID;
     }
 
     private static void SendToServer(Leaderboard_DataTypes.TriggerType type, params object[] args)
     {
-        if(!Global_Values._container.Value._useLeaderboard) return;
+        if (!Global_Values._container.Value._useLeaderboard) return;
         switch (type)
         {
             case Leaderboard_DataTypes.TriggerType.MonstersKilled:
             case Leaderboard_DataTypes.TriggerType.ItemsCrafted:
             case Leaderboard_DataTypes.TriggerType.StructuresBuilt:
             case Leaderboard_DataTypes.TriggerType.KilledBy:
+            case Leaderboard_DataTypes.TriggerType.Harvested:
                 ZPackage pkg = new();
                 pkg.Write((string)args[0]);
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(),
@@ -91,7 +92,8 @@ public static class LeaderBoard_Main_Client
 
         private static void Postfix(Player __instance)
         {
-            if (!Global_Values._container.Value._useLeaderboard || __instance != Player.m_localPlayer || !Minimap.instance) return;
+            if (!Minimap.instance || __instance != Player.m_localPlayer ||
+                !Global_Values._container.Value._useLeaderboard) return;
             _time += Time.deltaTime;
             if (_time >= 3 * 60)
             {

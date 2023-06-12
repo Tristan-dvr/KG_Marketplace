@@ -1,6 +1,5 @@
 ﻿using LocalizationManager;
 using Marketplace.Paths;
-using Microsoft.CSharp;
 using UnityEngine.Rendering;
 
 namespace Marketplace
@@ -29,7 +28,7 @@ namespace Marketplace
             DisplayName = GUID, ModRequired = true, MinimumRequiredVersion = PluginVersion,
             CurrentVersion = PluginVersion
         };
-
+ 
         public enum WorkingAs
         {
             Client,
@@ -67,7 +66,7 @@ namespace Marketplace
                 .Select(x => new KeyValuePair<Market_Autoload, Type>(x.GetCustomAttribute<Market_Autoload>(), x))
                 .OrderBy(x => x.Key.priority).Where(x => WorkingAsType switch
                 {
-                    WorkingAs.Client => x.Key.type != Market_Autoload.Type.Server,
+                    WorkingAs.Client => x.Key.type != Market_Autoload.Type.Server, 
                     WorkingAs.Server => x.Key.type != Market_Autoload.Type.Client,
                     _ => true
                 });

@@ -1,6 +1,5 @@
 ﻿using System.IO.Compression;
 using System.Security.Cryptography;
-using System.Text;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using Marketplace.Modules.Buffer;

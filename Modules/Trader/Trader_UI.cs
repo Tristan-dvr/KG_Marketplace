@@ -15,7 +15,7 @@ public static class Trader_UI
     private static readonly List<ContentSizeFitter> AllFilters = new();
     private static Scrollbar ScrollbarMain;
     private static Text NPCname;
-    private static IEnumerable<Trader_DataTypes.TraderData> SortedList;
+    private static List<Trader_DataTypes.TraderData> SortedList;
     private static InputField SearchInput;
     private static Modifier CurrentModifier;
     private static readonly Transform[] ModifierButtons = new Transform[Enum.GetValues(typeof(Modifier)).Length];
@@ -129,7 +129,7 @@ public static class Trader_UI
 
         SortedList = Trader_DataTypes.ClientSideItemList[CurrentProfile].Where(data =>
             data.NeededItems.Any(i => i.ItemName.ToLower().Contains(search)) ||
-            data.ResultItems.Any(i => i.ItemName.ToLower().Contains(search)));
+            data.ResultItems.Any(i => i.ItemName.ToLower().Contains(search))).ToList();
     }
 
     private static float CalculateOffset(int amount) => Mathf.Max(0, (amount - 1) * 34.5f);

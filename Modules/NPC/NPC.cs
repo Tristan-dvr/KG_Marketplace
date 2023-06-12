@@ -1,5 +1,4 @@
-﻿using Marketplace.Base64;
-using Marketplace.Modules.Banker;
+﻿using Marketplace.Modules.Banker;
 using Marketplace.Modules.Buffer;
 using Marketplace.Modules.Feedback;
 using Marketplace.Modules.Gambler;
@@ -11,7 +10,6 @@ using Marketplace.Modules.Teleporter;
 using Marketplace.Modules.Trader;
 using Marketplace.Modules.Transmogrification;
 using UnityEngine.EventSystems;
-using Valheim.UI;
 using Image = UnityEngine.UI.Image;
 using Object = UnityEngine.Object;
 
@@ -1619,9 +1617,8 @@ public static class Market_NPC
                 PeriodicAnimationTime = npc.znv.m_zdo.GetFloat("KGperiodicAnimationTime")
                     .ToString(CultureInfo.InvariantCulture),
                 PeriodicSound = npc.znv.m_zdo.GetString("KGperiodicSound"),
-                PeriodicSoundTime =
-                    npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture),
-                IMAGE = ResourcesBase64.PlaceholderMonster
+                PeriodicSoundTime = npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture),
+                IMAGE = PhotoManager.__instance.NPC_Photo(npc)
             };
             string json = JSON.ToNiceJSON(newData);
             File.WriteAllText(filePath, json);
@@ -1677,7 +1674,7 @@ public static class Market_NPC
                 PeriodicSound = _currentNPC.znv.m_zdo.GetString("KGperiodicSound"),
                 PeriodicSoundTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicSoundTime")
                     .ToString(CultureInfo.InvariantCulture),
-                IMAGE = ResourcesBase64.PlaceholderMonster
+                IMAGE = PhotoManager.__instance.NPC_Photo(_currentNPC)
             };
             string json = JSON.ToNiceJSON(newData);
             File.WriteAllText(filePath, json);
