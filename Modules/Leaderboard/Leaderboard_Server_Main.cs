@@ -165,7 +165,7 @@ public static class Leaderboard_Server_Main
                     if (triggerType is Leaderboard_DataTypes.TriggerType.ItemsCrafted
                         or Leaderboard_DataTypes.TriggerType.MonstersKilled
                         or Leaderboard_DataTypes.TriggerType.StructuresBuilt
-                        or Leaderboard_DataTypes.TriggerType.Harvested)
+                        or Leaderboard_DataTypes.TriggerType.Harvested) 
                     {
                         string[] prefabSplit = prefabParse.Replace(" ", "").Split(',');
                         currentAchievement.Prefab = prefabSplit[0];

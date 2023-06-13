@@ -25,9 +25,14 @@ public static class TerritorySystem_DataTypes
             pkg.Write(Xlength);
             pkg.Write(Ylength);
             pkg.Write(Name ?? "");
-            pkg.Write(R);
-            pkg.Write(G);
-            pkg.Write(B);
+            pkg.Write(Colors.Count);
+            foreach (Color32 color in Colors)
+            {
+                pkg.Write(color.r);
+                pkg.Write(color.g);
+                pkg.Write(color.b);
+            }
+
             pkg.Write(Radius);
             pkg.Write(ShowExternalWater);
             pkg.Write(Priority);
@@ -42,11 +47,6 @@ public static class TerritorySystem_DataTypes
             pkg.Write(OverridenBiome);
             pkg.Write(AddMonsterLevel);
             pkg.Write((int)PaintGround);
-            pkg.Write(DrawOnMap);
-            pkg.Write(R_End);
-            pkg.Write(G_End);
-            pkg.Write(B_End);
-            pkg.Write(UsingGradient);
             pkg.Write((int)GradientType);
             pkg.Write(ExponentialValue);
         }
@@ -61,9 +61,13 @@ public static class TerritorySystem_DataTypes
             Xlength = pkg.ReadInt();
             Ylength = pkg.ReadInt();
             Name = pkg.ReadString();
-            R = pkg.ReadInt();
-            G = pkg.ReadInt();
-            B = pkg.ReadInt();
+            int colorCount = pkg.ReadInt();
+            Colors = new List<Color32>();
+            for (int i = 0; i < colorCount; i++)
+            {
+                Colors.Add(new Color32(pkg.ReadByte(), pkg.ReadByte(), pkg.ReadByte(), 255));
+            }
+
             Radius = pkg.ReadInt();
             ShowExternalWater = pkg.ReadBool();
             Priority = pkg.ReadInt();
@@ -78,11 +82,6 @@ public static class TerritorySystem_DataTypes
             OverridenBiome = pkg.ReadInt();
             AddMonsterLevel = pkg.ReadInt();
             PaintGround = (PaintType)pkg.ReadInt();
-            DrawOnMap = pkg.ReadBool();
-            R_End = pkg.ReadInt();
-            G_End = pkg.ReadInt();
-            B_End = pkg.ReadInt();
-            UsingGradient = pkg.ReadBool();
             GradientType = (GradientType)pkg.ReadInt();
             ExponentialValue = pkg.ReadSingle();
         }
@@ -100,13 +99,7 @@ public static class TerritorySystem_DataTypes
         public int Xlength;
         public int Ylength;
         public string Name = "";
-        public int R;
-        public int G;
-        public int B;
-        public int R_End = -1;
-        public int G_End = -1;
-        public int B_End = -1;
-        public bool UsingGradient;
+        public List<Color32> Colors = new();
         public int Radius;
         public bool ShowExternalWater = true;
         public int Priority;
@@ -121,11 +114,12 @@ public static class TerritorySystem_DataTypes
         public int OverridenBiome;
         public int AddMonsterLevel;
         public PaintType PaintGround;
-        public bool DrawOnMap;
-        public GradientType GradientType = GradientType.FromCenter;
+        public GradientType GradientType = GradientType.LeftRight;
         public float ExponentialValue = 1f;
-        
 
+
+        public bool DrawOnMap => Colors.Count > 0;
+        public bool UsingGradient => Type is not TerritoryType.Custom && Colors.Count > 1;
 
         public static Territory GetCurrentTerritory(Vector3 pos)
         {
@@ -140,7 +134,6 @@ public static class TerritorySystem_DataTypes
             return null;
         }
 
-
         public Vector2 Pos()
         {
             return new Vector2(X, Y);
@@ -153,24 +146,32 @@ public static class TerritorySystem_DataTypes
 
         public Color32 GetColor()
         {
-            return new Color32((byte)R, (byte)G, (byte)B, 255);
+            return Colors.Count > 0 ? Colors[0] : Color.green;
         }
 
         private Color32 CalculateGradient(float t)
         {
-            Color32 start = GetColor();
-            Color32 end = new Color32((byte)R_End, (byte)G_End, (byte)B_End, 255);
-            return Color32.Lerp(start, end, t);
+            switch (t)
+            {
+                case <= 0f:
+                    return Colors[0];
+                case >= 1f:
+                    return Colors[Colors.Count - 1];
+            }
+            float intervalSize = 1f / (Colors.Count - 1);
+            int index = Mathf.FloorToInt(t / intervalSize);
+            float tInInterval = (t - index * intervalSize) / intervalSize;
+            float expedValue = 1 - Mathf.Pow(1 - tInInterval, ExponentialValue);
+            return Color32.Lerp(Colors[index], Colors[index + 1], expedValue);
         }
-        
+
         public Color32 GetGradientX(float x, bool reverse = false)
         {
             float startX = Pos().x - Radius;
             float endX = Pos().x + Radius;
             float t = Mathf.Clamp01((x - startX) / (endX - startX));
             if (reverse) t = 1 - t;
-            float expedValue = 1 - Mathf.Pow(1 - t, ExponentialValue);
-            return CalculateGradient(expedValue);
+            return CalculateGradient(t);
         }
 
         public Color32 GetGradientY(float y, bool reverse = false)
@@ -179,8 +180,7 @@ public static class TerritorySystem_DataTypes
             float endY = Pos().y + Radius;
             float t = Mathf.Clamp01((y - startY) / (endY - startY));
             if (reverse) t = 1 - t;
-            float expedValue = 1 - Mathf.Pow(1 - t, ExponentialValue);
-            return CalculateGradient(expedValue);
+            return CalculateGradient(t);
         }
 
         public Color32 GetGradientXY(Vector2 pos, bool reverse = false)
@@ -193,8 +193,7 @@ public static class TerritorySystem_DataTypes
             float tY = Mathf.Clamp01((pos.y - startY) / (endY - startY));
             float t = (tX + tY) / 2;
             if (reverse) t = 1 - t;
-            float expedValue = 1 - Mathf.Pow(1 - t, ExponentialValue);
-            return CalculateGradient(expedValue);
+            return CalculateGradient(t);
         }
 
         public Color32 GetGradientXY_2(Vector2 pos, bool reverse = false)
@@ -207,18 +206,16 @@ public static class TerritorySystem_DataTypes
             float tY = Mathf.Clamp01((pos.y - startY) / (endY - startY));
             float t = (tX + tY) / 2;
             if (reverse) t = 1 - t;
-            float expedValue = 1 - Mathf.Pow(1 - t, ExponentialValue);
-            return CalculateGradient(expedValue);
+            return CalculateGradient(t);
         }
 
         public Color32 GetGradientFromCenter(Vector2 pos, bool reverse = false)
         {
             float t = Mathf.Clamp01(Vector2.Distance(pos, Pos()) / Radius);
             if (reverse) t = 1 - t;
-            float expedValue = 1 - Mathf.Pow(1 - t, ExponentialValue);
-            return CalculateGradient(expedValue);
+            return CalculateGradient(t);
         }
-        
+
         public string RawName()
         {
             return Name;

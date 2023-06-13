@@ -305,6 +305,7 @@ public static class TerritorySystem_Main_Client
             IsGeneratingMap = false;
             originalMapColors = __instance.m_mapTexture.GetPixels();
             originalHeightColors = __instance.m_heightTexture.GetPixels();
+            Utils.print($"Calling native map magic");
             DoMapMagic();
         }
     }
@@ -313,8 +314,7 @@ public static class TerritorySystem_Main_Client
 
     private static async void DoMapMagic()
     {
-        if (TerritorySystem_DataTypes.TerritoriesData.Value == null ||
-            TerritorySystem_DataTypes.TerritoriesData.Value.Count == 0) return;
+        if (originalMapColors == null || TerritorySystem_DataTypes.TerritoriesData.Value == null || TerritorySystem_DataTypes.TerritoriesData.Value.Count == 0) return;
         MapMagicCounter++;
         int currentCounter = MapMagicCounter;
         try
@@ -425,7 +425,7 @@ public static class TerritorySystem_Main_Client
                                     heightColors[idx] = new Color(Mathf.Clamp(heightColors[idx].r, 29f, 89), 0, 0);
                                 }
                             }
-                        }
+                        } 
                     }
                 });
             });
@@ -435,8 +435,9 @@ public static class TerritorySystem_Main_Client
             Minimap.instance.m_heightTexture.SetPixels(heightColors);
             Minimap.instance.m_heightTexture.Apply();
         }
-        catch
+        catch(Exception ex)
         {
+            Utils.print($"Error while drawing territories on map: {ex.Message}\n{ex.StackTrace}");
         }
     }
 

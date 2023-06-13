@@ -104,26 +104,23 @@ public static class TerritorySystem_Main_Server
                         }
                     }
 
-                    newTerritory.R = Convert.ToInt32(rgb[0]);
-                    newTerritory.G = Convert.ToInt32(rgb[1]);
-                    newTerritory.B = Convert.ToInt32(rgb[2]);
-
-                    newTerritory.DrawOnMap = newTerritory.R >= 0 && newTerritory.G >= 0 && newTerritory.B >= 0;
-
-                    newTerritory.R = Mathf.Clamp(newTerritory.R, 0, 255);
-                    newTerritory.G = Mathf.Clamp(newTerritory.G, 0, 255);
-                    newTerritory.B = Mathf.Clamp(newTerritory.B, 0, 255);
-
-                    newTerritory.R_End = rgb.Count > 3 ? Convert.ToInt32(rgb[3]) : -1;
-                    newTerritory.G_End = rgb.Count > 4 ? Convert.ToInt32(rgb[4]) : -1;
-                    newTerritory.B_End = rgb.Count > 5 ? Convert.ToInt32(rgb[5]) : -1;
-
-                    newTerritory.UsingGradient =
-                        newTerritory.R_End >= 0 && newTerritory.G_End >= 0 && newTerritory.B_End >= 0;
-
-                    newTerritory.R_End = Mathf.Clamp(newTerritory.R_End, 0, 255);
-                    newTerritory.G_End = Mathf.Clamp(newTerritory.G_End, 0, 255);
-                    newTerritory.B_End = Mathf.Clamp(newTerritory.B_End, 0, 255);
+                    newTerritory.Colors = new();
+                    for (int tf = 0; tf < rgb.Count; tf += 3)
+                    {
+                        try
+                        {
+                            newTerritory.Colors.Add(new Color32
+                            {
+                                r = Convert.ToByte(rgb[tf]),
+                                g = Convert.ToByte(rgb[tf + 1]),
+                                b = Convert.ToByte(rgb[tf + 2])
+                            });
+                        }
+                        catch
+                        {
+                            break;
+                        }
+                    }
 
 
                     TerritorySystem_DataTypes.TerritoryFlags flags = TerritorySystem_DataTypes.TerritoryFlags.None;
