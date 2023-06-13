@@ -305,7 +305,6 @@ public static class TerritorySystem_Main_Client
             IsGeneratingMap = false;
             originalMapColors = __instance.m_mapTexture.GetPixels();
             originalHeightColors = __instance.m_heightTexture.GetPixels();
-            Utils.print($"Calling native map magic");
             DoMapMagic();
         }
     }
@@ -422,6 +421,7 @@ public static class TerritorySystem_Main_Client
 
                                 if (externalWater)
                                 {
+                                    
                                     heightColors[idx] = new Color(Mathf.Clamp(heightColors[idx].r, 29f, 89), 0, 0);
                                 }
                             }

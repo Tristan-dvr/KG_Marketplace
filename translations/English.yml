@@ -247,3 +247,14 @@ mpasn_toomuchepicmmolevel: Too much <color=yellow>EpicMMO</color> level
 mpasn_toomuchcozyheimlevel: Too much <color=yellow>Cozyheim</color> level
 mpasn_needtitle: Need Title
 mpasn_dontneedtitle: You have Title
+mpasn_Leaderboard: Leaderboard
+mpasn_Leaderboard_PlayerName: Player Name
+mpasn_Leaderboard_AchScore: "Ach.\nScore"
+mpasn_Leaderboard_CreaturesKilled: "Creatures\nKilled"
+mpasn_Leaderboard_PlayersKilled: "Players\nKilled"
+mpasn_Leaderboard_StructuresBuilt: "Structures\nBuilt"
+mpasn_Leaderboard_Harvested: "Plants\nHarvested"
+mpasn_Leaderboard_ItemsCrafted: "Items\nCrafted"
+mpasn_Leaderboard_AmountOfDeath: "Amount of\nDeaths"
+mpasn_Leaderboard_MapExplored: "Map\nExplored"
+mpasn_LeaderboardAchievements: "'s\nAchievements"

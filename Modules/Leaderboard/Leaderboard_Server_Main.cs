@@ -110,6 +110,7 @@ public static class Leaderboard_Server_Main
                 ItemsCrafted = leaderboard.Value.ItemsCrafted.Sum(x => x.Value),
                 KilledCreatures = leaderboard.Value.KilledCreatures.Sum(x => x.Value),
                 BuiltStructures = leaderboard.Value.BuiltStructures.Sum(x => x.Value),
+                Harvested = leaderboard.Value.Harvested.Sum(x => x.Value),
                 KilledPlayers = leaderboard.Value.KilledPlayers,
                 Died = leaderboard.Value.DeathAmount,
                 MapExplored = leaderboard.Value.MapExplored,

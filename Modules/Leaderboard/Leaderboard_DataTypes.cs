@@ -78,6 +78,7 @@ public static class Leaderboard_DataTypes
         public int BuiltStructures;
         public int ItemsCrafted;
         public int Died;
+        public int Harvested;
         public float MapExplored;
         public List<int> Achievements;
         public void Serialize(ref ZPackage pkg)
@@ -89,6 +90,7 @@ public static class Leaderboard_DataTypes
             pkg.Write(ItemsCrafted);
             pkg.Write(Died);
             pkg.Write(MapExplored);
+            pkg.Write(Harvested);
             pkg.Write(Achievements.Count);
             foreach (var achievement in Achievements)
             {
@@ -105,6 +107,7 @@ public static class Leaderboard_DataTypes
             ItemsCrafted = pkg.ReadInt();
             Died = pkg.ReadInt();
             MapExplored = pkg.ReadSingle();
+            Harvested = pkg.ReadInt();
             int count = pkg.ReadInt();
             Achievements = new();
             for (int i = 0; i < count; i++)

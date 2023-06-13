@@ -24,7 +24,8 @@ public static class Leaderboard_UI
         PlayersKilled,
         Died,
         MapExplored,
-        TotalAchievements
+        TotalAchievements,
+        Harvested
     }
 
     private static readonly Dictionary<SortBy, Button> SortButtons = new();
@@ -48,6 +49,7 @@ public static class Leaderboard_UI
         SortButtons.Add(SortBy.MapExplored, buttonsTransform.Find("MapExplored").GetComponent<Button>());
         SortButtons.Add(SortBy.TotalAchievements, buttonsTransform.Find("TotalAchievements").GetComponent<Button>());
         SortButtons.Add(SortBy.PlayersKilled, buttonsTransform.Find("PlayersKilled").GetComponent<Button>());
+        SortButtons.Add(SortBy.Harvested, buttonsTransform.Find("Harvested").GetComponent<Button>());
         foreach (var button in SortButtons)
             button.Value.onClick.AddListener(() =>
             {
@@ -126,6 +128,7 @@ public static class Leaderboard_UI
             SortBy.MapExplored => valuesOnly.OrderByDescending(x => x.MapExplored).ToList(),
             SortBy.TotalAchievements => valuesOnly.OrderByDescending(x => x.Achievements.Count).ToList(),
             SortBy.PlayersKilled => valuesOnly.OrderByDescending(x => x.KilledPlayers).ToList(),
+            SortBy.Harvested => valuesOnly.OrderByDescending(x => x.Harvested).ToList(),
             _ => new()
         };
         int maxPage = Mathf.CeilToInt(SortedList.Count / (float)MaxPerPage);
@@ -169,6 +172,7 @@ public static class Leaderboard_UI
             element.transform.Find("ItemsCrafted").GetComponent<Text>().text = data.ItemsCrafted.ToString();
             element.transform.Find("Died").GetComponent<Text>().text = data.Died.ToString();
             element.transform.Find("PlayersKilled").GetComponent<Text>().text = data.KilledPlayers.ToString();
+            element.transform.Find("Harvested").GetComponent<Text>().text = data.Harvested.ToString();
             element.transform.Find("MapExplored").GetComponent<Text>().text = data.MapExplored + "%";
 
             int overallScore = 0;
@@ -225,7 +229,7 @@ public static class Leaderboard_UI
         Achievements.SetActive(true);
         foreach (Transform child in AchievementContent)
             Object.Destroy(child.gameObject);
-        Achievements.transform.Find("Achievements").GetComponent<Text>().text = board.PlayerName + "\n$mpasn_LeaderboardAchievements".Localize();
+        Achievements.transform.Find("Achievements").GetComponent<Text>().text = board.PlayerName + "$mpasn_LeaderboardAchievements".Localize();
         foreach (var achievement in board.Achievements)
         {
             if (Leaderboard_DataTypes.SyncedClientAchievements.Value.Find(x => x.ID == achievement) is not { } t) continue;
