@@ -120,14 +120,11 @@ public static class Market_NPC
             if (!firstInit)
             {
                 firstInit = true;
-                GameObject hammer = __instance.GetPrefab("Hammer");
-                hammer.GetComponent<ItemDrop>().m_itemData.m_shared.m_buildPieces.m_pieces.Add(NPC);
                 GameObject inactive = new GameObject("InactiveMPASN");
                 Object.DontDestroyOnLoad(inactive);
                 inactive.SetActive(false);
                 PinnedNPC = Object.Instantiate(NPC, inactive.transform); 
                 PinnedNPC.name = "MarketPlaceNPCpinned";
-                hammer.GetComponent<ItemDrop>().m_itemData.m_shared.m_buildPieces.m_pieces.Add(PinnedNPC);
                 PinnedNPC.GetComponent<Piece>().m_name += " <color=#00FFFF>(Map Pin Visible)</color>";
             }
 

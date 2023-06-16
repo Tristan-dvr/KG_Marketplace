@@ -29,7 +29,7 @@ public static class Market_Paths
     public static string ServerMarketDataJSON => Path.Combine(DataFolder, "MarketplaceData.json");
     public static string MarketPlayersIncomeJSON => Path.Combine(DataFolder, "PlayersIncome.json");
     public static string MarketPlayerMessagesJSON => Path.Combine(DataFolder, "PlayerMessages.json");
-    public static string MarketLeaderboardJSON => Path.Combine(DataFolder, "Leaderboard.json");
+    public static string MarketLeaderboardJSON => Path.Combine(DataFolder, "LeaderboardV2.json");
 
     public static string TeleporterPinsFolder => Path.Combine(MainPath, "MapPinsIcons");
     public static string TeleporterPinsConfig => Path.Combine(MainPath, "TeleportHubProfiles.cfg");

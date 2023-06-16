@@ -152,26 +152,26 @@ namespace Marketplace
         {
             if (e.ChangeType != WatcherChangeTypes.Changed) return;
 
-            string fName = Path.GetFileName(e.Name)!;
-
-            string folderPath = Path.GetDirectoryName(e.FullPath)!;
+            string fName = Path.GetFileName(e.Name)!;  
+ 
+            string folderPath = Path.GetDirectoryName(e.FullPath)!; 
             if (folderPath.Contains(Market_Paths.AdditionalConfigsQuestsFolder))
                 fName = Path.GetFileName(Market_Paths.QuestDatabasePath);
             else if (folderPath.Contains(Market_Paths.AdditionalConfigsDialoguesFolder))
-                fName = Path.GetFileName(Market_Paths.NpcDialoguesConfig);
+                fName = Path.GetFileName(Market_Paths.NpcDialoguesConfig); 
             else if (folderPath.Contains(Market_Paths.AdditionalCondfigsTerritoriesFolder))
-                fName = Path.GetFileName(Market_Paths.TerritoriesConfigPath);
-
-            if (!FSW_Lookup.TryGetValue(fName, out Action action)) return;
+                fName = Path.GetFileName(Market_Paths.TerritoriesConfigPath); 
+ 
+            if (!FSW_Lookup.TryGetValue(fName, out Action action)) return; 
             if (!ZNet.instance || !ZNet.instance.IsServer())
-            {
-                Utils.print($"FSW: Not a server, ignoring ({e.Name})", ConsoleColor.Red);
+            { 
+                Utils.print($"FSW: Not a server, ignoring ({e.Name})", ConsoleColor.Red); 
                 return;
             }
             if (!LastConfigChangeTime.ContainsKey(fName)) LastConfigChangeTime[fName] = DateTime.MinValue;
             if (LastConfigChangeTime[fName] > DateTime.Now.AddSeconds(-5)) return;
             LastConfigChangeTime[fName] = DateTime.Now;
-            Utils.DelayedAction(action);
+            Utils.DelayedAction(action); 
         }
     }
 }

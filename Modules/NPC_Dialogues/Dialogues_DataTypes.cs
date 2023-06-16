@@ -64,8 +64,8 @@ public static class Dialogues_DataTypes
         EpicMMOLevelLess = 9 | reverseFlag,
         CozyheimLevelMore = 10,
         CozyheimLevelLess = 10 | reverseFlag,
-        HasTitle = 11,
-        NotHasTitle = 11 | reverseFlag,
+        HasAchievement = 11,
+        NotHasAchievement = 11 | reverseFlag,
     }
 
     public class RawDialogue : ISerializableParameter
@@ -399,14 +399,14 @@ public static class Dialogues_DataTypes
                         if (reverse) optionCondition = optionCondition.Reverse();
                         switch (optionCondition)
                         {
-                            case OptionCondition.HasTitle:
+                            case OptionCondition.HasAchievement:
                                 result += (out string reason) =>
                                 {
                                     reason = $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";
                                     return LeaderBoard_Main_Client.HasAchievement(split[1]);
                                 };
                                 break;
-                            case OptionCondition.NotHasTitle:
+                            case OptionCondition.NotHasAchievement:
                                 result += (out string reason) =>
                                 {
                                     reason = $"{Localization.instance.Localize("$mpasn_dontneedtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";

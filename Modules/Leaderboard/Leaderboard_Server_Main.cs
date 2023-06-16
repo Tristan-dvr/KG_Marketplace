@@ -35,6 +35,9 @@ public static class Leaderboard_Server_Main
         if (peer == null) return;
         string id = peer.m_socket.GetHostName();
         if (id == "0") return;
+        
+        id = id + "_" + peer.m_playerName;
+        
         if (!Leaderboard_DataTypes.ServersidePlayersLeaderboard.ContainsKey(id))
             Leaderboard_DataTypes.ServersidePlayersLeaderboard.Add(id, new Leaderboard_DataTypes.Player_Leaderboard());
 
@@ -152,7 +155,6 @@ public static class Leaderboard_Server_Main
                     string prefabParse = profiles[i + 3];
                     string color = profiles[i + 4];
                     string tierParse = profiles[i + 5];
-
                     if (!Enum.TryParse(type, out Leaderboard_DataTypes.TriggerType triggerType))
                     {
                         i += 5;

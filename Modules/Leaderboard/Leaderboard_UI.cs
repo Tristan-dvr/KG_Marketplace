@@ -96,6 +96,7 @@ public static class Leaderboard_UI
         int maxPage = Mathf.CeilToInt(SortedList.Count / (float)MaxPerPage);
         if (CurrentPage + 1 > maxPage) return;
         CurrentPage++;
+        if (maxPage == 0) maxPage = 1;
         PageText.text = $"{CurrentPage}/{maxPage}";
         CreateElements();
     }
@@ -106,6 +107,7 @@ public static class Leaderboard_UI
         if (CurrentPage - 1 < 1) return;
         CurrentPage--;
         int maxPage = Mathf.CeilToInt(SortedList.Count / (float)MaxPerPage);
+        if (maxPage == 0) maxPage = 1;
         PageText.text = $"{CurrentPage}/{maxPage}";
         CreateElements();
     }
@@ -132,6 +134,7 @@ public static class Leaderboard_UI
             _ => new()
         };
         int maxPage = Mathf.CeilToInt(SortedList.Count / (float)MaxPerPage);
+        if (maxPage == 0) maxPage = 1;
         PageText.text = $"{CurrentPage}/{maxPage}";
     }
 

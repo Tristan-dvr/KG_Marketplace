@@ -62,7 +62,7 @@ public static class Quests_DataTypes
         HasItem,
         IsVIP,
         Time,
-        HasTitle
+        HasAchievement
     }
 
     public enum QuestType
@@ -498,7 +498,7 @@ public static class Quests_DataTypes
                     return false;
                 }
 
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.HasTitle)
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.HasAchievement)
                 {
                     message =
                         $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(CheckQuest.QuestRequirementPrefab[i])}</color>";

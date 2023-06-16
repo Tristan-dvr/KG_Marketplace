@@ -44,7 +44,7 @@ public static class LeaderBoard_Main_Client
     public static bool HasAchievement(string achievementID)
     {
         int toId = achievementID.Replace(" ", "").ToLower().GetStableHashCode();
-        return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(Global_Values._localUserID,
+        return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(Global_Values._localUserID + "_" + Game.instance.m_playerProfile.m_playerName,
             out var LB) && LB.Achievements.Contains(toId);
     }
 
