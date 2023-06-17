@@ -13,12 +13,12 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        public const string PluginVersion = "8.7.0";
-        internal static Marketplace _thistype;
+        public const string PluginVersion = "8.8.0";
+        internal static Marketplace _thistype; 
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW;
         public static Action Global_Updator;
-        public static Action Global_FixedUpdator;
+        public static Action Global_FixedUpdator;  
         public static Action Global_OnGUI_Updator;
         public static Type TempJewelcraftingType;
         public static Type TempProfessionsType;

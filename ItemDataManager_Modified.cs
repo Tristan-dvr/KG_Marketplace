@@ -772,7 +772,7 @@ public class ItemInfo : IEnumerable<ItemData>
                 Priority.VeryHigh));
         harmony.Patch(
             AccessTools.DeclaredMethod(typeof(Inventory), nameof(Inventory.AddItem),
-                new[] { typeof(string), typeof(int), typeof(int), typeof(int), typeof(long), typeof(string) }),
+                new[] { typeof(string), typeof(int), typeof(int), typeof(int), typeof(long), typeof(string), typeof(bool) }),
             postfix: new HarmonyMethod(
                 AccessTools.DeclaredMethod(typeof(ItemInfo), nameof(RegisterForceLoadedTypesAddItem)), Priority.First));
         harmony.Patch(AccessTools.DeclaredMethod(typeof(ItemDrop), nameof(ItemDrop.Awake)),

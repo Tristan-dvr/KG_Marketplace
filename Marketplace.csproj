@@ -130,6 +130,9 @@
         <Reference Include="System.Transactions" />
         <Reference Include="System.Xaml" />
         <Reference Include="System.Xml" />
+        <Reference Include="ui_lib">
+          <HintPath>Libs\ui_lib.dll</HintPath>
+        </Reference>
         <Reference Include="Unity.TextMeshPro">
           <HintPath>Libs\Unity.TextMeshPro.dll</HintPath>
         </Reference>

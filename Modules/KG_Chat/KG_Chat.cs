@@ -1,6 +1,7 @@
 ﻿using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
+using Fishlabs;
 using UnityEngine.EventSystems;
 using Object = UnityEngine.Object;
 
@@ -13,7 +14,7 @@ public static class KG_Chat
     private static GameObject original_KG_Chat;
     private static readonly GameObject[] origStuff = new GameObject[3];
     private static TMP_FontAsset origFont;
-    private static Font origFont2;
+    private static TMP_FontAsset origFont2;
     private static ConfigEntry<int> kgchat_Fontsize;
     private static ConfigEntry<bool> useTypeSound;
     private static ConfigEntry<ChatController.Transparency> kgchat_Transparency;
@@ -54,6 +55,12 @@ public static class KG_Chat
                 ugui.spriteAsset.material.SetTexture(ShaderUtilities.ID_MainTex, tex);
             }
         }
+    }
+    
+    private static IEnumerator corout_MoveToEnd()
+    {
+        yield return null;
+        Chat.instance.m_input.MoveTextEnd(false);
     }
 
     private static Coroutine _corout;
@@ -119,6 +126,7 @@ public static class KG_Chat
             UI_X.Value = dragRect.localScale.x;
             UI_Y.Value = dragRect.localScale.y;
             Marketplace._thistype.Config.Save();
+            Chat.instance.m_input.MoveTextEnd(false);
         }
     }
 
@@ -181,6 +189,7 @@ public static class KG_Chat
             UI_X.Value = dragRect.anchoredPosition.x;
             UI_Y.Value = dragRect.anchoredPosition.y;
             Marketplace._thistype.Config.Save();
+            Chat.instance.m_input.MoveTextEnd(false);
         }
     }
 
@@ -210,11 +219,13 @@ public static class KG_Chat
             .AddListener(
                 () =>
                 {
-                    ResizeUI.Default();
+                    ResizeUI.Default(); 
                     DragUI.Default();
-                    AssetStorage.AssetStorage.AUsrc.Play();
+                    AssetStorage.AssetStorage.AUsrc.Play(); 
+                    Chat.instance.m_input.ActivateInputField();
                 });
-        kgChat.GetComponentInChildren<InputField>(true).onValueChanged.AddListener(IF_OnValueChanged);
+        kgChat.GetComponentInChildren<GuiInputField>(true).onValueChanged.AddListener(IF_OnValueChanged);
+        kgChat.GetComponentInChildren<GuiInputField>(true).CaretOnGamepadUsage = true;
         kgChat_Scrollbar = kgChat.GetComponentInChildren<Scrollbar>(true);
         Chat.instance.AddString("<color=green>KG Chat Loaded</color>");
         Chat.instance.AddString("<color=green>/say | /shout | /whisper to switch chat mode</color>");
@@ -271,11 +282,11 @@ public static class KG_Chat
                 __instance.m_npcTextBase = origStuff[1];
                 __instance.m_npcTextBaseLarge = origStuff[2];
                 __instance.m_output.font = origFont;
+                __instance.m_input.placeholder.GetComponent<TMP_Text>().font = origFont2;
                 __instance.m_input.textComponent.font = origFont2;
-                __instance.m_input.placeholder.GetComponent<Text>().font = origFont2;
-                if (__instance.m_search)
-                    __instance.m_search.font = origFont2;
+                __instance.m_input.fontAsset = origFont2;
                 __instance.m_input.gameObject.SetActive(false);
+                __instance.m_input.OnInputSubmit.AddListener((_) => __instance.SendInput());
             }
         }
     }
@@ -313,8 +324,7 @@ public static class KG_Chat
         }
     }
 
-    [HarmonyPatch(typeof(Terminal), nameof(Terminal.AddString), typeof(string), typeof(string), typeof(Talker.Type),
-        typeof(bool))]
+    [HarmonyPatch(typeof(Terminal), nameof(Terminal.AddString), typeof(string), typeof(string), typeof(Talker.Type),typeof(bool))]
     [ClientOnlyPatch]
     private static class Chat_Patches2
     {
@@ -353,7 +363,10 @@ public static class KG_Chat
         private static void Postfix(Terminal __instance)
         {
             if (__instance == kgChat && !__instance.m_input.isFocused)
+            {
                 ResetScroll();
+            }
+                
         }
     }
 
@@ -421,6 +434,7 @@ public static class KG_Chat
             {
                 Emojis_Tab.gameObject.SetActive(!Emojis_Tab.gameObject.activeSelf);
                 AssetStorage.AssetStorage.AUsrc.Play();
+                Chat.instance.m_input.ActivateInputField();
             });
             _muteSoundsButton.transform.Find("TF").gameObject.SetActive(!useTypeSound.Value);
             _muteSoundsButton.onClick.AddListener(() =>
@@ -429,6 +443,7 @@ public static class KG_Chat
                 useTypeSound.Value = !useTypeSound.Value;
                 Marketplace._thistype.Config.Save();
                 _muteSoundsButton.transform.Find("TF").gameObject.SetActive(!useTypeSound.Value);
+                Chat.instance.m_input.ActivateInputField();
             });
 
             Transform bgone = transform.Find("CHATWINDOW/Background/Upper Background");
@@ -446,6 +461,7 @@ public static class KG_Chat
                 MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
                     $"<color=green>{Transparency_Map[kgchat_Transparency.Value] * 100f}%</color>");
                 Marketplace._thistype.Config.Save();
+                Chat.instance.m_input.ActivateInputField();
             });
         }
 
@@ -487,6 +503,7 @@ public static class KG_Chat
             if (!Chat.instance) return;
             AssetStorage.AssetStorage.AUsrc.Play();
             Chat.instance.m_input.text += key + " ";
+            Chat.instance.m_input.ActivateInputField();
             Chat.instance.m_input.MoveTextEnd(false);
         }
 
@@ -498,6 +515,7 @@ public static class KG_Chat
             WhisperImage.color = mode == SendMode.Whisper ? Color.green : Color.white;
             GroupImage.color = mode == SendMode.Group ? Color.green : Color.white;
             AssetStorage.AssetStorage.AUsrc.Play();
+            Chat.instance.m_input.ActivateInputField();
         }
 
         private Image SayImage;
@@ -531,6 +549,8 @@ public static class KG_Chat
                 _ => "/say " + text
             };
         }
+        
+        private static void Postfix() => ResetScroll();
 
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
@@ -558,7 +578,7 @@ public static class KG_Chat
 
         private static MethodInfo TargetMethod()
         {
-            const string targetClass = "<>c__DisplayClass12_0";
+            const string targetClass = "<>c__DisplayClass11_0";
             const string targetMethod = "<OnNewChatMessage>b__2";
             Type type = typeof(Chat).GetNestedTypes(BindingFlags.NonPublic)
                 .FirstOrDefault(t => t.Name == targetClass);

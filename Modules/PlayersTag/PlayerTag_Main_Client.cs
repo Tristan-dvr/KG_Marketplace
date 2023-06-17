@@ -12,20 +12,35 @@ public static class PlayerTag_Main_Client
     private static void OnTagsUpdate()
     {
         if (!Game.instance || !Player.m_localPlayer) return;
-        string name = Game.instance.GetPlayerProfile().m_playerName;
-        long id = Game.instance.GetPlayerProfile().m_playerID;
-        Player.m_localPlayer.SetPlayerID(id, name);
+        Player.m_localPlayer.m_nview.m_zdo.Set("Marketplace_PlayerTag",
+            PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Values._localUserID, out var tag)
+                ? tag
+                : "");
     }
-
+    
+    [HarmonyPatch(typeof(Player),nameof(Player.GetHoverName))]
+    [ClientOnlyPatch]
+    private static class Player_GetHoverName_Patch
+    {
+        private static void Postfix(Player __instance, ref string __result)
+        {
+            if(!__instance.m_nview.IsValid()) return;
+            string tag = __instance.m_nview.m_zdo.GetString("Marketplace_PlayerTag");
+            if (tag == "") return;
+            __result = $"{tag} {__result}";
+        }
+    }
 
     [HarmonyPatch(typeof(Player), nameof(Player.SetPlayerID))]
     [ClientOnlyPatch]
     static class Player_SetPlayerID_Patch
     {
-        static void Prefix(ref string name)
+        static void Postfix()
         {
-            if (PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Values._localUserID,
-                    out string SpecialTag)) name = $"{SpecialTag} {name}";
+            Player.m_localPlayer.m_nview.m_zdo.Set("Marketplace_PlayerTag",
+                PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Values._localUserID, out var tag)
+                    ? tag
+                    : "");
         }
     }
 

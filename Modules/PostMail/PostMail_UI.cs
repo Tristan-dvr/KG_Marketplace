@@ -142,7 +142,7 @@ public static class PostMail_UI
                     item.m_itemData.GetMaxDurability(data.AttachedItem.Quality), pos,
                     false, data.AttachedItem.Quality, data.AttachedItem.Variant, data.AttachedItem.CrafterID,
                     data.AttachedItem.CrafterName,
-                    NewCustomData);
+                    NewCustomData, ((byte)Game.m_worldLevel), true);
             }
             else
             {

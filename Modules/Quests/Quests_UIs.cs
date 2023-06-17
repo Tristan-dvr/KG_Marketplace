@@ -229,7 +229,7 @@ public static class Quests_UIs
                         tooltip.m_topic = quest.GetLocalizedReward(i);
                         tooltip.m_text = ItemDrop.ItemData.GetTooltip(
                             ZNetScene.instance.GetPrefab(quest.RewardPrefab[i]).GetComponent<ItemDrop>().m_itemData,
-                            quest.RewardLevel[i], false);
+                            quest.RewardLevel[i], false, Game.m_worldLevel);
                         break;
                     case Quests_DataTypes.QuestRewardType.Skill or Quests_DataTypes.QuestRewardType.Skill_EXP:
                         rewardImage.sprite = Utils.GetSkillIcon(quest.RewardPrefab[i]);

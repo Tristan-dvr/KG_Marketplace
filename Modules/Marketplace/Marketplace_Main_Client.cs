@@ -88,7 +88,7 @@ public static class Marketplace_Main_Client
                     p.m_inventory.AddItem(forTest.ItemPrefab, addStack,
                         item.m_itemData.GetMaxDurability(forTest.Quality), pos,
                         false, forTest.Quality, forTest.Variant, forTest.CrafterID, forTest.CrafterName,
-                        NewCustomData);
+                        NewCustomData,  Game.m_worldLevel, true);
                 }
                 else
                 {

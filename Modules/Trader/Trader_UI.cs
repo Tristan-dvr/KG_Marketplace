@@ -174,7 +174,7 @@ public static class Trader_UI
                 transform.GetComponent<UITooltip>().m_topic = data.NeededItems[i].ItemName;
                 transform.GetComponent<UITooltip>().m_text = ItemDrop.ItemData.GetTooltip(
                     ZNetScene.instance.GetPrefab(data.NeededItems[i].ItemPrefab).GetComponent<ItemDrop>()
-                        .m_itemData, data.NeededItems[i].Level, false);
+                        .m_itemData, data.NeededItems[i].Level, false, Game.m_worldLevel);
                 bool hasEnough =
                     Utils.CustomCountItems(data.NeededItems[i].ItemPrefab,
                         data.NeededItems[i].Level) >=
@@ -213,7 +213,7 @@ public static class Trader_UI
                 else
                     transform.GetComponent<UITooltip>().m_text = ItemDrop.ItemData.GetTooltip(
                         ZNetScene.instance.GetPrefab(data.ResultItems[i].ItemPrefab).GetComponent<ItemDrop>()
-                            .m_itemData, data.ResultItems[i].Level, false);
+                            .m_itemData, data.ResultItems[i].Level, false, Game.m_worldLevel);
             }
 
             go.transform.Find("Background/ResultItems").GetComponent<RectTransform>().anchoredPosition +=
