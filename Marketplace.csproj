@@ -397,10 +397,6 @@
         <Compile Include="Modules\PlayersTag\PlayersTag_DataTypes.cs" />
         <Compile Include="Modules\PlayersTag\PlayerTags_Main_Server.cs" />
         <Compile Include="Modules\PlayersTag\PlayerTag_Main_Client.cs" />
-        <Compile Include="Modules\PostMail\PostMail_DataTypes.cs" />
-        <Compile Include="Modules\PostMail\PostMail_Main_Both.cs" />
-        <Compile Include="Modules\PostMail\PostMail_Pin.cs" />
-        <Compile Include="Modules\PostMail\PostMail_UI.cs" />
         <Compile Include="Modules\Quests\Quests_DataTypes.cs" />
         <Compile Include="Modules\Quests\Quests_Main_Client.cs" />
         <Compile Include="Modules\Quests\Quests_Main_Server.cs" />
