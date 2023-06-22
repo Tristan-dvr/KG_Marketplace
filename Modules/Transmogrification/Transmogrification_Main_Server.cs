@@ -6,7 +6,7 @@ namespace Marketplace.Modules.Transmogrification;
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", 
     new[]{"TransmogrificationProfiles.cfg"}, 
     new[]{"OnTransmogrificationProfileChanged"})]
-public static class Transmogrification_Client_Server
+public static class Transmogrification_Main_Server
 {
     private static void OnInit() => ReadTransmogrificationProfiles();
     

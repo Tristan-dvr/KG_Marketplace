@@ -36,7 +36,7 @@ public static class Transmogrification_Main_Client
         private static void Postfix() => InitTransmogData();
     }
 
-    private static void InitTransmogData()
+    public static void InitTransmogData()
     {
         if(!ZNetScene.instance) return;
         FilteredTransmogData.Clear();

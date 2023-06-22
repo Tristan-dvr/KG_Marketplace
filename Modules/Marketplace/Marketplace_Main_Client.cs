@@ -15,6 +15,7 @@ public static class Marketplace_Main_Client
         Marketplace.Global_Updator += Update;
         Marketplace.Global_OnGUI_Updator += Marketplace_Messages.OnGUI;
         Marketplace_DataTypes.ServerMarketPlaceData.ValueChanged += OnMarketplaceUpdate;
+        Global_Values._container.ValueChanged += () => Marketplace_Main_Client.OnUpdateCurrency();
     }
 
     private static void OnMarketplaceUpdate()

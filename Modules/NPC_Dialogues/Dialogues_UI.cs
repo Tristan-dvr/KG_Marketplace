@@ -122,7 +122,7 @@ public static class Dialogues_UI
         UI.SetActive(true);
         SmoothAlpha(Fade.Show, 0.5f);
 
-        string name = npc.GetNPCName();
+        string name = npc.GetClearNPCName();
         if (string.IsNullOrWhiteSpace(name))
         {
             name = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);

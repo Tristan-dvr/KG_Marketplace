@@ -2,6 +2,7 @@
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.TerritorySystem;
 using Marketplace.Modules.Trader;
+using Marketplace.Modules.Transmogrification;
 
 namespace API;
 
@@ -185,6 +186,7 @@ public static class ClientSide
     {
         Trader_Main_Client.InitTraderItems();
         Gambler_Main_Client.GamblerInit();
+        Transmogrification_Main_Client.InitTransmogData();
     }
 
     //quests

@@ -203,6 +203,7 @@ public static class Dialogues_DataTypes
                                     if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(split[1],
                                             out AudioClip clip))
                                     {
+                                        npc.NPC_SoundSource.Stop();
                                         npc.NPC_SoundSource.PlayOneShot(clip);
                                     }
                                 };

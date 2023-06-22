@@ -1,4 +1,5 @@
-﻿using Marketplace.Modules.Banker;
+﻿using System.Text.RegularExpressions;
+using Marketplace.Modules.Banker;
 using Marketplace.Modules.Buffer;
 using Marketplace.Modules.Feedback;
 using Marketplace.Modules.Gambler;
@@ -216,7 +217,7 @@ public static class Market_NPC
                 foreach (NPCcomponent npc in FindNPCsInRange)
                 {
                     ++c;
-                    string name = npc.GetNPCName();
+                    string name = npc.GetClearNPCName();
                     if (string.IsNullOrWhiteSpace(name))
                     {
                         name = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);
@@ -633,6 +634,8 @@ public static class Market_NPC
 
         public string GetHoverText()
         {
+            if (Menu.IsVisible()) return "";
+            
             string admintext = Utils.IsDebug
                 ? "\n" + Localization.instance.Localize("[<color=yellow><b>$KEY_AltPlace + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_opennnpcui") +
@@ -657,6 +660,11 @@ public static class Market_NPC
         public string GetNPCName()
         {
             return znv.m_zdo.GetString("KGnpcNameOverride");
+        }
+        
+        public string GetClearNPCName()
+        {
+            return Regex.Replace(GetNPCName(), @"<\/?(?!color\b)\w+[^>]*>", "");
         }
 
         public void OpenUIForType(string type, string profile) =>
@@ -745,7 +753,7 @@ public static class Market_NPC
                 return true;
             }
 
-            if (Quests_DataTypes.Quest.TryAddRewardTalk(GetNPCName()))
+            if (Quests_DataTypes.Quest.TryAddRewardTalk(GetClearNPCName()))
             {
                 Quests_UIs.AcceptedQuestsUI.CheckQuests();
             }
@@ -1566,7 +1574,7 @@ public static class Market_NPC
         public static void Save(NPCcomponent npc, out string text)
         {
             text = "";
-            string NPCName = npc.GetNPCName();
+            string NPCName = npc.GetClearNPCName();
             if (string.IsNullOrEmpty(NPCName))
             {
                 NPCName = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);

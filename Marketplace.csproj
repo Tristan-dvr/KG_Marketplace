@@ -380,7 +380,6 @@
         <Compile Include="Modules\Gambler\Gambler_Main_Server.cs" />
         <Compile Include="Modules\Gambler\Gambler_UI.cs" />
         <Compile Include="Modules\Global_Options\Global_Options.cs" />
-        <Compile Include="Modules\Global_Options\Global_Options_Client.cs" />
         <Compile Include="Modules\KG_Chat\KG_Chat.cs" />
         <Compile Include="Modules\Marketplace\JC_API.cs" />
         <Compile Include="Modules\Marketplace\Marketplace_Main_Server.cs" />
