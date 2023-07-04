@@ -30,7 +30,7 @@ namespace KG_Managers
         public static void AddAnimationSet(string AssetBundle, string attack1, string attack2 = null,
             string attack3 = null)
         {
-            UnityEngine.AssetBundle asset = GetAssetBundle(AssetBundle);
+            AssetBundle asset = GetAssetBundle(AssetBundle);
                 
             var newSet = new List<string> { attack1 };
             AllExternalAnimations[attack1] = asset.LoadAsset<AnimationClip>(attack1);
@@ -72,7 +72,7 @@ namespace KG_Managers
                 string name = animation.name;
                 if (replacement.TryGetValue(name, out string value))
                 {
-                    var newClip = UnityEngine.Object.Instantiate(AllExternalAnimations[value]);
+                    var newClip = Object.Instantiate(AllExternalAnimations[value]);
                     anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(animation, newClip));
                 }
                 else

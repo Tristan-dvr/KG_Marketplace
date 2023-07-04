@@ -4,8 +4,7 @@ public static class Marketplace_DataTypes
 {
     internal static readonly CustomSyncedValue<List<ServerMarketSendData>> ServerMarketPlaceData =
         new(Marketplace.configSync, "marketplaceData", new List<ServerMarketSendData>());
-
-
+    
     public class ServerMarketSendData : ISerializableParameter
     {
         public int UID;
@@ -20,7 +19,8 @@ public static class Marketplace_DataTypes
         public string CrafterName = "";
         public long CrafterID;
         public string CUSTOMdata = "{}";
-
+        public byte DurabilityPercent;
+        public uint TimeStamp;
 
         public ServerMarketSendData()
         {
@@ -39,7 +39,8 @@ public static class Marketplace_DataTypes
             CUSTOMdata = other.CUSTOMdata;
             CrafterName = other.CrafterName;
             CrafterID = other.CrafterID;
-
+            TimeStamp = (uint)ZNet.instance.m_netTime;
+            DurabilityPercent = other.DurabilityPercent;
             UID = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
             while (Marketplace_DataTypes.ServerMarketPlaceData.Value.Find(x => x.UID == UID) != null)
                 UID = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
@@ -63,6 +64,8 @@ public static class Marketplace_DataTypes
             pkg.Write(CrafterName ?? "");
             pkg.Write(CrafterID);
             pkg.Write(CUSTOMdata ?? "{}");
+            pkg.Write(TimeStamp);
+            pkg.Write(DurabilityPercent);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -79,6 +82,8 @@ public static class Marketplace_DataTypes
             CrafterName = pkg.ReadString();
             CrafterID = pkg.ReadLong();
             CUSTOMdata = pkg.ReadString();
+            TimeStamp = pkg.ReadUInt();
+            DurabilityPercent = pkg.ReadByte();
         }
     }
 
@@ -95,6 +100,7 @@ public static class Marketplace_DataTypes
         public string CUSTOMdata = "{}";
         public string CrafterName = "";
         public long CrafterID;
+        public byte DurabilityPercent;
 
         public string ItemName => ZNetScene.instance.GetPrefab(ItemPrefab) is { } item
             ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name

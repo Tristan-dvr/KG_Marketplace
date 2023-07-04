@@ -504,7 +504,7 @@ public static class Dialogues_DataTypes
                                 {
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needglobalkey")}: <color=#00ff00>{split[1]}</color>";
-                                    return ZoneSystem.instance.m_globalKeys.Contains(split[1]);
+                                    return ZoneSystem.instance.GetGlobalKey(split[1]);
                                 };
                                 break;
                             case OptionCondition.NotGlobalKey:
@@ -512,7 +512,7 @@ public static class Dialogues_DataTypes
                                 {
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_notneedglobalkey")}: <color=#00ff00>{split[1]}</color>";
-                                    return !ZoneSystem.instance.m_globalKeys.Contains(split[1]);
+                                    return !ZoneSystem.instance.GetGlobalKey(split[1]);
                                 };
                                 break;
                             case OptionCondition.HasBuff:

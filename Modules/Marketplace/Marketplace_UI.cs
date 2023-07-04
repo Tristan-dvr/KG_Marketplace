@@ -200,12 +200,13 @@ public static class Marketplace_UI
             {
                 Marketplace_DataTypes.ItemData_ItemCategory best = ChooseBestCategory(item);
                 string displayName = item.m_shared.m_name;
+                byte durabilityPercent = (byte)(item.GetDurabilityPercentage() * 100);
 
                 Marketplace_DataTypes.ClientMarketSendData alreadyExist = data.Find(x =>
                     x.ItemPrefab == item.m_dropPrefab?.name && x.Quality == item.m_quality &&
                     x.Variant == item.m_variant && x.CUSTOMdata == JSON.ToJSON(item.m_customData)
                     && x.CrafterID == item.m_crafterID && x.CrafterName == item.m_crafterName
-                    && x.ItemName == displayName);
+                    && x.ItemName == displayName && x.DurabilityPercent == durabilityPercent);
 
                 if (alreadyExist != null && item.m_shared.m_maxQuality <= 1)
                 {
@@ -223,7 +224,8 @@ public static class Marketplace_UI
                     Variant = item.m_variant,
                     CUSTOMdata = JSON.ToJSON(item.m_customData),
                     CrafterID = item.m_crafterID,
-                    CrafterName = item.m_crafterName
+                    CrafterName = item.m_crafterName,
+                    DurabilityPercent = durabilityPercent
                 };
                 data.Add(newData);
             }
@@ -425,7 +427,8 @@ public static class Marketplace_UI
             Variant = CurrentSendData.Variant,
             CUSTOMdata = CurrentSendData.CUSTOMdata,
             CrafterName = CurrentSendData.CrafterName,
-            CrafterID = CurrentSendData.CrafterID
+            CrafterID = CurrentSendData.CrafterID,
+            DurabilityPercent = CurrentSendData.DurabilityPercent,
         };
         string json = JSON.ToJSON(newData);
         ZRoutedRpc.instance.InvokeRoutedRPC("KGmarket ReceiveItem", json);
@@ -992,6 +995,8 @@ public static class Marketplace_UI
                 ServerMarketSendDataSORTED = ServerMarketSendDataSORTED
                     .Where(data => data.SellerUserID == Global_Values._localUserID).ToList();
             }
+
+            ServerMarketSendDataSORTED = ServerMarketSendDataSORTED.OrderByDescending(data => data.TimeStamp).ToList();
 
             CurrentMaxPage = (ServerMarketSendDataSORTED.Count - 1) / MAXITEMSPERPAGE + 1;
             PageNumber.text = $"1 / {CurrentMaxPage}";

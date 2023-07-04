@@ -112,6 +112,16 @@ public static class Leaderboard_UI
         CreateElements();
     }
 
+    private static int GetAchievementScore(List<int> achievements)
+    {
+        int result = 0;
+        foreach (var achievement in achievements)
+            result += Leaderboard_DataTypes.SyncedClientAchievements.Value.Find(x => x.ID == achievement) is { } t
+                ? t.Score
+                : 0;
+        return result;
+    }
+
     private static void SetSortBy(SortBy sort)
     {
         CurrentSort = sort;
@@ -128,7 +138,7 @@ public static class Leaderboard_UI
             SortBy.ItemsCrafted => valuesOnly.OrderByDescending(x => x.ItemsCrafted).ToList(),
             SortBy.Died => valuesOnly.OrderByDescending(x => x.Died).ToList(),
             SortBy.MapExplored => valuesOnly.OrderByDescending(x => x.MapExplored).ToList(),
-            SortBy.TotalAchievements => valuesOnly.OrderByDescending(x => x.Achievements.Count).ToList(),
+            SortBy.TotalAchievements => valuesOnly.OrderByDescending(x => GetAchievementScore(x.Achievements)).ToList(),
             SortBy.PlayersKilled => valuesOnly.OrderByDescending(x => x.KilledPlayers).ToList(),
             SortBy.Harvested => valuesOnly.OrderByDescending(x => x.Harvested).ToList(),
             _ => new()
@@ -177,13 +187,8 @@ public static class Leaderboard_UI
             element.transform.Find("PlayersKilled").GetComponent<Text>().text = data.KilledPlayers.ToString();
             element.transform.Find("Harvested").GetComponent<Text>().text = data.Harvested.ToString();
             element.transform.Find("MapExplored").GetComponent<Text>().text = data.MapExplored + "%";
-
-            int overallScore = 0;
-            foreach (var achievement in data.Achievements)
-                overallScore += Leaderboard_DataTypes.SyncedClientAchievements.Value.Find(x => x.ID == achievement) is { } t
-                    ? t.Score
-                    : 0;
-            element.transform.Find("TotalAchievements").GetComponent<Text>().text = overallScore.ToString();
+            
+            element.transform.Find("TotalAchievements").GetComponent<Text>().text = GetAchievementScore(data.Achievements).ToString();
 
             element.transform.Find(CurrentSort.ToString()).GetComponent<Text>().color = Color.green;
 

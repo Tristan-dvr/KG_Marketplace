@@ -477,7 +477,7 @@ public static class Quests_DataTypes
                 {
                     message =
                         $"{Localization.instance.Localize("$mpasn_needglobalkey")}: <color=#00ff00>{CheckQuest.QuestRequirementPrefab[i]}</color>";
-                    bool result = ZoneSystem.instance.m_globalKeys.Contains(CheckQuest.QuestRequirementPrefab[i]);
+                    bool result = ZoneSystem.instance.GetGlobalKey(CheckQuest.QuestRequirementPrefab[i]);
                     if (result)
                     {
                         continue;

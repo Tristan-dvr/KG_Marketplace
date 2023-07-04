@@ -7,7 +7,7 @@ namespace Marketplace.Modules.Marketplace_NPC;
 public static class Marketplace_Main_Client
 {
     public static int IncomeValue;
-    public static Action OnUpdateCurrency; 
+    public static Action OnUpdateCurrency;
 
     private static void OnInit()
     {
@@ -22,10 +22,11 @@ public static class Marketplace_Main_Client
     {
         if (Marketplace_UI.IsPanelVisible()) Marketplace_UI.ResetBUYPage();
     }
-    
+
     private static void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && (Marketplace_UI.IsPanelVisible() || Marketplace_Messages._showMessageBox))
+        if (Input.GetKeyDown(KeyCode.Escape) &&
+            (Marketplace_UI.IsPanelVisible() || Marketplace_Messages._showMessageBox))
         {
             Marketplace_UI.Hide();
             Menu.instance.OnClose();
@@ -57,28 +58,29 @@ public static class Marketplace_Main_Client
                 new Action<long, ZPackage>(Marketplace_Messages.Messenger.GetMessages));
         }
     }
-    
+
     private static void ReceiveIncomeFromServer(long sender, int value)
     {
         IncomeValue = value;
         Marketplace_UI.ResetIncome();
     }
-    
+
     private static void InstantiateItemFromServer(long sender, string data)
     {
         if (sender == ZNet.instance.GetServerPeer().m_uid && data.Length > 0)
         {
             Player p = Player.m_localPlayer;
-            Marketplace_DataTypes.ServerMarketSendData forTest = JSON.ToObject<Marketplace_DataTypes.ServerMarketSendData>(data);
-            GameObject main = ZNetScene.instance.GetPrefab(forTest.ItemPrefab);
+            Marketplace_DataTypes.ServerMarketSendData shopItem =
+                JSON.ToObject<Marketplace_DataTypes.ServerMarketSendData>(data);
+            GameObject main = ZNetScene.instance.GetPrefab(shopItem.ItemPrefab);
             if (!main) return;
-            string text = Localization.instance.Localize("$mpasn_added", forTest.Count.ToString(),
+            string text = Localization.instance.Localize("$mpasn_added", shopItem.Count.ToString(),
                 Localization.instance.Localize(main.GetComponent<ItemDrop>().m_itemData.m_shared.m_name));
             MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, text);
             ItemDrop item = main.GetComponent<ItemDrop>();
-            forTest.Quality = Mathf.Max(1, forTest.Quality);
-            int stack = forTest.Count;
-            Dictionary<string, string> NewCustomData = JSON.ToObject<Dictionary<string, string>>(forTest.CUSTOMdata);
+            shopItem.Quality = Mathf.Max(1, shopItem.Quality);
+            int stack = shopItem.Count;
+            Dictionary<string, string> NewCustomData = JSON.ToObject<Dictionary<string, string>>(shopItem.CUSTOMdata);
 
             while (stack > 0)
             {
@@ -86,10 +88,11 @@ public static class Marketplace_Main_Client
                 {
                     int addStack = Math.Min(stack, item.m_itemData.m_shared.m_maxStackSize);
                     stack -= addStack;
-                    p.m_inventory.AddItem(forTest.ItemPrefab, addStack,
-                        item.m_itemData.GetMaxDurability(forTest.Quality), pos,
-                        false, forTest.Quality, forTest.Variant, forTest.CrafterID, forTest.CrafterName,
-                        NewCustomData,  Game.m_worldLevel, true);
+                    float durability = item.m_itemData.GetMaxDurability(shopItem.Quality) * Mathf.Clamp01(shopItem.DurabilityPercent / 100f);
+                    p.m_inventory.AddItem(shopItem.ItemPrefab, addStack, durability
+                        , pos,
+                        false, shopItem.Quality, shopItem.Variant, shopItem.CrafterID, shopItem.CrafterName,
+                        NewCustomData, Game.m_worldLevel, true);
                 }
                 else
                 {
@@ -108,8 +111,12 @@ public static class Marketplace_Main_Client
                     .GetComponent<ItemDrop>();
                 itemDrop.m_itemData.m_customData = NewCustomData;
                 itemDrop.m_itemData.m_stack = addStack;
-                itemDrop.m_itemData.m_crafterName = forTest.CrafterName;
-                itemDrop.m_itemData.m_crafterID = forTest.CrafterID;
+                itemDrop.m_itemData.m_crafterName = shopItem.CrafterName;
+                itemDrop.m_itemData.m_crafterID = shopItem.CrafterID;
+                
+                float durability = item.m_itemData.GetMaxDurability(shopItem.Quality) * Mathf.Clamp01(shopItem.DurabilityPercent / 100f);
+                itemDrop.m_itemData.m_durability = durability;
+                
                 itemDrop.Save();
                 itemDrop.OnPlayerDrop();
                 itemDrop.GetComponent<Rigidbody>().velocity = (transform.forward + Vector3.up);
