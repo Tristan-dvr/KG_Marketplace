@@ -62,7 +62,7 @@ public static class Trader_Main_Client
                     GameObject resultItemPrefab = ZNetScene.instance.GetPrefab(RI.ItemPrefab);
                     if (!resultItemPrefab)
                     {
-                        RI.SetIcon(AssetStorage.AssetStorage.NullSprite);
+                        RI.SetIcon(Utils.GetSkillIcon(RI.ItemPrefab));
                         RI.ItemName = Utils.LocalizeSkill(RI.ItemPrefab) + " EXP";
                         RI.IsMonster = false;
                         RI.IsSkill = true;
