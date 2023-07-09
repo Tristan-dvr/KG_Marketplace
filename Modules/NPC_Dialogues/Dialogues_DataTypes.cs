@@ -66,6 +66,8 @@ public static class Dialogues_DataTypes
         CozyheimLevelLess = 10 | reverseFlag,
         HasAchievement = 11,
         NotHasAchievement = 11 | reverseFlag,
+        HasAchievementScore = 12,
+        NotHasAchievementScore = 12 | reverseFlag,
     }
 
     public class RawDialogue : ISerializableParameter
@@ -412,6 +414,24 @@ public static class Dialogues_DataTypes
                                 {
                                     reason = $"{Localization.instance.Localize("$mpasn_dontneedtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";
                                     return !LeaderBoard_Main_Client.HasAchievement(split[1]);
+                                };
+                                break;
+                            case OptionCondition.HasAchievementScore:
+                                result += (out string reason) =>
+                                {
+                                    reason = $"{Localization.instance.Localize("$mpasn_needtitlescore")}: <color=#00ff00>{split[1]}</color>";
+                                    return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
+                                        Global_Values._localUserID + "_" + Game.instance.m_playerProfile.m_playerName,
+                                        out var LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) >= int.Parse(split[1]);
+                                };
+                                break;
+                            case OptionCondition.NotHasAchievementScore:
+                                result += (out string reason) =>
+                                {
+                                    reason = $"{Localization.instance.Localize("$mpasn_dontneedtitlescore")}: <color=#00ff00>{split[1]}</color>";
+                                    return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
+                                        Global_Values._localUserID + "_" + Game.instance.m_playerProfile.m_playerName,
+                                        out var LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) < int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.SkillMore:

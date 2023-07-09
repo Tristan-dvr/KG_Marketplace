@@ -112,7 +112,7 @@ public static class Leaderboard_UI
         CreateElements();
     }
 
-    private static int GetAchievementScore(List<int> achievements)
+    public static int GetAchievementScore(List<int> achievements)
     {
         int result = 0;
         foreach (var achievement in achievements)

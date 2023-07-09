@@ -58,7 +58,6 @@ public static class TerritorySystem_Main_Client
                     var emission = ParticleMist.instance.m_ps.emission;
                     emission.enabled = false;
                 }
-                    
             }
             else
             {
@@ -313,7 +312,8 @@ public static class TerritorySystem_Main_Client
 
     private static async void DoMapMagic()
     {
-        if (originalMapColors == null || TerritorySystem_DataTypes.TerritoriesData.Value == null || TerritorySystem_DataTypes.TerritoriesData.Value.Count == 0) return;
+        if (originalMapColors == null || TerritorySystem_DataTypes.TerritoriesData.Value == null ||
+            TerritorySystem_DataTypes.TerritoriesData.Value.Count == 0) return;
         MapMagicCounter++;
         int currentCounter = MapMagicCounter;
         try
@@ -386,12 +386,12 @@ public static class TerritorySystem_Main_Client
                                         TerritorySystem_DataTypes.GradientType.ToCenter => territory
                                             .GetGradientFromCenter(
                                                 new Vector2((x - 1024) * pixelSize, (y - 1024) * pixelSize), true),
-                                        
+
                                         TerritorySystem_DataTypes.GradientType.LeftRight => territory.GetGradientX(
                                             (x - 1024) * pixelSize),
                                         TerritorySystem_DataTypes.GradientType.RightLeft => territory.GetGradientX(
                                             (x - 1024) * pixelSize, true),
-                                        
+
                                         TerritorySystem_DataTypes.GradientType.BottomTop => territory.GetGradientY(
                                             (y - 1024) * pixelSize),
                                         TerritorySystem_DataTypes.GradientType.TopBottom => territory.GetGradientY(
@@ -403,14 +403,14 @@ public static class TerritorySystem_Main_Client
                                         TerritorySystem_DataTypes.GradientType.TopRightBottomLeft =>
                                             territory.GetGradientXY(
                                                 new Vector2((x - 1024) * pixelSize, (y - 1024) * pixelSize), true),
-                                        
+
                                         TerritorySystem_DataTypes.GradientType.BottomRightTopLeft =>
                                             territory.GetGradientXY_2(new Vector2((x - 1024) * pixelSize,
                                                 (y - 1024) * pixelSize)),
                                         TerritorySystem_DataTypes.GradientType.TopLeftBottomRight =>
                                             territory.GetGradientXY_2(
                                                 new Vector2((x - 1024) * pixelSize, (y - 1024) * pixelSize), true),
-                                        
+
                                         _ => MainColor
                                     };
                                 }
@@ -421,11 +421,10 @@ public static class TerritorySystem_Main_Client
 
                                 if (externalWater)
                                 {
-                                    
                                     heightColors[idx] = new Color(Mathf.Clamp(heightColors[idx].r, 29f, 89), 0, 0);
                                 }
                             }
-                        } 
+                        }
                     }
                 });
             });
@@ -435,7 +434,7 @@ public static class TerritorySystem_Main_Client
             Minimap.instance.m_heightTexture.SetPixels(heightColors);
             Minimap.instance.m_heightTexture.Apply();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Utils.print($"Error while drawing territories on map: {ex.Message}\n{ex.StackTrace}");
         }
@@ -729,12 +728,16 @@ public static class TerritorySystem_Main_Client
     [ClientOnlyPatch]
     private static class NoStructureSupport_Patch
     {
-        private static void Postfix(ref bool __result)
+        private static void Postfix(WearNTear __instance, ref bool __result)
         {
-            if (CurrentTerritory == null) return;
-            if (CurrentTerritory.Flags.HasFlagFast(TerritorySystem_DataTypes.TerritoryFlags.NoStructureSupport))
+            foreach (TerritorySystem_DataTypes.Territory territory in TerritoriesByFlags[
+                         TerritorySystem_DataTypes.TerritoryFlags.NoStructureSupport])
             {
-                __result = true;
+                if (territory.IsInside(__instance.transform.position))
+                {
+                    __result = true;
+                    return;
+                }
             }
         }
     }
@@ -807,12 +810,13 @@ public static class TerritorySystem_Main_Client
     [ClientOnlyPatch]
     private static class NoMonsters_Start_Patch
     {
-        private static bool Prefix()
+        private static bool Prefix(CreatureSpawner __instance)
         {
-            if (CurrentTerritory == null) return true;
-            if (CurrentTerritory.Flags.HasFlagFast(TerritorySystem_DataTypes.TerritoryFlags.NoMonsters))
+            foreach (TerritorySystem_DataTypes.Territory territory in TerritoriesByFlags[
+                         TerritorySystem_DataTypes.TerritoryFlags.NoMonsters])
             {
-                return false;
+                if (territory.IsInside(__instance.transform.position))
+                    return false;
             }
 
             return true;

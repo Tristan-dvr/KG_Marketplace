@@ -258,3 +258,5 @@ mpasn_Leaderboard_ItemsCrafted: "Items\nCrafted"
 mpasn_Leaderboard_AmountOfDeath: "Amount of\nDeaths"
 mpasn_Leaderboard_MapExplored: "Map\nExplored"
 mpasn_LeaderboardAchievements: "'s\nAchievements"
+mpasn_needtitlescore: Need Achievement Score
+mpasn_dontneedtitlescore: You have Achievement Score

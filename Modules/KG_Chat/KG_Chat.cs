@@ -221,18 +221,33 @@ public static class KG_Chat
                 {
                     ResizeUI.Default(); 
                     DragUI.Default();
-                    AssetStorage.AssetStorage.AUsrc.Play(); 
-                    Chat.instance.m_input.ActivateInputField();
+                    AssetStorage.AssetStorage.AUsrc.Play();
                 });
         kgChat.GetComponentInChildren<GuiInputField>(true).onValueChanged.AddListener(IF_OnValueChanged);
-        kgChat.GetComponentInChildren<GuiInputField>(true).CaretOnGamepadUsage = true;
         kgChat_Scrollbar = kgChat.GetComponentInChildren<Scrollbar>(true);
         Chat.instance.AddString("<color=green>KG Chat Loaded</color>");
         Chat.instance.AddString("<color=green>/say | /shout | /whisper to switch chat mode</color>");
         if (Groups.API.IsLoaded())
             Chat.instance.AddString("<color=green>/group | /party to switch to groups chat mode</color>");
+
+        Marketplace.Global_FixedUpdator += KGChat_Update;
+    }
+    
+    [HarmonyPatch(typeof(GuiInputField), "Update")]
+    [ClientOnlyPatch]
+    private static class GuiInputField_Update_Patch
+    {
+        private static bool Prefix()
+        {
+            return !kgChat;
+        }
     }
 
+    private static void KGChat_Update()
+    {
+        if(!kgChat || !Chat.instance.m_input.IsActive()) return;
+        Chat.instance.m_input.ActivateInputField();
+    }
 
     private static void IF_OnValueChanged(string value)
     {
@@ -434,7 +449,6 @@ public static class KG_Chat
             {
                 Emojis_Tab.gameObject.SetActive(!Emojis_Tab.gameObject.activeSelf);
                 AssetStorage.AssetStorage.AUsrc.Play();
-                Chat.instance.m_input.ActivateInputField();
             });
             _muteSoundsButton.transform.Find("TF").gameObject.SetActive(!useTypeSound.Value);
             _muteSoundsButton.onClick.AddListener(() =>
@@ -443,7 +457,6 @@ public static class KG_Chat
                 useTypeSound.Value = !useTypeSound.Value;
                 Marketplace._thistype.Config.Save();
                 _muteSoundsButton.transform.Find("TF").gameObject.SetActive(!useTypeSound.Value);
-                Chat.instance.m_input.ActivateInputField();
             });
 
             Transform bgone = transform.Find("CHATWINDOW/Background/Upper Background");
@@ -461,7 +474,6 @@ public static class KG_Chat
                 MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
                     $"<color=green>{Transparency_Map[kgchat_Transparency.Value] * 100f}%</color>");
                 Marketplace._thistype.Config.Save();
-                Chat.instance.m_input.ActivateInputField();
             });
         }
 
@@ -503,7 +515,6 @@ public static class KG_Chat
             if (!Chat.instance) return;
             AssetStorage.AssetStorage.AUsrc.Play();
             Chat.instance.m_input.text += key + " ";
-            Chat.instance.m_input.ActivateInputField();
             Chat.instance.m_input.MoveTextEnd(false);
         }
 
@@ -515,7 +526,6 @@ public static class KG_Chat
             WhisperImage.color = mode == SendMode.Whisper ? Color.green : Color.white;
             GroupImage.color = mode == SendMode.Group ? Color.green : Color.white;
             AssetStorage.AssetStorage.AUsrc.Play();
-            Chat.instance.m_input.ActivateInputField();
         }
 
         private Image SayImage;
