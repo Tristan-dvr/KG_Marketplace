@@ -1,4 +1,5 @@
-﻿using Marketplace.UI_OptimizationHandler;
+﻿using Marketplace.Modules.Banker;
+using Marketplace.UI_OptimizationHandler;
 using Object = UnityEngine.Object;
 
 namespace Marketplace.Modules.Trader;
@@ -19,7 +20,9 @@ public static class Trader_UI
     private static InputField SearchInput;
     private static Modifier CurrentModifier;
     private static readonly Transform[] ModifierButtons = new Transform[Enum.GetValues(typeof(Modifier)).Length];
-
+    private static bool ToBank = false;
+    
+    
     public static bool IsPanelVisible()
     {
         return UI && UI.activeSelf;
@@ -70,6 +73,13 @@ public static class Trader_UI
                 CreateElementsNew();
             });
         }
+        
+        UI.transform.Find("Canvas/Background/ToBank").GetComponent<Button>().onClick.AddListener(() =>
+        {
+            AssetStorage.AssetStorage.AUsrc.Play();
+            ToBank = !ToBank;
+            UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color = ToBank ? Enabled : Disabled;
+        });
 
         Localization.instance.Localize(UI.transform);
     }
@@ -276,38 +286,45 @@ public static class Trader_UI
             GameObject prefab = ZNetScene.instance.GetPrefab(resultItem.ItemPrefab);
             if (!resultItem.IsMonster)
             {
-                string text = Localization.instance.Localize("$mpasn_added",
-                    (resultItem.Count * ModifierValues[CurrentModifier]).ToString(),
-                    Localization.instance.Localize(resultItem.ItemName));
-                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, text);
-                if (prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_maxStackSize > 1)
+                if (ToBank)
                 {
-                    GameObject go = Object.Instantiate(prefab,
-                        p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
-                    ItemDrop itemDrop = go.GetComponent<ItemDrop>();
-                    itemDrop.m_itemData.m_quality = resultItem.Level;
-                    itemDrop.m_itemData.m_stack = resultItem.Count * ModifierValues[CurrentModifier];
-                    itemDrop.Save();
-                    if (p.m_inventory.CanAddItem(go))
-                    {
-                        p.m_inventory.AddItem(itemDrop.m_itemData);
-                        ZNetScene.instance.Destroy(go);
-                    }
+                    ZRoutedRpc.instance.InvokeRoutedRPC("KGmarket BankerDeposit", resultItem.ItemPrefab, resultItem.Count * ModifierValues[CurrentModifier]);
+                    string text = Localization.instance.Localize("$mpasn_addedtobank", (resultItem.Count * ModifierValues[CurrentModifier]).ToString(), Localization.instance.Localize(resultItem.ItemName));
+                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, text);
                 }
                 else
                 {
-                    for (int i = 0; i < resultItem.Count * ModifierValues[CurrentModifier]; i++)
+                    string text = Localization.instance.Localize("$mpasn_added", (resultItem.Count * ModifierValues[CurrentModifier]).ToString(), Localization.instance.Localize(resultItem.ItemName));
+                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, text);
+                    if (prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_maxStackSize > 1)
                     {
                         GameObject go = Object.Instantiate(prefab,
-                            p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f,
-                            Quaternion.identity);
+                            p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
                         ItemDrop itemDrop = go.GetComponent<ItemDrop>();
                         itemDrop.m_itemData.m_quality = resultItem.Level;
+                        itemDrop.m_itemData.m_stack = resultItem.Count * ModifierValues[CurrentModifier];
                         itemDrop.Save();
                         if (p.m_inventory.CanAddItem(go))
                         {
                             p.m_inventory.AddItem(itemDrop.m_itemData);
                             ZNetScene.instance.Destroy(go);
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < resultItem.Count * ModifierValues[CurrentModifier]; i++)
+                        {
+                            GameObject go = Object.Instantiate(prefab,
+                                p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f,
+                                Quaternion.identity);
+                            ItemDrop itemDrop = go.GetComponent<ItemDrop>();
+                            itemDrop.m_itemData.m_quality = resultItem.Level;
+                            itemDrop.Save();
+                            if (p.m_inventory.CanAddItem(go))
+                            {
+                                p.m_inventory.AddItem(itemDrop.m_itemData);
+                                ZNetScene.instance.Destroy(go);
+                            }
                         }
                     }
                 }
@@ -364,6 +381,9 @@ public static class Trader_UI
         SortList();
         SetModifier(Modifier.x1);
         CreateElementsNew();
+        ToBank = false;
+        UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color = Disabled;
+        UI.transform.Find("Canvas/Background/ToBank").gameObject.SetActive(!ZNet.IsSinglePlayer);
         InventoryGui.instance.Show(null);
         UI.SetActive(true);
         _npcName = Utils.RichTextFormatting(_npcName);

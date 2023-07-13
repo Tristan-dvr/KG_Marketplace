@@ -9,7 +9,7 @@
 
 Like my mods? Support me:
 Paypal: war3spells@gmail.com 
-## MOD ONLY WORKS IF YOU USE IT ON DEDICATED SERVER. DON'T TRY TO USE IT IN SINGLEPLAYER / CLIENT HOST
+### IF YOU WANT TO USE MOD IN SINGLEPLAYER IT CAN PROVIDE 50% OF FUNCTIONALITY WHILE USING THAT ON CLIENTSIDE IF YOU HAVE OPTION TURNED ON IN MAIN CONFIG
 ## Mod adds different NPCs and Unique mechanics to server so admins can configure them from serverside with no need to restart server for applying settings:
 
 <details>

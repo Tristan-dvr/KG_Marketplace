@@ -169,47 +169,16 @@ public static class Market_NPC
             if (NPCLoader_UI.IsVisible() || NPCUI.IsVisible()) __result = true;
         }
     }
-
-    [HarmonyPatch(typeof(Terminal), nameof(Terminal.InputText))]
-    [ClientOnlyPatch]
-    private static class ConsolePatch
-    {
-        private static bool Prefix(Terminal __instance)
-        {
-            if (__instance.m_input.text.ToLower() == "pos")
-            {
-                __instance.AddString($"Position: {Player.m_localPlayer.transform.position}");
-                return false;
-            }
-
-            if (__instance.m_input.text.ToLower() == "idm")
-            {
-                ItemDrop.ItemData weapon = Player.m_localPlayer.GetRightItem() != null
-                    ? Player.m_localPlayer.GetRightItem()
-                    : Player.m_localPlayer.GetLeftItem();
-                if (weapon == null)
-                {
-                    __instance.AddString("No weapon in hand");
-                    return false;
-                }
-
-                string IDM = JSON.ToNiceJSON(weapon.m_customData);
-                __instance.AddString($"IDM for {weapon.m_dropPrefab}:\n{IDM}");
-                return false;
-            }
-
-            return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(Chat), nameof(Chat.InputText))]
+    
+    [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
     [ClientOnlyPatch]
     private static class Chat_InputText_Patch_AdminCommands
     {
-        private static bool Prefix(Chat __instance)
+        private static void Postfix()
         {
-            if (__instance.m_input.text.ToLower() == "/npc remove" && Utils.IsDebug)
+            new Terminal.ConsoleCommand("npc remove", "Remove NPCs in range of 5 meters", (args) =>
             {
+                if (!Utils.IsDebug) return;
                 IEnumerable<NPCcomponent> FindNPCsInRange = NPCcomponent.ALL.Where(x =>
                     global::Utils.DistanceXZ(Player.m_localPlayer.transform.position, x.transform.position) <= 5f);
                 int c = 0;
@@ -222,26 +191,43 @@ public static class Market_NPC
                     {
                         name = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);
                     }
-
                     total += $"\n{c + 1}) {name} {npc.transform.position}";
                     ZDOMan.instance.m_destroySendList.Add(npc.znv.m_zdo.m_uid);
                 }
+                args.Context.AddString($"Removed total {c} NPCs in range:{total}");
+            });
 
-                __instance.AddString($"Removed total {c} NPCs in range:{total}");
-                return false;
-            }
-
-            if (__instance.m_input.text.ToLower() == "/npc save" && Utils.IsDebug)
+            new Terminal.ConsoleCommand("npc save", "Save all loaded NPCs", (args) =>
             {
+                if (!Utils.IsDebug) return;
                 foreach (NPCcomponent npc in NPCcomponent.ALL)
                 {
                     if (!npc.pastOverrideModel) continue;
                     NPCLoader_UI.Save(npc, out string text);
-                    __instance.AddString(text);
+                    args.Context.AddString(text);
                 }
-            }
+            });
 
-            return true;
+            new Terminal.ConsoleCommand("idm", "Get Current Left/Right ItemDataManager values", (args) =>
+            {
+                if (!Utils.IsDebug) return;
+                ItemDrop.ItemData weapon = Player.m_localPlayer.GetRightItem() != null
+                    ? Player.m_localPlayer.GetRightItem()
+                    : Player.m_localPlayer.GetLeftItem();
+                if (weapon == null)
+                {
+                    args.Context.AddString("No weapon in hand");
+                    return;
+                }
+
+                string IDM = JSON.ToNiceJSON(weapon.m_customData);
+                args.Context.AddString($"IDM for {weapon.m_dropPrefab.name}:\n{IDM}");
+            });
+            
+            new Terminal.ConsoleCommand("mpos", "Get Current Position", (args) =>
+            {
+                args.Context.AddString($"<color=green>Position: {Player.m_localPlayer.transform.position}</color>");
+            });
         }
     }
 

@@ -5,7 +5,7 @@
 <p><img src="https://i.imgur.com/dBf99Od.png" alt="https://i.imgur.com/dBf99Od.png"></p>
 <p>Like my mods? Support me:
 Paypal: <a href="mailto:war3spells@gmail.com">war3spells@gmail.com</a></p>
-<h2>MOD ONLY WORKS IF YOU USE IT ON DEDICATED SERVER. DON’T TRY TO USE IT IN SINGLEPLAYER / CLIENT HOST</h2>
+<h3>IF YOU WANT TO USE MOD IN SINGLEPLAYER IT CAN PROVIDE 50% OF FUNCTIONALITY WHILE USING THAT ON CLIENTSIDE IF YOU HAVE OPTION TURNED ON IN MAIN CONFIG</h3>
 <h2>Mod adds different NPCs and Unique mechanics to server so admins can configure them from serverside with no need to restart server for applying settings:</h2>
 <details>
   <summary><b><span style="color:aqua;font-weight:200;font-size:20px">

@@ -177,6 +177,7 @@ public static class TerritorySystem_Main_Client
             .Sort((a, b) => a.Priority.CompareTo(b.Priority));
         API.ClientSide.FillingTerritoryData = false;
         DoMapMagic();
+        ZoneVisualizer.OnMapChange();
     }
 
     [HarmonyPatch(typeof(Minimap), nameof(Minimap.UpdateBiome))]
