@@ -413,14 +413,8 @@ public static class Utils
     {
         if (!Enum.TryParse(name, out Skills.SkillType skill))
         {
-            Skills.SkillDef SkillDef = Player.m_localPlayer.m_skills.GetSkillDef(
-                (Skills.SkillType)Mathf.Abs(name.GetStableHashCode()));
-            if (SkillDef == null)
-            {
-                return AssetStorage.AssetStorage.NullSprite;
-            }
-
-            return SkillDef.m_icon;
+            Skills.SkillDef SkillDef = Player.m_localPlayer.m_skills.GetSkillDef((Skills.SkillType)Mathf.Abs(name.GetStableHashCode()));
+            return SkillDef == null ? AssetStorage.AssetStorage.NullSprite : SkillDef.m_icon;
         }
         else
         {

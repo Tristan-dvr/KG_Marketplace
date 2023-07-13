@@ -348,6 +348,7 @@
         <Compile Include="Modules\Leaderboard\LeaderBoard_Main_Client.cs" />
         <Compile Include="Modules\Leaderboard\Leaderboard_Server_Main.cs" />
         <Compile Include="Modules\Leaderboard\Leaderboard_UI.cs" />
+        <Compile Include="Modules\TerritorySystem\ZoneVisualizer.cs" />
         <Compile Include="OtherModsAPIs\Cozyheim_LevelingSystem.cs" />
         <Compile Include="OtherModsAPIs\EpicMMO.cs" />
         <Compile Include="OtherModsAPIs\MagicHeim.cs" />

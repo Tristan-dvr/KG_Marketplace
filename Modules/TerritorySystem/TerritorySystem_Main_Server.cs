@@ -104,6 +104,19 @@ public static class TerritorySystem_Main_Server
                         }
                     }
 
+                    // find specify height override
+                    for (int tf = 0; tf < rgb.Count; ++tf)
+                    {
+                        if (rgb[tf].ToLower().Contains("heightbounds:"))
+                        {
+                            string val = rgb[tf].Split(':')[1];
+                            string[] split = val.Split('-');
+                            newTerritory.HeightBounds = new(int.Parse(split[0]), int.Parse(split[1]));
+                            rgb.RemoveAt(tf);
+                            break;
+                        }
+                    }
+
                     newTerritory.Colors = new();
                     for (int tf = 0; tf < rgb.Count; tf += 3)
                     {

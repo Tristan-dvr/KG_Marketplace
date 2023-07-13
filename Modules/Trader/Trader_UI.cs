@@ -200,7 +200,9 @@ public static class Trader_UI
                 string stars = data.ResultItems[i].DisplayStars ? $" <color=#00ff00>({starCount}★)</color>" : "";
                 transform.transform.Find("Text").GetComponent<Text>().text =
                     $"{data.ResultItems[i].ItemName}{stars}\n<color=yellow>x{data.ResultItems[i].Count * ModifierValues[CurrentModifier]}</color>";
-                transform.transform.Find("Icon").GetComponent<Image>().sprite = data.ResultItems[i].GetIcon();
+                transform.transform.Find("Icon").GetComponent<Image>().sprite = data.ResultItems[i].IsSkill
+                    ? Utils.GetSkillIcon(data.ResultItems[i].ItemPrefab)
+                    : data.ResultItems[i].GetIcon();
                 transform.GetComponent<UITooltip>().m_topic = data.ResultItems[i].ItemName;
                 if (data.ResultItems[i].IsMonster)
                     transform.GetComponent<UITooltip>().m_text =

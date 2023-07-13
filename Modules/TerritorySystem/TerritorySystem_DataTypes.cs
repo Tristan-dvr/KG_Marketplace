@@ -49,6 +49,8 @@ public static class TerritorySystem_DataTypes
             pkg.Write((int)PaintGround);
             pkg.Write((int)GradientType);
             pkg.Write(ExponentialValue);
+            pkg.Write(HeightBounds.Item1);
+            pkg.Write(HeightBounds.Item2);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -84,6 +86,7 @@ public static class TerritorySystem_DataTypes
             PaintGround = (PaintType)pkg.ReadInt();
             GradientType = (GradientType)pkg.ReadInt();
             ExponentialValue = pkg.ReadSingle();
+            HeightBounds = new Tuple<int, int>(pkg.ReadInt(), pkg.ReadInt());
         }
     }
 
@@ -116,7 +119,7 @@ public static class TerritorySystem_DataTypes
         public PaintType PaintGround;
         public GradientType GradientType = GradientType.LeftRight;
         public float ExponentialValue = 1f;
-
+        public Tuple<int, int> HeightBounds = new Tuple<int, int>(-100000, 100000);
 
         public bool DrawOnMap => Colors.Count > 0;
         public bool UsingGradient => Type is not TerritoryType.Custom && Colors.Count > 1;
@@ -141,7 +144,7 @@ public static class TerritorySystem_DataTypes
 
         public Vector3 Pos3D()
         {
-            return new Vector3(X, 0, Y);
+            return new Vector3(X, (HeightBounds.Item1 + HeightBounds.Item2) / 2f, Y);
         }
 
         public Color32 GetColor()
@@ -235,7 +238,7 @@ public static class TerritorySystem_DataTypes
             return IsOwnerCached.Value;
         }
 
-        public bool IsInside(Vector2 mouse)
+        public bool IsInside2D(Vector2 mouse)
         {
             Vector2 p = Pos();
             switch (Type)
@@ -256,18 +259,14 @@ public static class TerritorySystem_DataTypes
         {
             Vector2 mouse = new Vector2(init.x, init.z);
             Vector2 p = Pos();
-            switch (Type)
+            bool result = Type switch
             {
-                case TerritoryType.Square:
-                    return mouse.x >= p.x - Radius && mouse.x <= p.x + Radius && mouse.y >= p.y - Radius &&
-                           mouse.y <= p.y + Radius;
-                case TerritoryType.Circle:
-                    return Vector2.Distance(p, mouse) <= Radius;
-                case TerritoryType.Custom:
-                    return mouse.x >= p.x && mouse.x <= p.x + Xlength && mouse.y >= p.y && mouse.y <= p.y + Ylength;
-                default:
-                    return Vector2.Distance(p, mouse) <= Radius;
-            }
+                TerritoryType.Square => mouse.x >= p.x - Radius && mouse.x <= p.x + Radius && mouse.y >= p.y - Radius && mouse.y <= p.y + Radius,
+                TerritoryType.Circle => Vector2.Distance(p, mouse) <= Radius,
+                TerritoryType.Custom => mouse.x >= p.x && mouse.x <= p.x + Xlength && mouse.y >= p.y && mouse.y <= p.y + Ylength,
+                _ => Vector2.Distance(p, mouse) <= Radius
+            };
+            return result && init.y >= HeightBounds.Item1 && init.y <= HeightBounds.Item2;
         }
 
         public override string ToString()
@@ -278,7 +277,9 @@ public static class TerritorySystem_DataTypes
 
         public string GetTerritoryFlags()
         {
-            string ret = "";
+            string ret = $"";
+            if(HeightBounds.Item1 != int.MinValue && HeightBounds.Item2 != int.MaxValue)
+                ret += $"\n(Height Bounds: {HeightBounds.Item1} - {HeightBounds.Item2})\n";
             foreach (TerritoryFlags flag in AllTerritoryFlagsArray)
             {
                 if (!Flags.HasFlagFast(flag)) continue;

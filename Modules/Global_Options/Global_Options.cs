@@ -16,7 +16,6 @@ public static class Global_Values
     public static string _localUserID = "none";
 
     [HarmonyPatch]
-    [ClientOnlyPatch]
     private static class Game_Awake_Patch
     {
         public static IEnumerable<MethodInfo> TargetMethods()

@@ -223,7 +223,7 @@ public static class TerritorySystem_Main_Client
                 foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.TerritoriesData
                              .Value)
                 {
-                    if (territory.IsInside(new Vector2(vector.x, vector.z)))
+                    if (territory.IsInside2D(new Vector2(vector.x, vector.z)))
                     {
                         string newText = search + "\n" + territory.GetName() + territory.GetTerritoryFlags() + search;
                         TryReplaceTerritoryString(__instance.m_biomeNameLarge, newText);
@@ -957,7 +957,7 @@ public static class TerritorySystem_Main_Client
             foreach (TerritorySystem_DataTypes.Territory territory in TerritoriesByFlags[
                          TerritorySystem_DataTypes.TerritoryFlags.ForceGroundHeight])
             {
-                if (territory.IsInside(vec))
+                if (territory.IsInside2D(vec))
                 {
                     __result = territory.OverridenHeight;
                     //break;
@@ -967,7 +967,7 @@ public static class TerritorySystem_Main_Client
             foreach (TerritorySystem_DataTypes.Territory territory in TerritoriesByFlags[
                          TerritorySystem_DataTypes.TerritoryFlags.AddGroundHeight])
             {
-                if (territory.IsInside(vec))
+                if (territory.IsInside2D(vec))
                 {
                     __result += territory.OverridenHeight;
                     //break;
@@ -977,7 +977,7 @@ public static class TerritorySystem_Main_Client
             foreach (TerritorySystem_DataTypes.Territory territory in TerritoriesByFlags[
                          TerritorySystem_DataTypes.TerritoryFlags.LimitZoneHeight])
             {
-                if (territory.IsInside(vec))
+                if (territory.IsInside2D(vec))
                 {
                     __result = Mathf.Max(territory.OverridenHeight, __result);
                     //break;
@@ -997,7 +997,7 @@ public static class TerritorySystem_Main_Client
             foreach (TerritorySystem_DataTypes.Territory ground in TerritoriesByFlags[
                          TerritorySystem_DataTypes.TerritoryFlags.ForceBiome])
             {
-                if (ground.IsInside(vec))
+                if (ground.IsInside2D(vec))
                 {
                     __result = (Heightmap.Biome)ground.OverridenBiome;
                     break;
@@ -1093,7 +1093,7 @@ public static class TerritorySystem_Main_Client
                     foreach (TerritorySystem_DataTypes.Territory paint in TerritoriesByFlags[
                                  TerritorySystem_DataTypes.TerritoryFlags.CustomPaint])
                     {
-                        if (!paint.IsInside(new Vector2(FinalX, FinalZ))) continue;
+                        if (!paint.IsInside2D(new Vector2(FinalX, FinalZ))) continue;
                         Color c = paint.PaintGround switch
                         {
                             TerritorySystem_DataTypes.PaintType.Paved => Color.blue,
@@ -1142,7 +1142,7 @@ public static class TerritorySystem_Main_Client
                     foreach (TerritorySystem_DataTypes.Territory paint in TerritoriesByFlags_Additional[
                                  TerritorySystem_DataTypes.AdditionalTerritoryFlags.SnowMask])
                     {
-                        if (!paint.IsInside(new Vector2(FinalX, FinalZ)))
+                        if (!paint.IsInside2D(new Vector2(FinalX, FinalZ)))
                         {
                             Heightmap.Biome biome = WorldGenerator.instance.GetBiome(FinalX, FinalZ);
                             Heightmap.s_tempColors.Add(Heightmap.GetBiomeColor(biome));
