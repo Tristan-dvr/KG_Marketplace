@@ -38,6 +38,7 @@ public static class TerritorySystem_Main_Client
 
         TerritorySystem_DataTypes.TerritoriesData.ValueChanged += OnTerritoryUpdate;
         Marketplace.Global_FixedUpdator += TerritoryFixedUpdate;
+        Marketplace.Global_FixedUpdator += HeightmapRebuild;
     }
 
     private static void TerritoryFixedUpdate()
@@ -178,7 +179,36 @@ public static class TerritorySystem_Main_Client
         API.ClientSide.FillingTerritoryData = false;
         DoMapMagic();
         ZoneVisualizer.OnMapChange();
+        if (Global_Values._container.Value._rebuildHeightmap) rebuildIndex = 0;
     }
+
+    private static int rebuildIndex = -1;
+    private static float rebuildUptime = 0f;
+
+    private static void HeightmapRebuild()
+    {
+        if (rebuildIndex == -1) return;
+        rebuildUptime += Time.fixedDeltaTime;
+        if (rebuildUptime < 0.12f) return;
+        if (Heightmap.Instances.Count <= rebuildIndex || !Player.m_localPlayer || Heightmap.Instances[rebuildIndex] == null)
+        {
+            rebuildIndex = -1;
+            return;
+        }
+
+        if (Heightmap.Instances[rebuildIndex].IsDistantLod)
+        {
+            rebuildIndex++;
+            rebuildUptime = 0f;
+            return;
+        }
+
+        Heightmap.Instances[rebuildIndex].m_buildData = null;
+        Heightmap.Instances[rebuildIndex].Regenerate();
+        rebuildIndex++;
+        rebuildUptime = 0f;
+    }
+
 
     [HarmonyPatch(typeof(Minimap), nameof(Minimap.UpdateBiome))]
     [ClientOnlyPatch]

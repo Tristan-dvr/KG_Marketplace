@@ -21,8 +21,8 @@ public static class Trader_UI
     private static Modifier CurrentModifier;
     private static readonly Transform[] ModifierButtons = new Transform[Enum.GetValues(typeof(Modifier)).Length];
     private static bool ToBank = false;
-    
-    
+
+
     public static bool IsPanelVisible()
     {
         return UI && UI.activeSelf;
@@ -73,12 +73,16 @@ public static class Trader_UI
                 CreateElementsNew();
             });
         }
-        
+
         UI.transform.Find("Canvas/Background/ToBank").GetComponent<Button>().onClick.AddListener(() =>
         {
             AssetStorage.AssetStorage.AUsrc.Play();
             ToBank = !ToBank;
-            UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color = ToBank ? Enabled : Disabled;
+            UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color =
+                ToBank ? Enabled : Disabled;
+            UI.transform.Find("Canvas/Background/ToBank/Text").GetComponent<Text>().text = ToBank
+                ? "Send to Bank\n      <color=green>On</color>"
+                : "Send to Bank\n      <color=red>Off</color>";
         });
 
         Localization.instance.Localize(UI.transform);
@@ -257,6 +261,12 @@ public static class Trader_UI
         return true;
     }
 
+    private static bool CanAddToBanker(Trader_DataTypes.TraderItem item)
+    {
+        if (item.Level > 1) return false;
+        int hash = item.ItemPrefab.GetStableHashCode();
+        return Banker_DataTypes.SyncedBankerProfiles.Value.Values.Any(x => x.Contains(hash));
+    }
 
     private static void TradeItemByGo(Trader_DataTypes.TraderData data)
     {
@@ -286,15 +296,20 @@ public static class Trader_UI
             GameObject prefab = ZNetScene.instance.GetPrefab(resultItem.ItemPrefab);
             if (!resultItem.IsMonster)
             {
-                if (ToBank)
+                if (ToBank && CanAddToBanker(resultItem))
                 {
-                    ZRoutedRpc.instance.InvokeRoutedRPC("KGmarket BankerDeposit", resultItem.ItemPrefab, resultItem.Count * ModifierValues[CurrentModifier]);
-                    string text = Localization.instance.Localize("$mpasn_addedtobank", (resultItem.Count * ModifierValues[CurrentModifier]).ToString(), Localization.instance.Localize(resultItem.ItemName));
+                    ZRoutedRpc.instance.InvokeRoutedRPC("KGmarket BankerDeposit", resultItem.ItemPrefab,
+                        resultItem.Count * ModifierValues[CurrentModifier]);
+                    string text = Localization.instance.Localize("$mpasn_addedtobank",
+                        (resultItem.Count * ModifierValues[CurrentModifier]).ToString(),
+                        Localization.instance.Localize(resultItem.ItemName));
                     MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, text);
                 }
                 else
                 {
-                    string text = Localization.instance.Localize("$mpasn_added", (resultItem.Count * ModifierValues[CurrentModifier]).ToString(), Localization.instance.Localize(resultItem.ItemName));
+                    string text = Localization.instance.Localize("$mpasn_added",
+                        (resultItem.Count * ModifierValues[CurrentModifier]).ToString(),
+                        Localization.instance.Localize(resultItem.ItemName));
                     MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, text);
                     if (prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_maxStackSize > 1)
                     {
@@ -384,6 +399,9 @@ public static class Trader_UI
         ToBank = false;
         UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color = Disabled;
         UI.transform.Find("Canvas/Background/ToBank").gameObject.SetActive(!ZNet.IsSinglePlayer);
+        UI.transform.Find("Canvas/Background/ToBank/Text").GetComponent<Text>().text = ToBank
+            ? "Send to Bank\n       <color=green>On</color>"
+            : "Send to Bank\n       <color=red>Off</color>";
         InventoryGui.instance.Show(null);
         UI.SetActive(true);
         _npcName = Utils.RichTextFormatting(_npcName);

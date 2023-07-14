@@ -1,4 +1,6 @@
-﻿namespace Marketplace.Modules.Buffer;
+﻿using Object = UnityEngine.Object;
+
+namespace Marketplace.Modules.Buffer;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
@@ -22,35 +24,32 @@ public static class Buffer_Main_Client
         }
     }
     
-    [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.Awake))]
-    [ClientOnlyPatch, HarmonyPriority(-10000)]
-    private static class ZNetScene_Awake_Patch
+    [HarmonyPatch(typeof(ObjectDB),nameof(ObjectDB.Awake))]
+    [ClientOnlyPatch]
+    private static class ObjectDB_Awake_Patch
     {
         private static void Postfix() => OnBufferUpdate();
     }
-
+    
     private static void OnBufferUpdate()
     {
         if(!ZNetScene.instance) return;
         Buffer_DataTypes.ClientSideBufferProfiles.Clear();
-        foreach (Buffer_DataTypes.BufferBuffData buff in Buffer_DataTypes.AllCustomBuffs)
-        {
-            ObjectDB.instance.m_StatusEffects.Remove(buff.GetMain());
-        }
-        Buffer_DataTypes.AllCustomBuffs.Clear();
+        ObjectDB.instance.m_StatusEffects.RemoveAll(x => x is Buffer_DataTypes.BufferMain);
+        
         try
         {
+            foreach (var buff in Buffer_DataTypes.BufferBuffs.Value)
+                buff.Init();
+
             foreach (KeyValuePair<string, string> kvp in Buffer_DataTypes.BufferProfiles.Value)
             {
                 Buffer_DataTypes.ClientSideBufferProfiles.Add(kvp.Key, new List<Buffer_DataTypes.BufferBuffData>());
                 foreach (string split in kvp.Value.Split(','))
                 {
                     if (string.IsNullOrEmpty(split)) continue;
-                    if (Buffer_DataTypes.BufferBuffs.Value.Find(d => d.UniqueName.ToLower() == split.ToLower()) is var find and not null)
-                    {
-                        if (find.Init())
-                            Buffer_DataTypes.ClientSideBufferProfiles[kvp.Key].Add(find);
-                    }
+                    if (Buffer_DataTypes.BufferBuffs.Value.Find(d => d.UniqueName == split) is { IsValid: true } find)
+                        Buffer_DataTypes.ClientSideBufferProfiles[kvp.Key].Add(find);
                 }
             }
 

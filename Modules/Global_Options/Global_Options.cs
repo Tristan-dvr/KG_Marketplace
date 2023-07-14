@@ -63,6 +63,7 @@ public static class Global_Values
         public string _mailPostExcludeItems = "";
         public string _pieceSaverRecipe = "";
         public bool _useLeaderboard;
+        public bool _rebuildHeightmap;
 
 
         public void Serialize(ref ZPackage pkg)
@@ -86,6 +87,7 @@ public static class Global_Values
             pkg.Write(_mailPostExcludeItems ?? "");
             pkg.Write(_pieceSaverRecipe ?? "");
             pkg.Write(_useLeaderboard);
+            pkg.Write(_rebuildHeightmap);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -109,6 +111,7 @@ public static class Global_Values
             _mailPostExcludeItems = pkg.ReadString();
             _pieceSaverRecipe = pkg.ReadString();
             _useLeaderboard = pkg.ReadBool();
+            _rebuildHeightmap = pkg.ReadBool();
         }
     }
 
@@ -183,6 +186,7 @@ public static class Global_Values
         _container.Value._mailPostExcludeItems = SearchOption("MailPostExcludeItems", "Items Here", "Mailpost exclude items (with coma)");
         _container.Value._pieceSaverRecipe = SearchOption("PieceSaverRecipe", "SwordCheat,1", "Recipe for Piece Saver Crystal creation");
         _container.Value._useLeaderboard = SearchOption("UseLeaderboard", false, "Use Leaderboard");
+        _container.Value._rebuildHeightmap = SearchOption("RebuildHeightmap", false, "Rebuild Heightmap On Territory Change");
         _container.Update();
     }
 
