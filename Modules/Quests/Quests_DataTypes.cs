@@ -489,7 +489,7 @@ public static class Quests_DataTypes
                 if (CheckQuest.RequirementType[i] is QuestRequirementType.IsVIP)
                 {
                     message = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
-                    bool result = Global_Values._container.Value._vipPlayerList.Contains(Global_Values._localUserID);
+                    bool result = Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Values._localUserID);
                     if (result)
                     {
                         continue;
@@ -753,7 +753,7 @@ public static class Quests_DataTypes
 
             if (!IsAccepted(UID))
             {
-                if (AcceptedQuests.Count >= Global_Values._container.Value._maxAcceptedQuests)
+                if (AcceptedQuests.Count >= Global_Values.SyncedGlobalOptions.Value._maxAcceptedQuests)
                 {
                     return;
                 }
@@ -802,7 +802,7 @@ public static class Quests_DataTypes
                             ToAutocomplete.Add(quest.Key);
                         }
 
-                        if (!Global_Values._container.Value._allowMultipleQuestScore)
+                        if (!Global_Values.SyncedGlobalOptions.Value._allowMultipleQuestScore)
                             break;
                     }
                 }
@@ -990,7 +990,7 @@ public static class Quests_DataTypes
                             ToAutocomplete.Add(quest.Key);
                         }
 
-                        if (!Global_Values._container.Value._allowMultipleQuestScore)
+                        if (!Global_Values.SyncedGlobalOptions.Value._allowMultipleQuestScore)
                             break;
                     }
                 }
@@ -1078,7 +1078,7 @@ public static class Quests_DataTypes
                             ToAutocomplete.Add(quest.Key);
                         }
 
-                        if (!Global_Values._container.Value._allowMultipleQuestScore)
+                        if (!Global_Values.SyncedGlobalOptions.Value._allowMultipleQuestScore)
                             break;
                     }
                 }

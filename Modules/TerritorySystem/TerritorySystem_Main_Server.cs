@@ -44,7 +44,7 @@ public static class TerritorySystem_Main_Server
                     {
                         Name = splitProfile
                     };
-                    if (!(Enum.TryParse(profiles[i], out TerritorySystem_DataTypes.TerritoryType type) &&
+                    if (!(Enum.TryParse(profiles[i], true,  out TerritorySystem_DataTypes.TerritoryType type) &&
                           Enum.IsDefined(typeof(TerritorySystem_DataTypes.TerritoryType), type))) continue;
                     newTerritory.Type = type;
 
@@ -160,8 +160,7 @@ public static class TerritorySystem_Main_Server
                             customData = split[1];
                         }
 
-                        if (Enum.TryParse(workingFlag,
-                                out TerritorySystem_DataTypes.AdditionalTerritoryFlags testAdditionalFlag) &&
+                        if (Enum.TryParse(workingFlag, true, out TerritorySystem_DataTypes.AdditionalTerritoryFlags testAdditionalFlag) &&
                             Enum.IsDefined(typeof(TerritorySystem_DataTypes.AdditionalTerritoryFlags),
                                 testAdditionalFlag))
                         {
@@ -169,7 +168,7 @@ public static class TerritorySystem_Main_Server
                             continue;
                         }
 
-                        if (!(Enum.TryParse(workingFlag, out TerritorySystem_DataTypes.TerritoryFlags testFlag) &&
+                        if (!(Enum.TryParse(workingFlag, true, out TerritorySystem_DataTypes.TerritoryFlags testFlag) &&
                               Enum.IsDefined(typeof(TerritorySystem_DataTypes.TerritoryFlags), testFlag))) continue;
                         flags |= testFlag;
                         switch (testFlag)
@@ -227,7 +226,7 @@ public static class TerritorySystem_Main_Server
                     newTerritory.OverridenHeight = OverrideHeight;
                     newTerritory.AddMonsterLevel = addmonsterstars;
                     newTerritory.PaintGround = _paintGround;
-                    TerritorySystem_DataTypes.TerritoriesData.Value.Add(newTerritory);
+                    TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Add(newTerritory);
                 }
                 catch (Exception ex)
                 {
@@ -239,7 +238,7 @@ public static class TerritorySystem_Main_Server
 
     private static void ReadServerTerritoryDatabase()
     {
-        TerritorySystem_DataTypes.TerritoriesData.Value.Clear();
+        TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Clear();
         IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TerritoriesConfigPath);
         ProcessTerritoryConfig(profiles);
         string folder = Market_Paths.AdditionalCondfigsTerritoriesFolder;
@@ -250,7 +249,7 @@ public static class TerritorySystem_Main_Server
             ProcessTerritoryConfig(profiles);
         }
 
-        TerritorySystem_DataTypes.TerritoriesData.Value.Sort((x, y) => y.Priority.CompareTo(x.Priority));
-        TerritorySystem_DataTypes.TerritoriesData.Update();
+        TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Sort((x, y) => y.Priority.CompareTo(x.Priority));
+        TerritorySystem_DataTypes.SyncedTerritoriesData.Update();
     }
 }

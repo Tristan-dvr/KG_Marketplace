@@ -4,7 +4,7 @@ using Marketplace.Paths;
 namespace Marketplace.Modules.Marketplace_NPC;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal)]
 public static class Marketplace_Main_Server
 {
     private static Dictionary<string, int> PlayersIncome = new();
@@ -14,7 +14,7 @@ public static class Marketplace_Main_Server
         Market_Paths.ServerMarketDataJSON.DecryptOldData();
         string data = Market_Paths.ServerMarketDataJSON.ReadClear();
         if (!string.IsNullOrWhiteSpace(data))
-            Marketplace_DataTypes.ServerMarketPlaceData.Value =
+            Marketplace_DataTypes.SyncedMarketplaceData.Value =
                 JSON.ToObject<List<Marketplace_DataTypes.ServerMarketSendData>>(data);
 
         Market_Paths.MarketPlayersIncomeJSON.DecryptOldData();
@@ -77,12 +77,12 @@ public static class Marketplace_Main_Server
             $"Player User ID: {userID} requested Withdraw Marketplace with quantity: {value}");
         if (toBank)
         {
-            Banker_Main_Server.MethodBankerDeposit(sender, Global_Values._container.Value._serverCurrency, value);
+            Banker_Main_Server.MethodBankerDeposit(sender, Global_Values.SyncedGlobalOptions.Value._serverCurrency, value);
             return;
         }
 
         Marketplace_DataTypes.ServerMarketSendData sendMoney = new Marketplace_DataTypes.ServerMarketSendData
-            { Count = value, ItemPrefab = Global_Values._container.Value._serverCurrency, Quality = 1 };
+            { Count = value, ItemPrefab = Global_Values.SyncedGlobalOptions.Value._serverCurrency, Quality = 1 };
         string json = JSON.ToJSON(sendMoney);
         ZRoutedRpc.instance.InvokeRoutedRPC(sender, "KGmarket BuyItemAnswer", json);
     }
@@ -97,7 +97,7 @@ public static class Marketplace_Main_Server
         string userID = peer.m_socket.GetHostName();
         Marketplace_DataTypes.ServerMarketSendData newData =
             new Marketplace_DataTypes.ServerMarketSendData(toConvert, userID);
-        Marketplace_DataTypes.ServerMarketPlaceData.Value.Add(newData);
+        Marketplace_DataTypes.SyncedMarketplaceData.Value.Add(newData);
         SaveMarketAndSendToClients();
         Marketplace_Messages.Messenger.PostNewItemMessage(userID, newData);
         Market_Logger.Log(Market_Logger.LogType.Marketplace,
@@ -107,8 +107,8 @@ public static class Marketplace_Main_Server
 
     private static void SaveMarketAndSendToClients()
     {
-        Market_Paths.ServerMarketDataJSON.WriteClear(JSON.ToJSON(Marketplace_DataTypes.ServerMarketPlaceData.Value));
-        Marketplace_DataTypes.ServerMarketPlaceData.Update();
+        Market_Paths.ServerMarketDataJSON.WriteClear(JSON.ToJSON(Marketplace_DataTypes.SyncedMarketplaceData.Value));
+        Marketplace_DataTypes.SyncedMarketplaceData.Update();
     }
 
     private static void RemoveItemAdminStatus(long sender, int id)
@@ -118,21 +118,21 @@ public static class Marketplace_Main_Server
         if (ZNet.instance.m_adminList == null ||
             !ZNet.instance.ListContainsId(ZNet.instance.m_adminList, userID)) return;
         Marketplace_DataTypes.ServerMarketSendData findData =
-            Marketplace_DataTypes.ServerMarketPlaceData.Value.Find(data => data.UID == id);
+            Marketplace_DataTypes.SyncedMarketplaceData.Value.Find(data => data.UID == id);
         if (findData == null) return;
-        Marketplace_DataTypes.ServerMarketPlaceData.Value.Remove(findData);
+        Marketplace_DataTypes.SyncedMarketplaceData.Value.Remove(findData);
         SaveMarketAndSendToClients();
     }
 
     private static void RequestBuyItem(long sender, int id, int goldValue, int quantity)
     {
         Marketplace_DataTypes.ServerMarketSendData findData =
-            Marketplace_DataTypes.ServerMarketPlaceData.Value.Find(data => data.UID == id);
+            Marketplace_DataTypes.SyncedMarketplaceData.Value.Find(data => data.UID == id);
         if (findData != null)
         {
             if (quantity >= findData.Count)
             {
-                Marketplace_DataTypes.ServerMarketPlaceData.Value.Remove(findData);
+                Marketplace_DataTypes.SyncedMarketplaceData.Value.Remove(findData);
                 string json = JSON.ToJSON(findData);
                 ZRoutedRpc.instance.InvokeRoutedRPC(sender, "KGmarket BuyItemAnswer", json);
                 int leftOver = quantity - findData.Count;
@@ -141,7 +141,7 @@ public static class Marketplace_Main_Server
                 {
                     Marketplace_DataTypes.ServerMarketSendData mockData = new Marketplace_DataTypes.ServerMarketSendData
                     {
-                        Count = leftOver * findData.Price, ItemPrefab = Global_Values._container.Value._serverCurrency,
+                        Count = leftOver * findData.Price, ItemPrefab = Global_Values.SyncedGlobalOptions.Value._serverCurrency,
                         Quality = 1
                     };
                     string jsonLeftOver = JSON.ToJSON(mockData);
@@ -168,9 +168,9 @@ public static class Marketplace_Main_Server
 
             string buyerName = peer.m_playerName;
 
-            int applyTaxes = Global_Values._container.Value._vipPlayerList.Contains(sellerUserID)
-                ? Global_Values._container.Value._vipmarketTaxes
-                : Global_Values._container.Value._marketTaxes;
+            int applyTaxes = Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(sellerUserID)
+                ? Global_Values.SyncedGlobalOptions.Value._vipmarketTaxes
+                : Global_Values.SyncedGlobalOptions.Value._marketTaxes;
             applyTaxes = Mathf.Max(0, applyTaxes);
             float endValue = goldValue - goldValue * (applyTaxes / 100f);
             if (PlayersIncome.ContainsKey(sellerUserID))
@@ -189,7 +189,7 @@ public static class Marketplace_Main_Server
         else
         {
             Marketplace_DataTypes.ServerMarketSendData mockData = new Marketplace_DataTypes.ServerMarketSendData
-                { Count = goldValue, ItemPrefab = Global_Values._container.Value._serverCurrency, Quality = 1 };
+                { Count = goldValue, ItemPrefab = Global_Values.SyncedGlobalOptions.Value._serverCurrency, Quality = 1 };
             string json = JSON.ToJSON(mockData);
             ZRoutedRpc.instance.InvokeRoutedRPC(sender, "KGmarket BuyItemAnswer", json);
         }

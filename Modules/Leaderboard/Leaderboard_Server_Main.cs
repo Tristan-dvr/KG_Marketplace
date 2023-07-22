@@ -29,7 +29,7 @@ public static class Leaderboard_Server_Main
 
     private static void RPC_ReceiveLeaderboardEvent(long sender, int type, ZPackage pkg)
     {
-        if (!Global_Values._container.Value._useLeaderboard) return;
+        if (!Global_Values.SyncedGlobalOptions.Value._useLeaderboard) return;
         Leaderboard_DataTypes.TriggerType triggerType = (Leaderboard_DataTypes.TriggerType)type;
         ZNetPeer peer = ZNet.instance.GetPeer(sender);
         if (peer == null) return;
@@ -93,7 +93,7 @@ public static class Leaderboard_Server_Main
         {
             yield return new WaitForSecondsRealtime(5 * 60);
             if (!ZNet.instance || !ZNet.instance.IsServer() ||
-                !Global_Values._container.Value._useLeaderboard) continue;
+                !Global_Values.SyncedGlobalOptions.Value._useLeaderboard) continue;
             File.WriteAllText(Market_Paths.MarketLeaderboardJSON,
                 JSON.ToNiceJSON(Leaderboard_DataTypes.ServersidePlayersLeaderboard));
             SendToPlayers();
@@ -155,7 +155,7 @@ public static class Leaderboard_Server_Main
                     string prefabParse = profiles[i + 3];
                     string color = profiles[i + 4];
                     string tierParse = profiles[i + 5];
-                    if (!Enum.TryParse(type, out Leaderboard_DataTypes.TriggerType triggerType))
+                    if (!Enum.TryParse(type, true, out Leaderboard_DataTypes.TriggerType triggerType))
                     {
                         i += 5;
                         continue;

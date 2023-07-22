@@ -160,7 +160,7 @@ public static class Marketplace_Messages
         {
             if (buyer != seller)
             {
-                int applyTaxes = Global_Values._container.Value._vipPlayerList.Contains(seller) ? Global_Values._container.Value._vipmarketTaxes : Global_Values._container.Value._marketTaxes;
+                int applyTaxes = Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(seller) ? Global_Values.SyncedGlobalOptions.Value._vipmarketTaxes : Global_Values.SyncedGlobalOptions.Value._marketTaxes;
                 long value = howMany * data.Price;
                 value = (long)(value - value * (applyTaxes / 100f)); 
                 

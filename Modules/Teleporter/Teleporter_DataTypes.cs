@@ -2,9 +2,9 @@
 
 public static class Teleporter_DataTypes
 {
-    internal static readonly CustomSyncedValue<Dictionary<string, TransferBytes>> TeleporterSprites =
+    internal static readonly CustomSyncedValue<Dictionary<string, TransferBytes>> SyncedTeleporterSprites =
         new(Marketplace.configSync, "teleporterSprites", new Dictionary<string, TransferBytes>());
-    internal static readonly CustomSyncedValue<Dictionary<string, List<TeleporterData>>> TeleporterDataServer = 
+    internal static readonly CustomSyncedValue<Dictionary<string, List<TeleporterData>>> SyncedTeleporterData = 
         new(Marketplace.configSync, "teleporterData", new Dictionary<string, List<TeleporterData>>());
 
     public class TransferBytes : ISerializableParameter

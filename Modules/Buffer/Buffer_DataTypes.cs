@@ -2,10 +2,10 @@
 
 public static class Buffer_DataTypes
 {
-    internal static readonly CustomSyncedValue<Dictionary<string, string>> BufferProfiles =
+    internal static readonly CustomSyncedValue<Dictionary<string, string>> SyncedBufferProfiles =
         new(Marketplace.configSync, "bufferProfiles", new Dictionary<string, string>());
 
-    internal static readonly CustomSyncedValue<List<BufferBuffData>> BufferBuffs =
+    internal static readonly CustomSyncedValue<List<BufferBuffData>> SyncedBufferBuffs =
         new(Marketplace.configSync, "bufferBuffs", new List<BufferBuffData>());
     
     public static readonly Dictionary<string, List<BufferBuffData>> ClientSideBufferProfiles = new();
@@ -109,7 +109,7 @@ public static class Buffer_DataTypes
         private Sprite NeededItemIcon;
         private GameObject StartEffect;
 
-        public bool? IsValid = null;
+        public bool? IsValid;
 
         public void Init()
         {

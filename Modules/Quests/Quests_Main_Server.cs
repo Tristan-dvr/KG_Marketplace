@@ -122,7 +122,7 @@ public static class Quests_Main_Server
                     string reward = profiles[i + 4];
                     string cooldown = profiles[i + 5];
                     string restrictions = profiles[i + 6];
-                    if (!(Enum.TryParse(typeString, out Quests_DataTypes.QuestType type) &&
+                    if (!(Enum.TryParse(typeString, true, out Quests_DataTypes.QuestType type) &&
                           Enum.IsDefined(typeof(Quests_DataTypes.QuestType), type)))
                     {
                         dbProfile = null;
@@ -218,7 +218,7 @@ public static class Quests_Main_Server
                     for (int r = 0; r < _RestrictionsAMOUNT; ++r)
                     {
                         string[] RestrictionSplit = restrictionArray[r].Split(':');
-                        if (Enum.TryParse(RestrictionSplit[0], out Quests_DataTypes.QuestRequirementType restrType) &&
+                        if (Enum.TryParse(RestrictionSplit[0], true,  out Quests_DataTypes.QuestRequirementType restrType) &&
                             Enum.IsDefined(typeof(Quests_DataTypes.QuestRequirementType), restrType) &&
                             restrType is not Quests_DataTypes.QuestRequirementType.None)
                         {
@@ -356,7 +356,7 @@ public static class Quests_Main_Server
 
                 string[] actionSplit = value.Split(new[] { ',' }, 2, StringSplitOptions.RemoveEmptyEntries);
 
-                if (!Enum.TryParse(actionSplit[0], out Quests_DataTypes.QuestEventAction action) ||
+                if (!Enum.TryParse(actionSplit[0], true, out Quests_DataTypes.QuestEventAction action) ||
                     !Enum.IsDefined(typeof(Quests_DataTypes.QuestEventAction), action)) continue;
 
                 string args = actionSplit.Length > 1 ? actionSplit[1] : string.Empty;

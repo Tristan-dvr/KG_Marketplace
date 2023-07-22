@@ -15,21 +15,21 @@ public static class Teleporter_Main_Server
     
     private static void ReadServerTeleporterSprites()
     {
-        Teleporter_DataTypes.TeleporterSprites.Value.Clear();
+        Teleporter_DataTypes.SyncedTeleporterSprites.Value.Clear();
         string[] files = Directory.GetFiles(Market_Paths.TeleporterPinsFolder, "*.png", SearchOption.AllDirectories);
         foreach (string file in files)
         {
             string name = Path.GetFileNameWithoutExtension(file);
             byte[] data = File.ReadAllBytes(file);
-            Teleporter_DataTypes.TeleporterSprites.Value[name] = new Teleporter_DataTypes.TransferBytes(){array = data};
+            Teleporter_DataTypes.SyncedTeleporterSprites.Value[name] = new Teleporter_DataTypes.TransferBytes(){array = data};
         }
-        Teleporter_DataTypes.TeleporterSprites.Update();
+        Teleporter_DataTypes.SyncedTeleporterSprites.Update();
     }
     
     private static void ReadServerTeleporterProfile()
     {
         IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TeleporterPinsConfig);
-        Teleporter_DataTypes.TeleporterDataServer.Value.Clear();
+        Teleporter_DataTypes.SyncedTeleporterData.Value.Clear();
         string splitProfile = "default";
         for (int i = 0; i < profiles.Count; i++)
         {
@@ -72,13 +72,13 @@ public static class Teleporter_Main_Server
                         speed =  _speed
                     };
 
-                    if (Teleporter_DataTypes.TeleporterDataServer.Value.TryGetValue(splitProfile, out List<Teleporter_DataTypes.TeleporterData> value))
+                    if (Teleporter_DataTypes.SyncedTeleporterData.Value.TryGetValue(splitProfile, out List<Teleporter_DataTypes.TeleporterData> value))
                     {
                         value.Add(pinnerData);
                     }
                     else
                     {
-                        Teleporter_DataTypes.TeleporterDataServer.Value[splitProfile] = new List<Teleporter_DataTypes.TeleporterData> { pinnerData };
+                        Teleporter_DataTypes.SyncedTeleporterData.Value[splitProfile] = new List<Teleporter_DataTypes.TeleporterData> { pinnerData };
                     }
                 }
                 catch (Exception ex)
@@ -88,7 +88,7 @@ public static class Teleporter_Main_Server
                 }
             }
         }
-        Teleporter_DataTypes.TeleporterDataServer.Update();
+        Teleporter_DataTypes.SyncedTeleporterData.Update();
     }
     
     private static void ProcessTeleporterData()

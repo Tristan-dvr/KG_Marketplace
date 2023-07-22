@@ -196,7 +196,7 @@ public static class Marketplace_UI
         List<ItemDrop.ItemData> list = player?.m_inventory?.GetAllItems();
         if (list == null || list.Count == 0) return data;
         foreach (ItemDrop.ItemData item in list)
-            if (!Global_Values._container.Value._blockedPrefabsServer.Replace(" ","").Split(',').Contains(item.m_dropPrefab.name))
+            if (!Global_Values.SyncedGlobalOptions.Value._blockedPrefabsServer.Replace(" ","").Split(',').Contains(item.m_dropPrefab.name))
             {
                 Marketplace_DataTypes.ItemData_ItemCategory best = ChooseBestCategory(item);
                 string displayName = item.m_shared.m_name;
@@ -273,7 +273,7 @@ public static class Marketplace_UI
     private static void ResetCurrency()
     {
         UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Gold/Image").GetComponent<Image>().sprite =
-            ZNetScene.instance.GetPrefab(Global_Values._container.Value._serverCurrency).GetComponent<ItemDrop>().m_itemData.m_shared
+            ZNetScene.instance.GetPrefab(Global_Values.SyncedGlobalOptions.Value._serverCurrency).GetComponent<ItemDrop>().m_itemData.m_shared
                 .m_icons[0];
     }
 
@@ -317,7 +317,7 @@ public static class Marketplace_UI
     private static void ClickGetIncome(bool toBanker)
     {
         AssetStorage.AssetStorage.AUsrc.Play();
-        if (Global_Values._container.Value._blockedPlayerList.Contains(Global_Values._localUserID))
+        if (Global_Values.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Values._localUserID))
         {
             ERRORBLOCKED();
             return;
@@ -340,7 +340,7 @@ public static class Marketplace_UI
 
     private static void BUYITEMCLICK()
     {
-        if (Global_Values._container.Value._blockedPlayerList.Contains(Global_Values._localUserID))
+        if (Global_Values.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Values._localUserID))
         {
             ERRORBLOCKED();
             return;
@@ -377,14 +377,14 @@ public static class Marketplace_UI
 
     private static void SELLITEMCLICK()
     {
-        if (Global_Values._container.Value._blockedPlayerList.Contains(Global_Values._localUserID))
+        if (Global_Values.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Values._localUserID))
         {
             ERRORBLOCKED();
             return;
         }
 
-        if (Marketplace_DataTypes.ServerMarketPlaceData.Value.Count(data => data.SellerUserID == Global_Values._localUserID) >=
-            Global_Values._container.Value._itemMarketLimit)
+        if (Marketplace_DataTypes.SyncedMarketplaceData.Value.Count(data => data.SellerUserID == Global_Values._localUserID) >=
+            Global_Values.SyncedGlobalOptions.Value._itemMarketLimit)
         {
             ERRORLIMIT();
             return;
@@ -818,7 +818,7 @@ public static class Marketplace_UI
     {
         CurrentGameObjects.ForEach(Object.Destroy);
         CurrentGameObjects.Clear();
-        if (Marketplace_DataTypes.ServerMarketPlaceData.Value.Count == 0) return;
+        if (Marketplace_DataTypes.SyncedMarketplaceData.Value.Count == 0) return;
         int start = CurrentPage * MAXITEMSPERPAGE;
         Transform parent = BUYTAB.transform.Find("Content");
         for (int i = start;
@@ -907,87 +907,87 @@ public static class Marketplace_UI
     {
         ResetIncome();
         MySalesText.text =
-            $"{Localization.instance.Localize("$mpasn_mysales")} (<color=#00ff00>{Marketplace_DataTypes.ServerMarketPlaceData.Value.Count(data => data.SellerUserID == Global_Values._localUserID)}</color>)";
+            $"{Localization.instance.Localize("$mpasn_mysales")} (<color=#00ff00>{Marketplace_DataTypes.SyncedMarketplaceData.Value.Count(data => data.SellerUserID == Global_Values._localUserID)}</color>)";
         CurrentSendData = null;
         CurrentBuyData = null;
         ServerMarketSendDataSORTED.Clear();
         InventorySellDataSORTED.Clear();
         if (currentMarketMode == Marketplace_DataTypes.MarketMode.BUY)
         {
-            if (Marketplace_DataTypes.ServerMarketPlaceData.Value.Count == 0) return;
+            if (Marketplace_DataTypes.SyncedMarketplaceData.Value.Count == 0) return;
             if (currentSortType == Marketplace_DataTypes.SortType.UP)
                 ServerMarketSendDataSORTED = currentSortMode switch
                 {
-                    Marketplace_DataTypes.SortBy.None => Marketplace_DataTypes.ServerMarketPlaceData.Value.Where(
+                    Marketplace_DataTypes.SortBy.None => Marketplace_DataTypes.SyncedMarketplaceData.Value.Where(
                         data => (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                                  data.ItemCategory == currenCategory) &&
                                 Localization.instance.Localize(data.ItemName).ToLower()
                                     .Contains(SEARCHVALUE.ToLower())).ToList(),
-                    Marketplace_DataTypes.SortBy.ItemName => Marketplace_DataTypes.ServerMarketPlaceData
+                    Marketplace_DataTypes.SortBy.ItemName => Marketplace_DataTypes.SyncedMarketplaceData
                         .Value.Where(data =>
                             (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower()))
                         .OrderBy(data => Localization.instance.Localize(data.ItemName)).ToList(),
-                    Marketplace_DataTypes.SortBy.Count => Marketplace_DataTypes.ServerMarketPlaceData
+                    Marketplace_DataTypes.SortBy.Count => Marketplace_DataTypes.SyncedMarketplaceData
                         .Value.Where(data =>
                             (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower())).OrderBy(data => data.Count).ToList(),
-                    Marketplace_DataTypes.SortBy.Price => Marketplace_DataTypes.ServerMarketPlaceData
+                    Marketplace_DataTypes.SortBy.Price => Marketplace_DataTypes.SyncedMarketplaceData
                         .Value.Where(data =>
                             (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower())).OrderBy(data => data.Price).ToList(),
-                    Marketplace_DataTypes.SortBy.Seller => Marketplace_DataTypes.ServerMarketPlaceData
+                    Marketplace_DataTypes.SortBy.Seller => Marketplace_DataTypes.SyncedMarketplaceData
                         .Value.Where(data =>
                             (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower())).OrderBy(data => data.SellerName).ToList(),
-                    _ => Marketplace_DataTypes.ServerMarketPlaceData.Value
+                    _ => Marketplace_DataTypes.SyncedMarketplaceData.Value
                 };
 
             if (currentSortType == Marketplace_DataTypes.SortType.DOWN)
                 ServerMarketSendDataSORTED = currentSortMode switch
                 {
-                    Marketplace_DataTypes.SortBy.None => Marketplace_DataTypes.ServerMarketPlaceData.Value.Where(
+                    Marketplace_DataTypes.SortBy.None => Marketplace_DataTypes.SyncedMarketplaceData.Value.Where(
                         data => (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                                  data.ItemCategory == currenCategory) &&
                                 Localization.instance.Localize(data.ItemName).ToLower()
                                     .Contains(SEARCHVALUE.ToLower())).ToList(),
-                    Marketplace_DataTypes.SortBy.ItemName => Marketplace_DataTypes.ServerMarketPlaceData
+                    Marketplace_DataTypes.SortBy.ItemName => Marketplace_DataTypes.SyncedMarketplaceData
                         .Value.Where(data =>
                             (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower()))
                         .OrderByDescending(data => Localization.instance.Localize(data.ItemName)).ToList(),
-                    Marketplace_DataTypes.SortBy.Count => Marketplace_DataTypes.ServerMarketPlaceData
+                    Marketplace_DataTypes.SortBy.Count => Marketplace_DataTypes.SyncedMarketplaceData
                         .Value.Where(data =>
                             (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower())).OrderByDescending(data => data.Count)
                         .ToList(),
-                    Marketplace_DataTypes.SortBy.Price => Marketplace_DataTypes.ServerMarketPlaceData
+                    Marketplace_DataTypes.SortBy.Price => Marketplace_DataTypes.SyncedMarketplaceData
                         .Value.Where(data =>
                             (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower())).OrderByDescending(data => data.Price)
                         .ToList(),
-                    Marketplace_DataTypes.SortBy.Seller => Marketplace_DataTypes.ServerMarketPlaceData
+                    Marketplace_DataTypes.SortBy.Seller => Marketplace_DataTypes.SyncedMarketplaceData
                         .Value.Where(data =>
                             (currenCategory == Marketplace_DataTypes.ItemData_ItemCategory.ALL ||
                              data.ItemCategory == currenCategory) &&
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower())).OrderByDescending(data => data.SellerName)
                         .ToList(),
-                    _ => Marketplace_DataTypes.ServerMarketPlaceData.Value
+                    _ => Marketplace_DataTypes.SyncedMarketplaceData.Value
                 };
 
             if (MySalesOnly)
@@ -1194,9 +1194,9 @@ public static class Marketplace_UI
         UI.SetActive(true);
         DefaultBUY();
         OnSort();
-        if (!Global_Values._container.Value._blockedPlayerList.Contains(Global_Values._localUserID))
+        if (!Global_Values.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Values._localUserID))
         {
-            if (Global_Values._container.Value._vipPlayerList.Contains(Global_Values._localUserID))
+            if (Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Values._localUserID))
             {
                 UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
                     Global_Values._localUserID + "\n\t    <size=35>(VIP)</size>";
@@ -1222,9 +1222,9 @@ public static class Marketplace_UI
         }
 
         UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/MarketLimit/Text").GetComponent<Text>().text =
-            Global_Values._container.Value._vipPlayerList.Contains(Global_Values._localUserID)
-                ? $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Values._container.Value._itemMarketLimit}\n<color=#00ff00>{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Values._container.Value._vipmarketTaxes}%</color>"
-                : $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Values._container.Value._itemMarketLimit}\n{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Values._container.Value._marketTaxes}%";
+            Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Values._localUserID)
+                ? $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Values.SyncedGlobalOptions.Value._itemMarketLimit}\n<color=#00ff00>{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Values.SyncedGlobalOptions.Value._vipmarketTaxes}%</color>"
+                : $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Values.SyncedGlobalOptions.Value._itemMarketLimit}\n{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Values.SyncedGlobalOptions.Value._marketTaxes}%";
 
 
         UpdateAnnonIcon();

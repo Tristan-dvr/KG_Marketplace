@@ -18,7 +18,7 @@ public static class Transmogrification_Main_Server
     
     private static void ReadTransmogrificationProfiles()
     {
-        Transmogrification_DataTypes.TransmogData.Value.Clear();
+        Transmogrification_DataTypes.SyncedTransmogData.Value.Clear();
         IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TransmogrificationConfig);
 
         string splitProfile = "default";
@@ -29,8 +29,8 @@ public static class Transmogrification_Main_Server
             if (profiles[i].StartsWith("["))
             {
                 splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
-                if (!Transmogrification_DataTypes.TransmogData.Value.ContainsKey(splitProfile))
-                    Transmogrification_DataTypes.TransmogData.Value.Add(splitProfile,
+                if (!Transmogrification_DataTypes.SyncedTransmogData.Value.ContainsKey(splitProfile))
+                    Transmogrification_DataTypes.SyncedTransmogData.Value.Add(splitProfile,
                         new List<Transmogrification_DataTypes.TransmogItem_Data>());
             }
             else
@@ -44,7 +44,7 @@ public static class Transmogrification_Main_Server
                     int price = int.Parse(split[2]);
                     bool isSkip = bool.Parse(split[3]);
                     int vfxID = split.Length > 4 ? int.Parse(split[4]) : 0;
-                    Transmogrification_DataTypes.TransmogData.Value[splitProfile].Add(
+                    Transmogrification_DataTypes.SyncedTransmogData.Value[splitProfile].Add(
                         new Transmogrification_DataTypes.TransmogItem_Data()
                         {
                             Prefab = prefab,
@@ -61,6 +61,6 @@ public static class Transmogrification_Main_Server
             }
         }
 
-        Transmogrification_DataTypes.TransmogData.Update();
+        Transmogrification_DataTypes.SyncedTransmogData.Update();
     }
 }

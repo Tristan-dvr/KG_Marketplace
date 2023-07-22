@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 namespace Marketplace.AssetStorage;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.First, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.First)]
 public static class AssetStorage
 {
     public static AssetBundle asset;

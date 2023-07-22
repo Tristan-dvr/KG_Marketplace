@@ -22,7 +22,7 @@ public static class ServerInfo_Main_Server
     private static void ReadServerInfoProfiles()
     {
         IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.ServerInfoConfig);
-        ServerInfo_DataTypes.ServerInfoData.Value.Clear();
+        ServerInfo_DataTypes.SyncedServerInfoData.Value.Clear();
         string splitProfile = "default";
         List<ServerInfo_DataTypes.ServerInfoQueue.Info> _infoQueue = new();
         string data = "";
@@ -38,7 +38,7 @@ public static class ServerInfo_Main_Server
                         Type = ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Text,
                         Text = data.TrimEnd('\n')
                     });
-                    ServerInfo_DataTypes.ServerInfoData.Value[splitProfile] = new() { infoQueue = new(_infoQueue) };
+                    ServerInfo_DataTypes.SyncedServerInfoData.Value[splitProfile] = new() { infoQueue = new(_infoQueue) };
                 }
 
                 splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
@@ -83,10 +83,10 @@ public static class ServerInfo_Main_Server
                 Type = ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Text,
                 Text = data.TrimEnd('\n')
             });
-            ServerInfo_DataTypes.ServerInfoData.Value[splitProfile] = new() { infoQueue = new(_infoQueue) };
+            ServerInfo_DataTypes.SyncedServerInfoData.Value[splitProfile] = new() { infoQueue = new(_infoQueue) };
             _infoQueue.Clear();
         }
 
-        ServerInfo_DataTypes.ServerInfoData.Update();
+        ServerInfo_DataTypes.SyncedServerInfoData.Update();
     }
 }

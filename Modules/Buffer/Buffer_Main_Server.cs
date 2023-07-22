@@ -43,7 +43,7 @@ public static class Buffer_Main_Server
 
     private static void ReadBufferProfiles(IReadOnlyList<string> profiles)
     {
-        Buffer_DataTypes.BufferProfiles.Value.Clear();
+        Buffer_DataTypes.SyncedBufferProfiles.Value.Clear();
         string splitProfile = "default";
         for (int i = 0; i < profiles.Count; i++)
         {
@@ -54,19 +54,19 @@ public static class Buffer_Main_Server
             }
             else
             {
-                if (!Buffer_DataTypes.BufferProfiles.Value.ContainsKey(splitProfile))
+                if (!Buffer_DataTypes.SyncedBufferProfiles.Value.ContainsKey(splitProfile))
                 {
-                    Buffer_DataTypes.BufferProfiles.Value.Add(splitProfile, profiles[i].Replace(" ", ""));
+                    Buffer_DataTypes.SyncedBufferProfiles.Value.Add(splitProfile, profiles[i].Replace(" ", ""));
                 }
             }
         }
 
-        Buffer_DataTypes.BufferProfiles.Update();
+        Buffer_DataTypes.SyncedBufferProfiles.Update();
     }
 
     private static void ReadBufferDatabase(IReadOnlyList<string> profiles)
     {
-        Buffer_DataTypes.BufferBuffs.Value.Clear();
+        Buffer_DataTypes.SyncedBufferBuffs.Value.Clear();
         string dbProfile = null;
         for (int i = 0; i < profiles.Count; i++)
         {
@@ -139,11 +139,11 @@ public static class Buffer_Main_Server
                 data.Flags = _flags;
                 data.StartEffectPrefab = profiles[i + 5].Replace(" ", "");
                 data.BuffGroup = profiles[i + 6].Trim(' ');
-                Buffer_DataTypes.BufferBuffs.Value.Add(data);
+                Buffer_DataTypes.SyncedBufferBuffs.Value.Add(data);
                 dbProfile = null;
             }
         }
 
-        Buffer_DataTypes.BufferBuffs.Update();
+        Buffer_DataTypes.SyncedBufferBuffs.Update();
     }
 }

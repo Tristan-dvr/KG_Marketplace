@@ -17,7 +17,7 @@ using Object = UnityEngine.Object;
 namespace Marketplace.Modules.NPC;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Normal)]
 public static class Market_NPC
 {
     private static GameObject NPC;
@@ -227,6 +227,16 @@ public static class Market_NPC
             new Terminal.ConsoleCommand("mpos", "Get Current Position", (args) =>
             {
                 args.Context.AddString($"<color=green>Position: {Player.m_localPlayer.transform.position}</color>");
+            });
+            
+            new Terminal.ConsoleCommand("mfpslimit", "Set Fixed Update FPS", (args) =>
+            {
+                if(!Utils.IsDebug || args.Args.Length < 2) return;
+                int fps = int.Parse(args.Args[1]);
+                fps = Mathf.Clamp(fps, 50, 144);
+                float time = 1f / fps;
+                Time.fixedDeltaTime = time;
+                args.Context.AddString($"<color=green>Fixed Update FPS set to {fps}</color>");
             });
         }
     }
@@ -592,7 +602,7 @@ public static class Market_NPC
                 znv.Register("KGmarket changeprofile", new Action<long, string, string>(ChangeProfile));
                 znv.Register("KGmarket overridename", new Action<long, string>(OverrideName));
                 znv.Register("KGmarket overridemodel", new Action<long, string>(OverrideModel));
-                znv.Register("KGmarket fashion", new Action<long, string>(FashionApply));
+                znv.Register("KGmarket fashion", new Action<long, NPC_DataTypes.NPC_Fashion>(FashionApply));
                 znv.Register("KGmarket GetPatrolData", new Action<long, string>(GetPatrolData));
             }
 
@@ -759,54 +769,53 @@ public static class Market_NPC
             return false;
         }
 
-        private void FashionApply(long sender, string data)
+        private void FashionApply(long sender, NPC_DataTypes.NPC_Fashion fashion)
         {
-            string[] split = data.Split('|');
             if (znv.m_zdo.IsOwner())
             {
-                znv.m_zdo.Set("KGleftItem", split[0]);
-                znv.m_zdo.Set("KGrightItem", split[1]);
-                znv.m_zdo.Set("KGhelmetItem", split[2]);
-                znv.m_zdo.Set("KGchestItem", split[3]);
-                znv.m_zdo.Set("KGlegsItem", split[4]);
-                znv.m_zdo.Set("KGcapeItem", split[5]);
-                znv.m_zdo.Set("KGhairItem", split[6]);
-                znv.m_zdo.Set("KGhairItemColor", split[7]);
-                znv.m_zdo.Set("KGLeftItemBack", split[9]);
-                znv.m_zdo.Set("KGRightItemBack", split[10]);
-                znv.m_zdo.Set("KGinteractAnimation", split[11]);
-                znv.m_zdo.Set("KGgreetingAnimation", split[12]);
-                znv.m_zdo.Set("KGbyeAnimation", split[13]);
-                znv.m_zdo.Set("KGgreetingText", split[14]);
-                znv.m_zdo.Set("KGbyeText", split[15]);
-                znv.m_zdo.Set("KGskinColor", split[16]);
-                znv.m_zdo.Set("KGcraftingAnimation", int.TryParse(split[17], out int craftingZDO) ? craftingZDO : 0);
-                znv.m_zdo.Set("KGbeardItem", split[18]);
-                znv.m_zdo.Set("KGbeardColor", split[19]);
-                znv.m_zdo.Set("KGinteractSound", split[20]);
+                znv.m_zdo.Set("KGleftItem", fashion.LeftItem);
+                znv.m_zdo.Set("KGrightItem", fashion.RightItem);
+                znv.m_zdo.Set("KGhelmetItem", fashion.HelmetItem);
+                znv.m_zdo.Set("KGchestItem", fashion.ChestItem);
+                znv.m_zdo.Set("KGlegsItem", fashion.LegsItem);
+                znv.m_zdo.Set("KGcapeItem", fashion.CapeItem);
+                znv.m_zdo.Set("KGhairItem", fashion.HairItem);
+                znv.m_zdo.Set("KGhairItemColor", fashion.HairColor);
+                znv.m_zdo.Set("KGLeftItemBack", fashion.LeftItemHidden);
+                znv.m_zdo.Set("KGRightItemBack", fashion.RightItemHidden);
+                znv.m_zdo.Set("KGinteractAnimation", fashion.InteractAnimation);
+                znv.m_zdo.Set("KGgreetingAnimation", fashion.GreetAnimation);
+                znv.m_zdo.Set("KGbyeAnimation", fashion.ByeAnimation);
+                znv.m_zdo.Set("KGgreetingText", fashion.GreetText);
+                znv.m_zdo.Set("KGbyeText", fashion.ByeText);
+                znv.m_zdo.Set("KGskinColor", fashion.SkinColor);
+                znv.m_zdo.Set("KGcraftingAnimation", int.TryParse(fashion.CraftingAnimation, out int craftingZDO) ? craftingZDO : 0);
+                znv.m_zdo.Set("KGbeardItem", fashion.BeardItem);
+                znv.m_zdo.Set("KGbeardColor", fashion.BeardColor);
+                znv.m_zdo.Set("KGinteractSound", fashion.InteractAudioClip);
                 znv.m_zdo.Set("KGtextSize",
-                    float.TryParse(split[22], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
+                    float.TryParse(fashion.TextSize, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                         out float textSizeZDO)
                         ? textSizeZDO
                         : 3);
                 znv.m_zdo.Set("KGtextHeight",
-                    float.TryParse(split[23], NumberStyles.Any, CultureInfo.InvariantCulture,
+                    float.TryParse(fashion.TextHeight, NumberStyles.Any, CultureInfo.InvariantCulture,
                         out float textHeightZDO)
                         ? textHeightZDO
                         : 0f);
-                znv.m_zdo.Set("KGperiodicAnimation", split[24]);
+                znv.m_zdo.Set("KGperiodicAnimation", fashion.PeriodicAnimation);
                 znv.m_zdo.Set("KGperiodicAnimationTime",
-                    float.TryParse(split[25], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
+                    float.TryParse(fashion.PeriodicAnimationTime, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                         out float periodicAnimationTimeZDO)
                         ? periodicAnimationTimeZDO
                         : 0f);
-                znv.m_zdo.Set("KGperiodicSound", split[26]);
+                znv.m_zdo.Set("KGperiodicSound", fashion.PeriodicSound);
                 znv.m_zdo.Set("KGperiodicSoundTime",
-                    float.TryParse(split[27], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
+                    float.TryParse(fashion.PeriodicSoundTime, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                         out float periodicSoundTimeZDO)
                         ? periodicSoundTimeZDO
                         : 0f);
-                if (!float.TryParse(split[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
+                if (!float.TryParse(fashion.ModelScale, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                         out float scaleFloat)) scaleFloat = 1f;
 
                 znv.m_zdo.Set("KGnpcScale", scaleFloat);
@@ -818,7 +827,7 @@ public static class Market_NPC
             if (TryOverrideModel(ref prefab, out bool isFemale, false))
             {
                 pastOverrideModel.GetComponent<Animator>()?.SetBool(Wakeup, false);
-                if (int.TryParse(split[17], out int CRAFTING))
+                if (int.TryParse(fashion.CraftingAnimation, out int CRAFTING))
                 {
                     pastOverrideModel.GetComponent<Animator>()?.SetInteger(Crafting, CRAFTING);
                 }
@@ -837,11 +846,11 @@ public static class Market_NPC
                         global::Utils.FindChild(pastOverrideModel.transform, visuals.m_backShield?.name);
                     Transform rightBack =
                         global::Utils.FindChild(pastOverrideModel.transform, visuals.m_backMelee?.name);
-                    string leftItem = split[0];
-                    string rightItem = split[1];
-                    string helmetItem = split[2];
-                    string leftBackItem = split[9];
-                    string rightBackItem = split[10];
+                    string leftItem = fashion.LeftItem;
+                    string rightItem = fashion.RightItem;
+                    string helmetItem = fashion.HelmetItem;
+                    string leftBackItem = fashion.LeftItemHidden;
+                    string rightBackItem = fashion.RightItemHidden;
                     EquipItemsOnModel(leftArm, leftItem, skin);
                     EquipItemsOnModel(rightgArm, rightItem, skin);
                     if (ZNetScene.instance.GetPrefab(leftBackItem))
@@ -879,15 +888,15 @@ public static class Market_NPC
                             pastOverrideModel.transform.Find("Armature/Hips/Spine/Spine1/ClothCollider (3)")
                                 .GetComponent<CapsuleCollider>()
                         };
-                        string chestItem = split[3];
-                        string legsItem = split[4];
-                        string capeItem = split[5];
+                        string chestItem = fashion.ChestItem;
+                        string legsItem = fashion.LegsItem;
+                        string capeItem = fashion.CapeItem;
                         EquipItemsOnModel(skin, capeItem, capsule);
                         EquipItemsOnModel(skin, chestItem, capsule);
                         EquipItemsOnModel(skin, legsItem, capsule);
-                        string hairItem = "Hair" + split[6];
+                        string hairItem = "Hair" + fashion.HairItem;
                         GameObject hair = EquipItemsOnModel(helmetJoint, hairItem, skin);
-                        ColorUtility.TryParseHtmlString(split[7], out Color c);
+                        ColorUtility.TryParseHtmlString(fashion.HairColor, out Color c);
                         if (hair)
                         {
                             Renderer[] componentsInChildren = hair.GetComponentsInChildren<Renderer>();
@@ -895,9 +904,9 @@ public static class Market_NPC
                                 render.material.SetColor(SkinColor, c);
                         }
 
-                        string beardItem = "Beard" + split[18];
+                        string beardItem = "Beard" + fashion.BeardItem;
                         GameObject beard = EquipItemsOnModel(helmetJoint, beardItem, skin);
-                        ColorUtility.TryParseHtmlString(split[19], out Color beardColor);
+                        ColorUtility.TryParseHtmlString(fashion.BeardColor, out Color beardColor);
                         if (beard)
                         {
                             Renderer[] componentsInChildren = beard.GetComponentsInChildren<Renderer>();
@@ -915,7 +924,7 @@ public static class Market_NPC
                                 visuals.m_models[1].m_baseMaterial.GetTexture(SkinBumpMap));
                         }
 
-                        ColorUtility.TryParseHtmlString(split[16], out Color skinColor);
+                        ColorUtility.TryParseHtmlString(fashion.SkinColor, out Color skinColor);
                         skin.materials[0].SetColor(SkinColor, skinColor);
                     }
                 }
@@ -923,15 +932,15 @@ public static class Market_NPC
 
             if (pastOverrideModel)
             {
-                if (!float.TryParse(split[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
+                if (!float.TryParse(fashion.ModelScale, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                         out float val)) val = 1f;
                 if (val < 0.1f) val = 0.1f;
                 pastOverrideModel.transform.localScale *= val;
             }
 
-            float.TryParse(split[22], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
+            float.TryParse(fashion.TextSize, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                 out float textSize);
-            float.TryParse(split[23], NumberStyles.Any, CultureInfo.InvariantCulture,
+            float.TryParse(fashion.TextHeight, NumberStyles.Any, CultureInfo.InvariantCulture,
                 out float textAdditionalHeight);
             canvas.gameObject.transform.localScale = new Vector3(textSize, textSize, textSize);
             canvas.transform.localPosition = new Vector3(0, 3.4f, 0);
@@ -1439,38 +1448,7 @@ public static class Market_NPC
     }
 
 
-    private class NpcData
-    {
-        public string PrefabOverride;
-        public string LeftItem;
-        public string RightItem;
-        public string HelmetItem;
-        public string ChestItem;
-        public string LegsItem;
-        public string CapeItem;
-        public string HairItem;
-        public string HairItemColor;
-        public string ModelScale;
-        public string LeftItemHidden;
-        public string RightItemHidden;
-        public string NPCinteractAnimation;
-        public string NPCgreetAnimation;
-        public string NPCbyeAnimation;
-        public string NPCgreetText;
-        public string NPCbyeText;
-        public string SkinColor;
-        public string NPCcraftingAnimation;
-        public string BeardItem;
-        public string BeardItemColor;
-        public string InteractAudioClip;
-        public string TextSize;
-        public string TextHeight;
-        public string PeriodicAnimation;
-        public string PeriodicAnimationTime;
-        public string PeriodicSound = "";
-        public string PeriodicSoundTime = "0";
-        public string IMAGE;
-    }
+   
 
     private static class NPCLoader_UI
     {
@@ -1507,14 +1485,14 @@ public static class Market_NPC
             string folderPath = Path.Combine(BepInEx.Paths.ConfigPath, "SavedNPCs");
             if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
             string[] files = Directory.GetFiles(folderPath, "*.json");
-            Dictionary<string, NpcData> dictionary = new();
+            Dictionary<string, NPC_DataTypes.NpcData> dictionary = new();
             foreach (string file in files)
             {
                 try
                 {
                     string fileName = Path.GetFileNameWithoutExtension(file);
                     string json = File.ReadAllText(file);
-                    NpcData data = JSON.ToObject<NpcData>(json);
+                    NPC_DataTypes.NpcData data = JSON.ToObject<NPC_DataTypes.NpcData>(json);
                     dictionary[fileName] = data;
                 }
                 catch
@@ -1526,7 +1504,7 @@ public static class Market_NPC
             foreach (GameObject element in Elements)
                 Object.Destroy(element);
             Elements.Clear();
-            foreach (KeyValuePair<string, NpcData> pair in dictionary)
+            foreach (KeyValuePair<string, NPC_DataTypes.NpcData> pair in dictionary)
             {
                 GameObject element = Object.Instantiate(Element_GO, Content);
                 element.transform.Find("Text").GetComponent<Text>().text = pair.Key;
@@ -1537,7 +1515,7 @@ public static class Market_NPC
             }
         }
 
-        private static void LoadProfile(NpcData data)
+        private static void LoadProfile(NPC_DataTypes.NpcData data)
         {
             AssetStorage.AssetStorage.AUsrc.Play();
             if (_currentNPC == null || _currentNPC.znv == null || !_currentNPC.znv.IsValid())
@@ -1578,7 +1556,7 @@ public static class Market_NPC
             string fileName = NPCName + ".json";
             string filePath = Path.Combine(folderPath, fileName);
             if (!File.Exists(filePath)) File.Create(filePath).Close();
-            NpcData newData = new()
+            NPC_DataTypes.NpcData newData = new()
             {
                 PrefabOverride = npc.znv.m_zdo.GetString("KGnpcModelOverride"),
                 LeftItem = npc.znv.m_zdo.GetString("KGleftItem"),
@@ -1633,7 +1611,7 @@ public static class Market_NPC
             Input.text = "";
             string filePath = Path.Combine(folderPath, fileName);
             if (!File.Exists(filePath)) File.Create(filePath).Close();
-            NpcData newData = new()
+            NPC_DataTypes.NpcData newData = new()
             {
                 PrefabOverride = _currentNPC.znv.m_zdo.GetString("KGnpcModelOverride"),
                 LeftItem = _currentNPC.znv.m_zdo.GetString("KGleftItem"),
@@ -1830,14 +1808,37 @@ public static class Market_NPC
                 Hide();
                 return;
             }
-
-            string combine =
-                $"{LeftItemFashion.text}|{RightItemFashion.text}|{HelmetItemFashion.text}|{ChestItemFashion.text}|{LegsItemFashion.text}|{CapeItemFashion.text}|" +
-                $"{HairItemFashion.text}|{HairItemFashionColor.text}|{ModelScaleFashion.text}|{LeftItemHiddenFashion.text}|{RightItemHiddenFashion.text}|" +
-                $"{NPCinteractAnimation.text}|{NPCgreetAnimation.text}|{NPCbyeAnimation.text}|{NPCgreetText.text}|{NPCbyeText.text}|{SkinColorFashion.text}|{NPCcraftingAnimation.text}|" +
-                $"{BeardItemFashion.text}|{BeardItemFashionColor.text}|{InteractAudioClip.text}|FONT|{TextSize.text}|{TextHeight.text}|{PeriodicAnimation.text}|{PeriodicAnimationTime.text}|" +
-                $"{PeriodicSound.text}|{PeriodicSoundTime.text}";
-            _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket fashion", combine);
+            NPC_DataTypes.NPC_Fashion fashion = new()
+            {
+                LeftItem = LeftItemFashion.text,
+                RightItem = RightItemFashion.text,
+                HelmetItem = HelmetItemFashion.text,
+                ChestItem = ChestItemFashion.text,
+                LegsItem = LegsItemFashion.text,
+                CapeItem = CapeItemFashion.text,
+                HairItem = HairItemFashion.text,
+                HairColor = HairItemFashionColor.text,
+                ModelScale = ModelScaleFashion.text,
+                LeftItemHidden = LeftItemHiddenFashion.text,
+                RightItemHidden = RightItemHiddenFashion.text,
+                InteractAnimation = NPCinteractAnimation.text,
+                GreetAnimation = NPCgreetAnimation.text,
+                ByeAnimation = NPCbyeAnimation.text,
+                GreetText = NPCgreetText.text,
+                ByeText = NPCbyeText.text,
+                SkinColor = SkinColorFashion.text,
+                CraftingAnimation = NPCcraftingAnimation.text,
+                BeardItem = BeardItemFashion.text,
+                BeardColor = BeardItemFashionColor.text,
+                InteractAudioClip = InteractAudioClip.text,
+                TextSize = TextSize.text,
+                TextHeight = TextHeight.text,
+                PeriodicAnimation = PeriodicAnimation.text,
+                PeriodicAnimationTime = PeriodicAnimationTime.text,
+                PeriodicSound = PeriodicSound.text,
+                PeriodicSoundTime = PeriodicSoundTime.text
+            };
+            _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket fashion", fashion);
             Hide();
         }
 

@@ -113,7 +113,7 @@ public class Localizer
 			if (localizationFiles.ContainsKey(key))
 			{
 				// Handle duplicate key
-				UnityEngine.Debug.LogWarning($"Duplicate key {key} found for {plugin.Info.Metadata.Name}. The duplicate file found at {file} will be skipped.");
+				Debug.LogWarning($"Duplicate key {key} found for {plugin.Info.Metadata.Name}. The duplicate file found at {file} will be skipped.");
 			}
 			else
 			{
@@ -126,7 +126,7 @@ public class Localizer
 			throw new Exception($"Found no English localizations in mod {plugin.Info.Metadata.Name}. Expected an embedded resource translations/English.json or translations/English.yml.");
 		}
 
-		Dictionary<string, string>? localizationTexts = new DeserializerBuilder().IgnoreFields().Build().Deserialize<Dictionary<string, string>?>(System.Text.Encoding.UTF8.GetString(englishAssemblyData));
+		Dictionary<string, string>? localizationTexts = new DeserializerBuilder().IgnoreFields().Build().Deserialize<Dictionary<string, string>?>(Encoding.UTF8.GetString(englishAssemblyData));
 		if (localizationTexts is null)
 		{
 			throw new Exception($"Localization for mod {plugin.Info.Metadata.Name} failed: Localization file was empty.");
@@ -141,7 +141,7 @@ public class Localizer
 			}
 			else if (LoadTranslationFromAssembly(language) is { } languageAssemblyData)
 			{
-				localizationData = System.Text.Encoding.UTF8.GetString(languageAssemblyData);
+				localizationData = Encoding.UTF8.GetString(languageAssemblyData);
 			}
 		}
 		if (localizationData is null && localizationFiles.ContainsKey("English"))

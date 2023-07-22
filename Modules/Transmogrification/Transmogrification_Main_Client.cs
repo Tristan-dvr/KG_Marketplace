@@ -3,7 +3,7 @@
 namespace Marketplace.Modules.Transmogrification;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Transmogrification_Main_Client
 {
     private static GameObject Transmog_UI_Icon_Part;
@@ -18,7 +18,7 @@ public static class Transmogrification_Main_Client
         {
             MEL_Effects.Add(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("TransmogME" + (i + 1)));
         }
-        Transmogrification_DataTypes.TransmogData.ValueChanged += InitTransmogData;
+        Transmogrification_DataTypes.SyncedTransmogData.ValueChanged += InitTransmogData;
         Marketplace.Global_Updator += Update;
     }
     
@@ -41,7 +41,7 @@ public static class Transmogrification_Main_Client
         if(!ZNetScene.instance) return;
         FilteredTransmogData.Clear();
         foreach (KeyValuePair<string, List<Transmogrification_DataTypes.TransmogItem_Data>> profile in
-                 Transmogrification_DataTypes.TransmogData.Value)
+                 Transmogrification_DataTypes.SyncedTransmogData.Value)
         {
             if (!FilteredTransmogData.ContainsKey(profile.Key)) FilteredTransmogData.Add(profile.Key, new Dictionary<ItemDrop.ItemData.ItemType, List<Transmogrification_DataTypes.TransmogItem_Data>>());
             foreach (Transmogrification_DataTypes.TransmogItem_Data data in profile.Value)

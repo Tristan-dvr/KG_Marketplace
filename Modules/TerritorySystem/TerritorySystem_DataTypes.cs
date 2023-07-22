@@ -2,7 +2,7 @@
 
 public static class TerritorySystem_DataTypes
 {
-    internal static readonly CustomSyncedValue<List<Territory>> TerritoriesData =
+    internal static readonly CustomSyncedValue<List<Territory>> SyncedTerritoriesData =
         new(Marketplace.configSync, "territoryData", new List<Territory>());
 
     public static readonly TerritoryFlags[] AllTerritoryFlagsArray =
@@ -93,7 +93,7 @@ public static class TerritorySystem_DataTypes
     //main part
     public partial class Territory
     {
-        public static Territory LastTerritory;
+        [NonSerialized] public static Territory LastTerritory;
         public TerritoryType Type;
         public TerritoryFlags Flags;
         public AdditionalTerritoryFlags AdditionalFlags;
@@ -126,7 +126,7 @@ public static class TerritorySystem_DataTypes
 
         public static Territory GetCurrentTerritory(Vector3 pos)
         {
-            foreach (Territory territory in TerritoriesData.Value)
+            foreach (Territory territory in SyncedTerritoriesData.Value)
             {
                 if (territory.IsInside(pos))
                 {

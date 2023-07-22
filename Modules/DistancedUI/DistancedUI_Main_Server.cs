@@ -52,7 +52,7 @@ public static class DistanceUI_Main_Server
 
     private static void ReadPremiumSystemData()
     {
-        DistancedUI_DataType.CurrentPremiumSystemData.Value = new DistancedUI_DataType.PremiumSystemData
+        DistancedUI_DataType.SyncedPremiumSystemData.Value = new DistancedUI_DataType.PremiumSystemData
         {
             isAllowed = false,
             MarketplaceEnabled = CanUseMarketplace_PremiumSystem.Value,

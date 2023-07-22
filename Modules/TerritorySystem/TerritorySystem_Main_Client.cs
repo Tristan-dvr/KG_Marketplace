@@ -4,7 +4,7 @@ using Marketplace.Modules.Teleporter;
 namespace Marketplace.Modules.TerritorySystem;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class TerritorySystem_Main_Client
 {
     public static TerritorySystem_DataTypes.Territory CurrentTerritory;
@@ -36,7 +36,7 @@ public static class TerritorySystem_Main_Client
             TerritoriesByFlags_Additional[flag] = new List<TerritorySystem_DataTypes.Territory>();
         }
 
-        TerritorySystem_DataTypes.TerritoriesData.ValueChanged += OnTerritoryUpdate;
+        TerritorySystem_DataTypes.SyncedTerritoriesData.ValueChanged += OnTerritoryUpdate;
         Marketplace.Global_FixedUpdator += TerritoryFixedUpdate;
         Marketplace.Global_FixedUpdator += HeightmapRebuild;
     }
@@ -143,14 +143,14 @@ public static class TerritorySystem_Main_Client
             territoriesByFlag.Value.Clear();
         }
 
-        if (TerritorySystem_DataTypes.TerritoriesData.Value.Count == 0)
+        if (TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Count == 0)
         {
             API.ClientSide.FillingTerritoryData = false;
             DoMapMagic();
             return;
         }
 
-        foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.TerritoriesData.Value)
+        foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.SyncedTerritoriesData.Value)
         {
             foreach (TerritorySystem_DataTypes.TerritoryFlags flag in TerritorySystem_DataTypes.AllTerritoryFlagsArray)
             {
@@ -179,7 +179,7 @@ public static class TerritorySystem_Main_Client
         API.ClientSide.FillingTerritoryData = false;
         DoMapMagic();
         ZoneVisualizer.OnMapChange();
-        if (Global_Values._container.Value._rebuildHeightmap &&
+        if (Global_Values.SyncedGlobalOptions.Value._rebuildHeightmap &&
             (TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.AddGroundHeight].Count > 0 ||
              TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.ForceGroundHeight].Count > 0 ||
              TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.LimitZoneHeight].Count > 0))
@@ -187,7 +187,7 @@ public static class TerritorySystem_Main_Client
     }
 
     private static int rebuildIndex = -1;
-    private static float rebuildUptime = 0f;
+    private static float rebuildUptime;
     private static void HeightmapRebuild()
     {
         if (rebuildIndex == -1) return;
@@ -246,7 +246,7 @@ public static class TerritorySystem_Main_Client
                     ? Input.mousePosition
                     : new Vector3(Screen.width / 2, Screen.height / 2));
                 bool found = false;
-                foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.TerritoriesData
+                foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.SyncedTerritoriesData
                              .Value)
                 {
                     if (territory.IsInside2D(new Vector2(vector.x, vector.z)))
@@ -338,8 +338,8 @@ public static class TerritorySystem_Main_Client
 
     private static async void DoMapMagic()
     {
-        if (originalMapColors == null || TerritorySystem_DataTypes.TerritoriesData.Value == null ||
-            TerritorySystem_DataTypes.TerritoriesData.Value.Count == 0) return;
+        if (originalMapColors == null || TerritorySystem_DataTypes.SyncedTerritoriesData.Value == null ||
+            TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Count == 0) return;
         MapMagicCounter++;
         int currentCounter = MapMagicCounter;
         try
@@ -360,7 +360,7 @@ public static class TerritorySystem_Main_Client
                     int segmentSize = Mathf.RoundToInt(textureSize / (float)segments);
                     int segmentStart = segment * segmentSize;
                     int segmentEnd = segmentStart + segmentSize;
-                    foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.TerritoriesData
+                    foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.SyncedTerritoriesData
                                  .Value.Where(t => t.DrawOnMap).OrderBy(t => t.Priority))
                     {
                         Color32 MainColor = territory.GetColor();

@@ -2,7 +2,7 @@
 
 public static class Marketplace_DataTypes
 {
-    internal static readonly CustomSyncedValue<List<ServerMarketSendData>> ServerMarketPlaceData =
+    internal static readonly CustomSyncedValue<List<ServerMarketSendData>> SyncedMarketplaceData =
         new(Marketplace.configSync, "marketplaceData", new List<ServerMarketSendData>());
     
     public class ServerMarketSendData : ISerializableParameter
@@ -42,7 +42,7 @@ public static class Marketplace_DataTypes
             TimeStamp = (uint)ZNet.instance.m_netTime;
             DurabilityPercent = other.DurabilityPercent;
             UID = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-            while (Marketplace_DataTypes.ServerMarketPlaceData.Value.Find(x => x.UID == UID) != null)
+            while (SyncedMarketplaceData.Value.Find(x => x.UID == UID) != null)
                 UID = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         }
 

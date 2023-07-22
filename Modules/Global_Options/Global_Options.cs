@@ -9,7 +9,7 @@ namespace Marketplace;
 public static class Global_Values
 {
     public static string CurrencyName =>
-        ObjectDB.instance?.GetItemPrefab(_container.Value._serverCurrency.GetStableHashCode()) is { } item
+        ObjectDB.instance?.GetItemPrefab(SyncedGlobalOptions.Value._serverCurrency.GetStableHashCode()) is { } item
             ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name
             : "$item_coins";
 
@@ -39,7 +39,7 @@ public static class Global_Values
         }
     }
 
-    internal static readonly CustomSyncedValue<Container> _container = new(Marketplace.configSync, "Global_Values",
+    internal static readonly CustomSyncedValue<Container> SyncedGlobalOptions = new(Marketplace.configSync, "Global_Values",
         new Container());
 
     public class Container : ISerializableParameter
@@ -157,37 +157,37 @@ public static class Global_Values
         WebHookLink = SearchOption("FeedbackWebhookLink", "webhook link", "Feedback Webhook Link");
         BankerInterestItems = SearchOption("BankerInterestItems", "All", "Banker Interest Items").Replace(" ","");
 
-        _container.Value._itemMarketLimit =
+        SyncedGlobalOptions.Value._itemMarketLimit =
             SearchOption("ItemMarketLimit", 15, "Limit amount of slots player can sell in marketpalce");
-        _container.Value._blockedPlayerList = SearchOption("BlockedPlayers", "User IDs", "Marketplace Blocked Players");
-        _container.Value._vipPlayerList = SearchOption("VIPplayersList", "User IDs", "Marketplace VIP Players List ");
-        _container.Value._marketTaxes = SearchOption("MarketTaxes", 0, "Market Taxes From Each Sell");
-        _container.Value._vipmarketTaxes = SearchOption("VIPplayersTaxes", 0, "VIP Player Market Taxes");
-        _container.Value._marketTaxes = Mathf.Clamp(_container.Value._marketTaxes, 0, 100);
-        _container.Value._vipmarketTaxes = Mathf.Clamp(_container.Value._vipmarketTaxes, 0, 100);
-        _container.Value._canTeleportWithOre =
+        SyncedGlobalOptions.Value._blockedPlayerList = SearchOption("BlockedPlayers", "User IDs", "Marketplace Blocked Players");
+        SyncedGlobalOptions.Value._vipPlayerList = SearchOption("VIPplayersList", "User IDs", "Marketplace VIP Players List ");
+        SyncedGlobalOptions.Value._marketTaxes = SearchOption("MarketTaxes", 0, "Market Taxes From Each Sell");
+        SyncedGlobalOptions.Value._vipmarketTaxes = SearchOption("VIPplayersTaxes", 0, "VIP Player Market Taxes");
+        SyncedGlobalOptions.Value._marketTaxes = Mathf.Clamp(SyncedGlobalOptions.Value._marketTaxes, 0, 100);
+        SyncedGlobalOptions.Value._vipmarketTaxes = Mathf.Clamp(SyncedGlobalOptions.Value._vipmarketTaxes, 0, 100);
+        SyncedGlobalOptions.Value._canTeleportWithOre =
             SearchOption("CanTeleportWithOre", true, "Enable/Disable players teleporter with ore");
-        _container.Value._blockedPrefabsServer = SearchOption("MarketSellBlockedPrefabs", "Coins, SwordCheat",
+        SyncedGlobalOptions.Value._blockedPrefabsServer = SearchOption("MarketSellBlockedPrefabs", "Coins, SwordCheat",
             "Marketplace Blocked Prefabs For Selling");
-        _container.Value._serverCurrency =
+        SyncedGlobalOptions.Value._serverCurrency =
             SearchOption("ServerCurrency", "Coins", "Prefab Of Server Currency (marketplace)");
-        _container.Value._gamblerEnableNotifications =
+        SyncedGlobalOptions.Value._gamblerEnableNotifications =
             SearchOption("GamblerEnableWinNotifications", false, "Enable Gambler Win Notification");
-        _container.Value._allowMultipleQuestScore = SearchOption("AllowMultipleQuestsScore", false,
+        SyncedGlobalOptions.Value._allowMultipleQuestScore = SearchOption("AllowMultipleQuestsScore", false,
             "Enable Kill / Harvest Craft Same Target Quests Get + Score In Same Time");
-        _container.Value._maxAcceptedQuests = SearchOption("MaxAcceptedQuests", 7, "Max Amount Of Accpeted Quests");
-        _container.Value._hideOtherQuestRequirementQuests = SearchOption("HideOtherQuestRequirementQuests", false,
+        SyncedGlobalOptions.Value._maxAcceptedQuests = SearchOption("MaxAcceptedQuests", 7, "Max Amount Of Accpeted Quests");
+        SyncedGlobalOptions.Value._hideOtherQuestRequirementQuests = SearchOption("HideOtherQuestRequirementQuests", false,
             "Hide Quest in UI if they have OtherQuest as requirement");
-        _container.Value._allowKillQuestsInParty =
+        SyncedGlobalOptions.Value._allowKillQuestsInParty =
             SearchOption("AllowKillQuestsInParty", true, "Allow Kill Quests In Party");
-        _container.Value._enableKGChat = SearchOption("EnableKGChat", true, "Enable KGChat");
-        _container.Value._mailPostRecipe = SearchOption("MailPostRecipe", "SwordCheat,1", "Recipe for Mailpost creation");
-        _container.Value._mailPostWaitTime = SearchOption("MailPostWaitTime", 5, "Mailpost wait time (minutes)");
-        _container.Value._mailPostExcludeItems = SearchOption("MailPostExcludeItems", "Items Here", "Mailpost exclude items (with coma)");
-        _container.Value._pieceSaverRecipe = SearchOption("PieceSaverRecipe", "SwordCheat,1", "Recipe for Piece Saver Crystal creation");
-        _container.Value._useLeaderboard = SearchOption("UseLeaderboard", false, "Use Leaderboard");
-        _container.Value._rebuildHeightmap = SearchOption("RebuildHeightmap", false, "Rebuild Heightmap On Territory Change");
-        _container.Update();
+        SyncedGlobalOptions.Value._enableKGChat = SearchOption("EnableKGChat", true, "Enable KGChat");
+        SyncedGlobalOptions.Value._mailPostRecipe = SearchOption("MailPostRecipe", "SwordCheat,1", "Recipe for Mailpost creation");
+        SyncedGlobalOptions.Value._mailPostWaitTime = SearchOption("MailPostWaitTime", 5, "Mailpost wait time (minutes)");
+        SyncedGlobalOptions.Value._mailPostExcludeItems = SearchOption("MailPostExcludeItems", "Items Here", "Mailpost exclude items (with coma)");
+        SyncedGlobalOptions.Value._pieceSaverRecipe = SearchOption("PieceSaverRecipe", "SwordCheat,1", "Recipe for Piece Saver Crystal creation");
+        SyncedGlobalOptions.Value._useLeaderboard = SearchOption("UseLeaderboard", false, "Use Leaderboard");
+        SyncedGlobalOptions.Value._rebuildHeightmap = SearchOption("RebuildHeightmap", false, "Rebuild Heightmap On Territory Change");
+        SyncedGlobalOptions.Update();
     }
 
 
@@ -198,7 +198,7 @@ public static class Global_Values
         private static void Postfix()
         {
             if (!ZNet.instance.IsServer()) return;
-            ItemDrop currencyItem = ZNetScene.instance.GetPrefab(_container.Value._serverCurrency)
+            ItemDrop currencyItem = ZNetScene.instance.GetPrefab(SyncedGlobalOptions.Value._serverCurrency)
                 ?.GetComponent<ItemDrop>();
             if (currencyItem)
             {
@@ -208,10 +208,10 @@ public static class Global_Values
             {
                 Utils.print("Can't accept new currency so changing that to Default: Coins, $item_coins",
                     ConsoleColor.Red);
-                _container.Value._serverCurrency = "Coins";
+                SyncedGlobalOptions.Value._serverCurrency = "Coins";
             }
 
-            _container.Update();
+            SyncedGlobalOptions.Update();
         }
     }
 }

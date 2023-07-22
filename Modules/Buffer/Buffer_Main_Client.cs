@@ -1,17 +1,15 @@
-﻿using Object = UnityEngine.Object;
-
-namespace Marketplace.Modules.Buffer;
+﻿namespace Marketplace.Modules.Buffer;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Buffer_Main_Client
 {
     private static void OnInit()
     {
         Buffer_UI.Init();
         Marketplace.Global_Updator += Update;
-        Buffer_DataTypes.BufferProfiles.ValueChanged += OnBufferUpdate;
-        Buffer_DataTypes.BufferBuffs.ValueChanged += OnBufferUpdate;
+        Buffer_DataTypes.SyncedBufferProfiles.ValueChanged += OnBufferUpdate;
+        Buffer_DataTypes.SyncedBufferBuffs.ValueChanged += OnBufferUpdate;
     }
     
     private static void Update()
@@ -39,16 +37,16 @@ public static class Buffer_Main_Client
         
         try
         {
-            foreach (var buff in Buffer_DataTypes.BufferBuffs.Value)
+            foreach (var buff in Buffer_DataTypes.SyncedBufferBuffs.Value)
                 buff.Init();
 
-            foreach (KeyValuePair<string, string> kvp in Buffer_DataTypes.BufferProfiles.Value)
+            foreach (KeyValuePair<string, string> kvp in Buffer_DataTypes.SyncedBufferProfiles.Value)
             {
                 Buffer_DataTypes.ClientSideBufferProfiles.Add(kvp.Key, new List<Buffer_DataTypes.BufferBuffData>());
                 foreach (string split in kvp.Value.Split(','))
                 {
                     if (string.IsNullOrEmpty(split)) continue;
-                    if (Buffer_DataTypes.BufferBuffs.Value.Find(d => d.UniqueName == split) is { IsValid: true } find)
+                    if (Buffer_DataTypes.SyncedBufferBuffs.Value.Find(d => d.UniqueName == split) is { IsValid: true } find)
                         Buffer_DataTypes.ClientSideBufferProfiles[kvp.Key].Add(find);
                 }
             }

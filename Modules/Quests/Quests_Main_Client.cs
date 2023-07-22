@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 namespace Marketplace.Modules.Quests;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Quests_Main_Client
 {
     private static ConfigEntry<KeyCode> QuestJournalOpenKey;

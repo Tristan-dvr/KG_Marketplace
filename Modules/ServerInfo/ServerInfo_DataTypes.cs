@@ -2,7 +2,7 @@
 
 public static class ServerInfo_DataTypes
 {
-    internal static readonly CustomSyncedValue<Dictionary<string, ServerInfoQueue>> ServerInfoData =
+    internal static readonly CustomSyncedValue<Dictionary<string, ServerInfoQueue>> SyncedServerInfoData =
         new(Marketplace.configSync, "infoData", new Dictionary<string, ServerInfoQueue>());
 
 

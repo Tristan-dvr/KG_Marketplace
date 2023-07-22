@@ -4,7 +4,7 @@ using Marketplace.Modules.Quests;
 namespace Marketplace.Modules.NPC;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Last, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Both)]
 [SuppressMessage("ReSharper", "IteratorNeverReturns")]
 public static class Market_NPC_MapPins
 {
@@ -13,8 +13,7 @@ public static class Market_NPC_MapPins
     private static readonly List<Minimap.PinData> TempNPCpins = new();
     public const Minimap.PinType PINTYPENPC = (Minimap.PinType)175;
     private static Sprite QuestCompleteIcon;
-
-    // ReSharper disable once UnusedMember.Global
+    
     private static void OnInit()
     {
         Marketplace._thistype.StartCoroutine(SendNPCsToClients());

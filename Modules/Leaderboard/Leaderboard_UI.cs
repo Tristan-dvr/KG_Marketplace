@@ -32,7 +32,7 @@ public static class Leaderboard_UI
 
     private static int CurrentPage = 1;
     private const int MaxPerPage = 10;
-    private static GameObject CurrentSelectedElement = null;
+    private static GameObject CurrentSelectedElement;
     private static List<Leaderboard_DataTypes.Client_Leaderboard> SortedList = new();
 
     public static void Init()
@@ -74,13 +74,13 @@ public static class Leaderboard_UI
         Main.SetActive(false);
         Achievements.SetActive(false);
         SetSortBy(SortBy.TotalAchievements);
-        Global_Values._container.ValueChanged += OnChange;
+        Global_Values.SyncedGlobalOptions.ValueChanged += OnChange;
         Localization.instance.Localize(UI.transform);
     }
 
     private static void OnChange()
     {
-        if (Global_Values._container.Value._useLeaderboard)
+        if (Global_Values.SyncedGlobalOptions.Value._useLeaderboard)
         {
             ShowTF();
         }
@@ -252,7 +252,7 @@ public static class Leaderboard_UI
 
     public static void Show()
     {
-        if (!Global_Values._container.Value._useLeaderboard) return;
+        if (!Global_Values.SyncedGlobalOptions.Value._useLeaderboard) return;
         Default();
         Main.SetActive(true);
         CreateElements();

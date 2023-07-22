@@ -1,7 +1,7 @@
 ﻿namespace Marketplace.Paths;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Init, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Init)]
 public static class Market_Paths
 {
     public static string MainPath => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceKG");

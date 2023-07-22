@@ -1,7 +1,7 @@
 ﻿namespace Marketplace.Modules.Gambler;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Gambler_Main_Client
 {
     private static void OnInit()

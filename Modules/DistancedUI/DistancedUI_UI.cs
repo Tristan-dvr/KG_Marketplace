@@ -127,7 +127,7 @@ public static class DistancedUI_UI
 
         private static void ClickOpen(NPCtype_Internal type)
         {
-            if (!DistancedUI_DataType.CurrentPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
+            if (!DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
             HideViewProfiles();
             if (type is not NPCtype_Internal.Marketplace)
             {
@@ -141,7 +141,7 @@ public static class DistancedUI_UI
             Profiles_Text.text = Localization.instance.Localize(Texts[type]);
             if (type is NPCtype_Internal.Marketplace)
             {
-                if (DistancedUI_DataType.CurrentPremiumSystemData.Value.MarketplaceEnabled)
+                if (DistancedUI_DataType.SyncedPremiumSystemData.Value.MarketplaceEnabled)
                 {
                     if (Marketplace_UI.IsPanelVisible())
                     {
@@ -159,26 +159,26 @@ public static class DistancedUI_UI
 
             List<string> premiumSource = type switch
             {
-                NPCtype_Internal.Trader => DistancedUI_DataType.CurrentPremiumSystemData.Value.TraderProfiles,
-                NPCtype_Internal.Banker => DistancedUI_DataType.CurrentPremiumSystemData.Value.BankerProfiles,
-                NPCtype_Internal.Teleporter => DistancedUI_DataType.CurrentPremiumSystemData.Value.TeleporterProfiles,
-                NPCtype_Internal.Gambler => DistancedUI_DataType.CurrentPremiumSystemData.Value.GamblerProfiles,
-                NPCtype_Internal.Buffer => DistancedUI_DataType.CurrentPremiumSystemData.Value.BufferProfiles,
-                NPCtype_Internal.Quests => DistancedUI_DataType.CurrentPremiumSystemData.Value.QuestProfiles,
-                NPCtype_Internal.Info => DistancedUI_DataType.CurrentPremiumSystemData.Value.InfoProfiles,
-                NPCtype_Internal.Transmogrification => DistancedUI_DataType.CurrentPremiumSystemData.Value.TransmogrificationProfiles,
+                NPCtype_Internal.Trader => DistancedUI_DataType.SyncedPremiumSystemData.Value.TraderProfiles,
+                NPCtype_Internal.Banker => DistancedUI_DataType.SyncedPremiumSystemData.Value.BankerProfiles,
+                NPCtype_Internal.Teleporter => DistancedUI_DataType.SyncedPremiumSystemData.Value.TeleporterProfiles,
+                NPCtype_Internal.Gambler => DistancedUI_DataType.SyncedPremiumSystemData.Value.GamblerProfiles,
+                NPCtype_Internal.Buffer => DistancedUI_DataType.SyncedPremiumSystemData.Value.BufferProfiles,
+                NPCtype_Internal.Quests => DistancedUI_DataType.SyncedPremiumSystemData.Value.QuestProfiles,
+                NPCtype_Internal.Info => DistancedUI_DataType.SyncedPremiumSystemData.Value.InfoProfiles,
+                NPCtype_Internal.Transmogrification => DistancedUI_DataType.SyncedPremiumSystemData.Value.TransmogrificationProfiles,
                 _ => new()
             };
             List<string> source = type switch
             {
                 NPCtype_Internal.Trader => Trader_DataTypes.ClientSideItemList.Keys.ToList(),
                 NPCtype_Internal.Banker => Banker_DataTypes.SyncedBankerProfiles.Value.Keys.ToList(),
-                NPCtype_Internal.Teleporter => Teleporter_DataTypes.TeleporterDataServer.Value.Keys.ToList(),
+                NPCtype_Internal.Teleporter => Teleporter_DataTypes.SyncedTeleporterData.Value.Keys.ToList(),
                 NPCtype_Internal.Gambler => Gambler_DataTypes.SyncedGamblerData.Value.Keys.ToList(), 
                 NPCtype_Internal.Buffer => Buffer_DataTypes.ClientSideBufferProfiles.Keys.ToList(),
                 NPCtype_Internal.Quests => Quests_DataTypes.SyncedQuestProfiles.Value.Keys.ToList(),
-                NPCtype_Internal.Info => ServerInfo_DataTypes.ServerInfoData.Value.Keys.ToList(),
-                NPCtype_Internal.Transmogrification => Transmogrification_DataTypes.TransmogData.Value.Keys.ToList(),
+                NPCtype_Internal.Info => ServerInfo_DataTypes.SyncedServerInfoData.Value.Keys.ToList(),
+                NPCtype_Internal.Transmogrification => Transmogrification_DataTypes.SyncedTransmogData.Value.Keys.ToList(),
                 _ => new()
             };
 
@@ -209,7 +209,7 @@ public static class DistancedUI_UI
 
         private static void ClickElement(string profile, NPCtype_Internal type, string _NPCname)
         {
-            if (!DistancedUI_DataType.CurrentPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
+            if (!DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
             Menu.instance.OnClose();
             AssetStorage.AssetStorage.AUsrc.Play();
             HideViewProfiles();
@@ -264,7 +264,7 @@ public static class DistancedUI_UI
         public static void ClickView()
         {
             ResetColors();
-            if (!DistancedUI_DataType.CurrentPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
+            if (!DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
             Menu.instance.OnClose();
             AssetStorage.AssetStorage.AUsrc.Play();
             View_Profiles.SetActive(false);

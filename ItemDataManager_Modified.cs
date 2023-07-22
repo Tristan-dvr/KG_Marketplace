@@ -10,7 +10,7 @@ public abstract class ItemData
 {
     public string CustomDataKey { get; private set; } = null!;
 
-    protected virtual bool AllowStackingIdenticalValues { get; set; } = false;
+    protected virtual bool AllowStackingIdenticalValues { get; set; }
 
     public string Value
     {
@@ -101,7 +101,7 @@ public class ItemInfo : IEnumerable<ItemData>
     public ItemDrop.ItemData ItemData { get; private set; }
 
     private Dictionary<string, ItemData> data = new();
-    private WeakReference<ItemInfo>? selfReference = null;
+    private WeakReference<ItemInfo>? selfReference;
 
     internal HashSet<string> isCloned = new();
 

@@ -376,7 +376,7 @@ public static class Quests_UIs
                     bool canTake = Quests_DataTypes.Quest.CanTake(profileID, out _,
                         out Quests_DataTypes.QuestRequirementType type);
 
-                    if (!canTake && Global_Values._container.Value._hideOtherQuestRequirementQuests &&
+                    if (!canTake && Global_Values.SyncedGlobalOptions.Value._hideOtherQuestRequirementQuests &&
                         type is Quests_DataTypes.QuestRequirementType.OtherQuest) continue;
 
                     if (!canTake && type is Quests_DataTypes.QuestRequirementType.IsVIP) continue;

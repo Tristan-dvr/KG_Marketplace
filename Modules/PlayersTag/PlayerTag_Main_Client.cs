@@ -1,7 +1,7 @@
 ﻿namespace Marketplace.Modules.PlayersTag;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client)]
 public static class PlayerTag_Main_Client
 {
     private static void OnInit()

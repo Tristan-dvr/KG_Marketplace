@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 namespace Marketplace.Modules.KG_Chat;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client)]
 public static class KG_Chat
 {
     private static GameObject original_KG_Chat;
@@ -29,7 +29,7 @@ public static class KG_Chat
             ChatController.Transparency.Two, "KG Chat Transparency");
         original_KG_Chat = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_KGChat");
 
-        Global_Values._container.ValueChanged += ApplyKGChat;
+        Global_Values.SyncedGlobalOptions.ValueChanged += ApplyKGChat;
 
         string spritesheetPath_Original =
             Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet_original.png");
@@ -202,7 +202,7 @@ public static class KG_Chat
 
     private static void ApplyKGChat()
     {
-        if (!Global_Values._container.Value._enableKGChat || kgChat || !Chat.instance) return;
+        if (!Global_Values.SyncedGlobalOptions.Value._enableKGChat || kgChat || !Chat.instance) return;
         Utils.print($"Switching to KG Chat", ConsoleColor.Cyan);
         ZRoutedRpc.instance.m_functions.Remove("ChatMessage".GetStableHashCode());
         ZRoutedRpc.instance.m_functions.Remove("RPC_TeleportPlayer".GetStableHashCode());

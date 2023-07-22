@@ -3,20 +3,20 @@
 namespace Marketplace.Modules.ServerInfo;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class ServerInfo_Main_Client
 {
     private static void OnInit()
     {
         ServerInfo_UI.Init();
-        ServerInfo_DataTypes.ServerInfoData.ValueChanged += OnInfoUpdate;
+        ServerInfo_DataTypes.SyncedServerInfoData.ValueChanged += OnInfoUpdate;
         Marketplace.Global_Updator += Update;
         GameEvents.OnPlayerFirstSpawn += OnPlayerFirstSpawn;
     }
 
     private static void OnPlayerFirstSpawn()
     {
-        if (ServerInfo_DataTypes.ServerInfoData.Value.ContainsKey("onplayerfirstspawn"))
+        if (ServerInfo_DataTypes.SyncedServerInfoData.Value.ContainsKey("onplayerfirstspawn"))
             ServerInfo_UI.Show("onplayerfirstspawn", "");
     }
 
@@ -34,7 +34,7 @@ public static class ServerInfo_Main_Client
         if (LoadImagesRoutine != null)
             Marketplace._thistype.StopCoroutine(LoadImagesRoutine);
         LoadImagesRoutine = Marketplace._thistype.StartCoroutine(LoadQuestImages(
-            ServerInfo_DataTypes.ServerInfoData.Value.Values.SelectMany(x => x.infoQueue)
+            ServerInfo_DataTypes.SyncedServerInfoData.Value.Values.SelectMany(x => x.infoQueue)
                 .Where(x => x.Type == ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Image)));
 
         if (ServerInfo_UI.IsPanelVisible()) ServerInfo_UI.Reload();

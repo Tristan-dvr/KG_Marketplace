@@ -20,6 +20,7 @@ namespace Marketplace
         public static Action Global_Updator;
         public static Action Global_FixedUpdator;  
         public static Action Global_OnGUI_Updator;
+        public static Action Global_Start;
         public static Type TempJewelcraftingType;
         public static Type TempProfessionsType;
 
@@ -89,7 +90,7 @@ namespace Marketplace
                     }
                 }
 
-                MethodInfo method = autoload.Value.GetMethod(autoload.Key.InitMethod ?? "None",
+                MethodInfo method = autoload.Value.GetMethod(autoload.Key.InitMethod ?? "OnInit",
                     BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public);
                 if (method == null)
                 {
@@ -124,6 +125,7 @@ namespace Marketplace
         private void Update() => Global_Updator?.Invoke();
         private void OnGUI() => Global_OnGUI_Updator?.Invoke();
         private void FixedUpdate() => Global_FixedUpdator?.Invoke();
+        private void Start() => Global_Start?.Invoke();
 
         private static void InitFSW(string folderPath)
         {

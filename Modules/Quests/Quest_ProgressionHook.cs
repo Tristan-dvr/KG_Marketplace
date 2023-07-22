@@ -136,7 +136,7 @@ public static class Quest_ProgressionHook
         {
             if (!Player.m_localPlayer) return;
             GameEvents.OnCreatureKilled?.Invoke(prefab, level);
-            if (Global_Values._container.Value._allowKillQuestsInParty && ownerRPC && Groups.API.IsLoaded() &&
+            if (Global_Values.SyncedGlobalOptions.Value._allowKillQuestsInParty && ownerRPC && Groups.API.IsLoaded() &&
                 Groups.API.GroupPlayers() is { Count: > 1 } group)
                 foreach (PlayerReference member in group)
                     if (member.peerId != ZDOMan.instance.m_sessionID)

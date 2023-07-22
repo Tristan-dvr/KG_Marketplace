@@ -507,7 +507,7 @@ public static class Dialogues_DataTypes
                                 result += (out string reason) =>
                                 {
                                     reason = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
-                                    return Global_Values._container.Value._vipPlayerList.Contains(Global_Values
+                                    return Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Values
                                         ._localUserID);
                                 };
                                 break;
@@ -515,7 +515,7 @@ public static class Dialogues_DataTypes
                                 result += (out string reason) =>
                                 {
                                     reason = $"{Localization.instance.Localize("$mpasn_notforvip")}";
-                                    return !Global_Values._container.Value._vipPlayerList.Contains(Global_Values
+                                    return !Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Values
                                         ._localUserID);
                                 };
                                 break;

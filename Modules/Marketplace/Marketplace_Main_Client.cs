@@ -3,7 +3,7 @@
 namespace Marketplace.Modules.Marketplace_NPC;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Marketplace_Main_Client
 {
     public static int IncomeValue;
@@ -14,8 +14,8 @@ public static class Marketplace_Main_Client
         Marketplace_UI.Init();
         Marketplace.Global_Updator += Update;
         Marketplace.Global_OnGUI_Updator += Marketplace_Messages.OnGUI;
-        Marketplace_DataTypes.ServerMarketPlaceData.ValueChanged += OnMarketplaceUpdate;
-        Global_Values._container.ValueChanged += () => Marketplace_Main_Client.OnUpdateCurrency();
+        Marketplace_DataTypes.SyncedMarketplaceData.ValueChanged += OnMarketplaceUpdate;
+        Global_Values.SyncedGlobalOptions.ValueChanged += () => OnUpdateCurrency();
     }
 
     private static void OnMarketplaceUpdate()

@@ -20,7 +20,7 @@ public static class Trader_UI
     private static InputField SearchInput;
     private static Modifier CurrentModifier;
     private static readonly Transform[] ModifierButtons = new Transform[Enum.GetValues(typeof(Modifier)).Length];
-    private static bool ToBank = false;
+    private static bool ToBank;
 
 
     public static bool IsPanelVisible()

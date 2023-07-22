@@ -73,7 +73,7 @@ public static class Banker_Main_Server
                 HashSet<int> interestItems = new(Global_Values.BankerInterestItems.Split(',').Select(i => i.GetStableHashCode()));
                 foreach (string id in BankerServerSideData.Keys)
                 {
-                    float multiplier = Global_Values._container.Value._vipPlayerList.Contains(id)
+                    float multiplier = Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(id)
                         ? Global_Values.BankerVIPIncomeMultiplier
                         : Global_Values.BankerIncomeMultiplier;
                     if (multiplier > 0)

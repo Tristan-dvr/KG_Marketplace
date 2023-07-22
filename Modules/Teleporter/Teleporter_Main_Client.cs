@@ -1,7 +1,7 @@
 ﻿namespace Marketplace.Modules.Teleporter;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal, "OnInit")]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Teleporter_Main_Client
 {
     private static readonly List<Minimap.PinData> CurrentTeleporterObjects = new();
@@ -12,13 +12,13 @@ public static class Teleporter_Main_Client
 
     private static void OnInit()
     {
-        Teleporter_DataTypes.TeleporterSprites.ValueChanged += OnTeleporterUpdate;
+        Teleporter_DataTypes.SyncedTeleporterSprites.ValueChanged += OnTeleporterUpdate;
     }
 
 
     private static void OnTeleporterUpdate()
     {
-        foreach (KeyValuePair<string, Teleporter_DataTypes.TransferBytes> raw in Teleporter_DataTypes.TeleporterSprites.Value)
+        foreach (KeyValuePair<string, Teleporter_DataTypes.TransferBytes> raw in Teleporter_DataTypes.SyncedTeleporterSprites.Value)
         {
             if (AssetStorage.AssetStorage.GlobalCachedSprites.ContainsKey(raw.Key)) continue;
             Texture2D tex = new Texture2D(1, 1);
@@ -34,8 +34,8 @@ public static class Teleporter_Main_Client
         foreach (Minimap.PinData obj in CurrentTeleporterObjects) Minimap.instance.RemovePin(obj);
         CurrentTeleporterObjects.Clear();
         SpeedValues.Clear();
-        if (!Teleporter_DataTypes.TeleporterDataServer.Value.ContainsKey(profile)) return;
-        List<Teleporter_DataTypes.TeleporterData> current = Teleporter_DataTypes.TeleporterDataServer.Value[profile];
+        if (!Teleporter_DataTypes.SyncedTeleporterData.Value.ContainsKey(profile)) return;
+        List<Teleporter_DataTypes.TeleporterData> current = Teleporter_DataTypes.SyncedTeleporterData.Value[profile];
         Minimap.instance.SetMapMode(Minimap.MapMode.Large);
         foreach (Teleporter_DataTypes.TeleporterData data in current)
         {
@@ -81,7 +81,7 @@ public static class Teleporter_Main_Client
             Minimap.PinData closestPin = Utils.GetCustomPin(PINTYPE, pos, __instance.m_removeRadius * (__instance.m_largeZoom * 2f));
             if (closestPin != null)
             {
-                if (!Global_Values._container.Value._canTeleportWithOre && !Player.m_localPlayer.IsTeleportable())
+                if (!Global_Values.SyncedGlobalOptions.Value._canTeleportWithOre && !Player.m_localPlayer.IsTeleportable())
                 {
                     MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
                         $"<color=red>{Localization.instance.Localize("$mpasn_teleportwithore")}</color>");

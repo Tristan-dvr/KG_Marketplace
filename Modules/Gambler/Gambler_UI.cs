@@ -326,7 +326,7 @@ public static class Gambler_UI
                     pkg);
             }
 
-            if (Global_Values._container.Value._gamblerEnableNotifications)
+            if (Global_Values.SyncedGlobalOptions.Value._gamblerEnableNotifications)
             {
                 string sendText =
                     $"{Player.m_localPlayer.GetPlayerName()} just won {Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name)} x{count}";

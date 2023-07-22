@@ -28,7 +28,7 @@ public static class ServerInfo_UI
     public static void Reload()
     {
         if (!IsPanelVisible()) return;
-        if (!ServerInfo_DataTypes.ServerInfoData.Value.ContainsKey(CurrentProfile))
+        if (!ServerInfo_DataTypes.SyncedServerInfoData.Value.ContainsKey(CurrentProfile))
         {
             Hide();
             return;
@@ -41,7 +41,7 @@ public static class ServerInfo_UI
         for (int i = 2; i < Content.childCount; i++)
             UnityEngine.Object.Destroy(Content.GetChild(i).gameObject);
 
-        foreach (ServerInfo_DataTypes.ServerInfoQueue.Info q in ServerInfo_DataTypes.ServerInfoData.Value[CurrentProfile].infoQueue)
+        foreach (ServerInfo_DataTypes.ServerInfoQueue.Info q in ServerInfo_DataTypes.SyncedServerInfoData.Value[CurrentProfile].infoQueue)
         {
             if (q.Type == ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Text)
             {
@@ -77,7 +77,7 @@ public static class ServerInfo_UI
 
     public static void Show(string profile, string _npcName)
     {
-        if (!ServerInfo_DataTypes.ServerInfoData.Value.ContainsKey(profile)) return;
+        if (!ServerInfo_DataTypes.SyncedServerInfoData.Value.ContainsKey(profile)) return;
         CurrentProfile = profile;
         UI.SetActive(true);
         _npcName = Utils.RichTextFormatting(_npcName);
