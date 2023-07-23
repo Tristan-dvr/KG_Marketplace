@@ -13,7 +13,7 @@ public class Dialogues_Main_Server
         ReadDialoguesData();
     }
 
-    private enum DataType
+    private enum InputType
     {
         Text,
         Transition,
@@ -42,10 +42,11 @@ public class Dialogues_Main_Server
                         dialogue = null;
                     }
 
-                    string splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
+                    string[] splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").Split('=');
                     dialogue = new Dialogues_DataTypes.RawDialogue
                     {
-                        UID = splitProfile.Replace(@"\n", "\n")
+                        UID = splitProfile[0].ToLower(),
+                        BG_ImageLink = splitProfile.Length > 1 ? splitProfile[1] : null
                     };
                     options = new List<Dialogues_DataTypes.RawDialogue.RawPlayerOption>();
                 }
@@ -67,28 +68,28 @@ public class Dialogues_Main_Server
                         {
                             string[] enumCheck = s.Split(new[] { ':' }, 2);
                             if (enumCheck.Length != 2) continue;
-                            if (!Enum.TryParse(enumCheck[0], true, out DataType type)) continue;
+                            if (!Enum.TryParse(enumCheck[0], true, out InputType type)) continue;
                             switch (type)
                             {
-                                case DataType.Text:
+                                case InputType.Text:
                                     option.Text = enumCheck[1].Trim().Replace(@"\n", "\n");
                                     break;
-                                case DataType.Transition:
+                                case InputType.Transition:
                                     option.NextUID = enumCheck[1].Replace(" ", "").ToLower();
                                     break;
-                                case DataType.Command:
+                                case InputType.Command:
                                     commands.Add(enumCheck[1].Replace(" ", ""));
                                     break;
-                                case DataType.Icon:
+                                case InputType.Icon:
                                     option.Icon = enumCheck[1].Replace(" ", "");
                                     break;
-                                case DataType.Condition:
+                                case InputType.Condition:
                                     conditions.Add(enumCheck[1].Replace(" ", ""));
                                     break;
-                                case DataType.AlwaysVisible:
+                                case InputType.AlwaysVisible:
                                     option.AlwaysVisible = bool.Parse(enumCheck[1].Replace(" ", ""));
                                     break;
-                                case DataType.Color:
+                                case InputType.Color:
                                     string[] colorSplit = enumCheck[1].Split(',');
                                     if (colorSplit.Length != 3) continue;
                                     option.Color = new Color32(byte.Parse(colorSplit[0]), byte.Parse(colorSplit[1]),

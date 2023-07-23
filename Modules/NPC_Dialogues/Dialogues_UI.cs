@@ -9,6 +9,7 @@ public static class Dialogues_UI
     private static readonly List<GameObject> Elements = new();
     private static Text NPC_Name;
     private static Text Dialogue_Text;
+    private static Image BG_Image;
     private static Transform Content;
 
 
@@ -41,6 +42,7 @@ public static class Dialogues_UI
         NPC_Name = UI.transform.Find("GO/NPC_Name").GetComponent<Text>();
         Dialogue_Text = UI.transform.Find("GO/Dialogue_Text").GetComponent<Text>();
         Content = UI.transform.Find("GO");
+        BG_Image = UI.transform.Find("GO/BACKGROUND").GetComponent<Image>();
         Default();
         Marketplace.Global_Updator += PressHotbarUpdate;
     }
@@ -130,6 +132,15 @@ public static class Dialogues_UI
 
         NPC_Name.text = name;
         Dialogue_Text.text = "\"" + Localization.instance.Localize(dialogue.Text) + "\"";
+        if (dialogue.BG_Image != null)
+        {
+            BG_Image.sprite = dialogue.BG_Image;
+            BG_Image.gameObject.SetActive(true);
+        }
+        else
+        {
+            BG_Image.gameObject.SetActive(false);
+        }
         int c = 0;
         foreach (Dialogues_DataTypes.Dialogue.PlayerOption option in dialogue.Options)
         {

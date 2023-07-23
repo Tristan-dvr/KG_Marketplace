@@ -7,6 +7,7 @@ using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.TerritorySystem;
 using Marketplace.Modules.Trader;
+using UnityEngine.Networking;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace Marketplace;
@@ -420,6 +421,35 @@ public static class Utils
         {
             Skills.Skill SkillDef = Player.m_localPlayer.m_skills.GetSkill(skill);
             return SkillDef.m_info.m_icon;
+        }
+    }
+    
+    public static void LoadImageFromWEB(string url, Action<Sprite> callback)
+    {
+        if (string.IsNullOrWhiteSpace(url) || !Uri.TryCreate(url, UriKind.Absolute, out _)) return;
+        if (!AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(url, out var sprite))
+        {
+            Marketplace._thistype.StartCoroutine(InternalCoroutine_LoadImage(url, callback));
+        }
+        else
+        {
+            callback?.Invoke(sprite);
+        }
+    }
+
+    private static IEnumerator InternalCoroutine_LoadImage(string url, Action<Sprite> callback)
+    {
+        using UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
+        yield return request.SendWebRequest();
+        if (request.result is UnityWebRequest.Result.Success)
+        {
+            Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+            if (texture == null || texture.width == 0 || texture.height == 0) yield break;
+            Texture2D newTempTexture = new Texture2D(texture.width, texture.height);
+            newTempTexture.SetPixels(texture.GetPixels());
+            newTempTexture.Apply();
+            AssetStorage.AssetStorage.GlobalCachedSprites[url] = Sprite.Create(newTempTexture, new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
+            callback?.Invoke(AssetStorage.AssetStorage.GlobalCachedSprites[url]);
         }
     }
 

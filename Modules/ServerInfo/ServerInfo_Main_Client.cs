@@ -27,38 +27,13 @@ public static class ServerInfo_Main_Client
         Menu.instance.OnClose();
     }
 
-    private static Coroutine LoadImagesRoutine;
-
     private static void OnInfoUpdate()
     {
-        if (LoadImagesRoutine != null)
-            Marketplace._thistype.StopCoroutine(LoadImagesRoutine);
-        LoadImagesRoutine = Marketplace._thistype.StartCoroutine(LoadQuestImages(
-            ServerInfo_DataTypes.SyncedServerInfoData.Value.Values.SelectMany(x => x.infoQueue)
-                .Where(x => x.Type == ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Image)));
-
-        if (ServerInfo_UI.IsPanelVisible()) ServerInfo_UI.Reload();
-    }
-
-    private static IEnumerator LoadQuestImages(IEnumerable<ServerInfo_DataTypes.ServerInfoQueue.Info> urls)
-    {
-        yield return new WaitForSeconds(3f);
-        foreach (ServerInfo_DataTypes.ServerInfoQueue.Info url in urls)
+        foreach (var url in  ServerInfo_DataTypes.SyncedServerInfoData.Value.Values.SelectMany(x => x.infoQueue).Where(x => x.Type == ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Image))
         {
-            if (string.IsNullOrEmpty(url.Text)) continue;
-            UnityWebRequest request = UnityWebRequestTexture.GetTexture(url.Text);
-            yield return request.SendWebRequest();
-            if (request.result is UnityWebRequest.Result.Success)
-            {
-                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                if (texture == null || texture.width == 0 || texture.height == 0) continue;
-                Texture2D newTempTexture = new Texture2D(texture.width, texture.height);
-                newTempTexture.SetPixels(texture.GetPixels());
-                newTempTexture.Apply();
-                Sprite sprite = Sprite.Create(newTempTexture,
-                    new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
-                url.SetSprite(sprite);
-            }
+            Utils.LoadImageFromWEB(url.Text, (sprite) => url.SetSprite(sprite));
         }
+        
+        if (ServerInfo_UI.IsPanelVisible()) ServerInfo_UI.Reload();
     }
 }

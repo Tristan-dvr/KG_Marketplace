@@ -1,7 +1,9 @@
-﻿using Marketplace_APIs;
+﻿using System.Security.Policy;
+using Marketplace_APIs;
 using Marketplace.Modules.Leaderboard;
 using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
+using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 
 namespace Marketplace.Modules.NPC_Dialogues;
@@ -74,6 +76,7 @@ public static class Dialogues_DataTypes
     {
         public string UID;
         public string Text;
+        public string BG_ImageLink;
         public RawPlayerOption[] Options = Array.Empty<RawPlayerOption>();
 
         public class RawPlayerOption
@@ -91,6 +94,7 @@ public static class Dialogues_DataTypes
         {
             pkg.Write(UID ?? "default");
             pkg.Write(Text ?? "");
+            pkg.Write(BG_ImageLink ?? "");
             pkg.Write(Options.Length);
             foreach (RawPlayerOption option in Options)
             {
@@ -118,6 +122,7 @@ public static class Dialogues_DataTypes
         {
             UID = pkg.ReadString();
             Text = pkg.ReadString();
+            BG_ImageLink = pkg.ReadString();
             int optionsLength = pkg.ReadInt();
             Options = new RawPlayerOption[optionsLength];
             for (int i = 0; i < optionsLength; i++)
@@ -151,6 +156,7 @@ public static class Dialogues_DataTypes
     public class Dialogue
     {
         public string Text;
+        public Sprite BG_Image;
         public PlayerOption[] Options = Array.Empty<PlayerOption>();
 
         public class PlayerOption
@@ -176,7 +182,7 @@ public static class Dialogues_DataTypes
             }
         }
 
-        private static Action<Market_NPC.NPCcomponent> TryParseCommand(IEnumerable<string> commands)
+        private static Action<Market_NPC.NPCcomponent> TryParseCommands(IEnumerable<string> commands)
         {
             Action<Market_NPC.NPCcomponent> result = null;
             foreach (string command in commands)
@@ -189,10 +195,7 @@ public static class Dialogues_DataTypes
                         switch (optionCommand)
                         {
                             case OptionCommand.PlayAnimation:
-                                result += (npc) =>
-                                {
-                                    npc.zanim.SetTrigger(split[1]);
-                                };
+                                result += (npc) => { npc.zanim.SetTrigger(split[1]); };
                                 break;
                             case OptionCommand.OpenUI:
                                 result += (npc) => npc.OpenUIForType(
@@ -318,7 +321,11 @@ public static class Dialogues_DataTypes
                                 result += (_) =>
                                 {
                                     Player.m_localPlayer.GetSEMan()
+                                        .RemoveStatusEffect(split[1].GetStableHashCode(), true);
+                                    var se = Player.m_localPlayer.GetSEMan()
                                         .AddStatusEffect(split[1].GetStableHashCode(), true);
+                                    if (se && split.Length > 2)
+                                        se.m_ttl = Mathf.Min(1, float.Parse(split[2]));
                                 };
                                 break;
                             case OptionCommand.FinishQuest:
@@ -382,7 +389,7 @@ public static class Dialogues_DataTypes
         }
 
 
-        private static Dialogue_Condition TryParseCondition(IEnumerable<string> conditions)
+        private static Dialogue_Condition TryParseConditions(IEnumerable<string> conditions)
         {
             Dialogue_Condition result = null;
             foreach (string condition in conditions)
@@ -405,33 +412,41 @@ public static class Dialogues_DataTypes
                             case OptionCondition.HasAchievement:
                                 result += (out string reason) =>
                                 {
-                                    reason = $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";
                                     return LeaderBoard_Main_Client.HasAchievement(split[1]);
                                 };
                                 break;
                             case OptionCondition.NotHasAchievement:
                                 result += (out string reason) =>
                                 {
-                                    reason = $"{Localization.instance.Localize("$mpasn_dontneedtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_dontneedtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";
                                     return !LeaderBoard_Main_Client.HasAchievement(split[1]);
                                 };
                                 break;
                             case OptionCondition.HasAchievementScore:
                                 result += (out string reason) =>
                                 {
-                                    reason = $"{Localization.instance.Localize("$mpasn_needtitlescore")}: <color=#00ff00>{split[1]}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needtitlescore")}: <color=#00ff00>{split[1]}</color>";
                                     return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
-                                        Global_Values._localUserID + "_" + Game.instance.m_playerProfile.m_playerName,
-                                        out var LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) >= int.Parse(split[1]);
+                                            Global_Values._localUserID + "_" +
+                                            Game.instance.m_playerProfile.m_playerName,
+                                            out var LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) >=
+                                        int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.NotHasAchievementScore:
                                 result += (out string reason) =>
                                 {
-                                    reason = $"{Localization.instance.Localize("$mpasn_dontneedtitlescore")}: <color=#00ff00>{split[1]}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_dontneedtitlescore")}: <color=#00ff00>{split[1]}</color>";
                                     return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
-                                        Global_Values._localUserID + "_" + Game.instance.m_playerProfile.m_playerName,
-                                        out var LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) < int.Parse(split[1]);
+                                            Global_Values._localUserID + "_" +
+                                            Game.instance.m_playerProfile.m_playerName,
+                                            out var LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) <
+                                        int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.SkillMore:
@@ -515,8 +530,9 @@ public static class Dialogues_DataTypes
                                 result += (out string reason) =>
                                 {
                                     reason = $"{Localization.instance.Localize("$mpasn_notforvip")}";
-                                    return !Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Values
-                                        ._localUserID);
+                                    return !Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(
+                                        Global_Values
+                                            ._localUserID);
                                 };
                                 break;
                             case OptionCondition.GlobalKey:
@@ -618,28 +634,32 @@ public static class Dialogues_DataTypes
                             case OptionCondition.EpicMMOLevelMore:
                                 result += (out string reason) =>
                                 {
-                                    reason = $"{Localization.instance.Localize("$mpasn_needepicmmolevel")}: <color=#00ff00>{split[1]}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needepicmmolevel")}: <color=#00ff00>{split[1]}</color>";
                                     return EpicMMOSystem_API.GetLevel() >= int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.EpicMMOLevelLess:
                                 result += (out string reason) =>
                                 {
-                                    reason = $"{Localization.instance.Localize("$mpasn_toomuchepicmmolevel")}: <color=#00ff00>{split[1]}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_toomuchepicmmolevel")}: <color=#00ff00>{split[1]}</color>";
                                     return EpicMMOSystem_API.GetLevel() < int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.CozyheimLevelMore:
                                 result += (out string reason) =>
                                 {
-                                    reason = $"{Localization.instance.Localize("$mpasn_needcozyheimlevel")}: <color=#00ff00>{split[1]}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needcozyheimlevel")}: <color=#00ff00>{split[1]}</color>";
                                     return Cozyheim_LevelingSystem.GetLevel() >= int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.CozyheimLevelLess:
                                 result += (out string reason) =>
                                 {
-                                    reason = $"{Localization.instance.Localize("$mpasn_toomuchcozyheimlevel")}: <color=#00ff00>{split[1]}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_toomuchcozyheimlevel")}: <color=#00ff00>{split[1]}</color>";
                                     return Cozyheim_LevelingSystem.GetLevel() < int.Parse(split[1]);
                                 };
                                 break;
@@ -662,6 +682,7 @@ public static class Dialogues_DataTypes
                 Text = raw.Text,
                 Options = new PlayerOption[raw.Options.Length]
             };
+            Utils.LoadImageFromWEB(raw.BG_ImageLink, (sprite) => dialogue.BG_Image = sprite);
             for (int i = 0; i < raw.Options.Length; ++i)
             {
                 dialogue.Options[i] = new PlayerOption
@@ -669,8 +690,8 @@ public static class Dialogues_DataTypes
                     Text = raw.Options[i].Text,
                     Icon = Utils.TryFindIcon(raw.Options[i].Icon),
                     NextUID = raw.Options[i].NextUID,
-                    Command = TryParseCommand(raw.Options[i].Commands),
-                    Condition = TryParseCondition(raw.Options[i].Conditions),
+                    Command = TryParseCommands(raw.Options[i].Commands),
+                    Condition = TryParseConditions(raw.Options[i].Conditions),
                     AlwaysVisible = raw.Options[i].AlwaysVisible,
                     Color = raw.Options[i].Color
                 };

@@ -9,7 +9,6 @@ public static class Quests_Main_Client
 {
     private static ConfigEntry<KeyCode> QuestJournalOpenKey;
     private static int LatestRevision;
-    private static Coroutine LoadImagesRoutine;
 
     private static void OnInit()
     {
@@ -154,30 +153,10 @@ public static class Quests_Main_Client
                 }
             }
 
-            if (LoadImagesRoutine != null)
-                Marketplace._thistype.StopCoroutine(LoadImagesRoutine);
-            LoadImagesRoutine = Marketplace._thistype.StartCoroutine(LoadQuestImages());
-        }
-
-        private static IEnumerator LoadQuestImages()
-        {
-            yield return new WaitForSeconds(3f);
             foreach (KeyValuePair<Quests_DataTypes.Quest, string> url in Quests_DataTypes.AllQuests.Select(x =>
                          new KeyValuePair<Quests_DataTypes.Quest, string>(x.Value, x.Value.PreviewImage)))
             {
-                if (string.IsNullOrEmpty(url.Value)) continue;
-                UnityWebRequest request = UnityWebRequestTexture.GetTexture(url.Value);
-                yield return request.SendWebRequest();
-                if (request.result is UnityWebRequest.Result.Success)
-                {
-                    Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                    if (texture == null || texture.width == 0 || texture.height == 0) continue;
-                    Texture2D newTempTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
-                    newTempTexture.SetPixels(texture.GetPixels());
-                    newTempTexture.Apply();
-                    Sprite sprite = Sprite.Create(newTempTexture, new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
-                    url.Key.SetPreviewSprite(sprite);
-                }
+                Utils.LoadImageFromWEB(url.Value, (sprite) => url.Key.SetPreviewSprite(sprite));
             }
         }
 
