@@ -119,7 +119,7 @@ public static class Leaderboard_Server_Main
                 MapExplored = leaderboard.Value.MapExplored,
                 Achievements = new()
             };
-            foreach (var achievement in Leaderboard_DataTypes.AllAchievements)
+            foreach (Leaderboard_DataTypes.Achievement achievement in Leaderboard_DataTypes.AllAchievements)
             {
                 if (achievement.Check(leaderboard.Key)) newLeaderboard.Achievements.Add(achievement.ID);
             }
@@ -197,7 +197,7 @@ public static class Leaderboard_Server_Main
         Leaderboard_DataTypes.AllAchievements =
             Leaderboard_DataTypes.AllAchievements.OrderByDescending(x => x.Score).ToList();
         Leaderboard_DataTypes.SyncedClientAchievements.Value.Clear();
-        foreach (var achievement in Leaderboard_DataTypes.AllAchievements)
+        foreach (Leaderboard_DataTypes.Achievement achievement in Leaderboard_DataTypes.AllAchievements)
         {
             Leaderboard_DataTypes.SyncedClientAchievements.Value.Add(new()
             {

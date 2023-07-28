@@ -13,7 +13,7 @@ public static class PlayerTag_Main_Client
     {
         if (!Game.instance || !Player.m_localPlayer) return;
         Player.m_localPlayer.m_nview.m_zdo.Set("Marketplace_PlayerTag",
-            PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Values._localUserID, out var tag)
+            PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Values._localUserID, out string tag)
                 ? tag
                 : "");
     }
@@ -38,7 +38,7 @@ public static class PlayerTag_Main_Client
         static void Postfix()
         {
             Player.m_localPlayer.m_nview.m_zdo.Set("Marketplace_PlayerTag",
-                PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Values._localUserID, out var tag)
+                PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Values._localUserID, out string tag)
                     ? tag
                     : "");
         }

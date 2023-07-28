@@ -48,7 +48,7 @@ public static class StatsPanel
             try
             {
                 Type toGeneric = typeof(CustomSyncedValue<>).MakeGenericType(field.FieldType.GetGenericArguments()[0]);
-                var obj = field.GetValue(null);
+                object obj = field.GetValue(null);
                 if (reflection != null)
                 {
                     Cache = JSON.ToNiceJSON(AccessTools.PropertyGetter(toGeneric, reflection).Invoke(obj, null), PARAMS);
@@ -83,7 +83,7 @@ public static class StatsPanel
         StatsDict.Add("Dictionary / List", new ());
         foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
         {
-            foreach (var field in AccessTools.GetDeclaredFields(type))
+            foreach (FieldInfo field in AccessTools.GetDeclaredFields(type))
             {
                 try
                 {
@@ -109,7 +109,7 @@ public static class StatsPanel
             }
         }
 
-        foreach (var dict in StatsDict)
+        foreach (KeyValuePair<string, Stats> dict in StatsDict)
         {
             dict.Value._statsList = dict.Value._statsList.OrderBy(x => x.FName()).ToList();
         }
@@ -157,7 +157,7 @@ public static class StatsPanel
     {
         SV = GUILayout.BeginScrollView(SV);
         GUILayout.BeginVertical();
-        foreach (var statList in StatsDict)
+        foreach (KeyValuePair<string, Stats> statList in StatsDict)
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("<color=lime>" + statList.Key + "</color>",
@@ -176,7 +176,7 @@ public static class StatsPanel
                 statList.Value.Search = GUILayout.TextField(statList.Value.Search);
                 GUILayout.EndHorizontal();
                 GUILayout.Space(5);
-                foreach (var stat in statList.Value._statsList)
+                foreach (Stat stat in statList.Value._statsList)
                 {
                     string statName = stat.Name();
                     if (!statName.ToLower().Replace(" ","").Contains(statList.Value.Search.ToLower().Replace(" ",""))) continue;
@@ -219,10 +219,10 @@ public static class StatsPanel
             Show = ConnectPanel.IsVisible();
             if (Show)
             {
-                foreach (var stat in StatsDict)
+                foreach (KeyValuePair<string, Stats> stat in StatsDict)
                 {
                     stat.Value.Show = false;
-                    foreach (var stat2 in stat.Value._statsList)
+                    foreach (Stat stat2 in stat.Value._statsList)
                     {
                         stat2.Show = false;
                     }
@@ -250,7 +250,7 @@ public static class StatsPanel
         private static MethodInfo TargetMethod()
         {
             Type jsonSerializer = Type.GetType("fastJSON.JSONSerializer");
-            var method = AccessTools.Method(jsonSerializer, "WriteValue");
+            MethodInfo method = AccessTools.Method(jsonSerializer, "WriteValue");
             return method;
         }
 

@@ -128,7 +128,11 @@ public static class Global_Values
 
     private static ConfigFile _config;
 
-
+    public static ConfigEntry<T> Register<T>(string section, string key, T value, string description)
+    {
+        return _config.Bind(section, key, value, description);
+    }
+    
     private static void OnInit()
     {
         _config = new ConfigFile(Market_Paths.MainConfig, true);

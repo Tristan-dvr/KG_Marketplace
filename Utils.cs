@@ -42,9 +42,10 @@ public static class Utils
             int c = 0;
             foreach (object item in arr)
             {
-                ConsoleManager.StandardOutStream.WriteLine($"[{c++}] {item}");
+                foreach (ILogListener logListener in BepInEx.Logging.Logger.Listeners)
+                    if (logListener is DiskLogListener { LogWriter: not null } bepinexlog)
+                        bepinexlog.LogWriter.WriteLine($"[{c++}] {item}");
             }
-
             ConsoleManager.SetConsoleColor(ConsoleColor.White);
         }
         else
@@ -427,9 +428,9 @@ public static class Utils
     public static void LoadImageFromWEB(string url, Action<Sprite> callback)
     {
         if (string.IsNullOrWhiteSpace(url) || !Uri.TryCreate(url, UriKind.Absolute, out _)) return;
-        if (!AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(url, out var sprite))
+        if (!AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(url, out Sprite sprite))
         {
-            Marketplace._thistype.StartCoroutine(InternalCoroutine_LoadImage(url, callback));
+            Marketplace._thistype.StartCoroutine(_Internal_LoadImage(url, callback));
         }
         else
         {
@@ -437,7 +438,7 @@ public static class Utils
         }
     }
 
-    private static IEnumerator InternalCoroutine_LoadImage(string url, Action<Sprite> callback)
+    private static IEnumerator _Internal_LoadImage(string url, Action<Sprite> callback)
     {
         using UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
         yield return request.SendWebRequest();

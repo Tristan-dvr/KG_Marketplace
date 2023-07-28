@@ -32,7 +32,7 @@ public static class ZoneVisualizer
         });
         Visualizers.Clear();
 
-        foreach (var territory in TerritorySystem_DataTypes.SyncedTerritoriesData.Value)
+        foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.SyncedTerritoriesData.Value)
         {
             GameObject visualizer = Object.Instantiate(territory.Type is TerritorySystem_DataTypes.TerritoryType.Circle
                 ? ZoneVisualizer_Circle

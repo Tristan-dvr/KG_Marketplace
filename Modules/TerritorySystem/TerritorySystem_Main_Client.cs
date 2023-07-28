@@ -41,7 +41,7 @@ public static class TerritorySystem_Main_Client
         Marketplace.Global_FixedUpdator += HeightmapRebuild;
     }
 
-    private static void TerritoryFixedUpdate()
+    private static void TerritoryFixedUpdate(float dt)
     {
         ZoneTick -= Time.fixedDeltaTime;
         if (!Player.m_localPlayer) return;
@@ -56,7 +56,7 @@ public static class TerritorySystem_Main_Client
             {
                 if (ParticleMist.instance.m_ps.emission.enabled)
                 {
-                    var emission = ParticleMist.instance.m_ps.emission;
+                    ParticleSystem.EmissionModule emission = ParticleMist.instance.m_ps.emission;
                     emission.enabled = false;
                 }
             }
@@ -64,7 +64,7 @@ public static class TerritorySystem_Main_Client
             {
                 if (!ParticleMist.instance.m_ps.emission.enabled)
                 {
-                    var emission = ParticleMist.instance.m_ps.emission;
+                    ParticleSystem.EmissionModule emission = ParticleMist.instance.m_ps.emission;
                     emission.enabled = true;
                 }
             }
@@ -188,7 +188,7 @@ public static class TerritorySystem_Main_Client
 
     private static int rebuildIndex = -1;
     private static float rebuildUptime;
-    private static void HeightmapRebuild()
+    private static void HeightmapRebuild(float dt)
     {
         if (rebuildIndex == -1) return;
         rebuildUptime += Time.fixedDeltaTime;

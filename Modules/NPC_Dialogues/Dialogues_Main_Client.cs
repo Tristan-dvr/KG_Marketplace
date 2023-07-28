@@ -11,7 +11,7 @@ public static class Dialogues_Main_Client
         Marketplace.Global_Updator += Update;
     }
 
-    private static void Update()
+    private static void Update(float dt)
     {
         if (!Input.GetKeyDown(KeyCode.Escape) || !Dialogues_UI.IsVisible()) return;
         Dialogues_UI.Hide();

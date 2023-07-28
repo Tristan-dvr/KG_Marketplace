@@ -20,7 +20,7 @@ public static class Gambler_Main_Client
         }
     }
     
-    private static void Update()
+    private static void Update(float dt)
     {
         if (!Input.GetKeyDown(KeyCode.Escape) || !Gambler_UI.IsPanelVisible()) return;
         Gambler_UI.Hide();

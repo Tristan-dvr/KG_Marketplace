@@ -32,7 +32,7 @@ public static class DistancedUI_Main_Client
         }
     }
     
-    private static void Update()
+    private static void Update(float dt)
     {
         if (Input.GetKeyDown(KeyCode.Escape) && DistancedUI_UI.IsViewProfilesVisible())
         {

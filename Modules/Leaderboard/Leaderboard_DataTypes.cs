@@ -22,7 +22,7 @@ public static class Leaderboard_DataTypes
         public int DeathAmount;
         public string PlayerName;
 
-        public int KilledPlayers => KilledCreatures.TryGetValue("Player", out var amount) ? amount : 0;
+        public int KilledPlayers => KilledCreatures.TryGetValue("Player", out int amount) ? amount : 0;
     }
 
     public enum TriggerType
@@ -54,17 +54,17 @@ public static class Leaderboard_DataTypes
             Player_Leaderboard player = ServersidePlayersLeaderboard[id];
             return Type switch
             {
-                TriggerType.MonstersKilled => player.KilledCreatures.TryGetValue(Prefab, out var amount) &&
+                TriggerType.MonstersKilled => player.KilledCreatures.TryGetValue(Prefab, out int amount) &&
                                               amount >= MinAmount,
-                TriggerType.ItemsCrafted => player.ItemsCrafted.TryGetValue(Prefab, out var amount) &&
+                TriggerType.ItemsCrafted => player.ItemsCrafted.TryGetValue(Prefab, out int amount) &&
                                             amount >= MinAmount,
-                TriggerType.StructuresBuilt => player.BuiltStructures.TryGetValue(Prefab, out var amount) &&
+                TriggerType.StructuresBuilt => player.BuiltStructures.TryGetValue(Prefab, out int amount) &&
                                                amount >= MinAmount,
-                TriggerType.KilledBy => player.KilledBy.TryGetValue(Prefab, out var amount) && amount >= MinAmount,
+                TriggerType.KilledBy => player.KilledBy.TryGetValue(Prefab, out int amount) && amount >= MinAmount,
                 TriggerType.Explored => player.MapExplored >= MinAmount,
                 TriggerType.Died => player.DeathAmount >= MinAmount,
                 TriggerType.PlayersKilled => player.KilledPlayers >= MinAmount,
-                TriggerType.Harvested => player.Harvested.TryGetValue(Prefab, out var amount) && amount >= MinAmount,
+                TriggerType.Harvested => player.Harvested.TryGetValue(Prefab, out int amount) && amount >= MinAmount,
                 _ => false
             };
         }
@@ -92,7 +92,7 @@ public static class Leaderboard_DataTypes
             pkg.Write(MapExplored);
             pkg.Write(Harvested);
             pkg.Write(Achievements.Count);
-            foreach (var achievement in Achievements)
+            foreach (int achievement in Achievements)
             {
                 pkg.Write(achievement);
             }

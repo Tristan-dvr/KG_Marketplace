@@ -16,7 +16,7 @@ public static class Banker_Main_Client
         Banker_UI.Reload();
     }
     
-    private static void Update()
+    private static void Update(float dt)
     {
         if (!Input.GetKeyDown(KeyCode.Escape) || !Banker_UI.IsPanelVisible()) return;
         Banker_UI.Hide();

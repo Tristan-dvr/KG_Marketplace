@@ -12,7 +12,7 @@ public static class Buffer_Main_Client
         Buffer_DataTypes.SyncedBufferBuffs.ValueChanged += OnBufferUpdate;
     }
     
-    private static void Update()
+    private static void Update(float dt)
     {
         if (!Player.m_localPlayer || !Input.GetKeyDown(KeyCode.Escape)) return;
         if (Buffer_UI.IsVisible())
@@ -37,7 +37,7 @@ public static class Buffer_Main_Client
         
         try
         {
-            foreach (var buff in Buffer_DataTypes.SyncedBufferBuffs.Value)
+            foreach (Buffer_DataTypes.BufferBuffData buff in Buffer_DataTypes.SyncedBufferBuffs.Value)
                 buff.Init();
 
             foreach (KeyValuePair<string, string> kvp in Buffer_DataTypes.SyncedBufferProfiles.Value)

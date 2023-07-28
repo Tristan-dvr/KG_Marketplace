@@ -20,7 +20,7 @@ public static class LeaderBoard_Main_Client
         Marketplace.Global_Updator += Update;
     }
 
-    private static void Update()
+    private static void Update(float dt)
     {
         if (Input.GetKeyDown(KeyCode.Escape) && Leaderboard_UI.IsVisible())
         {
@@ -45,7 +45,7 @@ public static class LeaderBoard_Main_Client
     {
         int toId = achievementID.Replace(" ", "").ToLower().GetStableHashCode();
         return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(Global_Values._localUserID + "_" + Game.instance.m_playerProfile.m_playerName,
-            out var LB) && LB.Achievements.Contains(toId);
+            out Leaderboard_DataTypes.Client_Leaderboard LB) && LB.Achievements.Contains(toId);
     }
 
     public static string GetAchievementName(string achievementID)

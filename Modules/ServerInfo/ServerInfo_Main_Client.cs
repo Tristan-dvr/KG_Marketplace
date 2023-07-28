@@ -20,7 +20,7 @@ public static class ServerInfo_Main_Client
             ServerInfo_UI.Show("onplayerfirstspawn", "");
     }
 
-    private static void Update()
+    private static void Update(float dt)
     { 
         if (!Input.GetKeyDown(KeyCode.Escape) || !ServerInfo_UI.IsPanelVisible()) return;
         ServerInfo_UI.Hide();
@@ -29,7 +29,7 @@ public static class ServerInfo_Main_Client
 
     private static void OnInfoUpdate()
     {
-        foreach (var url in  ServerInfo_DataTypes.SyncedServerInfoData.Value.Values.SelectMany(x => x.infoQueue).Where(x => x.Type == ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Image))
+        foreach (ServerInfo_DataTypes.ServerInfoQueue.Info url in  ServerInfo_DataTypes.SyncedServerInfoData.Value.Values.SelectMany(x => x.infoQueue).Where(x => x.Type == ServerInfo_DataTypes.ServerInfoQueue.Info.InfoType.Image))
         {
             Utils.LoadImageFromWEB(url.Text, (sprite) => url.SetSprite(sprite));
         }

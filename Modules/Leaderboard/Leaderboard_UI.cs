@@ -50,7 +50,7 @@ public static class Leaderboard_UI
         SortButtons.Add(SortBy.TotalAchievements, buttonsTransform.Find("TotalAchievements").GetComponent<Button>());
         SortButtons.Add(SortBy.PlayersKilled, buttonsTransform.Find("PlayersKilled").GetComponent<Button>());
         SortButtons.Add(SortBy.Harvested, buttonsTransform.Find("Harvested").GetComponent<Button>());
-        foreach (var button in SortButtons)
+        foreach (KeyValuePair<SortBy, Button> button in SortButtons)
             button.Value.onClick.AddListener(() =>
             {
                 AssetStorage.AssetStorage.AUsrc.Play();
@@ -115,7 +115,7 @@ public static class Leaderboard_UI
     public static int GetAchievementScore(List<int> achievements)
     {
         int result = 0;
-        foreach (var achievement in achievements)
+        foreach (int achievement in achievements)
             result += Leaderboard_DataTypes.SyncedClientAchievements.Value.Find(x => x.ID == achievement) is { } t
                 ? t.Score
                 : 0;
@@ -125,7 +125,7 @@ public static class Leaderboard_UI
     private static void SetSortBy(SortBy sort)
     {
         CurrentSort = sort;
-        foreach (var button in SortButtons)
+        foreach (KeyValuePair<SortBy, Button> button in SortButtons)
             button.Value.GetComponent<Text>().color = new Color(0.9137256f, 0.8627452f, 0.007843138f);
         SortButtons[sort].GetComponent<Text>().color = Color.green;
 
@@ -168,11 +168,11 @@ public static class Leaderboard_UI
         for (int i = start; i < end; ++i)
         {
             if (i >= SortedList.Count) break;
-            var element = Object.Instantiate(Element, Content);
-            var data = SortedList[i];
+            GameObject element = Object.Instantiate(Element, Content);
+            Leaderboard_DataTypes.Client_Leaderboard data = SortedList[i];
 
-            var rankTransform = element.transform.Find("Rank");
-            var cstring = (i + 1).ToString();
+            Transform rankTransform = element.transform.Find("Rank");
+            string cstring = (i + 1).ToString();
             if (i + 1 <= 3)
                 rankTransform.Find(cstring).gameObject.SetActive(true);
             else
@@ -238,10 +238,10 @@ public static class Leaderboard_UI
         foreach (Transform child in AchievementContent)
             Object.Destroy(child.gameObject);
         Achievements.transform.Find("Achievements").GetComponent<Text>().text = board.PlayerName + "$mpasn_LeaderboardAchievements".Localize();
-        foreach (var achievement in board.Achievements)
+        foreach (int achievement in board.Achievements)
         {
             if (Leaderboard_DataTypes.SyncedClientAchievements.Value.Find(x => x.ID == achievement) is not { } t) continue;
-            var element = Object.Instantiate(AchievementsElement, AchievementContent);
+            GameObject element = Object.Instantiate(AchievementsElement, AchievementContent);
             element.GetComponent<Image>().color = new Color(t.Color.r, t.Color.g, t.Color.b, 0.2f);
             element.transform.Find("color").GetComponent<Image>().color = t.Color;
             element.transform.Find("Name").GetComponent<Text>().text = t.Name;

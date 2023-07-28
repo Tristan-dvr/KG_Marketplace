@@ -10,7 +10,7 @@ public static class Feedback_Main_Client
         Marketplace.Global_Updator += Update;
     }
     
-    private static void Update()
+    private static void Update(float dt)
     {
         if (!Input.GetKeyDown(KeyCode.Escape) || !Feedback_UI.IsPanelVisible()) return;
         Feedback_UI.Hide();

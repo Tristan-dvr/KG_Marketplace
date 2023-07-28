@@ -243,7 +243,7 @@ public static class KG_Chat
         }
     }
 
-    private static void KGChat_Update()
+    private static void KGChat_Update(float dt)
     {
         if(!kgChat || !Chat.instance.m_input.IsActive()) return;
         Chat.instance.m_input.ActivateInputField();

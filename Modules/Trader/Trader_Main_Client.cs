@@ -11,7 +11,7 @@ public static class Trader_Main_Client
         Marketplace.Global_Updator += Update;
     }
 
-    private static void Update()
+    private static void Update(float dt)
     {
         if (!Input.GetKeyDown(KeyCode.Escape) || !Trader_UI.IsPanelVisible()) return;
         Trader_UI.Hide();

@@ -322,7 +322,7 @@ public static class Dialogues_DataTypes
                                 {
                                     Player.m_localPlayer.GetSEMan()
                                         .RemoveStatusEffect(split[1].GetStableHashCode(), true);
-                                    var se = Player.m_localPlayer.GetSEMan()
+                                    StatusEffect se = Player.m_localPlayer.GetSEMan()
                                         .AddStatusEffect(split[1].GetStableHashCode(), true);
                                     if (se && split.Length > 2)
                                         se.m_ttl = Mathf.Min(1, float.Parse(split[2]));
@@ -433,7 +433,7 @@ public static class Dialogues_DataTypes
                                     return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
                                             Global_Values._localUserID + "_" +
                                             Game.instance.m_playerProfile.m_playerName,
-                                            out var LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) >=
+                                            out Leaderboard_DataTypes.Client_Leaderboard LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) >=
                                         int.Parse(split[1]);
                                 };
                                 break;
@@ -445,7 +445,7 @@ public static class Dialogues_DataTypes
                                     return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
                                             Global_Values._localUserID + "_" +
                                             Game.instance.m_playerProfile.m_playerName,
-                                            out var LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) <
+                                            out Leaderboard_DataTypes.Client_Leaderboard LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) <
                                         int.Parse(split[1]);
                                 };
                                 break;

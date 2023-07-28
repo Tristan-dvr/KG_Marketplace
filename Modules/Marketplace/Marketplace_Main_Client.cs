@@ -23,7 +23,7 @@ public static class Marketplace_Main_Client
         if (Marketplace_UI.IsPanelVisible()) Marketplace_UI.ResetBUYPage();
     }
 
-    private static void Update()
+    private static void Update(float dt)
     {
         if (Input.GetKeyDown(KeyCode.Escape) &&
             (Marketplace_UI.IsPanelVisible() || Marketplace_Messages._showMessageBox))

@@ -53,7 +53,7 @@ public static class Dialogues_UI
         KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9, KeyCode.Alpha0
     };
 
-    private static void PressHotbarUpdate()
+    private static void PressHotbarUpdate(float dt)
     {
         if (!IsVisible() || !Player.m_localPlayer) return;
         for (int i = 0; i < hotbarKeys.Length; ++i)

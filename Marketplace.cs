@@ -17,8 +17,8 @@ namespace Marketplace
         internal static Marketplace _thistype; 
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW;
-        public static Action Global_Updator;
-        public static Action Global_FixedUpdator;  
+        public static Action<float> Global_Updator;
+        public static Action<float> Global_FixedUpdator;  
         public static Action Global_OnGUI_Updator;
         public static Action Global_Start;
         public static Type TempJewelcraftingType;
@@ -122,9 +122,9 @@ namespace Marketplace
                 .Do(type => _harmony.CreateClassProcessor(type).Patch());
         }
 
-        private void Update() => Global_Updator?.Invoke();
+        private void Update() => Global_Updator?.Invoke(Time.deltaTime);
         private void OnGUI() => Global_OnGUI_Updator?.Invoke();
-        private void FixedUpdate() => Global_FixedUpdator?.Invoke();
+        private void FixedUpdate() => Global_FixedUpdator?.Invoke(Time.fixedDeltaTime);
         private void Start() => Global_Start?.Invoke();
 
         private static void InitFSW(string folderPath)

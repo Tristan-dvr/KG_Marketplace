@@ -83,8 +83,8 @@ public static class Market_NPC
             if (animator.gameObject.name == "WomanNPC")
             {
                 animator.gameObject.AddComponent<CustomLookAt>();
-                var mesh = animator.gameObject.GetComponentInChildren<SkinnedMeshRenderer>(true);
-                foreach (var material in mesh.materials)
+                SkinnedMeshRenderer mesh = animator.gameObject.GetComponentInChildren<SkinnedMeshRenderer>(true);
+                foreach (Material material in mesh.materials)
                 {
                     material.shader = Shader.Find("Custom/Creature");
                 }
@@ -95,7 +95,7 @@ public static class Market_NPC
         Marketplace.Global_Updator += UpdateNPCGUI;
     }
 
-    private static void UpdateNPCGUI()
+    private static void UpdateNPCGUI(float dt)
     {
         if (Input.GetKeyDown(KeyCode.Escape) && NPCLoader_UI.IsVisible())
         {
@@ -140,7 +140,7 @@ public static class Market_NPC
             GameObject teleporter = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_TELEPORTER");
             __instance.m_namedPrefabs.Add(teleporter.name.GetStableHashCode(), teleporter);
             GameObject defaultnpc = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_DEFAULTNPC");
-            foreach (var material in defaultnpc.GetComponentInChildren<SkinnedMeshRenderer>().materials)
+            foreach (Material material in defaultnpc.GetComponentInChildren<SkinnedMeshRenderer>().materials)
             {
                 material.shader = Shader.Find("Custom/Creature");
             }
@@ -1245,7 +1245,7 @@ public static class Market_NPC
                 pastOverrideModel = Instantiate(original, transform);
                 foreach (ParticleSystem particleSystem in pastOverrideModel.GetComponentsInChildren<ParticleSystem>())
                 {
-                    var em = particleSystem.emission;
+                    ParticleSystem.EmissionModule em = particleSystem.emission;
                     em.enabled = false;
                 }
                 pastOverrideModel.layer = LayerMask.NameToLayer("character");

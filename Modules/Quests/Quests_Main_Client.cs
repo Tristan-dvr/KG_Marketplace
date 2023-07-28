@@ -35,7 +35,7 @@ public static class Quests_Main_Client
         Quests_UIs.QuestUI.Reload();
     }
 
-    private static void Update()
+    private static void Update(float dt)
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
