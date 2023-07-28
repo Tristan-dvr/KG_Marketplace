@@ -462,7 +462,7 @@ public static class TerritorySystem_Main_Client
         }
         catch (Exception ex)
         {
-            Utils.print($"Error while drawing territories on map: {ex.Message}\n{ex.StackTrace}");
+            Utils.print($"Error while drawing territories on map: {ex}");
         }
     }
 
