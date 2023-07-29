@@ -16,7 +16,7 @@ public static class Banker_UI
     {
         return UI && UI.activeSelf;
     }
-    
+
     [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
     [ClientOnlyPatch]
     private static class BankerUIFix
@@ -53,8 +53,8 @@ public static class Banker_UI
         foreach (ItemDrop.ItemData data in Player.m_localPlayer.m_inventory.m_inventory)
         {
             if (data.m_stack <= 0 || !data.m_dropPrefab) continue;
-            if (!Banker_DataTypes.SyncedBankerProfiles.Value[CurrentProfile]
-                    .Contains(data.m_dropPrefab.name.GetStableHashCode())) continue;
+            if (!Banker_DataTypes.SyncedBankerProfiles.Value[CurrentProfile].Contains(data.m_dropPrefab.name.GetStableHashCode())) continue;
+            if (data.m_quality > 1) continue;
             if (items.ContainsKey(data.m_dropPrefab.name))
             {
                 items[data.m_dropPrefab.name] += data.m_stack;
@@ -91,12 +91,11 @@ public static class Banker_UI
             if (item == null) break;
             GameObject go = UnityEngine.Object.Instantiate(ItemElement, ContentTransform);
             string text = Localization.instance.Localize(item.m_itemData.m_shared.m_name);
-            int currentQuantity = Player.m_localPlayer.m_inventory.CountItems(item.m_itemData.m_shared.m_name);
             int quantityBank = Banker_DataTypes.BankerClientData.TryGetValue(data, out int value) ? value : 0;
             int id = i;
             go.transform.Find("Icon/IconItem").GetComponent<Image>().sprite = item.m_itemData.GetIcon();
             go.transform.Find("Inventory").GetComponent<Text>().text =
-                Localization.instance.Localize("$mpasn_inventory: ") + currentQuantity;
+                Localization.instance.Localize("$mpasn_inventory: ") + Utils.CustomCountItems(item.name, 1);
             go.transform.Find("ItemName").GetComponent<Text>().text = text;
             go.transform.Find("BankCount").GetComponent<Text>().text = quantityBank.ToString();
             go.transform.Find("Control/InputField").GetComponent<InputField>().onValueChanged
@@ -134,11 +133,10 @@ public static class Banker_UI
         string prefab = item.name;
         if (DEPOSIT)
         {
-            string itemName = item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
-            int inventoryCount = Player.m_localPlayer.m_inventory.CountItems(itemName);
+            int inventoryCount = Utils.CustomCountItems(prefab, 1);
             if (value > inventoryCount) value = inventoryCount;
             if (value <= 0) return;
-            Player.m_localPlayer.m_inventory.RemoveItem(itemName, value);
+            Utils.CustomRemoveItems(prefab, value, 1);
             ZRoutedRpc.instance.InvokeRoutedRPC("KGmarket BankerDeposit", prefab, value);
         }
         else
@@ -167,7 +165,7 @@ public static class Banker_UI
 
     public static void Show(string profile, string _npcName)
     {
-        if(!Banker_DataTypes.SyncedBankerProfiles.Value.ContainsKey(profile)) return;
+        if (!Banker_DataTypes.SyncedBankerProfiles.Value.ContainsKey(profile)) return;
         CurrentProfile = profile;
         UI.SetActive(true);
         CreateElements(CurrentProfile);

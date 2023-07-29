@@ -206,11 +206,11 @@ public static class Utils
         return num;
     }
 
-    public static void CustomRemoveItems(string name, int amount, int level)
+    public static void CustomRemoveItems(string prefab, int amount, int level)
     {
         foreach (ItemDrop.ItemData itemData in Player.m_localPlayer.m_inventory.m_inventory)
         {
-            if (itemData.m_dropPrefab.name == name && itemData.m_quality == level)
+            if (itemData.m_dropPrefab.name == prefab && itemData.m_quality == level)
             {
                 int num = Mathf.Min(itemData.m_stack, amount);
                 itemData.m_stack -= num;
