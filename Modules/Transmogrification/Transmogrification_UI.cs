@@ -58,7 +58,8 @@ public static class Transmogrification_UI
 
     public static void Init()
     {
-        UI = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceTransmogUI"));
+        UI = UnityEngine.Object.Instantiate(
+            AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceTransmogUI"));
         UnityEngine.Object.DontDestroyOnLoad(UI);
         UI.SetActive(false);
         MainBar = UI.transform.Find("Canvas/SelectItemTab/ItemList/ListPanel/Scroll View/Scrollbar")
@@ -121,14 +122,16 @@ public static class Transmogrification_UI
         foreach (Transform child in Category_Content)
             UnityEngine.Object.Destroy(child.gameObject);
 
-        
+
         if (item == null)
         {
             if (Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile]
-                    .TryGetValue((ItemDrop.ItemData.ItemType)999, out List<Transmogrification_DataTypes.TransmogItem_Data> anyCategoryNoItem) &&
+                    .TryGetValue((ItemDrop.ItemData.ItemType)999,
+                        out List<Transmogrification_DataTypes.TransmogItem_Data> anyCategoryNoItem) &&
                 anyCategoryNoItem.Count > 0)
             {
                 GameObject element = UnityEngine.Object.Instantiate(Category_Element, Category_Content);
+                element.GetComponent<GridLayoutGroup>().cellSize -= new Vector2(0, 40f);
                 element.GetComponent<Image>().color = TypeColors[(ItemDrop.ItemData.ItemType)999];
                 element.transform.Find("Text").GetComponent<Text>().text =
                     Localization.instance.Localize("$mpasn_transmog_any");
@@ -144,6 +147,8 @@ public static class Transmogrification_UI
                     transmogElement.transform.Find("Price/PriceIcon/IconItem").GetComponent<Image>().sprite =
                         data.GetPriceIcon();
                     transmogElement.transform.Find("Add").gameObject.SetActive(false);
+                    transmogElement.transform.Find("HEX").gameObject.SetActive(false);
+                    transmogElement.transform.Find("ColorText").gameObject.SetActive(false);
                 }
             }
 
@@ -153,6 +158,7 @@ public static class Transmogrification_UI
                         .TryGetValue(type, out List<Transmogrification_DataTypes.TransmogItem_Data> categoryData) ||
                     categoryData.Count <= 0) continue;
                 GameObject element = UnityEngine.Object.Instantiate(Category_Element, Category_Content);
+                element.GetComponent<GridLayoutGroup>().cellSize -= new Vector2(0, 40f);
                 element.GetComponent<Image>().color = TypeColors[type];
                 element.transform.Find("Text").GetComponent<Text>().text =
                     Localization.instance.Localize("$mpasn_transmog_" + type.ToString().ToLower());
@@ -169,6 +175,8 @@ public static class Transmogrification_UI
                     transmogElement.transform.Find("Price/PriceIcon/IconItem").GetComponent<Image>().sprite =
                         data.GetPriceIcon();
                     transmogElement.transform.Find("Add").gameObject.SetActive(false);
+                    transmogElement.transform.Find("HEX").gameObject.SetActive(false);
+                    transmogElement.transform.Find("ColorText").gameObject.SetActive(false);
                 }
             }
 
@@ -178,7 +186,8 @@ public static class Transmogrification_UI
         ItemDrop.ItemData.ItemType category = item.m_shared.m_itemType;
 
         if (Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile]
-                .TryGetValue((ItemDrop.ItemData.ItemType)999, out List<Transmogrification_DataTypes.TransmogItem_Data> anyCategory) &&
+                .TryGetValue((ItemDrop.ItemData.ItemType)999,
+                    out List<Transmogrification_DataTypes.TransmogItem_Data> anyCategory) &&
             anyCategory.Count > 0)
         {
             GameObject element = UnityEngine.Object.Instantiate(Category_Element, Category_Content);
@@ -207,7 +216,21 @@ public static class Transmogrification_UI
                     data.GetPriceIcon();
                 transmogElement.transform.Find("Add").gameObject.SetActive(enough);
                 transmogElement.transform.Find("Add").GetComponent<Button>().onClick
-                    .AddListener(() => ClickTransmog(data, transmogElement.transform, transmogElement));
+                    .AddListener(() => ClickTransmog(data, transmogElement));
+
+                transmogElement.transform.Find("HEX").GetComponent<TMP_InputField>().onValueChanged.AddListener(
+                    (str) =>
+                    {
+                        Image bg = transmogElement.transform.Find("HEX").GetComponent<Image>();
+                        if (ColorUtility.TryParseHtmlString("#" + str, out Color c))
+                        {
+                            bg.color = c;
+                        }
+                        else
+                        {
+                            bg.color = Color.white;
+                        }
+                    });
 
                 Transform vfx21 = transmogElement.transform.Find("Premium");
                 if (data.VFX_ID >= 21)
@@ -223,7 +246,8 @@ public static class Transmogrification_UI
             }
         }
 
-        if (Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile].TryGetValue(category, out List<Transmogrification_DataTypes.TransmogItem_Data> itemCategory) &&
+        if (Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile].TryGetValue(category,
+                out List<Transmogrification_DataTypes.TransmogItem_Data> itemCategory) &&
             itemCategory.Count > 0)
         {
             GameObject element = UnityEngine.Object.Instantiate(Category_Element, Category_Content);
@@ -252,7 +276,21 @@ public static class Transmogrification_UI
                     data.GetPriceIcon();
                 transmogElement.transform.Find("Add").gameObject.SetActive(enough);
                 transmogElement.transform.Find("Add").GetComponent<Button>().onClick
-                    .AddListener(() => ClickTransmog(data, transmogElement.transform, transmogElement));
+                    .AddListener(() => ClickTransmog(data, transmogElement));
+
+                transmogElement.transform.Find("HEX").GetComponent<TMP_InputField>().onValueChanged.AddListener(
+                    (str) =>
+                    {
+                        Image bg = transmogElement.transform.Find("HEX").GetComponent<Image>();
+                        if (ColorUtility.TryParseHtmlString("#" + str, out Color c))
+                        {
+                            bg.color = c;
+                        }
+                        else
+                        {
+                            bg.color = Color.white;
+                        }
+                    });
 
                 Transform vfx21 = transmogElement.transform.Find("Premium");
                 if (data.VFX_ID >= 21)
@@ -285,7 +323,7 @@ public static class Transmogrification_UI
     }
 
 
-    private static void ClickTransmog(Transmogrification_DataTypes.TransmogItem_Data data, Transform Parent, GameObject element)
+    private static void ClickTransmog(Transmogrification_DataTypes.TransmogItem_Data data, GameObject element)
     {
         AssetStorage.AssetStorage.AUsrc.Play();
         if (CurrentChoosenItem == null) return;
@@ -305,12 +343,15 @@ public static class Transmogrification_UI
         newTransmog.VFX_ID = data.VFX_ID >= 21
             ? int.Parse(element.transform.Find("Premium").GetChild(0).name)
             : data.VFX_ID;
+
+        string hex = "#" + element.transform.Find("HEX").GetComponent<TMP_InputField>().text;
+        newTransmog.ItemColor = ColorUtility.TryParseHtmlString(hex, out _) ? hex : "#ffffff";
         newTransmog.Save();
         ChoosenItem_Transform.Find("EIDF").gameObject.SetActive(true);
         GameObject eff = UnityEngine.Object.Instantiate(ClickEffect, ChoosenItem_Transform);
         eff.transform.SetAsLastSibling();
         GameObject eff2 = UnityEngine.Object.Instantiate(ClickEffect2, ChoosenItem_Transform);
-        eff2.GetComponent<RectTransform>().position = Parent.position;
+        eff2.GetComponent<RectTransform>().position = element.transform.position;
         AssetStorage.AssetStorage.AUsrc.PlayOneShot(Gambler_UI.SOUNDEFFECT3, 0.6f);
         LoadCategories(CurrentChoosenItem);
         Inventory_Content.GetChild(IndexOfChoosenItem).Find("Text").GetComponent<Text>().color =

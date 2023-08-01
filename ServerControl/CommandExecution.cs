@@ -511,8 +511,9 @@ public static class CommandExecution
         
         _commands.Add(Command.StopEvent, (string[] _, out string result) =>
         {
+            var currentEvent = RandEventSystem.instance.m_activeEvent?.m_name ?? "Unknown";
             RandEventSystem.instance.SetRandomEventByName("stopEvent", Vector3.zero);
-            result = $"Latest Event stopped";
+            result = $"Latest Event stopped ({currentEvent})";
             return true;
         });
         

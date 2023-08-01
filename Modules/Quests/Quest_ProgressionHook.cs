@@ -27,19 +27,18 @@ public static class Quest_ProgressionHook
         Quests_DataTypes.Quest.TryAddRewardCraft(CraftedItemName, recipe.Value?.m_quality ?? 1);
     }
 
-
     [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
     [ClientOnlyPatch]
     private static class HOOKCRAFTING
     {
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            FieldInfo craftsField = AccessTools.DeclaredField(typeof(PlayerProfile.PlayerStats), "m_crafts");
+            MethodInfo target = AccessTools.Method(typeof(Gogan), nameof(Gogan.LogEvent));
             MethodInfo method = AccessTools.DeclaredMethod(typeof(Quest_ProgressionHook), nameof(HookCrafting));
             foreach (CodeInstruction instruction in instructions)
             {
                 yield return instruction;
-                if (instruction.opcode == OpCodes.Stfld && instruction.OperandIs(craftsField))
+                if (instruction.opcode == OpCodes.Call && instruction.OperandIs(target))
                 {
                     yield return new CodeInstruction(OpCodes.Call, method);
                 }

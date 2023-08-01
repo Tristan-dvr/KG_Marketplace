@@ -488,6 +488,17 @@ public static class Utils
         }
     }
 
+    public static void SetGOColors(GameObject go, Color color)
+    {
+        foreach (Renderer renderer in go.GetComponentsInChildren<MeshRenderer>().Concat(go.GetComponentsInChildren<SkinnedMeshRenderer>().Cast<Renderer>()))
+        {
+            foreach (Material mat in renderer.materials)
+            {
+                mat.color = color;
+            }
+        }
+    }
+
     public static bool HasFlagFast(this Quests_DataTypes.SpecialQuestTag value,
         Quests_DataTypes.SpecialQuestTag flag)
     {

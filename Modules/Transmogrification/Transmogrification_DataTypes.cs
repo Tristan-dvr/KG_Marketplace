@@ -52,15 +52,9 @@ public static class Transmogrification_DataTypes
         public string ReplacedPrefab;
         public int Variant;
         public int VFX_ID;
+        public string ItemColor;
 
         public TransmogItem_Component(){}
-        
-        public TransmogItem_Component(string replacedPrefab, int variant, int vfx_id)
-        {
-            ReplacedPrefab = replacedPrefab;
-            Variant = variant;
-            VFX_ID = vfx_id;
-        }
 
         public override void Load()
         {
@@ -68,11 +62,12 @@ public static class Transmogrification_DataTypes
             ReplacedPrefab = split[0];
             Variant = int.Parse(split[1]);
             VFX_ID = int.Parse(split[2]);
+            ItemColor = split.Length > 3 ? split[3] : "#ffffff";
         }
 
         public override void Save()
         {
-            Value = $"{ReplacedPrefab}|{Variant}|{VFX_ID}";
+            Value = $"{ReplacedPrefab}|{Variant}|{VFX_ID}|{ItemColor}";
         }
         
     }

@@ -103,6 +103,9 @@ public static class Transmogrification_Main_Client
         if (transmog.VFX_ID > 0)
             result +=
                 $"\n<color=#FF00FF>VFX: <color=#00FFFF>{Localization.instance.Localize("$mpasn_transmog_eff" + transmog.VFX_ID)}</color></color>";
+        
+        if(ColorUtility.TryParseHtmlString(transmog.ItemColor, out Color color))
+            result += $"\n<color=#FF00FF>Color: <color=#{ColorUtility.ToHtmlStringRGB(color)}>{transmog.ItemColor}</color></color>";
         return result;
     }
 
@@ -116,16 +119,18 @@ public static class Transmogrification_Main_Client
         public string ReplacedPrefab;
         public int Variant;
         public int VFX_ID;
+        public string ItemColor;
     }
     
     
     private static TempItem T_Data(this ItemDrop.ItemData item)
     {
-        if (item == null) return new TempItem { ReplacedPrefab = "", Variant = 0, VFX_ID = 0 };
+        if (item == null) return new TempItem { ReplacedPrefab = "", Variant = 0, VFX_ID = 0, ItemColor = ""};
 
         if (item.Data().Get<Transmogrification_DataTypes.TransmogItem_Component>() is { } t)
-            return new TempItem { ReplacedPrefab = t.ReplacedPrefab, Variant = 0, VFX_ID = t.VFX_ID };
-        return new TempItem { ReplacedPrefab = item.m_dropPrefab.name, Variant = item.m_variant, VFX_ID = 0 };
+            return new TempItem { ReplacedPrefab = t.ReplacedPrefab, Variant = 0, VFX_ID = t.VFX_ID, ItemColor = t.ItemColor};
+        
+        return new TempItem { ReplacedPrefab = item.m_dropPrefab.name, Variant = item.m_variant, VFX_ID = 0, ItemColor = ""};
     }
 
 
@@ -160,6 +165,10 @@ public static class Transmogrification_Main_Client
                         p.m_nview.m_zdo.Set("MPASN_TMGleftitem", LeftItem.VFX_ID);
                         p.m_nview.m_zdo.Set("MPASN_TMGleftbackitem", LeftBackItem.VFX_ID);
                         p.m_nview.m_zdo.Set("MPASN_TMGrightbackitem", RightBackItem.VFX_ID);
+                        p.m_nview.m_zdo.Set("MPASN_TMGrightitemColor", RightItem.ItemColor);
+                        p.m_nview.m_zdo.Set("MPASN_TMGleftitemColor", LeftItem.ItemColor);
+                        p.m_nview.m_zdo.Set("MPASN_TMGleftbackitemColor", LeftBackItem.ItemColor);
+                        p.m_nview.m_zdo.Set("MPASN_TMGrightbackitemColor", RightBackItem.ItemColor);
                     }
                 }
 
@@ -182,6 +191,10 @@ public static class Transmogrification_Main_Client
                     p.m_nview.m_zdo.Set("MPASN_TMGlegitem", LegItem.VFX_ID);
                     p.m_nview.m_zdo.Set("MPASN_TMGhelmetitem", HelmetItem.VFX_ID);
                     p.m_nview.m_zdo.Set("MPASN_TMGshoulderitem", ShoulderItem.VFX_ID);
+                    p.m_nview.m_zdo.Set("MPASN_TMGchestitemColor", ChestItem.ItemColor);
+                    p.m_nview.m_zdo.Set("MPASN_TMGlegitemColor", LegItem.ItemColor);
+                    p.m_nview.m_zdo.Set("MPASN_TMGhelmetitemColor", HelmetItem.ItemColor);
+                    p.m_nview.m_zdo.Set("MPASN_TMGshoulderitemColor", ShoulderItem.ItemColor);
                 }
 
                 visEq.SetUtilityItem((p.m_utilityItem != null) ? p.m_utilityItem.m_dropPrefab.name : "");
@@ -322,6 +335,12 @@ public static class Transmogrification_Main_Client
             Transfer = false;
             if (__instance.m_rightItemInstance)
             {
+                string colorString = __instance.m_nview.m_zdo.GetString("MPASN_TMGrightitemColor");
+                if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
+                {
+                    Utils.SetGOColors(__instance.m_rightItemInstance, c);
+                }
+                
                 int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGrightitem");
                 if (test > 0)
                 {
@@ -357,6 +376,12 @@ public static class Transmogrification_Main_Client
             Transfer = false;
             if (__instance.m_leftItemInstance)
             {
+                string colorString = __instance.m_nview.m_zdo.GetString("MPASN_TMGleftitemColor");
+                if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
+                {
+                    Utils.SetGOColors(__instance.m_leftItemInstance, c);
+                }
+
                 int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGleftitem");
                 if (test > 0)
                 {
@@ -391,6 +416,13 @@ public static class Transmogrification_Main_Client
             Transfer = false;
             if (__instance.m_helmetItemInstance)
             {
+                string colorString = __instance.m_nview.m_zdo.GetString("MPASN_TMGhelmetitemColor");
+                if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
+                {
+                    Utils.SetGOColors(__instance.m_helmetItemInstance, c);
+                }
+                
+                
                 int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGhelmetitem");
                 if (test > 0)
                 {
@@ -430,6 +462,15 @@ public static class Transmogrification_Main_Client
             Transfer = false;
             if (__instance.m_shoulderItemInstances is { Count: > 0 })
             {
+                string colorString = __instance.m_nview.m_zdo.GetString("MPASN_TMGshoulderitemColor");
+                if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
+                {
+                    foreach (GameObject VARIABLE in __instance.m_shoulderItemInstances)
+                    {
+                        Utils.SetGOColors(VARIABLE, c);
+                    }
+                }
+                
                 int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGshoulderitem");
                 if (test > 0)
                 {
@@ -471,6 +512,15 @@ public static class Transmogrification_Main_Client
             Transfer = false;
             if (__instance.m_legItemInstances is { Count: > 0 })
             {
+                string colorString = __instance.m_nview.m_zdo.GetString("MPASN_TMGlegitemColor");
+                if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
+                {
+                    foreach (GameObject VARIABLE in __instance.m_legItemInstances)
+                    {
+                        Utils.SetGOColors(VARIABLE, c);
+                    }
+                }
+                
                 int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGlegitem");
                 if (test > 0)
                 {
@@ -514,6 +564,12 @@ public static class Transmogrification_Main_Client
             Transfer = false;
             if (__instance.m_leftBackItemInstance)
             {
+                string colorString = __instance.m_nview.m_zdo.GetString("MPASN_TMGleftbackitemColor");
+                if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
+                {
+                    Utils.SetGOColors(__instance.m_leftBackItemInstance, c);
+                }
+                
                 int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGleftbackitem");
                 if (test > 0)
                 {
@@ -527,6 +583,12 @@ public static class Transmogrification_Main_Client
 
             if (__instance.m_rightBackItemInstance)
             {
+                string colorString = __instance.m_nview.m_zdo.GetString("MPASN_TMGrightbackitemColor");
+                if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
+                {
+                    Utils.SetGOColors(__instance.m_rightBackItemInstance, c);
+                }
+
                 int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGrightbackitem");
                 if (test > 0)
                 {
@@ -561,6 +623,15 @@ public static class Transmogrification_Main_Client
             Transfer = false;
             if (__instance.m_chestItemInstances is { Count: > 0 })
             {
+                string colorString = __instance.m_nview.m_zdo.GetString("MPASN_TMGchestitemColor");
+                if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
+                {
+                    foreach (GameObject VARIABLE in __instance.m_chestItemInstances)
+                    {
+                        Utils.SetGOColors(VARIABLE, c);
+                    }
+                }
+                
                 int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGchestitem");
                 if (test > 0)
                 {
