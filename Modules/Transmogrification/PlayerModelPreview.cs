@@ -15,7 +15,7 @@ public static class PlayerModelPreview
     private static float OriginalCameraZPos;
     private static GameObject CurrentPreviewGO;
     private static GameObject BehindWallRender;
-    private static string CurrentWall = "woodwall";
+    private static string CurrentWall = "woodwall@grey";
     private static readonly int ChestTex = Shader.PropertyToID("_ChestTex");
     private static readonly int ChestBumpMap = Shader.PropertyToID("_ChestBumpMap");
     private static readonly int ChestMetal = Shader.PropertyToID("_ChestMetal");
@@ -35,10 +35,9 @@ public static class PlayerModelPreview
                 StopPreview();
             });
         UI.transform.Find("Canvas/Preview/Background/Light").GetComponent<Button>().onClick.AddListener(ChangeLight);
-        UI.transform.Find("Canvas/Preview/Background/Wood").GetComponent<Button>().onClick
-            .AddListener(() => ResetWall("woodwall"));
-        UI.transform.Find("Canvas/Preview/Background/Stone").GetComponent<Button>().onClick
-            .AddListener(() => ResetWall("stone_wall_4x2"));
+        UI.transform.Find("Canvas/Preview/Background/Wood").GetComponent<Button>().onClick.AddListener(() => ResetWall("woodwall"));
+        UI.transform.Find("Canvas/Preview/Background/Black").GetComponent<Button>().onClick.AddListener(() => ResetWall("woodwall@black"));
+        UI.transform.Find("Canvas/Preview/Background/Stone").GetComponent<Button>().onClick.AddListener(() => ResetWall("woodwall@grey"));
         UI.transform.Find("Canvas/Preview/Background/Flip").GetComponent<Button>().onClick.AddListener(() =>
         {
             AssetStorage.AssetStorage.AUsrc.Play();
@@ -341,9 +340,12 @@ public static class PlayerModelPreview
         if (BehindWallRender) UnityEngine.Object.Destroy(BehindWallRender);
         CurrentWall = newWall;
 
-        GameObject wallObj = ZNetScene.instance.GetPrefab(CurrentWall);
+        bool grey = newWall.Contains("@grey");
+        bool black = newWall.Contains("@black");
+        string prefabName = newWall.Replace("@grey", "").Replace("@black","");
+        GameObject wallObj = ZNetScene.instance.GetPrefab(prefabName);
         if (wallObj == null) return;
-        Vector3 scale = new Vector3(1.3f, 1.1f, 0.2f);
+        Vector3 scale = new Vector3(1.3f, 1.3f, 0.2f);
         Transform t = wallObj.transform.Find("New");
         if (!t) return;
         var pos = CurrentPreviewGO.transform.position;
@@ -353,6 +355,15 @@ public static class PlayerModelPreview
         var position = BehindWallRender.transform.position + Vector3.up;
         position = new Vector3(position.x, position.y, position.z - 2f);
         BehindWallRender.transform.position = position;
+        if (grey)
+            BehindWallRender.GetComponentInChildren<Renderer>().material.color  = Color.black;
+
+        if (black)
+        {
+            BehindWallRender.GetComponentInChildren<Renderer>().material.shader = Shader.Find("Standard (Specular setup)");
+            BehindWallRender.GetComponentInChildren<Renderer>().material.color  = Color.black;
+            BehindWallRender.GetComponentInChildren<Renderer>().material.SetColor("_SpecColor", Color.black);
+        }
     }
 
     private enum Intensity

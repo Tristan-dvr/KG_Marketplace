@@ -152,6 +152,41 @@ public static class Marketplace_API
             return;
         MI_OpenQuestJournal.Invoke(null, null);
     }
+    
+    public enum NPCType { None, Trader, Info, Teleporter, Feedback, Banker, Gambler, Quests, Buffer, Transmog, Marketplace }
+    public static void NPC_Type(this ZDO zdo, NPCType type) => zdo.Set("KGmarketNPC", (int)type);
+    public static void NPC_Profile(this ZDO zdo, string profile) => zdo.Set("KGnpcProfile", profile);
+    public static void NPC_Model(this ZDO zdo, string prefab) => zdo.Set("KGnpcModelOverride", prefab);
+    public static void NPC_Name(this ZDO zdo, string name) => zdo.Set("KGnpcNameOverride", name);
+    public static void NPC_Dialogue(this ZDO zdo, string dialogue) => zdo.Set("KGnpcDialogue", dialogue);
+    
+    public static void NPC_LeftItem(this ZDO zdo, string prefab) => zdo.Set("KGleftItem", prefab);
+    public static void NPC_RightItem(this ZDO zdo, string prefab) => zdo.Set("KGrightItem", prefab);
+    public static void NPC_HelmetItem(this ZDO zdo, string prefab) => zdo.Set("KGhelmetItem", prefab);
+    public static void NPC_ChestItem(this ZDO zdo, string prefab) => zdo.Set("KGchestItem", prefab);
+    public static void NPC_LegsItem(this ZDO zdo, string prefab) => zdo.Set("KGlegsItem", prefab);
+    public static void NPC_CapeItem(this ZDO zdo, string prefab) => zdo.Set("KGcapeItem", prefab);
+    public static void NPC_HairItem(this ZDO zdo, string prefab) => zdo.Set("KGhairItem", prefab);
+    public static void NPC_HairColor(this ZDO zdo, string color) => zdo.Set("KGhairItemColor", color);
+    public static void NPC_LeftItemBack(this ZDO zdo, string prefab) => zdo.Set("KGLeftItemBack", prefab);
+    public static void NPC_RightItemBack(this ZDO zdo, string prefab) => zdo.Set("KGRightItemBack", prefab);
+    public static void NPC_InteractAnimation(this ZDO zdo, string animation) => zdo.Set("KGinteractAnimation", animation);
+    public static void NPC_GreetingAnimation(this ZDO zdo, string animation) => zdo.Set("KGgreetingAnimation", animation);
+    public static void NPC_ByeAnimation(this ZDO zdo, string animation) => zdo.Set("KGbyeAnimation", animation);
+    public static void NPC_GreetingText(this ZDO zdo, string text) => zdo.Set("KGgreetingText", text);
+    public static void NPC_ByeText(this ZDO zdo, string text) => zdo.Set("KGbyeText", text);
+    public static void NPC_SkinColor(this ZDO zdo, string color) => zdo.Set("KGskinColor", color);
+    public static void NPC_CraftingAnimation(this ZDO zdo, string animation) => zdo.Set("KGcraftingAnimation", animation);
+    public static void NPC_BeardItem(this ZDO zdo, string prefab) => zdo.Set("KGbeardItem", prefab);
+    public static void NPC_BeardColor(this ZDO zdo, string color) => zdo.Set("KGbeardColor", color);
+    public static void NPC_InteractSound(this ZDO zdo, string sound) => zdo.Set("KGinteractSound", sound);
+    public static void NPC_TextSize(this ZDO zdo, float size) => zdo.Set("KGtextSize", size);
+    public static void NPC_TextHeight(this ZDO zdo, float height) => zdo.Set("KGtextHeight", height);
+    public static void NPC_PeriodicAnimation(this ZDO zdo, string animation) => zdo.Set("KGperiodicAnimation", animation);
+    public static void NPC_PeriodicAnimationTime(this ZDO zdo, float time) => zdo.Set("KGperiodicAnimationTime", time);
+    public static void NPC_PeriodicSound(this ZDO zdo, string sound) => zdo.Set("KGperiodicSound", sound);
+    public static void NPC_PeriodicSoundTime(this ZDO zdo, float time) => zdo.Set("KGperiodicSoundTime", time);
+    public static void NPC_NPCScale(this ZDO zdo, float scale) => zdo.Set("KGnpcScale", scale);
 
     static Marketplace_API()
     {

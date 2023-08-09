@@ -385,6 +385,7 @@ public static class Transmogrification_UI
     private static void TransformReverse()
     {
         AssetStorage.AssetStorage.AUsrc.Play();
+        if(CurrentChoosenItem?.Data().Get<Transmogrification_DataTypes.TransmogItem_Component>() == null) return;
         CurrentChoosenItem.Data().Remove<Transmogrification_DataTypes.TransmogItem_Component>();
         GameObject eff = UnityEngine.Object.Instantiate(ClickEffectReverse, ChoosenItem_Transform);
         eff.transform.SetAsLastSibling();
