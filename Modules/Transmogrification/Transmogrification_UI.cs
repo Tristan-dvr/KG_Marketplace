@@ -137,7 +137,7 @@ public static class Transmogrification_UI
                     Localization.instance.Localize("$mpasn_transmog_any");
                 foreach (Transmogrification_DataTypes.TransmogItem_Data data in anyCategoryNoItem)
                 {
-                    GameObject prefab = ZNetScene.instance.GetPrefab(data.Prefab);
+                    GameObject prefab = ZNetScene.instance.GetPrefab(data.Prefab); 
                     if (!prefab) continue;
                     GameObject transmogElement = UnityEngine.Object.Instantiate(Transmog_Element, element.transform);
                     transmogElement.transform.Find("ItemName").GetComponent<Text>().text = data.GetLocalizedName();

@@ -8,11 +8,21 @@ public static class PlayerModelPreview
 {
     private static readonly Camera renderCamera;
     private static readonly Light Light;
-    private static readonly Vector3 SpawnPoint = new(10000f, 10000f, 10000f);
+    private static readonly Vector3 SpawnPoint = new(25000f, 25000f, 25000f);
     private static readonly GameObject UI;
     private static bool IsCameraFlipped;
     private static float OriginalYPos;
     private static float OriginalCameraZPos;
+    private static GameObject CurrentPreviewGO;
+    private static GameObject BehindWallRender;
+    private static string CurrentWall = "woodwall";
+    private static readonly int ChestTex = Shader.PropertyToID("_ChestTex");
+    private static readonly int ChestBumpMap = Shader.PropertyToID("_ChestBumpMap");
+    private static readonly int ChestMetal = Shader.PropertyToID("_ChestMetal");
+    private static readonly int LegsTex = Shader.PropertyToID("_LegsTex");
+    private static readonly int LegsBumpMap = Shader.PropertyToID("_LegsBumpMap");
+    private static readonly int LegsMetal = Shader.PropertyToID("_LegsMetal");
+    private static readonly int Wakeup = Animator.StringToHash("wakeup");
 
     static PlayerModelPreview()
     {
@@ -60,23 +70,6 @@ public static class PlayerModelPreview
         UI.GetComponentInChildren<RawImage>().texture = renderCamera.targetTexture;
         Marketplace.Global_Updator += Update;
     }
-
-    private static void ClearRendering()
-    {
-        renderCamera.gameObject.SetActive(false);
-        Light.gameObject.SetActive(false);
-    }
-
-
-    private static GameObject CurrentPreviewGO;
-    private static GameObject BehindWallRender;
-    private static readonly int ChestTex = Shader.PropertyToID("_ChestTex");
-    private static readonly int ChestBumpMap = Shader.PropertyToID("_ChestBumpMap");
-    private static readonly int ChestMetal = Shader.PropertyToID("_ChestMetal");
-    private static readonly int LegsTex = Shader.PropertyToID("_LegsTex");
-    private static readonly int LegsBumpMap = Shader.PropertyToID("_LegsBumpMap");
-    private static readonly int LegsMetal = Shader.PropertyToID("_LegsMetal");
-    private static readonly int Wakeup = Animator.StringToHash("wakeup");
 
     public static GameObject CreatePlayerModel(string item, ItemDrop.ItemData.ItemType itemType, Color c, int vfxId = 0)
     {
@@ -286,7 +279,8 @@ public static class PlayerModelPreview
             BehindWallRender = null;
         }
 
-        ClearRendering();
+        renderCamera.gameObject.SetActive(false);
+        Light.gameObject.SetActive(false);
         UI.SetActive(false);
     }
 
@@ -340,8 +334,6 @@ public static class PlayerModelPreview
             }
         }
     }
-
-    private static string CurrentWall = "stone_wall_4x2";
 
     private static void ResetWall(string newWall)
     {
