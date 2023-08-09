@@ -149,6 +149,7 @@ public static class Transmogrification_UI
                     transmogElement.transform.Find("Add").gameObject.SetActive(false);
                     transmogElement.transform.Find("HEX").gameObject.SetActive(false);
                     transmogElement.transform.Find("ColorText").gameObject.SetActive(false);
+                    transmogElement.transform.Find("Preview").gameObject.SetActive(false);
                 }
             }
 
@@ -177,6 +178,7 @@ public static class Transmogrification_UI
                     transmogElement.transform.Find("Add").gameObject.SetActive(false);
                     transmogElement.transform.Find("HEX").gameObject.SetActive(false);
                     transmogElement.transform.Find("ColorText").gameObject.SetActive(false);
+                    transmogElement.transform.Find("Preview").gameObject.SetActive(false);
                 }
             }
 
@@ -202,7 +204,6 @@ public static class Transmogrification_UI
                 transmogElement.transform.Find("ItemName").GetComponent<Text>().text = data.GetLocalizedName();
                 transmogElement.transform.Find("Icon/IconItem").GetComponent<Image>().sprite = data.GetIcon();
                 transmogElement.transform.Find("Price").GetComponent<Text>().text = data.GetLocalizedPrice();
-
                 string name = ZNetScene.instance.GetPrefab(data.Price_Prefab).GetComponent<ItemDrop>().m_itemData
                     .m_shared.m_name;
                 int amountInInventory = Player.m_localPlayer.m_inventory.CountItems(name);
@@ -243,6 +244,9 @@ public static class Transmogrification_UI
                     vfx21.transform.GetChild(0).name = "0";
                     vfx21.transform.Find("Page").GetComponent<Text>().text = "0";
                 }
+
+                transmogElement.transform.Find("Preview").GetComponent<Button>().onClick.AddListener(() =>
+                    MOnRightClick(transmogElement, data.Prefab, category, data.VFX_ID));
             }
         }
 
@@ -303,10 +307,26 @@ public static class Transmogrification_UI
                     vfx21.transform.GetChild(0).name = "0";
                     vfx21.transform.Find("Page").GetComponent<Text>().text = "0";
                 }
+
+                transmogElement.transform.Find("Preview").GetComponent<Button>().onClick.AddListener(() =>
+                    MOnRightClick(transmogElement, data.Prefab, category, data.VFX_ID));
             }
         }
 
         UpdateFillers();
+    }
+
+    private static void MOnRightClick(GameObject go, string prefab, ItemDrop.ItemData.ItemType category, int vfxID)
+    {
+        Color c = Color.white;
+        if (go.transform.Find("HEX").GetComponent<TMP_InputField>() is { } tmp &&
+            ColorUtility.TryParseHtmlString("#" + tmp.text, out Color test)) c = test;
+        if (vfxID >= 21)
+        {
+            int currentCounter = int.Parse(go.transform.Find("Premium").GetChild(0).name);
+            vfxID = currentCounter;
+        }
+        PlayerModelPreview.SetAsCurrent(PlayerModelPreview.CreatePlayerModel(prefab, category, c, vfxID));
     }
 
 
@@ -345,7 +365,7 @@ public static class Transmogrification_UI
             : data.VFX_ID;
 
         string hex = "#" + element.transform.Find("HEX").GetComponent<TMP_InputField>().text;
-        newTransmog.ItemColor = ColorUtility.TryParseHtmlString(hex, out _) ? hex : "#ffffff";
+        newTransmog.ItemColor = ColorUtility.TryParseHtmlString(hex, out _) ? hex : "";
         newTransmog.Save();
         ChoosenItem_Transform.Find("EIDF").gameObject.SetActive(true);
         GameObject eff = UnityEngine.Object.Instantiate(ClickEffect, ChoosenItem_Transform);

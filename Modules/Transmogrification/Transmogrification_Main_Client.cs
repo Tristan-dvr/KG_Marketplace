@@ -307,7 +307,7 @@ public static class Transmogrification_Main_Client
         }
     }
 
-    private static GameObject MEL_GetEffect(int index)
+    public static GameObject MEL_GetEffect(int index)
     {
         index--;
         if (index < 0 || index >= MEL_Effects.Count) return null;
@@ -385,8 +385,7 @@ public static class Transmogrification_Main_Client
                 int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGleftitem");
                 if (test > 0)
                 {
-                    GameObject go = UnityEngine.Object.Instantiate(MEL_GetEffect(test),
-                        __instance.m_leftItemInstance.transform);
+                    GameObject go = UnityEngine.Object.Instantiate(MEL_GetEffect(test), __instance.m_leftItemInstance.transform);
                     PSMeshRendererUpdater update = go.GetComponent<PSMeshRendererUpdater>();
                     update.MeshObject = go.transform.parent.gameObject;
                     update.UpdateMeshEffect();

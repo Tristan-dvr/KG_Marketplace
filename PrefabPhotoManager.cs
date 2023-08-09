@@ -226,8 +226,7 @@ public static class PhotoManager
                 }
 
                 spawn.transform.position = SpawnPoint - (min + max) / 2f;
-                Vector3 size = new Vector3(Mathf.Abs(min.x) + Mathf.Abs(max.x), Mathf.Abs(min.y) + Mathf.Abs(max.y),
-                    Mathf.Abs(min.z) + Mathf.Abs(max.z));
+                Vector3 size = new Vector3(Mathf.Abs(min.x) + Mathf.Abs(max.x), Mathf.Abs(min.y) + Mathf.Abs(max.y), Mathf.Abs(min.z) + Mathf.Abs(max.z));
                 TimedDestruction timedDestruction = spawn.AddComponent<TimedDestruction>();
                 timedDestruction.Trigger(1f);
 
@@ -261,8 +260,7 @@ public static class PhotoManager
 
             renderObject.Spawn.SetActive(true);
             float maxMeshSize = Mathf.Max(renderObject.Size.x, renderObject.Size.y) + 0.1f;
-            float distance = maxMeshSize / Mathf.Tan(rendererCamera.fieldOfView * Mathf.Deg2Rad) *
-                             renderObject.Request.DistanceMultiplier;
+            float distance = maxMeshSize / Mathf.Tan(rendererCamera.fieldOfView * Mathf.Deg2Rad) * renderObject.Request.DistanceMultiplier;
             rendererCamera.transform.position = SpawnPoint + new Vector3(0, renderObject.Request.offset, distance);
             rendererCamera.Render();
             renderObject.Spawn.SetActive(false);
@@ -355,6 +353,12 @@ public static class PhotoManager
 
             return Convert.ToBase64String(previewImage.EncodeToPNG());
         }
+         
+         
+         
+         
+         
+         
         
     }
 }

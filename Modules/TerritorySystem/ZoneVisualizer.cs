@@ -80,6 +80,7 @@ public static class ZoneVisualizer
     }
 
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
+    [ClientOnlyPatch]
     private static class FejdStartup_Awake_Patch
     {
         private static void Postfix() => Off();

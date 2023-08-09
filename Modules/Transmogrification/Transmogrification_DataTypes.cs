@@ -62,7 +62,7 @@ public static class Transmogrification_DataTypes
             ReplacedPrefab = split[0];
             Variant = int.Parse(split[1]);
             VFX_ID = int.Parse(split[2]);
-            ItemColor = split.Length > 3 ? split[3] : "#ffffff";
+            ItemColor = split.Length > 3 ? split[3] : "";
         }
 
         public override void Save()

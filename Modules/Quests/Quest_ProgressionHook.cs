@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Emit;
 using Groups;
+using Mono.CSharp;
 
 namespace Marketplace.Modules.Quests;
 
@@ -33,16 +34,16 @@ public static class Quest_ProgressionHook
     {
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            MethodInfo target = AccessTools.Method(typeof(Gogan), nameof(Gogan.LogEvent));
-            MethodInfo method = AccessTools.DeclaredMethod(typeof(Quest_ProgressionHook), nameof(HookCrafting));
-            foreach (CodeInstruction instruction in instructions)
-            {
-                yield return instruction;
-                if (instruction.opcode == OpCodes.Call && instruction.OperandIs(target))
+            MethodInfo target = AccessTools.Method(typeof(Inventory), nameof(Inventory.AddItem),
+                new[]
                 {
-                    yield return new CodeInstruction(OpCodes.Call, method);
-                }
-            }
+                    typeof(string), typeof(int), typeof(int), typeof(int), typeof(long), typeof(string), typeof(bool)
+                });
+            MethodInfo method = AccessTools.DeclaredMethod(typeof(Quest_ProgressionHook), nameof(HookCrafting));
+            CodeMatcher matcher = new(instructions);
+            matcher.MatchForward(false, new CodeMatch(OpCodes.Callvirt, target));
+            if (matcher.IsInvalid) return instructions;
+            return matcher.Advance(2).Insert(new CodeInstruction(OpCodes.Call, method)).Instructions();
         }
     }
 

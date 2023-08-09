@@ -12,8 +12,7 @@ internal static class Market_Logger
         Trader,
         Transmog,
     }
-    
-    
+
     internal static void Log(LogType type, string message)
     {
         if(type is LogType.Trader && !Global_Values.EnableTraderLog) return;
@@ -29,8 +28,7 @@ internal static class Market_Logger
         };
         File.AppendAllText(Market_Paths.LoggerPath, LogStr);
     }
-    
-    
+
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     [ServerOnlyPatch]
     private static class ZNetScene_Awake_Patch

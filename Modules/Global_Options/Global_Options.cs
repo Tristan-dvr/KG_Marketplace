@@ -13,9 +13,10 @@ public static class Global_Values
             ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name
             : "$item_coins";
 
-    public static string _localUserID = "none";
+    public static string _localUserID = "NONE";
 
     [HarmonyPatch]
+    [ClientOnlyPatch]
     private static class Game_Awake_Patch
     {
         public static IEnumerable<MethodInfo> TargetMethods()
