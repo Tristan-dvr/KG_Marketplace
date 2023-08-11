@@ -6,7 +6,6 @@ public static class Market_Paths
 {
     public static string MainPath => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceKG");
     public static string NPC_SoundsPath => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceNPC_Sounds");
-    public static string OBJModelsFolder => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceNPC_OBJModels");
     public static string CachedImagesFolder => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceCachedImages");
     public static string DiscordStuffFolder => Path.Combine(MainPath, "DiscordWebhooks");
 
@@ -140,8 +139,6 @@ public static class Market_Paths
                 Directory.CreateDirectory(NPC_SoundsPath);
             if (!Directory.Exists(CachedImagesFolder))
                 Directory.CreateDirectory(CachedImagesFolder);
-            if (!Directory.Exists(OBJModelsFolder))
-                Directory.CreateDirectory(OBJModelsFolder);
         }
     }
 }

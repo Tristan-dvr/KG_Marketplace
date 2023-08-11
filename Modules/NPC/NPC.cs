@@ -1272,6 +1272,8 @@ public static class Market_NPC
                         EquipItemsOnModel(leftArm, leftItem, skin);
                         EquipItemsOnModel(rightgArm, rightItem, skin);
                         EquipItemsOnModel(rightBack, rightBackItem, skin);
+                        
+                        
 
                         if (ZNetScene.instance.GetPrefab(leftBackItem))
                         {
