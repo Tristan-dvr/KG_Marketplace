@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using API;
 using Marketplace.Modules.Banker;
 using Marketplace.Modules.Buffer;
 using Marketplace.Modules.Feedback;
@@ -22,6 +23,7 @@ public static class Market_NPC
 {
     private static GameObject NPC;
     private static GameObject PinnedNPC;
+    private static readonly string[] TypeNames = Enum.GetNames(typeof(NPCType));
     private static readonly int SkinColor = Shader.PropertyToID("_SkinColor");
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
     private static readonly int SkinBumpMap = Shader.PropertyToID("_SkinBumpMap");
@@ -40,6 +42,7 @@ public static class Market_NPC
     private static class FejdStartup_Awake_Patch
     {
         private static bool done;
+
         private static void Postfix(FejdStartup __instance)
         {
             if (!done)
@@ -77,7 +80,7 @@ public static class Market_NPC
         NPC = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketPlaceNPC");
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
         NPC.AddComponent<NPCcomponent>();
-        NPC.transform.Find("TMP").gameObject.AddComponent<TextComponent>(); 
+        NPC.transform.Find("TMP").gameObject.AddComponent<TextComponent>();
         foreach (Animator animator in NPC.GetComponentsInChildren<Animator>(true))
         {
             if (animator.gameObject.name == "WomanNPC")
@@ -91,19 +94,11 @@ public static class Market_NPC
             }
         }
         NPCUI.Init();
-        NPCLoader_UI.Init();
         Marketplace.Global_Updator += UpdateNPCGUI;
     }
 
     private static void UpdateNPCGUI(float dt)
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && NPCLoader_UI.IsVisible())
-        {
-            NPCLoader_UI.Hide();
-            Menu.instance.OnClose();
-            return;
-        }
-
         if (Input.GetKeyDown(KeyCode.Escape) && NPCUI.IsVisible())
         {
             NPCUI.Hide();
@@ -124,7 +119,7 @@ public static class Market_NPC
                 GameObject inactive = new GameObject("InactiveMPASN");
                 Object.DontDestroyOnLoad(inactive);
                 inactive.SetActive(false);
-                PinnedNPC = Object.Instantiate(NPC, inactive.transform); 
+                PinnedNPC = Object.Instantiate(NPC, inactive.transform);
                 PinnedNPC.name = "MarketPlaceNPCpinned";
                 PinnedNPC.GetComponent<Piece>().m_name += " <color=#00FFFF>(Map Pin Visible)</color>";
             }
@@ -144,6 +139,7 @@ public static class Market_NPC
             {
                 material.shader = Shader.Find("Custom/Creature");
             }
+
             __instance.m_namedPrefabs.Add(defaultnpc.name.GetStableHashCode(), defaultnpc);
         }
     }
@@ -166,10 +162,10 @@ public static class Market_NPC
     {
         private static void Postfix(ref bool __result)
         {
-            if (NPCLoader_UI.IsVisible() || NPCUI.IsVisible()) __result = true;
+            if (NPCUI.IsVisible()) __result = true;
         }
     }
-    
+
     [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
     [ClientOnlyPatch]
     private static class Chat_InputText_Patch_AdminCommands
@@ -191,22 +187,14 @@ public static class Market_NPC
                     {
                         name = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);
                     }
+
                     total += $"\n{c + 1}) {name} {npc.transform.position}";
                     ZDOMan.instance.m_destroySendList.Add(npc.znv.m_zdo.m_uid);
                 }
+
                 args.Context.AddString($"Removed total {c} NPCs in range:{total}");
             });
-
-            new Terminal.ConsoleCommand("npc save", "Save all loaded NPCs", (args) =>
-            {
-                if (!Utils.IsDebug) return;
-                foreach (NPCcomponent npc in NPCcomponent.ALL)
-                {
-                    if (!npc.pastOverrideModel) continue;
-                    NPCLoader_UI.Save(npc, out string text);
-                    args.Context.AddString(text);
-                }
-            });
+            
 
             new Terminal.ConsoleCommand("idm", "Get Current Left/Right ItemDataManager values", (args) =>
             {
@@ -223,15 +211,16 @@ public static class Market_NPC
                 string IDM = JSON.ToNiceJSON(weapon.m_customData);
                 args.Context.AddString($"IDM for {weapon.m_dropPrefab.name}:\n{IDM}");
             });
-            
-            new Terminal.ConsoleCommand("mpos", "Get Current Position", (args) =>
-            {
-                args.Context.AddString($"<color=green>Position: {Player.m_localPlayer.transform.position}</color>");
-            });
-            
+
+            new Terminal.ConsoleCommand("mpos", "Get Current Position",
+                (args) =>
+                {
+                    args.Context.AddString($"<color=green>Position: {Player.m_localPlayer.transform.position}</color>");
+                });
+
             new Terminal.ConsoleCommand("mfpslimit", "Set Fixed Update FPS", (args) =>
             {
-                if(!Utils.IsDebug || args.Args.Length < 2) return;
+                if (!Utils.IsDebug || args.Args.Length < 2) return;
                 int fps = int.Parse(args.Args[1]);
                 fps = Mathf.Clamp(fps, 50, 144);
                 float time = 1f / fps;
@@ -321,7 +310,7 @@ public static class Market_NPC
 
         private void OnAnimatorIK(int layerIndex)
         {
-            if(!_znet.IsValid()) return;
+            if (!_znet.IsValid()) return;
             if (animator && Player.m_localPlayer)
             {
                 float speed = 2f;
@@ -356,7 +345,6 @@ public static class Market_NPC
         private const string PatrolData = "KGmarket PatrolData";
         private const string LatestPatrolPoint = "KGmarket LatestPatrolPoint";
         private const string GoBackPatrol = "KGmarket GoBack";
-        private readonly string[] TypeNames = Enum.GetNames(typeof(NPCType));
 
         public static readonly List<NPCcomponent> ALL = new();
         public ZNetView znv;
@@ -385,7 +373,7 @@ public static class Market_NPC
                     ccomponent.CustomUpdate();
             }
         }
-        
+
         [HarmonyPatch(typeof(MonoUpdaters), nameof(MonoUpdaters.FixedUpdate))]
         [ClientOnlyPatch]
         private static class MonoUpdaters_FixedUpdate_Patch
@@ -396,7 +384,6 @@ public static class Market_NPC
                     ccomponent.CustomFixedUpdate();
             }
         }
-        
 
 
         private void OnDestroy()
@@ -433,7 +420,7 @@ public static class Market_NPC
                 PatrolArray = null;
             }
         }
-        
+
         private void CustomUpdate()
         {
             PatrolTime += Time.deltaTime;
@@ -446,7 +433,7 @@ public static class Market_NPC
                 zanim.SetFloat(Character.s_forwardSpeed, ForwardSpeed * 1.5f);
             int currentPatrolPoint = znv.m_zdo.GetInt(LatestPatrolPoint);
             Vector2 currentPos = new Vector2(transform.position.x, transform.position.z);
-            Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint], 
+            Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint],
                 Time.deltaTime * ForwardSpeed);
             Vector3 targetPoint = new Vector3(move.x, transform.position.y, move.y);
             Utils.CustomFindFloor(targetPoint, out float height);
@@ -631,14 +618,12 @@ public static class Market_NPC
         public string GetHoverText()
         {
             if (Menu.IsVisible()) return "";
-            
+
             string admintext = Utils.IsDebug
                 ? "\n" + Localization.instance.Localize("[<color=yellow><b>$KEY_AltPlace + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_opennnpcui") +
                   "\n" + Localization.instance.Localize("[<color=yellow><b>ALT + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_fashionmenu") +
-                  "\n" + Localization.instance.Localize("[<color=yellow><b>C + $KEY_Use</b></color>]") +
-                  " " + Localization.instance.Localize("$mpasn_npcsaveload") +
                   "\n" + Localization.instance.Localize("[<color=red><b>DELETE + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_removenpc")
                 : "";
@@ -657,7 +642,7 @@ public static class Market_NPC
         {
             return znv.m_zdo.GetString("KGnpcNameOverride");
         }
-        
+
         public string GetClearNPCName()
         {
             return Regex.Replace(GetNPCName(), @"<\/?(?!color\b)\w+[^>]*>", "");
@@ -725,21 +710,15 @@ public static class Market_NPC
                 NPC_SoundSource.Play();
             }
 
-            if (Input.GetKey(KeyCode.C) && Utils.IsDebug)
-            {
-                NPCLoader_UI.Show(this);
-                return true;
-            }
-
             if (Input.GetKey(KeyCode.LeftAlt) && Utils.IsDebug)
             {
-                NPCUI.ShowFashion(this);
+                NPCUI.ShowFashion(this.znv.m_zdo);
                 return true;
             }
 
             if (alt && Utils.IsDebug)
             {
-                NPCUI.ShowMain(this);
+                NPCUI.ShowMain(this.znv.m_zdo);
                 return true;
             }
 
@@ -789,7 +768,8 @@ public static class Market_NPC
                 znv.m_zdo.Set("KGgreetingText", fashion.GreetText);
                 znv.m_zdo.Set("KGbyeText", fashion.ByeText);
                 znv.m_zdo.Set("KGskinColor", fashion.SkinColor);
-                znv.m_zdo.Set("KGcraftingAnimation", int.TryParse(fashion.CraftingAnimation, out int craftingZDO) ? craftingZDO : 0);
+                znv.m_zdo.Set("KGcraftingAnimation",
+                    int.TryParse(fashion.CraftingAnimation, out int craftingZDO) ? craftingZDO : 0);
                 znv.m_zdo.Set("KGbeardItem", fashion.BeardItem);
                 znv.m_zdo.Set("KGbeardColor", fashion.BeardColor);
                 znv.m_zdo.Set("KGinteractSound", fashion.InteractAudioClip);
@@ -805,13 +785,15 @@ public static class Market_NPC
                         : 0f);
                 znv.m_zdo.Set("KGperiodicAnimation", fashion.PeriodicAnimation);
                 znv.m_zdo.Set("KGperiodicAnimationTime",
-                    float.TryParse(fashion.PeriodicAnimationTime, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
+                    float.TryParse(fashion.PeriodicAnimationTime, NumberStyles.AllowDecimalPoint,
+                        CultureInfo.InvariantCulture,
                         out float periodicAnimationTimeZDO)
                         ? periodicAnimationTimeZDO
                         : 0f);
                 znv.m_zdo.Set("KGperiodicSound", fashion.PeriodicSound);
                 znv.m_zdo.Set("KGperiodicSoundTime",
-                    float.TryParse(fashion.PeriodicSoundTime, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
+                    float.TryParse(fashion.PeriodicSoundTime, NumberStyles.AllowDecimalPoint,
+                        CultureInfo.InvariantCulture,
                         out float periodicSoundTimeZDO)
                         ? periodicSoundTimeZDO
                         : 0f);
@@ -967,7 +949,6 @@ public static class Market_NPC
                 t.gameObject.SetActive(true);
                 zanim.m_animator = t.GetComponentInChildren<Animator>(true);
             }
-                
         }
 
         private void OverrideName(long sender, string newName)
@@ -979,6 +960,7 @@ public static class Market_NPC
 
         private void ChangeProfile(long sender, string profile, string dialogue)
         {
+            Utils.print($"Internal change profile set. Profile: {profile} Dialogue: {dialogue}");
             if (znv.IsOwner())
             {
                 if (string.IsNullOrWhiteSpace(profile)) profile = "default";
@@ -1169,7 +1151,7 @@ public static class Market_NPC
 
             AttachArmor(prefab.GetStableHashCode(), joint, capsule);
         }
-        
+
 
         private bool TryOverrideModel(ref string prefab, out bool isFemale, bool EquipItems = true)
         {
@@ -1248,6 +1230,7 @@ public static class Market_NPC
                     ParticleSystem.EmissionModule em = particleSystem.emission;
                     em.enabled = false;
                 }
+
                 pastOverrideModel.layer = LayerMask.NameToLayer("character");
                 Utils.CopyComponent(col, pastOverrideModel);
                 pastOverrideModel.transform.localPosition = Vector3.zero;
@@ -1383,7 +1366,7 @@ public static class Market_NPC
 
         private void ChangeNpcType(long sende, int index)
         {
-            if (_currentNpcType == (NPCType)index) return; 
+            if (_currentNpcType == (NPCType)index) return;
             if (znv.IsOwner()) znv.m_zdo.Set("KGmarketNPC", index);
             _currentNpcType = (NPCType)index;
             OverrideModel(0, znv.m_zdo.GetString("KGnpcModelOverride"));
@@ -1437,7 +1420,7 @@ public static class Market_NPC
 
         public void Damage(HitData hit)
         {
-            if(!znv.IsValid() || !zanim.m_animator) return;
+            if (!znv.IsValid() || !zanim.m_animator) return;
             zanim?.SetTrigger("stagger");
         }
 
@@ -1447,239 +1430,13 @@ public static class Market_NPC
         }
     }
 
+    
 
-   
-
-    private static class NPCLoader_UI
+    public static class NPCUI
     {
+        private static Action _callback;
         private static GameObject UI;
-        private static GameObject Element_GO;
-        private static Transform Content;
-        private static InputField Input;
-        private static Transform ShowImage;
-        private static readonly List<GameObject> Elements = new();
-
-        private static NPCcomponent _currentNPC;
-
-        public static bool IsVisible()
-        {
-            return UI && UI.activeSelf;
-        }
-
-
-        public static void Init()
-        {
-            UI = Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("LoadNPC_UI"));
-            Element_GO = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("LoadNPC_Element");
-            Content = UI.transform.Find("Canvas/View_Profiles/CraftView/Scroll View/Viewport/Content");
-            Input = UI.transform.Find("Canvas/View_Profiles/InputField").GetComponent<InputField>();
-            Object.DontDestroyOnLoad(UI);
-            UI.SetActive(false);
-            UI.transform.Find("Canvas/View_Profiles/Button").GetComponent<Button>().onClick.AddListener(SaveProfile);
-            ShowImage = UI.transform.Find("Canvas/View_Profiles/ShowImage");
-            Localization.instance.Localize(UI.transform);
-        }
-
-        private static void LoadProfiles()
-        {
-            string folderPath = Path.Combine(BepInEx.Paths.ConfigPath, "SavedNPCs");
-            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
-            string[] files = Directory.GetFiles(folderPath, "*.json");
-            Dictionary<string, NPC_DataTypes.NpcData> dictionary = new();
-            foreach (string file in files)
-            {
-                try
-                {
-                    string fileName = Path.GetFileNameWithoutExtension(file);
-                    string json = File.ReadAllText(file);
-                    NPC_DataTypes.NpcData data = JSON.ToObject<NPC_DataTypes.NpcData>(json);
-                    dictionary[fileName] = data;
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-
-            foreach (GameObject element in Elements)
-                Object.Destroy(element);
-            Elements.Clear();
-            foreach (KeyValuePair<string, NPC_DataTypes.NpcData> pair in dictionary)
-            {
-                GameObject element = Object.Instantiate(Element_GO, Content);
-                element.transform.Find("Text").GetComponent<Text>().text = pair.Key;
-                element.GetComponent<Button>().onClick.AddListener(() => LoadProfile(pair.Value));
-                Elements.Add(element);
-                element.AddComponent<HoverOnButton_WithImage>()
-                    .Setup(pair.Key, ShowImage, pair.Value.IMAGE);
-            }
-        }
-
-        private static void LoadProfile(NPC_DataTypes.NpcData data)
-        {
-            AssetStorage.AssetStorage.AUsrc.Play();
-            if (_currentNPC == null || _currentNPC.znv == null || !_currentNPC.znv.IsValid())
-            {
-                Hide();
-                return;
-            }
-
-            _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket overridemodel", data.PrefabOverride);
-            string combine =
-                $"{data.LeftItem}|{data.RightItem}|{data.HelmetItem}|{data.ChestItem}|{data.LegsItem}|{data.CapeItem}|" +
-                $"{data.HairItem}|{data.HairItemColor}|{data.ModelScale}|{data.LeftItemHidden}|{data.RightItemHidden}|" +
-                $"{data.NPCinteractAnimation}|{data.NPCgreetAnimation}|{data.NPCbyeAnimation}|{data.NPCgreetText}|{data.NPCbyeText}|{data.SkinColor}|{data.NPCcraftingAnimation}|" +
-                $"{data.BeardItem}|{data.BeardItemColor}|{data.InteractAudioClip}|FONT|{data.TextSize}|{data.TextHeight}|{data.PeriodicAnimation}|" +
-                $"{data.PeriodicAnimationTime}|{data.PeriodicSound}|{data.PeriodicSoundTime}";
-            _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket fashion", combine);
-            Hide();
-        }
-
-        public static void Save(NPCcomponent npc, out string text)
-        {
-            text = "";
-            string NPCName = npc.GetClearNPCName();
-            if (string.IsNullOrEmpty(NPCName))
-            {
-                NPCName = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);
-            }
-
-            string ReplaceInvalidChars(string filename)
-            {
-                return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
-            }
-
-            NPCName += $" {npc.transform.position}";
-            NPCName = ReplaceInvalidChars(NPCName);
-            string folderPath = Path.Combine(BepInEx.Paths.ConfigPath, "SavedNPCs");
-            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
-            string fileName = NPCName + ".json";
-            string filePath = Path.Combine(folderPath, fileName);
-            if (!File.Exists(filePath)) File.Create(filePath).Close();
-            NPC_DataTypes.NpcData newData = new()
-            {
-                PrefabOverride = npc.znv.m_zdo.GetString("KGnpcModelOverride"),
-                LeftItem = npc.znv.m_zdo.GetString("KGleftItem"),
-                LeftItemHidden = npc.znv.m_zdo.GetString("KGLeftItemBack"),
-                RightItemHidden = npc.znv.m_zdo.GetString("KGRightItemBack"),
-                RightItem = npc.znv.m_zdo.GetString("KGrightItem"),
-                HelmetItem = npc.znv.m_zdo.GetString("KGhelmetItem"),
-                ChestItem = npc.znv.m_zdo.GetString("KGchestItem"),
-                LegsItem = npc.znv.m_zdo.GetString("KGlegsItem"),
-                HairItem = npc.znv.m_zdo.GetString("KGhairItem"),
-                HairItemColor = npc.znv.m_zdo.GetString("KGhairItemColor"),
-                CapeItem = npc.znv.m_zdo.GetString("KGcapeItem"),
-                ModelScale = npc.znv.m_zdo.GetFloat("KGnpcScale", 1f).ToString(CultureInfo.InvariantCulture),
-                NPCinteractAnimation = npc.znv.m_zdo.GetString("KGinteractAnimation"),
-                NPCgreetAnimation = npc.znv.m_zdo.GetString("KGgreetingAnimation"),
-                NPCbyeAnimation = npc.znv.m_zdo.GetString("KGbyeAnimation"),
-                NPCgreetText = npc.znv.m_zdo.GetString("KGgreetingText"),
-                NPCbyeText = npc.znv.m_zdo.GetString("KGbyeText"),
-                SkinColor = npc.znv.m_zdo.GetString("KGskinColor"),
-                NPCcraftingAnimation = npc.znv.m_zdo.GetInt("KGcraftingAnimation").ToString(),
-                BeardItem = npc.znv.m_zdo.GetString("KGbeardItem"),
-                BeardItemColor = npc.znv.m_zdo.GetString("KGbeardColor"),
-                InteractAudioClip = npc.znv.m_zdo.GetString("KGinteractSound"),
-                TextSize = npc.znv.m_zdo.GetFloat("KGtextSize", 3).ToString(CultureInfo.InvariantCulture),
-                TextHeight = npc.znv.m_zdo.GetFloat("KGtextHeight").ToString(CultureInfo.InvariantCulture),
-                PeriodicAnimation = npc.znv.m_zdo.GetString("KGperiodicAnimation"),
-                PeriodicAnimationTime = npc.znv.m_zdo.GetFloat("KGperiodicAnimationTime")
-                    .ToString(CultureInfo.InvariantCulture),
-                PeriodicSound = npc.znv.m_zdo.GetString("KGperiodicSound"),
-                PeriodicSoundTime = npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture),
-                IMAGE = PhotoManager.__instance.NPC_Photo(npc)
-            };
-            string json = JSON.ToNiceJSON(newData);
-            File.WriteAllText(filePath, json);
-            text = $"Saved {NPCName}";
-        }
-
-
-        private static void SaveProfile()
-        {
-            AssetStorage.AssetStorage.AUsrc.Play();
-            if (_currentNPC == null || _currentNPC.znv == null || !_currentNPC.znv.IsValid())
-            {
-                Hide();
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(Input.text)) return;
-            string folderPath = Path.Combine(BepInEx.Paths.ConfigPath, "SavedNPCs");
-            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
-            string fileName = Input.text + ".json";
-            Input.text = "";
-            string filePath = Path.Combine(folderPath, fileName);
-            if (!File.Exists(filePath)) File.Create(filePath).Close();
-            NPC_DataTypes.NpcData newData = new()
-            {
-                PrefabOverride = _currentNPC.znv.m_zdo.GetString("KGnpcModelOverride"),
-                LeftItem = _currentNPC.znv.m_zdo.GetString("KGleftItem"),
-                LeftItemHidden = _currentNPC.znv.m_zdo.GetString("KGLeftItemBack"),
-                RightItemHidden = _currentNPC.znv.m_zdo.GetString("KGRightItemBack"),
-                RightItem = _currentNPC.znv.m_zdo.GetString("KGrightItem"),
-                HelmetItem = _currentNPC.znv.m_zdo.GetString("KGhelmetItem"),
-                ChestItem = _currentNPC.znv.m_zdo.GetString("KGchestItem"),
-                LegsItem = _currentNPC.znv.m_zdo.GetString("KGlegsItem"),
-                HairItem = _currentNPC.znv.m_zdo.GetString("KGhairItem"),
-                HairItemColor = _currentNPC.znv.m_zdo.GetString("KGhairItemColor"),
-                CapeItem = _currentNPC.znv.m_zdo.GetString("KGcapeItem"),
-                ModelScale = _currentNPC.znv.m_zdo.GetFloat("KGnpcScale", 1f).ToString(CultureInfo.InvariantCulture),
-                NPCinteractAnimation = _currentNPC.znv.m_zdo.GetString("KGinteractAnimation"),
-                NPCgreetAnimation = _currentNPC.znv.m_zdo.GetString("KGgreetingAnimation"),
-                NPCbyeAnimation = _currentNPC.znv.m_zdo.GetString("KGbyeAnimation"),
-                NPCgreetText = _currentNPC.znv.m_zdo.GetString("KGgreetingText"),
-                NPCbyeText = _currentNPC.znv.m_zdo.GetString("KGbyeText"),
-                SkinColor = _currentNPC.znv.m_zdo.GetString("KGskinColor"),
-                NPCcraftingAnimation = _currentNPC.znv.m_zdo.GetInt("KGcraftingAnimation").ToString(),
-                BeardItem = _currentNPC.znv.m_zdo.GetString("KGbeardItem"),
-                BeardItemColor = _currentNPC.znv.m_zdo.GetString("KGbeardColor"),
-                InteractAudioClip = _currentNPC.znv.m_zdo.GetString("KGinteractSound"),
-                TextSize = _currentNPC.znv.m_zdo.GetFloat("KGtextSize", 3).ToString(CultureInfo.InvariantCulture),
-                TextHeight = _currentNPC.znv.m_zdo.GetFloat("KGtextHeight").ToString(CultureInfo.InvariantCulture),
-                PeriodicAnimation = _currentNPC.znv.m_zdo.GetString("KGperiodicAnimation"),
-                PeriodicAnimationTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicAnimationTime")
-                    .ToString(CultureInfo.InvariantCulture),
-                PeriodicSound = _currentNPC.znv.m_zdo.GetString("KGperiodicSound"),
-                PeriodicSoundTime = _currentNPC.znv.m_zdo.GetFloat("KGperiodicSoundTime")
-                    .ToString(CultureInfo.InvariantCulture),
-                IMAGE = PhotoManager.__instance.NPC_Photo(_currentNPC)
-            };
-            string json = JSON.ToNiceJSON(newData);
-            File.WriteAllText(filePath, json);
-            LoadProfiles();
-        }
-
-
-        private static void Default()
-        {
-            Input.text = "";
-            Elements.ForEach(Object.Destroy);
-            Elements.Clear();
-            ShowImage.gameObject.SetActive(false);
-        }
-
-        public static void Hide()
-        {
-            _currentNPC = null;
-            Default();
-            UI.SetActive(false);
-        }
-
-        public static void Show(NPCcomponent npc)
-        {
-            if (!npc) return;
-            _currentNPC = npc;
-            Default();
-            UI.SetActive(true);
-            LoadProfiles();
-        }
-    }
-
-    private static class NPCUI
-    {
-        private static GameObject UI;
-        private static NPCcomponent _currentNPC;
+        private static ZDO _currentNPC;
         private static GameObject MAIN;
         private static GameObject FASHION;
         private static Transform NPCTypeButtons;
@@ -1803,11 +1560,12 @@ public static class Market_NPC
         private static void ApplyFashion()
         {
             AssetStorage.AssetStorage.AUsrc.Play();
-            if (!_currentNPC)
+            if (_currentNPC == null || !_currentNPC.IsValid())
             {
                 Hide();
                 return;
             }
+
             NPC_DataTypes.NPC_Fashion fashion = new()
             {
                 LeftItem = LeftItemFashion.text,
@@ -1838,7 +1596,41 @@ public static class Market_NPC
                 PeriodicSound = PeriodicSound.text,
                 PeriodicSoundTime = PeriodicSoundTime.text
             };
-            _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket fashion", fashion);
+            if (_currentNPC.HasOwner())
+            {
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZNetView.Everybody, _currentNPC.m_uid, "KGmarket fashion", fashion);
+            }
+            else
+            {
+                _currentNPC.NPC_LeftItem(fashion.LeftItem);
+                _currentNPC.NPC_RightItem(fashion.RightItem);
+                _currentNPC.NPC_HelmetItem(fashion.HelmetItem);
+                _currentNPC.NPC_ChestItem(fashion.ChestItem);
+                _currentNPC.NPC_LegsItem(fashion.LegsItem);
+                _currentNPC.NPC_CapeItem(fashion.CapeItem);
+                _currentNPC.NPC_HairItem(fashion.HairItem);
+                _currentNPC.NPC_HairColor(fashion.HairColor);
+                _currentNPC.NPC_NPCScale(fashion.ModelScale);
+                _currentNPC.NPC_LeftItemBack(fashion.LeftItemHidden);
+                _currentNPC.NPC_RightItemBack(fashion.RightItemHidden);
+                _currentNPC.NPC_InteractAnimation(fashion.InteractAnimation);
+                _currentNPC.NPC_GreetingAnimation(fashion.GreetAnimation);
+                _currentNPC.NPC_ByeAnimation(fashion.ByeAnimation);
+                _currentNPC.NPC_GreetingText(fashion.GreetText);
+                _currentNPC.NPC_ByeText(fashion.ByeText);
+                _currentNPC.NPC_SkinColor(fashion.SkinColor);
+                _currentNPC.NPC_CraftingAnimation(fashion.CraftingAnimation);
+                _currentNPC.NPC_BeardItem(fashion.BeardItem);
+                _currentNPC.NPC_BeardColor(fashion.BeardColor);
+                _currentNPC.NPC_InteractSound(fashion.InteractAudioClip);
+                _currentNPC.NPC_TextSize(fashion.TextSize);
+                _currentNPC.NPC_TextHeight(fashion.TextHeight);
+                _currentNPC.NPC_PeriodicAnimation(fashion.PeriodicAnimation);
+                _currentNPC.NPC_PeriodicAnimationTime(fashion.PeriodicAnimationTime);
+                _currentNPC.NPC_PeriodicSound(fashion.PeriodicSound);
+                _currentNPC.NPC_PeriodicSoundTime(fashion.PeriodicSoundTime);
+            }
+            _callback?.Invoke();
             Hide();
         }
 
@@ -1850,24 +1642,37 @@ public static class Market_NPC
             rot.x = 0;
             rot.z = 0;
             pkg.Write(rot);
-            _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket snapandrotate", pkg);
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZNetView.Everybody, _currentNPC.m_uid, "KGmarket snapandrotate", pkg);
             Hide();
         }
 
         private static void ApplyMain()
         {
             AssetStorage.AssetStorage.AUsrc.Play();
-            if (!_currentNPC)
+            if (_currentNPC == null || !_currentNPC.IsValid())
             {
                 Hide();
                 return;
             }
 
-            _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGMarket changeNpcType", (int)_currentType);
-            _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket overridename", _npcname.text);
-            _currentNPC.znv.InvokeRPC("KGmarket changeprofile", _npcprofile.text, _npcDialogue.text);
-            _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket overridemodel", _npcmodel.text);
-            _currentNPC.znv.InvokeRPC(ZNetView.Everybody, "KGmarket GetPatrolData", _patroldata.text);
+            if (_currentNPC.HasOwner())
+            {
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, _currentNPC.m_uid, "KGMarket changeNpcType", (int)_currentType);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, _currentNPC.m_uid, "KGmarket overridename", _npcname.text);
+                ZRoutedRpc.instance.InvokeRoutedRPC(_currentNPC.GetOwner(),_currentNPC.m_uid, "KGmarket changeprofile",  _npcprofile.text, _npcDialogue.text);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody,_currentNPC.m_uid, "KGmarket overridemodel",  _npcmodel.text);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody,_currentNPC.m_uid, "KGmarket GetPatrolData",  _patroldata.text);
+            }
+            else
+            {
+                _currentNPC.NPC_Type((API.Marketplace_API.NPCType)_currentType);
+                _currentNPC.NPC_Name(_npcname.text);
+                _currentNPC.NPC_Profile(_npcprofile.text);
+                _currentNPC.NPC_Dialogue(_npcDialogue.text);
+                _currentNPC.NPC_Model(_npcmodel.text);
+                _currentNPC.NPC_PatrolData(_patroldata.text);
+            }
+            _callback?.Invoke();
             Hide();
         }
 
@@ -1891,56 +1696,60 @@ public static class Market_NPC
             }
         }
 
-        public static void ShowFashion(NPCcomponent _npc)
+        public static void ShowFashion(ZDO _npc, Action callback = null)
         {
             FASHION.SetActive(true);
             MAIN.SetActive(false);
             _currentNPC = _npc;
-            LeftItemFashion.text = _npc.znv.m_zdo.GetString("KGleftItem");
-            LeftItemHiddenFashion.text = _npc.znv.m_zdo.GetString("KGLeftItemBack");
-            RightItemHiddenFashion.text = _npc.znv.m_zdo.GetString("KGRightItemBack");
-            RightItemFashion.text = _npc.znv.m_zdo.GetString("KGrightItem");
-            HelmetItemFashion.text = _npc.znv.m_zdo.GetString("KGhelmetItem");
-            ChestItemFashion.text = _npc.znv.m_zdo.GetString("KGchestItem");
-            LegsItemFashion.text = _npc.znv.m_zdo.GetString("KGlegsItem");
-            HairItemFashion.text = _npc.znv.m_zdo.GetString("KGhairItem");
-            HairItemFashionColor.text = _npc.znv.m_zdo.GetString("KGhairItemColor");
-            CapeItemFashion.text = _npc.znv.m_zdo.GetString("KGcapeItem");
-            ModelScaleFashion.text = _npc.znv.m_zdo.GetFloat("KGnpcScale", 1f).ToString(CultureInfo.InvariantCulture);
-            NPCinteractAnimation.text = _npc.znv.m_zdo.GetString("KGinteractAnimation");
-            NPCgreetAnimation.text = _npc.znv.m_zdo.GetString("KGgreetingAnimation");
-            NPCbyeAnimation.text = _npc.znv.m_zdo.GetString("KGbyeAnimation");
-            NPCgreetText.text = _npc.znv.m_zdo.GetString("KGgreetingText");
-            NPCbyeText.text = _npc.znv.m_zdo.GetString("KGbyeText");
-            SkinColorFashion.text = _npc.znv.m_zdo.GetString("KGskinColor");
-            NPCcraftingAnimation.text = _npc.znv.m_zdo.GetInt("KGcraftingAnimation").ToString();
-            BeardItemFashion.text = _npc.znv.m_zdo.GetString("KGbeardItem");
-            BeardItemFashionColor.text = _npc.znv.m_zdo.GetString("KGbeardColor");
-            InteractAudioClip.text = _npc.znv.m_zdo.GetString("KGinteractSound");
-            TextSize.text = _npc.znv.m_zdo.GetFloat("KGtextSize", 3).ToString(CultureInfo.InvariantCulture);
-            TextHeight.text = _npc.znv.m_zdo.GetFloat("KGtextHeight").ToString(CultureInfo.InvariantCulture);
-            PeriodicAnimation.text = _npc.znv.m_zdo.GetString("KGperiodicAnimation");
-            PeriodicAnimationTime.text = _npc.znv.m_zdo.GetFloat("KGperiodicAnimationTime")
+            LeftItemFashion.text = _npc.GetString("KGleftItem");
+            LeftItemHiddenFashion.text = _npc.GetString("KGLeftItemBack");
+            RightItemHiddenFashion.text = _npc.GetString("KGRightItemBack");
+            RightItemFashion.text = _npc.GetString("KGrightItem");
+            HelmetItemFashion.text = _npc.GetString("KGhelmetItem");
+            ChestItemFashion.text = _npc.GetString("KGchestItem");
+            LegsItemFashion.text = _npc.GetString("KGlegsItem");
+            HairItemFashion.text = _npc.GetString("KGhairItem");
+            HairItemFashionColor.text = _npc.GetString("KGhairItemColor");
+            CapeItemFashion.text = _npc.GetString("KGcapeItem");
+            ModelScaleFashion.text = _npc.GetFloat("KGnpcScale", 1f).ToString(CultureInfo.InvariantCulture);
+            NPCinteractAnimation.text = _npc.GetString("KGinteractAnimation");
+            NPCgreetAnimation.text = _npc.GetString("KGgreetingAnimation");
+            NPCbyeAnimation.text = _npc.GetString("KGbyeAnimation");
+            NPCgreetText.text = _npc.GetString("KGgreetingText");
+            NPCbyeText.text = _npc.GetString("KGbyeText");
+            SkinColorFashion.text = _npc.GetString("KGskinColor");
+            NPCcraftingAnimation.text = _npc.GetInt("KGcraftingAnimation").ToString();
+            BeardItemFashion.text = _npc.GetString("KGbeardItem");
+            BeardItemFashionColor.text = _npc.GetString("KGbeardColor");
+            InteractAudioClip.text = _npc.GetString("KGinteractSound");
+            TextSize.text = _npc.GetFloat("KGtextSize", 3).ToString(CultureInfo.InvariantCulture);
+            TextHeight.text = _npc.GetFloat("KGtextHeight").ToString(CultureInfo.InvariantCulture);
+            PeriodicAnimation.text = _npc.GetString("KGperiodicAnimation");
+            PeriodicAnimationTime.text = _npc.GetFloat("KGperiodicAnimationTime")
                 .ToString(CultureInfo.InvariantCulture);
-            PeriodicSound.text = _npc.znv.m_zdo.GetString("KGperiodicSound");
+            PeriodicSound.text = _npc.GetString("KGperiodicSound");
             PeriodicSoundTime.text =
-                _npc.znv.m_zdo.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture);
+                _npc.GetFloat("KGperiodicSoundTime").ToString(CultureInfo.InvariantCulture);
             UI.SetActive(true);
+            _callback = callback;
         }
 
-        public static void ShowMain(NPCcomponent _npc)
+        public static void ShowMain(ZDO _npc, Action callback = null)
         {
             FASHION.SetActive(false);
             MAIN.SetActive(true);
-            _currentType = _npc._currentNpcType;
-            _npcprofile.text = _npc.znv.m_zdo.GetString("KGnpcProfile", "default");
-            _npcname.text = _npc.znv.m_zdo.GetString("KGnpcNameOverride");
-            _npcmodel.text = _npc.znv.m_zdo.GetString("KGnpcModelOverride");
-            _patroldata.text = _npc.znv.m_zdo.GetString("KGmarket PatrolData");
-            _npcDialogue.text = _npc.znv.m_zdo.GetString("KGnpcDialogue");
+            int npcType = _npc.GetInt("KGmarketNPC");
+            if (npcType >= TypeNames.Length) npcType = 0;
+            _currentType = (NPCType)npcType;
+            _npcprofile.text = _npc.GetString("KGnpcProfile", "default");
+            _npcname.text = _npc.GetString("KGnpcNameOverride");
+            _npcmodel.text = _npc.GetString("KGnpcModelOverride");
+            _patroldata.text = _npc.GetString("KGmarket PatrolData");
+            _npcDialogue.text = _npc.GetString("KGnpcDialogue");
             _currentNPC = _npc;
             CheckColors();
             UI.SetActive(true);
+            _callback = callback;
         }
     }
 

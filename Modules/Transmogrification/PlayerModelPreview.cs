@@ -10,7 +10,6 @@ public static class PlayerModelPreview
     private static readonly Light Light;
     private static readonly Vector3 SpawnPoint = new(25000f, 25000f, 25000f);
     private static readonly GameObject UI;
-    private static bool IsCameraFlipped;
     private static float OriginalYPos;
     private static float OriginalCameraZPos;
     private static GameObject CurrentPreviewGO;
@@ -35,15 +34,12 @@ public static class PlayerModelPreview
                 StopPreview();
             });
         UI.transform.Find("Canvas/Preview/Background/Light").GetComponent<Button>().onClick.AddListener(ChangeLight);
-        UI.transform.Find("Canvas/Preview/Background/Wood").GetComponent<Button>().onClick.AddListener(() => ResetWall("woodwall"));
-        UI.transform.Find("Canvas/Preview/Background/Black").GetComponent<Button>().onClick.AddListener(() => ResetWall("woodwall@black"));
-        UI.transform.Find("Canvas/Preview/Background/Stone").GetComponent<Button>().onClick.AddListener(() => ResetWall("woodwall@grey"));
-        UI.transform.Find("Canvas/Preview/Background/Flip").GetComponent<Button>().onClick.AddListener(() =>
-        {
-            AssetStorage.AssetStorage.AUsrc.Play();
-            IsCameraFlipped = !IsCameraFlipped;
-            renderCamera!.projectionMatrix = Matrix4x4.Scale(new Vector3(-1, 1, 1)) * renderCamera.projectionMatrix;
-        });
+        UI.transform.Find("Canvas/Preview/Background/Wood").GetComponent<Button>().onClick
+            .AddListener(() => ResetWall("woodwall"));
+        UI.transform.Find("Canvas/Preview/Background/Black").GetComponent<Button>().onClick
+            .AddListener(() => ResetWall("woodwall@black"));
+        UI.transform.Find("Canvas/Preview/Background/Stone").GetComponent<Button>().onClick
+            .AddListener(() => ResetWall("woodwall@grey"));
         UnityEngine.Object.DontDestroyOnLoad(UI);
         UI.AddComponent<PreviewModelAngleController>();
         UI.SetActive(false);
@@ -55,7 +51,6 @@ public static class PlayerModelPreview
         renderCamera.fieldOfView = 0.5f;
         renderCamera.farClipPlane = 100000;
         renderCamera.targetTexture = new RenderTexture(2048, 2048, 32);
-        renderCamera.gameObject.AddComponent<CameraInvertCulling>();
         UnityEngine.Object.DontDestroyOnLoad(renderCamera);
         Light = new GameObject("Render Light", typeof(Light)).GetComponent<Light>();
         Light.transform.position = SpawnPoint;
@@ -152,7 +147,8 @@ public static class PlayerModelPreview
         else if (itemObj.transform.Find("attach_skin") is { } attach_skin)
         {
             var attachPoint = go.transform;
-            var armor = UnityEngine.Object.Instantiate(attach_skin.gameObject, attachPoint.position, attachPoint.rotation);
+            var armor = UnityEngine.Object.Instantiate(attach_skin.gameObject, attachPoint.position,
+                attachPoint.rotation);
             armor.SetActive(true);
             armor.GetComponentInChildren<SkinnedMeshRenderer>().rootBone = body.rootBone;
             armor.GetComponentInChildren<SkinnedMeshRenderer>().bones = body.bones;
@@ -287,19 +283,9 @@ public static class PlayerModelPreview
     {
         public void OnDrag(PointerEventData eventData)
         {
-            if (eventData.button == 0)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                if (eventData.button == PointerEventData.InputButton.Left) 
-                {
-                    if (!IsCameraFlipped)
-                    {
-                        CurrentPreviewGO.transform.Rotate(new Vector3(0, 1, 0), -eventData.delta.x / 2f, Space.World);
-                    }
-                    else
-                    {
-                        CurrentPreviewGO.transform.Rotate(new Vector3(0, 1, 0), eventData.delta.x / 2f, Space.World);
-                    }
-                }
+                CurrentPreviewGO.transform.Rotate(new Vector3(0, 1, 0), -eventData.delta.x / 2f, Space.World);
             }
 
             if (eventData.button == PointerEventData.InputButton.Right)
@@ -342,7 +328,7 @@ public static class PlayerModelPreview
 
         bool grey = newWall.Contains("@grey");
         bool black = newWall.Contains("@black");
-        string prefabName = newWall.Replace("@grey", "").Replace("@black","");
+        string prefabName = newWall.Replace("@grey", "").Replace("@black", "");
         GameObject wallObj = ZNetScene.instance.GetPrefab(prefabName);
         if (wallObj == null) return;
         Vector3 scale = new Vector3(1.3f, 1.3f, 0.2f);
@@ -356,12 +342,13 @@ public static class PlayerModelPreview
         position = new Vector3(position.x, position.y, position.z - 2f);
         BehindWallRender.transform.position = position;
         if (grey)
-            BehindWallRender.GetComponentInChildren<Renderer>().material.color  = Color.black;
+            BehindWallRender.GetComponentInChildren<Renderer>().material.color = Color.black;
 
         if (black)
         {
-            BehindWallRender.GetComponentInChildren<Renderer>().material.shader = Shader.Find("Standard (Specular setup)");
-            BehindWallRender.GetComponentInChildren<Renderer>().material.color  = Color.black;
+            BehindWallRender.GetComponentInChildren<Renderer>().material.shader =
+                Shader.Find("Standard (Specular setup)");
+            BehindWallRender.GetComponentInChildren<Renderer>().material.color = Color.black;
             BehindWallRender.GetComponentInChildren<Renderer>().material.SetColor("_SpecColor", Color.black);
         }
     }
@@ -415,19 +402,6 @@ public static class PlayerModelPreview
         if (Input.GetKeyDown(KeyCode.Escape) && IsVisible)
         {
             StopPreview();
-        }
-    }
-
-    public class CameraInvertCulling : MonoBehaviour
-    {
-        private void OnPreCull()
-        {
-            GL.invertCulling = IsCameraFlipped;
-        }
-
-        private void OnPostRender()
-        {
-            GL.invertCulling = false;
         }
     }
 }

@@ -17,6 +17,7 @@ public static class AssetStorage
     public static GameObject MarketplaceQuestQuestionIcon;
     public static Sprite PlaceholderMonsterIcon;
     public static Sprite PlaceholderGamblerIcon;
+    public static Sprite NPC_MapControl;
     public static Sprite EpicMMO_Exp;
     public static Sprite Cozyheim_Exp;
     public static Sprite Battlepass_EXP_Icon;
@@ -61,8 +62,7 @@ public static class AssetStorage
         Texture2D cozyheimTex = new Texture2D(1, 1);
         cozyheimTex.LoadImage(Convert.FromBase64String(ResourcesBase64.Cozyheim_LevelingSystem_Icon));
         Cozyheim_Exp = Sprite.Create(cozyheimTex, new Rect(0, 0, cozyheimTex.width, cozyheimTex.height), Vector2.zero);
-        PlaceholderGamblerIcon = Sprite.Create(gamblerTex, new Rect(0, 0, gamblerTex.width, gamblerTex.height),
-            Vector2.zero);
+        PlaceholderGamblerIcon = Sprite.Create(gamblerTex, new Rect(0, 0, gamblerTex.width, gamblerTex.height), Vector2.zero);
         Texture2D monsterTex = new Texture2D(1, 1);
         monsterTex.LoadImage(Convert.FromBase64String(ResourcesBase64.PlaceholderMonster));
         PlaceholderMonsterIcon = Sprite.Create(monsterTex, new Rect(0, 0, monsterTex.width, monsterTex.height),
@@ -72,6 +72,7 @@ public static class AssetStorage
         PortalIconDefault = Sprite.Create(def, new Rect(0, 0, def.width, def.height), new Vector2(0, 0));
         FreeTakeEffect = asset.LoadAsset<GameObject>("BattlepassEffectFree");
         PremiumTakeEffect = asset.LoadAsset<GameObject>("BattlepassEffectPremium");
+        NPC_MapControl = asset.LoadAsset<Sprite>("NPC_MapControl");
         foreach (string file in Directory.GetFiles(Market_Paths.CachedImagesFolder, "*.png", SearchOption.TopDirectoryOnly))
         {
             string fileName = Path.GetFileNameWithoutExtension(file);

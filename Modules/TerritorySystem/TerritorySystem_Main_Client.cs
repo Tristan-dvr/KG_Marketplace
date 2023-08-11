@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reflection.Emit;
+using System.Threading.Tasks;
 using Marketplace.Modules.Teleporter;
 
 namespace Marketplace.Modules.TerritorySystem;
@@ -49,6 +50,11 @@ public static class TerritorySystem_Main_Client
         Vector3 vec = p.transform.position;
         CurrentTerritory = TerritorySystem_DataTypes.Territory.GetCurrentTerritory(vec);
         if (CurrentTerritory == null) return;
+
+        if (CurrentTerritory.Wind != 0)
+        {
+            EnvMan.instance.m_windDir2.w = CurrentTerritory.Wind;
+        }
 
         if (ParticleMist.instance && ParticleMist.instance.m_ps)
         {
@@ -188,6 +194,7 @@ public static class TerritorySystem_Main_Client
 
     private static int rebuildIndex = -1;
     private static float rebuildUptime;
+
     private static void HeightmapRebuild(float dt)
     {
         if (rebuildIndex == -1) return;
@@ -198,6 +205,7 @@ public static class TerritorySystem_Main_Client
             rebuildIndex = -1;
             return;
         }
+
         Heightmap.Instances[rebuildIndex].m_buildData = null;
         Heightmap.Instances[rebuildIndex].Regenerate();
         rebuildIndex++;
@@ -246,7 +254,8 @@ public static class TerritorySystem_Main_Client
                     ? Input.mousePosition
                     : new Vector3(Screen.width / 2, Screen.height / 2));
                 bool found = false;
-                foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.SyncedTerritoriesData
+                foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes
+                             .SyncedTerritoriesData
                              .Value)
                 {
                     if (territory.IsInside2D(new Vector2(vector.x, vector.z)))
@@ -360,7 +369,8 @@ public static class TerritorySystem_Main_Client
                     int segmentSize = Mathf.RoundToInt(textureSize / (float)segments);
                     int segmentStart = segment * segmentSize;
                     int segmentEnd = segmentStart + segmentSize;
-                    foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.SyncedTerritoriesData
+                    foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes
+                                 .SyncedTerritoriesData
                                  .Value.Where(t => t.DrawOnMap).OrderBy(t => t.Priority))
                     {
                         Color32 MainColor = territory.GetColor();
@@ -1091,6 +1101,29 @@ public static class TerritorySystem_Main_Client
             return CurrentTerritory == null ||
                    !CurrentTerritory.AdditionalFlags.HasFlagFast(TerritorySystem_DataTypes.AdditionalTerritoryFlags
                        .NoItemLoss);
+        }
+    }
+
+    [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.SetTargetWind))]
+    private static class EnvMan_SetTargetWind_Patch
+    {
+        private static void ToCall()
+        {
+            if (CurrentTerritory == null) return;
+            if (CurrentTerritory.AdditionalFlags.HasFlagFast(TerritorySystem_DataTypes.AdditionalTerritoryFlags
+                    .ForceWind))
+            {
+                EnvMan.instance.m_windDir2.w = CurrentTerritory.Wind;
+            }
+        }
+
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> code)
+        {
+            List<CodeInstruction> codeList = code.ToList();
+            codeList.Insert(codeList.Count - 1,
+                new CodeInstruction(OpCodes.Call,
+                    AccessTools.Method(typeof(EnvMan_SetTargetWind_Patch), nameof(ToCall))));
+            return codeList;
         }
     }
 

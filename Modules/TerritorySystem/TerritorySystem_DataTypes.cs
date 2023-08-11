@@ -51,6 +51,7 @@ public static class TerritorySystem_DataTypes
             pkg.Write(ExponentialValue);
             pkg.Write(HeightBounds.Item1);
             pkg.Write(HeightBounds.Item2);
+            pkg.Write(Wind);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -87,6 +88,7 @@ public static class TerritorySystem_DataTypes
             GradientType = (GradientType)pkg.ReadInt();
             ExponentialValue = pkg.ReadSingle();
             HeightBounds = new Tuple<int, int>(pkg.ReadInt(), pkg.ReadInt());
+            Wind = pkg.ReadSingle();
         }
     }
 
@@ -116,6 +118,7 @@ public static class TerritorySystem_DataTypes
         public float OverridenHeight;
         public int OverridenBiome;
         public int AddMonsterLevel;
+        public float Wind;
         public PaintType PaintGround;
         public GradientType GradientType = GradientType.LeftRight;
         public float ExponentialValue = 1f;
@@ -415,5 +418,6 @@ public static class TerritorySystem_DataTypes
         InfiniteEitr = 1 << 3,
         InfiniteStamina = 1 << 4,
         NoCreatureDrops = 1 << 5,
+        ForceWind = 1 << 6,
     }
 }

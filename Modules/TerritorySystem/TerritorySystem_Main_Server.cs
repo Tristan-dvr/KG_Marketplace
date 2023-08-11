@@ -22,7 +22,7 @@ public static class TerritorySystem_Main_Server
     private static void ProcessTerritoryConfig(IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
-        int zonePrio = 1;
+        int Priority = 1;
         for (int i = 0; i < profiles.Count; i++)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
@@ -32,7 +32,7 @@ public static class TerritorySystem_Main_Server
                 splitProfile = split[0];
                 if (split.Length == 2)
                 {
-                    zonePrio = int.Parse(split[1]);
+                    Priority = int.Parse(split[1]);
                 }
             }
             else
@@ -147,8 +147,9 @@ public static class TerritorySystem_Main_Server
                     float MoveSpeedMultiplier = 0;
                     float OverrideHeight = 0;
                     int overrideBiome = 0;
-                    int addmonsterstars = 0;
-                    TerritorySystem_DataTypes.PaintType _paintGround = TerritorySystem_DataTypes.PaintType.Paved;
+                    int AddMonsterLevel = 0;
+                    float Wind = 0;
+                    TerritorySystem_DataTypes.PaintType PaintGround = TerritorySystem_DataTypes.PaintType.Paved;
                     string[] splitFlags = profiles[i + 3].Replace(" ", "").Split(',');
                     foreach (string flag in splitFlags)
                     {
@@ -165,6 +166,12 @@ public static class TerritorySystem_Main_Server
                                 testAdditionalFlag))
                         {
                             additionalflags |= testAdditionalFlag;
+                            switch (testAdditionalFlag)
+                            {
+                                case TerritorySystem_DataTypes.AdditionalTerritoryFlags.ForceWind:
+                                    Wind = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                    break;
+                            }
                             continue;
                         }
 
@@ -201,17 +208,17 @@ public static class TerritorySystem_Main_Server
                                 overrideBiome = Convert.ToInt32(customData, new CultureInfo("en-US"));
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.MonstersAddStars:
-                                addmonsterstars = Convert.ToInt32(customData, new CultureInfo("en-US"));
+                                AddMonsterLevel = Convert.ToInt32(customData, new CultureInfo("en-US"));
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.CustomPaint:
-                                _paintGround =
+                                PaintGround =
                                     (TerritorySystem_DataTypes.PaintType)Convert.ToInt32(customData,
                                         new CultureInfo("en-US"));
                                 break;
                         }
                     }
 
-                    string owners = string.IsNullOrEmpty(profiles[i + 4]) ? "None" : profiles[i + 4].Replace(" ", "");
+                    string Owners = string.IsNullOrEmpty(profiles[i + 4]) ? "None" : profiles[i + 4].Replace(" ", "");
                     newTerritory.Flags = flags;
                     newTerritory.AdditionalFlags = additionalflags;
                     newTerritory.CustomEnvironment = CustomEnvironment;
@@ -220,12 +227,13 @@ public static class TerritorySystem_Main_Server
                     newTerritory.IncreasedMonsterDamageValue = IncreasedMonsterDamageValue;
                     newTerritory.IncreasedPlayerDamageValue = IncreasedPlayerDamageValue;
                     newTerritory.MoveSpeedMultiplier = MoveSpeedMultiplier;
-                    newTerritory.Owners = owners;
-                    newTerritory.Priority = zonePrio;
+                    newTerritory.Owners = Owners;
+                    newTerritory.Priority = Priority;
                     newTerritory.OverridenBiome = overrideBiome;
                     newTerritory.OverridenHeight = OverrideHeight;
-                    newTerritory.AddMonsterLevel = addmonsterstars;
-                    newTerritory.PaintGround = _paintGround;
+                    newTerritory.AddMonsterLevel = AddMonsterLevel;
+                    newTerritory.PaintGround = PaintGround;
+                    newTerritory.Wind = Wind;
                     TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Add(newTerritory);
                 }
                 catch (Exception ex)

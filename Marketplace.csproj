@@ -352,6 +352,7 @@
         <Compile Include="Modules\Leaderboard\Leaderboard_Server_Main.cs" />
         <Compile Include="Modules\Leaderboard\Leaderboard_UI.cs" />
         <Compile Include="Modules\NPC\NPC_DataTypes.cs" />
+        <Compile Include="Modules\NPC\NPC_MapController.cs" />
         <Compile Include="Modules\TerritorySystem\ZoneVisualizer.cs" />
         <Compile Include="Modules\Transmogrification\PlayerModelPreview.cs" />
         <Compile Include="OtherModsAPIs\Cozyheim_LevelingSystem.cs" />

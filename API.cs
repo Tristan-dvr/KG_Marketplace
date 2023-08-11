@@ -159,6 +159,7 @@ public static class Marketplace_API
     public static void NPC_Model(this ZDO zdo, string prefab) => zdo.Set("KGnpcModelOverride", prefab);
     public static void NPC_Name(this ZDO zdo, string name) => zdo.Set("KGnpcNameOverride", name);
     public static void NPC_Dialogue(this ZDO zdo, string dialogue) => zdo.Set("KGnpcDialogue", dialogue);
+    public static void NPC_PatrolData(this ZDO zdo, string patrolData) => zdo.Set("KGmarket PatrolData", patrolData);
     
     public static void NPC_LeftItem(this ZDO zdo, string prefab) => zdo.Set("KGleftItem", prefab);
     public static void NPC_RightItem(this ZDO zdo, string prefab) => zdo.Set("KGrightItem", prefab);
@@ -180,13 +181,13 @@ public static class Marketplace_API
     public static void NPC_BeardItem(this ZDO zdo, string prefab) => zdo.Set("KGbeardItem", prefab);
     public static void NPC_BeardColor(this ZDO zdo, string color) => zdo.Set("KGbeardColor", color);
     public static void NPC_InteractSound(this ZDO zdo, string sound) => zdo.Set("KGinteractSound", sound);
-    public static void NPC_TextSize(this ZDO zdo, float size) => zdo.Set("KGtextSize", size);
-    public static void NPC_TextHeight(this ZDO zdo, float height) => zdo.Set("KGtextHeight", height);
+    public static void NPC_TextSize(this ZDO zdo, string size) => zdo.Set("KGtextSize", float.TryParse(size, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float scaleFloat) ? scaleFloat : 3f);
+    public static void NPC_TextHeight(this ZDO zdo, string height) => zdo.Set("KGtextHeight", float.TryParse(height, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float heightFloat) ? heightFloat : 0f);
     public static void NPC_PeriodicAnimation(this ZDO zdo, string animation) => zdo.Set("KGperiodicAnimation", animation);
-    public static void NPC_PeriodicAnimationTime(this ZDO zdo, float time) => zdo.Set("KGperiodicAnimationTime", time);
+    public static void NPC_PeriodicAnimationTime(this ZDO zdo, string time) => zdo.Set("KGperiodicAnimationTime", float.TryParse(time, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float timeFloat) ? timeFloat : 0f);
     public static void NPC_PeriodicSound(this ZDO zdo, string sound) => zdo.Set("KGperiodicSound", sound);
-    public static void NPC_PeriodicSoundTime(this ZDO zdo, float time) => zdo.Set("KGperiodicSoundTime", time);
-    public static void NPC_NPCScale(this ZDO zdo, float scale) => zdo.Set("KGnpcScale", scale);
+    public static void NPC_PeriodicSoundTime(this ZDO zdo, string time) => zdo.Set("KGperiodicSoundTime", float.TryParse(time, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float timeFloat) ? timeFloat : 0f);
+    public static void NPC_NPCScale(this ZDO zdo, string scale) => zdo.Set("KGnpcScale", float.TryParse(scale, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float scaleFloat) ? scaleFloat : 1f);
 
     static Marketplace_API()
     {

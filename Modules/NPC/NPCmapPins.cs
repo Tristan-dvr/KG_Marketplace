@@ -8,26 +8,17 @@ namespace Marketplace.Modules.NPC;
 [SuppressMessage("ReSharper", "IteratorNeverReturns")]
 public static class Market_NPC_MapPins
 {
-    private const string npcToSearchPrefabName = "MarketPlaceNPCpinned";
+    private const string npcToSearchPrefabName = "MarketPlaceNPC";
+    private const string npcToSearchPrefabName_Pinned = "MarketPlaceNPCpinned";
     private static readonly List<ZDO> TempNPCList = new();
     private static readonly List<Minimap.PinData> TempNPCpins = new();
     public const Minimap.PinType PINTYPENPC = (Minimap.PinType)175;
     private static Sprite QuestCompleteIcon;
-    
+
     private static void OnInit()
     {
         Marketplace._thistype.StartCoroutine(SendNPCsToClients());
         Marketplace._thistype.StartCoroutine(UpdateNPCpins());
-    }
-
-    [HarmonyPatch(typeof(Minimap), nameof(Minimap.GetSprite))]
-    [ClientOnlyPatch]
-    private static class Minimap_GetSprite_Patch
-    {
-        private static void Postfix(Minimap.PinType type, ref Sprite __result)
-        {
-            if (type is PINTYPENPC) __result = AssetStorage.AssetStorage.PlaceholderGamblerIcon;
-        }
     }
 
     private static IEnumerator UpdateNPCpins()
@@ -38,9 +29,14 @@ public static class Market_NPC_MapPins
             {
                 foreach (Minimap.PinData obj in TempNPCpins) Minimap.instance.RemovePin(obj);
                 TempNPCpins.Clear();
+                if (Minimap.instance.m_mode == Minimap.MapMode.Large && Utils.IsDebug)
+                {
+                    yield return new WaitForSecondsRealtime(1f);
+                    continue;
+                }
                 List<ZDO> AllNPCs = new();
                 int index = 0;
-                while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName, AllNPCs, ref index))
+                while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName_Pinned, AllNPCs, ref index))
                 {
                     if (!Player.m_localPlayer || ZDOMan.instance == null || !Minimap.instance) break;
                     yield return null;
@@ -111,7 +107,7 @@ public static class Market_NPC_MapPins
                     pinData.m_ownerID = 0L;
                     TempNPCpins.Add(pinData);
                 }
-
+            
                 foreach (Minimap.PinData p in TempNPCpins.OrderBy(pin => pin.m_animate))
                 {
                     Minimap.instance.m_pins.Add(p);
@@ -119,6 +115,31 @@ public static class Market_NPC_MapPins
             }
 
             yield return new WaitForSecondsRealtime(10f);
+        }
+    }
+    
+    [HarmonyPatch(typeof(Minimap), nameof(Minimap.GetSprite))]
+    [ClientOnlyPatch]
+    private static class Minimap_GetSprite_Patch
+    {
+        private static void Postfix(Minimap.PinType type, ref Sprite __result)
+        {
+            if (type is PINTYPENPC) __result = AssetStorage.AssetStorage.PlaceholderGamblerIcon;
+        }
+    }
+
+    [HarmonyPatch(typeof(Minimap), nameof(Minimap.SetMapMode))]
+    [ClientOnlyPatch]
+    private static class NPC_MapControllerPatch
+    {
+        private static void Prefix(Minimap __instance, Minimap.MapMode mode)
+        {
+            if (mode != Minimap.MapMode.Large) return;
+            if (Utils.IsDebug)
+            {
+                foreach (Minimap.PinData obj in TempNPCpins) __instance.RemovePin(obj);
+                TempNPCpins.Clear();
+            }
         }
     }
 
@@ -131,6 +152,12 @@ public static class Market_NPC_MapPins
                 TempNPCList.Clear();
                 int index = 0;
                 while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName, TempNPCList, ref index))
+                {
+                    yield return null;
+                }
+
+                while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName_Pinned, TempNPCList,
+                           ref index))
                 {
                     yield return null;
                 }
