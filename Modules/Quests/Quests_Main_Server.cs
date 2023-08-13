@@ -142,15 +142,14 @@ public static class Quests_Main_Server
                         if (!(Enum.TryParse(rwdTypeCheck[0], true,
                                 out rewardTypes[r])))
                         {
-                            Utils.print(
-                                $"Failed to parse reward type {rewardsArray[r]} in quest {name}. Skipping quest");
-                            goto GoNextLabel;
+                            Utils.print($"Failed to parse reward type {rewardsArray[r]} in quest {name}. Skipping quest");
+                            continue;
                         }
 
                         string[] RewardSplit = rwdTypeCheck[1].Split(',');
 
-                        if (rewardTypes[r] is Quests_DataTypes.QuestRewardType.Battlepass_EXP
-                            or Quests_DataTypes.QuestRewardType.EpicMMO_EXP
+                        if (rewardTypes[r] 
+                            is Quests_DataTypes.QuestRewardType.EpicMMO_EXP
                             or Quests_DataTypes.QuestRewardType.MH_EXP 
                             or Quests_DataTypes.QuestRewardType.Cozyheim_EXP)
                         {
@@ -281,8 +280,6 @@ public static class Quests_Main_Server
                 {
                     Utils.print($"Error in Quests {dbProfile} DB file\n{ex}", ConsoleColor.Red);
                 }
-
-                GoNextLabel:
                 dbProfile = null;
             }
         }

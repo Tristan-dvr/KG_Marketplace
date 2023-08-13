@@ -14,8 +14,8 @@ public static class Banker_Main_Server
 
     private static void OnInit()
     {
-        Market_Paths.BankerDataJSONFile.DecryptOldData();
-        string bankData = Market_Paths.BankerDataJSONFile.ReadClear();
+        if (!File.Exists(Market_Paths.BankerDataJSONFile)) File.Create(Market_Paths.BankerDataJSONFile).Dispose();
+        string bankData = Market_Paths.BankerDataJSONFile.ReadFile();
         if (!string.IsNullOrWhiteSpace(bankData))
             BankerServerSideData.AddRange(JSON.ToObject<Dictionary<string, Dictionary<int, int>>>(bankData));
         if (Global_Values.BankerIncomeTime > 0)
@@ -70,7 +70,8 @@ public static class Banker_Main_Server
             Utils.print("Adding Banker Income");
             Task task = Task.Run(() =>
             {
-                HashSet<int> interestItems = new(Global_Values.BankerInterestItems.Split(',').Select(i => i.GetStableHashCode()));
+                HashSet<int> interestItems =
+                    new(Global_Values.BankerInterestItems.Split(',').Select(i => i.GetStableHashCode()));
                 foreach (string id in BankerServerSideData.Keys)
                 {
                     float multiplier = Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(id)
@@ -124,7 +125,7 @@ public static class Banker_Main_Server
 
     private static void SaveBankerData()
     {
-        Market_Paths.BankerDataJSONFile.WriteClear(JSON.ToNiceJSON(BankerServerSideData));
+        Market_Paths.BankerDataJSONFile.WriteFile(JSON.ToNiceJSON(BankerServerSideData));
     }
 
     [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_CharacterID))]

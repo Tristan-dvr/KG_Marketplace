@@ -13,11 +13,6 @@ public static class Market_Paths
     public static string QuestDatabasePath => Path.Combine(MainPath, "QuestsDatabase.cfg");
     public static string QuestEventsPath => Path.Combine(MainPath, "QuestsEvents.cfg");
 
-    private static string BattlepassPath => Path.Combine(MainPath, "Battlepass");
-    public static string BattlepassConfigPath => Path.Combine(BattlepassPath, "BattlepassConfig.cfg");
-    public static string BattlepassFreeRewardsPath => Path.Combine(BattlepassPath, "BattlepassFreeRewards.cfg");
-    public static string BattlepassPremiumRewardsPath => Path.Combine(BattlepassPath, "BattlepassPremiumRewards.cfg");
-
     private static string DataFolder => Path.Combine(MainPath, "DO NOT TOUCH");
 
     public static string BankerDataJSONFile => Path.Combine(DataFolder, "BankerData.json");
@@ -73,8 +68,6 @@ public static class Market_Paths
                 Directory.CreateDirectory(DataFolder);
             if (!Directory.Exists(DiscordStuffFolder))
                 Directory.CreateDirectory(DiscordStuffFolder);
-            if (!Directory.Exists(BattlepassPath))
-                Directory.CreateDirectory(BattlepassPath);
             if (!Directory.Exists(TeleporterPinsFolder))
                 Directory.CreateDirectory(TeleporterPinsFolder);
             if (!Directory.Exists(DistancedUIFolder))
@@ -101,10 +94,7 @@ public static class Market_Paths
                     File.Create(QuestDatabasePath).Dispose();
                 }
             }
-
-            if (!File.Exists(BattlepassConfigPath)) File.Create(BattlepassConfigPath).Dispose();
-            if (!File.Exists(BattlepassFreeRewardsPath)) File.Create(BattlepassFreeRewardsPath).Dispose();
-            if (!File.Exists(BattlepassPremiumRewardsPath)) File.Create(BattlepassPremiumRewardsPath).Dispose();
+            
             if (!File.Exists(BankerFile)) File.Create(BankerFile).Dispose();
             if (!File.Exists(BankerDataJSONFile)) File.Create(BankerDataJSONFile).Dispose();
             if (!File.Exists(TeleporterPinsConfig)) File.Create(TeleporterPinsConfig).Dispose();

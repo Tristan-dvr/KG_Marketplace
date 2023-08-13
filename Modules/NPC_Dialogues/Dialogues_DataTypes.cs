@@ -36,7 +36,9 @@ public static class Dialogues_DataTypes
         AddPin,
         AddEpicMMOExp,
         AddCozyheimExp,
-        PlayAnimation
+        PlayAnimation,
+        AddCustomValue,
+        SetCustomValue,
     }
 
     private const byte reverseFlag = 1 << 7;
@@ -70,6 +72,8 @@ public static class Dialogues_DataTypes
         NotHasAchievement = 11 | reverseFlag,
         HasAchievementScore = 12,
         NotHasAchievementScore = 12 | reverseFlag,
+        CustomValueMore = 13,
+        CustomValueLess = 13 | reverseFlag,
     }
 
     public class RawDialogue : ISerializableParameter
@@ -194,6 +198,25 @@ public static class Dialogues_DataTypes
                     {
                         switch (optionCommand)
                         {
+                            case OptionCommand.SetCustomValue:
+                                result += (_) =>
+                                {
+                                    string key = split[1];
+                                    int value = int.Parse(split[2]);
+                                    if (value != 0)
+                                        Player.m_localPlayer.SetCustomValue(key, value);
+                                    else
+                                        Player.m_localPlayer.RemoveCustomValue(key);
+                                };
+                                break;
+                            case OptionCommand.AddCustomValue:
+                                result += (_) =>
+                                {
+                                    string key = split[1];
+                                    int value = int.Parse(split[2]);
+                                    Player.m_localPlayer.AddCustomValue(key, value);
+                                };
+                                break;
                             case OptionCommand.PlayAnimation:
                                 result += (npc) => { npc.zanim.SetTrigger(split[1]); };
                                 break;
@@ -357,7 +380,7 @@ public static class Dialogues_DataTypes
                                 {
                                     Vector3 pos = new Vector3(int.Parse(split[2]), int.Parse(split[3]),
                                         int.Parse(split[4]));
-                                    Minimap.instance.AddPin(pos, Market_NPC_MapPins.PINTYPENPC, split[1], true, false);
+                                    Minimap.instance.AddPin(pos, NPC_MapPins.PINTYPENPC, split[1], true, false);
                                     Minimap.instance.ShowPointOnMap(pos);
                                     Minimap.instance.m_largeZoom = 0.1f;
                                 };
@@ -409,6 +432,24 @@ public static class Dialogues_DataTypes
                         if (reverse) optionCondition = optionCondition.Reverse();
                         switch (optionCondition)
                         {
+                            case OptionCondition.CustomValueMore:
+                                result += (out string reason) =>
+                                {
+                                    string key = split[1];
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needcustomvalue")}: <color=#00ff00>{split[1].Replace("_", " ")}</color>";
+                                    return Player.m_localPlayer.GetCustomValue(key) >= int.Parse(split[2]);
+                                };
+                                break;
+                            case OptionCondition.CustomValueLess:
+                                result += (out string reason) =>
+                                {
+                                    string key = split[1];
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_dontneedcustomvalue")}: <color=#00ff00>{split[1].Replace("_", " ")}</color>";
+                                    return Player.m_localPlayer.GetCustomValue(key) < int.Parse(split[2]);
+                                };
+                                break;
                             case OptionCondition.HasAchievement:
                                 result += (out string reason) =>
                                 {
@@ -431,10 +472,11 @@ public static class Dialogues_DataTypes
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needtitlescore")}: <color=#00ff00>{split[1]}</color>";
                                     return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
-                                            Global_Values._localUserID + "_" +
-                                            Game.instance.m_playerProfile.m_playerName,
-                                            out Leaderboard_DataTypes.Client_Leaderboard LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) >=
-                                        int.Parse(split[1]);
+                                               Global_Values._localUserID + "_" +
+                                               Game.instance.m_playerProfile.m_playerName,
+                                               out Leaderboard_DataTypes.Client_Leaderboard LB) &&
+                                           Leaderboard_UI.GetAchievementScore(LB.Achievements) >=
+                                           int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.NotHasAchievementScore:
@@ -443,10 +485,11 @@ public static class Dialogues_DataTypes
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_dontneedtitlescore")}: <color=#00ff00>{split[1]}</color>";
                                     return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
-                                            Global_Values._localUserID + "_" +
-                                            Game.instance.m_playerProfile.m_playerName,
-                                            out Leaderboard_DataTypes.Client_Leaderboard LB) && Leaderboard_UI.GetAchievementScore(LB.Achievements) <
-                                        int.Parse(split[1]);
+                                               Global_Values._localUserID + "_" +
+                                               Game.instance.m_playerProfile.m_playerName,
+                                               out Leaderboard_DataTypes.Client_Leaderboard LB) &&
+                                           Leaderboard_UI.GetAchievementScore(LB.Achievements) <
+                                           int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.SkillMore:

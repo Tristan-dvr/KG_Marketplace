@@ -80,7 +80,6 @@ mpasn_target: Target
 mpasn_reward: Reward
 mpasn_youfinishedquest: You finished quest
 mpasn_EpicMMO_EXP: <color=yellow>EpicMMO</color> EXP
-mpasn_Battlepass_EXP: Battlepass EXP
 mpasn_needepicmmolevel: Need <color=yellow>EpicMMO</color> level
 mpasn_inventory: Inventory
 mpasn_duration: Duration
@@ -202,7 +201,6 @@ mpasn_transmog_eff20: Lightning Menace
 mpasn_transmog_transmogrifiedinfo: Transmogrified into
 mpasn_tooltip_pet: Creature will spawn tamed if it can be
 mpasn_tooltip_epicmmo: Adds <color=yellow>EpicMMO</color> Experience
-mpasn_tooltip_battlepass: Adds Battlepass Experience
 mpasn_tooltip_addskilllevel: Adds Skill Level
 mpasn_tooltip_addskillexp: Adds Skill Experience
 mpasn_questjournal: Quest Journal
@@ -237,7 +235,6 @@ mpasn_notneedhasbuff: Buff is active
 mpasn_notforvip: Not for <color=#32CD32>VIP</color> users
 mpasn_neednothasitem: You have item
 mpasn_zoneloading: Zone Loading...
-marketplace_mailbox: Mailbox
 mpasn_JC_Item: Jewelcrafting Item
 mpasn_JC_RandomItem: Jewelcrafting Random Item
 mpasn_Cozyheim_EXP: <color=yellow>Cozyheim</color> Experience
@@ -257,7 +254,12 @@ mpasn_Leaderboard_Harvested: "Plants\nHarvested"
 mpasn_Leaderboard_ItemsCrafted: "Items\nCrafted"
 mpasn_Leaderboard_AmountOfDeath: "Amount of\nDeaths"
 mpasn_Leaderboard_MapExplored: "Map\nExplored"
-mpasn_LeaderboardAchievements: "'s\nAchievements"
+mpasn_LeaderboardAchievements: "'s\nAchievements" 
 mpasn_needtitlescore: Need Achievement Score
 mpasn_dontneedtitlescore: You have Achievement Score
 mpasn_addedtobank: Added to Bank
+mpasn_needcustomvalue: Need Custom Value
+mpasn_dontneedcustomvalue: Too much Custom Value
+mpasn_CustomValue: Custom Value
+mpasn_SetCustomValue: Set Custom Value
+mpasn_AddCustomValue: Add Custom Value

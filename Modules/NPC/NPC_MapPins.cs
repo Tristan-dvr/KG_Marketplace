@@ -6,7 +6,7 @@ namespace Marketplace.Modules.NPC;
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both)]
 [SuppressMessage("ReSharper", "IteratorNeverReturns")]
-public static class Market_NPC_MapPins
+public static class NPC_MapPins
 {
     private const string npcToSearchPrefabName = "MarketPlaceNPC";
     private const string npcToSearchPrefabName_Pinned = "MarketPlaceNPCpinned";

@@ -7,20 +7,20 @@ public static class NPC_MapController
     private const string npcToSearchPrefabName_Pinned = "MarketPlaceNPCpinned";
     private const Minimap.PinType PINTYPENPC = (Minimap.PinType)72;
     
+    [HarmonyPatch(typeof(Minimap), nameof(Minimap.GetSprite))]
+    [ClientOnlyPatch]
+    private static class Minimap_GetSprite_Patch
+    {
+        private static void Postfix(Minimap.PinType type, ref Sprite __result)
+        {
+            if (type is PINTYPENPC) __result = AssetStorage.AssetStorage.NPC_MapControl;
+        }
+    }
+
     [HarmonyPatch(typeof(Minimap), nameof(Minimap.SetMapMode))]
     [ClientOnlyPatch]
     private static class NPC_MapControllerPatch
     {
-        [HarmonyPatch(typeof(Minimap), nameof(Minimap.GetSprite))]
-        [ClientOnlyPatch]
-        private static class Minimap_GetSprite_Patch
-        {
-            private static void Postfix(Minimap.PinType type, ref Sprite __result)
-            {
-                if (type is PINTYPENPC) __result = AssetStorage.AssetStorage.NPC_MapControl;
-            }
-        }
-
         public static void ReapplyPins()
         {
             foreach (var pin in _pins) Minimap.instance.RemovePin(pin.Key);

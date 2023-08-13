@@ -20,14 +20,10 @@ public static class AssetStorage
     public static Sprite NPC_MapControl;
     public static Sprite EpicMMO_Exp;
     public static Sprite Cozyheim_Exp;
-    public static Sprite Battlepass_EXP_Icon;
     public static Sprite MH_Exp_Icon;
     public static Sprite NullSprite;
+    public static Sprite CustomValue_Icon;
     public static Texture WoodTex;
-    public static AudioClip OpenUI_Sound;
-    public static AudioClip CloseUI_Sound;
-    public static GameObject FreeTakeEffect;
-    public static GameObject PremiumTakeEffect;
     public static AudioClip TypeClip;
     public static GameObject Teleporter_VFX1;
     public static Sprite PortalIconDefault;
@@ -43,17 +39,13 @@ public static class AssetStorage
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
         TypeClip = asset.LoadAsset<AudioClip>("TypeKeySoundMP");
         NullSprite = asset.LoadAsset<Sprite>("NullSpriteMP");
-        OpenUI_Sound = asset.LoadAsset<AudioClip>("UI_InventoryShow_MPASN");
-        CloseUI_Sound = asset.LoadAsset<AudioClip>("UI_InventoryHide_MPASN");
-        Battlepass_EXP_Icon = asset.LoadAsset<Sprite>("premiumuser");
         WoodTex = asset.LoadAsset<Texture>("cbimage");
         Teleporter_VFX1 = asset.LoadAsset<GameObject>("MarketplaceTP_1");
         Teleporter_VFX2 = asset.LoadAsset<GameObject>("MarketplaceTP_2");
         MarketplaceQuestTargetIcon = asset.LoadAsset<GameObject>("MarketplaceQuestTargetIcon");
         MarketplaceQuestQuestionIcon = asset.LoadAsset<GameObject>("MarketplaceQuestionMark");
-        Texture2D epicMMOTex = new Texture2D(1, 1);
-        epicMMOTex.LoadImage(Convert.FromBase64String(ResourcesBase64.EpicMMO_Icon));
-        EpicMMO_Exp = Sprite.Create(epicMMOTex, new Rect(0, 0, epicMMOTex.width, epicMMOTex.height), Vector2.zero);
+        EpicMMO_Exp = asset.LoadAsset<Sprite>("EpicMMOIcon");
+        CustomValue_Icon = asset.LoadAsset<Sprite>("CustomValueIcon");
         Texture2D mh_texture = new Texture2D(1, 1);
         mh_texture.LoadImage(Convert.FromBase64String(ResourcesBase64.MagicHeim_Icon));
         MH_Exp_Icon = Sprite.Create(mh_texture, new Rect(0, 0, mh_texture.width, mh_texture.height), Vector2.zero);
@@ -70,8 +62,6 @@ public static class AssetStorage
         Texture2D def = new Texture2D(1, 1);
         def.LoadImage(Convert.FromBase64String(ResourcesBase64.defaultPortal));
         PortalIconDefault = Sprite.Create(def, new Rect(0, 0, def.width, def.height), new Vector2(0, 0));
-        FreeTakeEffect = asset.LoadAsset<GameObject>("BattlepassEffectFree");
-        PremiumTakeEffect = asset.LoadAsset<GameObject>("BattlepassEffectPremium");
         NPC_MapControl = asset.LoadAsset<Sprite>("NPC_MapControl");
         foreach (string file in Directory.GetFiles(Market_Paths.CachedImagesFolder, "*.png", SearchOption.TopDirectoryOnly))
         {

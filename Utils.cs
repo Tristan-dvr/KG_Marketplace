@@ -224,16 +224,6 @@ public static class Utils
         Player.m_localPlayer.m_inventory.Changed();
     }
 
-    public static void DecryptOldData(this string path)
-    {
-        if (File.Exists(path)) return;
-        File.Create(path).Dispose();
-        string encryptedOldData = path.Replace(".json", "");
-        if (!File.Exists(encryptedOldData)) return;
-        string decryptedData = encryptedOldData.ReadObfuscated();
-        path.WriteClear(decryptedData);
-    }
-
     public static string SizeSuffix(this int value, int decimalPlaces = 1)
     {
         switch (value)
@@ -264,43 +254,19 @@ public static class Utils
         pkg.m_writer.Write(decompress);
         pkg.m_stream.Position = 0L;
     }
-
-    public static void WriteClear(this string path, string data)
+    
+    public static void WriteFile(this string path, string data)
     {
         File.WriteAllText(path, data);
     }
 
-    public static string ReadClear(this string path)
+    public static string ReadFile(this string path)
     {
         return File.ReadAllText(path);
     }
 
     private static readonly string[] SizeSuffixes =
         { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
-
-    private static string ReadObfuscated(this string path)
-    {
-        return Deobf(File.ReadAllText(path));
-    }
-
-    private static string Deobf(string data)
-    {
-        if (string.IsNullOrEmpty(data)) return "";
-        byte[] baseBytes = Convert.FromBase64String(data);
-        baseBytes = CreateEnc().CreateDecryptor().TransformFinalBlock(baseBytes, 0, baseBytes.Length);
-        return Encoding.UTF8.GetString(baseBytes);
-    }
-
-    private static Aes CreateEnc()
-    {
-        Aes myAes = Aes.Create();
-        myAes.Key = new byte[] { 205, 120, 49, 128, 197, 196, 75, 24, 63, 192, 191, 190, 189, 188, 187, 186 };
-        myAes.IV = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
-        myAes.Padding = PaddingMode.ISO10126;
-        myAes.Mode = CipherMode.ECB;
-        return myAes;
-    }
-
 
     public static void Compress(this ZPackage pkg)
     {
@@ -498,6 +464,50 @@ public static class Utils
             }
         }
     }
+
+    private const string CustomValue_Prefix = "kgMarketplaceValue@";
+    public static void SetCustomValue(this Player p, string key, int value)
+    {
+        string toCheck = CustomValue_Prefix + key;
+        p.m_customData[toCheck] = value.ToString();
+    }
+    public static void AddCustomValue(this Player p, string key, int value)
+    {
+        string toCheck = CustomValue_Prefix + key;
+        if (p.m_customData.TryGetValue(toCheck, out string val))
+        {
+            if (int.TryParse(val, out int valInt))
+            {
+                p.m_customData[toCheck] = (valInt + value).ToString();
+            }
+            else
+            {
+                p.m_customData[toCheck] = value.ToString();
+            }
+        }
+        else
+        {
+            p.m_customData[toCheck] = value.ToString();
+        }
+    }
+    public static int GetCustomValue(this Player p, string key)
+    {
+        string toCheck = CustomValue_Prefix + key;
+        if (p.m_customData.TryGetValue(toCheck, out string val))
+        {
+            if (int.TryParse(val, out int valInt))
+            {
+                return valInt;
+            }
+        }
+        return 0;
+    }
+    public static void RemoveCustomValue(this Player p, string key)
+    {
+        string toCheck = CustomValue_Prefix + key;
+        p.m_customData.Remove(toCheck);
+    }
+    
 
     public static bool HasFlagFast(this Quests_DataTypes.SpecialQuestTag value,
         Quests_DataTypes.SpecialQuestTag flag)

@@ -1,5 +1,4 @@
 ﻿using Marketplace_APIs;
-using Marketplace.Modules.Battlepass;
 using Marketplace.Modules.Leaderboard;
 using Marketplace.Modules.NPC;
 
@@ -62,7 +61,9 @@ public static class Quests_DataTypes
         HasItem,
         IsVIP,
         Time,
-        HasAchievement
+        HasAchievement,
+        CustomValueMore,
+        CustomValueLess
     }
 
     public enum QuestType
@@ -82,9 +83,10 @@ public static class Quests_DataTypes
         Skill_EXP,
         Pet,
         EpicMMO_EXP,
-        Battlepass_EXP,
         MH_EXP,
-        Cozyheim_EXP
+        Cozyheim_EXP,
+        SetCustomValue,
+        AddCustomValue
     }
 
 
@@ -333,6 +335,9 @@ public static class Quests_DataTypes
                     case QuestRewardType.Skill or QuestRewardType.Skill_EXP:
                         LocalizedReward[i] = Utils.LocalizeSkill(RewardPrefab[i]);
                         break;
+                    case QuestRewardType.AddCustomValue or QuestRewardType.SetCustomValue:
+                        LocalizedReward[i] = RewardPrefab[i].Replace("_", " ");
+                        break;
                 }
             }
 
@@ -539,6 +544,32 @@ public static class Quests_DataTypes
                     return false;
                 }
 
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.CustomValueMore)
+                {
+                    message = $"{Localization.instance.Localize("$mpasn_needcustomvalue")}: <color=#00ff00>{CheckQuest.QuestRequirementPrefab[i].Replace("_", " ")} <color=yellow>{CheckQuest.QuestRequirementLevel[i]}</color></color>";
+                    bool result = Player.m_localPlayer.GetCustomValue(CheckQuest.QuestRequirementPrefab[i]) >= CheckQuest.QuestRequirementLevel[i];
+                    if (result)
+                    {
+                        continue;
+                    }
+                    
+                    return false;
+                }
+                
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.CustomValueLess)
+                {
+                    message = $"{Localization.instance.Localize("$mpasn_dontneedcustomvalue")}: <color=#00ff00>{CheckQuest.QuestRequirementPrefab[i].Replace("_", " ")} <color=yellow>{CheckQuest.QuestRequirementLevel[i]}</color></color>";
+                    bool result = Player.m_localPlayer.GetCustomValue(CheckQuest.QuestRequirementPrefab[i]) < CheckQuest.QuestRequirementLevel[i];
+                    if (result)
+                    {
+                        continue;
+                    }
+                    
+                    return false;
+                }
+                
+                
+
                 if (CheckQuest.RequirementType[i] is QuestRequirementType.MH_Level)
                 {
                     if (!int.TryParse(CheckQuest.QuestRequirementPrefab[i], out int requiredLevel_MH)) continue;
@@ -665,18 +696,24 @@ public static class Quests_DataTypes
                     Cozyheim_LevelingSystem.AddExp(quest.RewardCount[i]);
                     continue;
                 }
+                if (quest.RewardType[i] is QuestRewardType.AddCustomValue)
+                {
+                        Player.m_localPlayer.AddCustomValue(quest.RewardPrefab[i], quest.RewardCount[i]);
+                }
+                if (quest.RewardType[i] is QuestRewardType.SetCustomValue)
+                {
+                    if (quest.RewardCount[i] != 0)
+                        Player.m_localPlayer.SetCustomValue(quest.RewardPrefab[i], quest.RewardCount[i]);
+                    else
+                        Player.m_localPlayer.RemoveCustomValue(quest.RewardPrefab[i]);
+                }
 
                 if (quest.RewardType[i] is QuestRewardType.MH_EXP)
                 {
                     MH_API.AddEXP(quest.RewardCount[i]);
                     continue;
                 }
-
-                if (quest.RewardType[i] is QuestRewardType.Battlepass_EXP)
-                {
-                    Battlepass_Main_Client.AddExp(quest.RewardCount[i]);
-                    continue;
-                }
+                
 
                 if (quest.RewardType[i] is QuestRewardType.Item or QuestRewardType.Pet)
                 {

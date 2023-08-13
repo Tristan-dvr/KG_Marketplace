@@ -11,25 +11,25 @@ public static class Marketplace_Main_Server
 
     private static void OnInit()
     {
-        Market_Paths.ServerMarketDataJSON.DecryptOldData();
-        string data = Market_Paths.ServerMarketDataJSON.ReadClear();
+        if(!File.Exists(Market_Paths.ServerMarketDataJSON)) File.Create(Market_Paths.ServerMarketDataJSON).Dispose();
+        string data = Market_Paths.ServerMarketDataJSON.ReadFile();
         if (!string.IsNullOrWhiteSpace(data))
             Marketplace_DataTypes.SyncedMarketplaceData.Value =
                 JSON.ToObject<List<Marketplace_DataTypes.ServerMarketSendData>>(data);
 
-        Market_Paths.MarketPlayersIncomeJSON.DecryptOldData();
-        string goldData = Market_Paths.MarketPlayersIncomeJSON.ReadClear();
+        if (!File.Exists(Market_Paths.MarketPlayersIncomeJSON)) File.Create(Market_Paths.MarketPlayersIncomeJSON).Dispose();
+        string goldData = Market_Paths.MarketPlayersIncomeJSON.ReadFile();
         if (!string.IsNullOrWhiteSpace(goldData)) PlayersIncome = JSON.ToObject<Dictionary<string, int>>(goldData);
-
-        Market_Paths.MarketPlayerMessagesJSON.DecryptOldData();
-        string messagesData = Market_Paths.MarketPlayerMessagesJSON.ReadClear();
+        
+        if (!File.Exists(Market_Paths.MarketPlayerMessagesJSON)) File.Create(Market_Paths.MarketPlayerMessagesJSON).Dispose();
+        string messagesData = Market_Paths.MarketPlayerMessagesJSON.ReadFile();
         if (!string.IsNullOrWhiteSpace(messagesData))
             Marketplace_Messages.Messenger.PlayerMessages = JSON.ToObject<Dictionary<string, string>>(messagesData);
     }
 
     private static void SavePlayersIncomeAndSendToClients(ZNetPeer target = null)
     {
-        Market_Paths.MarketPlayersIncomeJSON.WriteClear(JSON.ToJSON(PlayersIncome));
+        Market_Paths.MarketPlayersIncomeJSON.WriteFile(JSON.ToJSON(PlayersIncome));
 
         if (target != null)
         {
@@ -107,7 +107,7 @@ public static class Marketplace_Main_Server
 
     private static void SaveMarketAndSendToClients()
     {
-        Market_Paths.ServerMarketDataJSON.WriteClear(JSON.ToJSON(Marketplace_DataTypes.SyncedMarketplaceData.Value));
+        Market_Paths.ServerMarketDataJSON.WriteFile(JSON.ToJSON(Marketplace_DataTypes.SyncedMarketplaceData.Value));
         Marketplace_DataTypes.SyncedMarketplaceData.Update();
     }
 

@@ -630,4 +630,11 @@ public static class KG_Chat
             text = Regex.Replace(text, @"<sprite=\d+>", "");
         }
     }
+
+    [HarmonyPatch(typeof(Chat), nameof(Chat.isAllowedCommand))]
+    [ClientOnlyPatch]
+    private static class Chat_isAllowedCommand_Patch
+    {
+        private static void Postfix(ref bool __result) => __result |= (kgChat && Utils.IsDebug);
+    }
 }

@@ -246,12 +246,6 @@ public static class Quests_UIs
                         tooltip.m_text = Localization.instance.Localize("$mpasn_tooltip_epicmmo ") + "x" +
                                          quest.RewardCount[i];
                         break;
-                    case Quests_DataTypes.QuestRewardType.Battlepass_EXP:
-                        rewardImage.sprite = AssetStorage.AssetStorage.Battlepass_EXP_Icon;
-                        tooltip.m_topic = Localization.instance.Localize("$mpasn_Battlepass_EXP");
-                        tooltip.m_text = Localization.instance.Localize("$mpasn_tooltip_battlepass ") + "x" +
-                                         quest.RewardCount[i];
-                        break;
                     case Quests_DataTypes.QuestRewardType.MH_EXP:
                         rewardImage.sprite = AssetStorage.AssetStorage.MH_Exp_Icon;
                         tooltip.m_topic = Localization.instance.Localize("$mpasn_MH_EXP");
@@ -261,8 +255,12 @@ public static class Quests_UIs
                     case Quests_DataTypes.QuestRewardType.Cozyheim_EXP:
                         rewardImage.sprite = AssetStorage.AssetStorage.Cozyheim_Exp;
                         tooltip.m_topic = Localization.instance.Localize("$mpasn_Cozyheim_EXP");
-                        tooltip.m_text = Localization.instance.Localize("$mpasn_tooltip_cozyheim ") + "x" +
-                                         quest.RewardCount[i];
+                        tooltip.m_text = Localization.instance.Localize("$mpasn_tooltip_cozyheim ") + "x" + quest.RewardCount[i];
+                        break;
+                    case Quests_DataTypes.QuestRewardType.SetCustomValue or Quests_DataTypes.QuestRewardType.AddCustomValue:
+                        rewardImage.sprite = AssetStorage.AssetStorage.CustomValue_Icon;
+                        tooltip.m_topic = Localization.instance.Localize("$mpasn_CustomValue");
+                        tooltip.m_text = $"{Localization.instance.Localize("$mpasn_CustomValue")} {quest.GetLocalizedReward(i)} {(quest.RewardCount[i] > 0 ? "+" : "-")}{quest.RewardCount[i]}";
                         break;
                 }
             }

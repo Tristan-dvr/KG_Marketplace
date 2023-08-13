@@ -226,7 +226,7 @@ public static class Marketplace_Messages
             if (IsSaving) return;
             IsSaving = true;
             await Task.Run(SaveMsg);
-            Market_Paths.MarketPlayerMessagesJSON.WriteClear(JSON.ToNiceJSON(PlayerMessages));
+            Market_Paths.MarketPlayerMessagesJSON.WriteFile(JSON.ToNiceJSON(PlayerMessages));
             IsSaving = false;
         }
     }
