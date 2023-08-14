@@ -26,8 +26,7 @@ namespace Marketplace
 
         public static readonly ConfigSync configSync = new(GUID)
         {
-            DisplayName = GUID, ModRequired = true, MinimumRequiredVersion = PluginVersion,
-            CurrentVersion = PluginVersion
+            DisplayName = GUID, ModRequired = true, MinimumRequiredVersion = PluginVersion, CurrentVersion = PluginVersion
         };
  
         public enum WorkingAs

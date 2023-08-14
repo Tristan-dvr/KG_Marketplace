@@ -56,28 +56,9 @@ public static class Quests_Main_Client
     [ClientOnlyPatch]
     private static class Quest_Main_LoadPatch
     {
-        private static void MigrateToCustomData()
-        {
-            const string str = "[MPASN]questCD=";
-            const string str2 = "[MPASN]quest=";
-            HashSet<string> toRemove = new();
-            foreach (KeyValuePair<string, string> kvp in Player.m_localPlayer.m_knownTexts.Where(kvp =>
-                         kvp.Key.Contains(str) || kvp.Key.Contains(str2)))
-            {
-                Player.m_localPlayer.m_customData[kvp.Key] = kvp.Value;
-                toRemove.Add(kvp.Key);
-            }
-
-            foreach (string key in toRemove)
-            {
-                Player.m_localPlayer.m_knownTexts.Remove(key);
-            }
-        }
-
         private static void ClearEmptyQuestCooldowns()
         {
             if (!Player.m_localPlayer) return;
-            MigrateToCustomData();
             HashSet<string> toRemove = new();
             const string str = "[MPASN]questCD=";
             const string str2 = "[MPASN]quest=";

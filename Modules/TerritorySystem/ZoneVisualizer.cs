@@ -7,8 +7,8 @@ namespace Marketplace.Modules.TerritorySystem;
 public static class ZoneVisualizer
 {
     private static GameObject ZoneVisualizer_Square, ZoneVisualizer_Circle;
-    private static readonly List<GameObject> Visualizers = new();
-    private static float VisualizerAlpha = 0.2f;
+    public static readonly List<GameObject> Visualizers = new();
+    public static float VisualizerAlpha = 0.2f;
 
     private static void OnInit()
     {
@@ -24,7 +24,7 @@ public static class ZoneVisualizer
         }
     }
 
-    private static void On()
+    public static void On()
     {
         Visualizers.ForEach(x =>
         {
@@ -69,7 +69,7 @@ public static class ZoneVisualizer
         EnvMan.instance?.transform.Find("Clouds").gameObject.SetActive(false);
     }
 
-    private static void Off()
+    public static void Off()
     {
         Visualizers.ForEach(x =>
         {
@@ -85,41 +85,6 @@ public static class ZoneVisualizer
     {
         private static void Postfix() => Off();
     }
-
-    [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
-    [ClientOnlyPatch]
-    private static class Terminal_InputText_Patch
-    {
-        private static void Postfix()
-        {
-            new Terminal.ConsoleCommand("zonevisualizer", "Toggle zone visualizer", (_) =>
-            {
-                if (!Utils.IsDebug) return;
-                if (Visualizers.Count == 0)
-                    On();
-                else
-                    Off();
-            });
-
-            new Terminal.ConsoleCommand("zonevisualizeralpha", "Set Zone Visualizer Alpha", (args) =>
-            {
-                if (args.Args.Length <= 1)
-                {
-                    args.Context.AddString("Current Alpha: " + VisualizerAlpha);
-                    return;
-                }
-
-                if (!int.TryParse(args.Args[1], out int alpha))
-                {
-                    args.Context.AddString("Invalid Alpha");
-                    return;
-                }
-
-                alpha = Mathf.Clamp(alpha, 25, 255);
-                VisualizerAlpha = Mathf.Clamp(alpha, 25, 255) / 255f;
-                args.Context.AddString("Set Alpha to: " + alpha);
-                if (Visualizers.Count > 0) On();
-            });
-        }
-    }
+    
+    
 }

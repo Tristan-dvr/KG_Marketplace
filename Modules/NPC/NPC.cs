@@ -93,6 +93,7 @@ public static class Market_NPC
                 }
             }
         }
+
         NPCUI.Init();
         Marketplace.Global_Updator += UpdateNPCGUI;
     }
@@ -166,69 +167,7 @@ public static class Market_NPC
         }
     }
 
-    [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
-    [ClientOnlyPatch]
-    private static class Chat_InputText_Patch_AdminCommands
-    {
-        private static void Postfix()
-        {
-            new Terminal.ConsoleCommand("npc remove", "Remove NPCs in range of 5 meters", (args) =>
-            {
-                if (!Utils.IsDebug) return;
-                IEnumerable<NPCcomponent> FindNPCsInRange = NPCcomponent.ALL.Where(x =>
-                    global::Utils.DistanceXZ(Player.m_localPlayer.transform.position, x.transform.position) <= 5f);
-                int c = 0;
-                string total = "";
-                foreach (NPCcomponent npc in FindNPCsInRange)
-                {
-                    ++c;
-                    string name = npc.GetClearNPCName();
-                    if (string.IsNullOrWhiteSpace(name))
-                    {
-                        name = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);
-                    }
-
-                    total += $"\n{c + 1}) {name} {npc.transform.position}";
-                    ZDOMan.instance.m_destroySendList.Add(npc.znv.m_zdo.m_uid);
-                }
-
-                args.Context.AddString($"Removed total {c} NPCs in range:{total}");
-            });
-            
-
-            new Terminal.ConsoleCommand("idm", "Get Current Left/Right ItemDataManager values", (args) =>
-            {
-                if (!Utils.IsDebug) return;
-                ItemDrop.ItemData weapon = Player.m_localPlayer.GetRightItem() != null
-                    ? Player.m_localPlayer.GetRightItem()
-                    : Player.m_localPlayer.GetLeftItem();
-                if (weapon == null)
-                {
-                    args.Context.AddString("No weapon in hand");
-                    return;
-                }
-
-                string IDM = JSON.ToNiceJSON(weapon.m_customData);
-                args.Context.AddString($"IDM for {weapon.m_dropPrefab.name}:\n{IDM}");
-            });
-
-            new Terminal.ConsoleCommand("mpos", "Get Current Position",
-                (args) =>
-                {
-                    args.Context.AddString($"<color=green>Position: {Player.m_localPlayer.transform.position}</color>");
-                });
-
-            new Terminal.ConsoleCommand("mfpslimit", "Set Fixed Update FPS", (args) =>
-            {
-                if (!Utils.IsDebug || args.Args.Length < 2) return;
-                int fps = int.Parse(args.Args[1]);
-                fps = Mathf.Clamp(fps, 50, 144);
-                float time = 1f / fps;
-                Time.fixedDeltaTime = time;
-                args.Context.AddString($"<color=green>Fixed Update FPS set to {fps}</color>");
-            });
-        }
-    }
+   
 
     private class TextComponent : MonoBehaviour
     {
@@ -516,7 +455,13 @@ public static class Market_NPC
                     {
                         if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(znv.m_zdo.GetString("KGperiodicSound"),
                                 out AudioClip sound))
-                            NPC_SoundSource.PlayOneShot(sound);
+                        {
+                            if (!NPC_SoundSource.isPlaying)
+                            {
+                                NPC_SoundSource.clip = sound;
+                                NPC_SoundSource.Play();
+                            }
+                        }
                     }
                 }
             }
@@ -640,7 +585,7 @@ public static class Market_NPC
 
         public string GetNPCName()
         {
-            return znv.m_zdo.GetString("KGnpcNameOverride");
+            return znv?.m_zdo?.GetString("KGnpcNameOverride") ?? "";
         }
 
         public string GetClearNPCName()
@@ -1272,8 +1217,7 @@ public static class Market_NPC
                         EquipItemsOnModel(leftArm, leftItem, skin);
                         EquipItemsOnModel(rightgArm, rightItem, skin);
                         EquipItemsOnModel(rightBack, rightBackItem, skin);
-                        
-                        
+
 
                         if (ZNetScene.instance.GetPrefab(leftBackItem))
                         {
@@ -1432,7 +1376,6 @@ public static class Market_NPC
         }
     }
 
-    
 
     public static class NPCUI
     {
@@ -1632,6 +1575,7 @@ public static class Market_NPC
                 _currentNPC.NPC_PeriodicSound(fashion.PeriodicSound);
                 _currentNPC.NPC_PeriodicSoundTime(fashion.PeriodicSoundTime);
             }
+
             _callback?.Invoke();
             Hide();
         }
@@ -1659,11 +1603,16 @@ public static class Market_NPC
 
             if (_currentNPC.HasOwner())
             {
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, _currentNPC.m_uid, "KGMarket changeNpcType", (int)_currentType);
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, _currentNPC.m_uid, "KGmarket overridename", _npcname.text);
-                ZRoutedRpc.instance.InvokeRoutedRPC(_currentNPC.GetOwner(),_currentNPC.m_uid, "KGmarket changeprofile",  _npcprofile.text, _npcDialogue.text);
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody,_currentNPC.m_uid, "KGmarket overridemodel",  _npcmodel.text);
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody,_currentNPC.m_uid, "KGmarket GetPatrolData",  _patroldata.text);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, _currentNPC.m_uid, "KGMarket changeNpcType",
+                    (int)_currentType);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, _currentNPC.m_uid, "KGmarket overridename",
+                    _npcname.text);
+                ZRoutedRpc.instance.InvokeRoutedRPC(_currentNPC.GetOwner(), _currentNPC.m_uid, "KGmarket changeprofile",
+                    _npcprofile.text, _npcDialogue.text);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, _currentNPC.m_uid, "KGmarket overridemodel",
+                    _npcmodel.text);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, _currentNPC.m_uid, "KGmarket GetPatrolData",
+                    _patroldata.text);
             }
             else
             {
@@ -1674,6 +1623,7 @@ public static class Market_NPC
                 _currentNPC.NPC_Model(_npcmodel.text);
                 _currentNPC.NPC_PatrolData(_patroldata.text);
             }
+
             _callback?.Invoke();
             Hide();
         }

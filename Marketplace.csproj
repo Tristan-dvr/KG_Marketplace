@@ -342,6 +342,7 @@
     <ItemGroup>
         <Compile Include="API.cs" />
         <Compile Include="Attributes.cs" />
+        <Compile Include="ChatCommands.cs" />
         <Compile Include="DiscordStuff\DiscordConnetor.cs" />
         <Compile Include="ExternalLoads\AsmLoad_UnityCode.cs" />
         <Compile Include="ExternalLoads\AssetStorage.cs" />

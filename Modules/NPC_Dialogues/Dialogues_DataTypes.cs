@@ -232,7 +232,8 @@ public static class Dialogues_DataTypes
                                             out AudioClip clip))
                                     {
                                         npc.NPC_SoundSource.Stop();
-                                        npc.NPC_SoundSource.PlayOneShot(clip);
+                                        npc.NPC_SoundSource.clip = clip;
+                                        npc.NPC_SoundSource.Play();
                                     }
                                 };
                                 break;
