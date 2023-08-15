@@ -25,11 +25,9 @@ public static class Teleporter_Main_Server
         }
         Teleporter_DataTypes.SyncedTeleporterSprites.Update();
     }
-    
-    private static void ReadServerTeleporterProfile()
+
+    private static void ProcessTeleporterProfiles(IReadOnlyList<string> profiles)
     {
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TeleporterPinsConfig);
-        Teleporter_DataTypes.SyncedTeleporterData.Value.Clear();
         string splitProfile = "default";
         for (int i = 0; i < profiles.Count; i++)
         {
@@ -88,6 +86,20 @@ public static class Teleporter_Main_Server
                 }
             }
         }
+    }
+    
+    private static void ReadServerTeleporterProfile()
+    {
+        Teleporter_DataTypes.SyncedTeleporterData.Value.Clear();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TeleporterConfig);
+        ProcessTeleporterProfiles(profiles);
+        string folder = Market_Paths.AdditionalConfigsTeleportHubProfilesConfig;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            profiles = File.ReadAllLines(file).ToList();
+            ProcessTeleporterProfiles(profiles);
+        }
         Teleporter_DataTypes.SyncedTeleporterData.Update();
     }
     
@@ -96,7 +108,6 @@ public static class Teleporter_Main_Server
         ReadServerTeleporterSprites();
         ReadServerTeleporterProfile();
     }
-    
 
     private static void OnTeleporterProfilesChange()
     {

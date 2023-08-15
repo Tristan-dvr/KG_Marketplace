@@ -20,9 +20,18 @@ public static class Gambler_Main_Server
 
     private static void ReadGamblerProfiles()
     {
-        IReadOnlyList<string> list = File.ReadAllLines(Market_Paths.GamblerConfig);
-        ReadGamblerProfiles(list);
+        Gambler_DataTypes.SyncedGamblerData.Value.Clear();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.GamblerConfig);
+        ReadGamblerProfiles(profiles);
+        string folder = Market_Paths.AdditionalConfigsGamblerProfilesConfig;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            profiles = File.ReadAllLines(file).ToList();
+            ReadGamblerProfiles(profiles);
+        }
         ClientClearData();
+        Gambler_DataTypes.SyncedGamblerData.Update();
     }
 
     private static void ClientClearData()
@@ -38,7 +47,6 @@ public static class Gambler_Main_Server
 
     private static void ReadGamblerProfiles(IReadOnlyList<string> profiles)
     {
-        Gambler_DataTypes.SyncedGamblerData.Value.Clear();
         string splitProfile = "default";
         int MAXSROLL = 1;
         for (int i = 0; i < profiles.Count; i++)
@@ -98,7 +106,5 @@ public static class Gambler_Main_Server
                 };
             }
         }
-
-        Gambler_DataTypes.SyncedGamblerData.Update();
     }
 }

@@ -10,47 +10,62 @@ public static class Buffer_Main_Server
 {
     private static void OnInit()
     {
+        ReadBufferConfigs();
+    }
+
+    private static void ReadBufferConfigs()
+    {
+        Buffer_DataTypes.SyncedBufferProfiles.Value.Clear();
+        Buffer_DataTypes.SyncedBufferBuffs.Value.Clear();
         try
         {
             IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.BufferProfilesConfig);
             ReadBufferProfiles(profiles);
+            string folder = Market_Paths.AdditionalConfigsBufferProfilesConfig;
+            string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+            foreach (string file in files)
+            {
+                profiles = File.ReadAllLines(file).ToList();
+                ReadBufferProfiles(profiles);
+            }
+
             IReadOnlyList<string> database = File.ReadAllLines(Market_Paths.BufferDatabaseConfig);
             ReadBufferDatabase(database);
+            folder = Market_Paths.AdditionalConfigsBufferDatabaseConfig;
+            files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+            foreach (string file in files)
+            {
+                database = File.ReadAllLines(file).ToList();
+                ReadBufferDatabase(database);
+            }
         }
         catch (Exception ex)
         {
-            Utils.print($"BUFFER ERROR:\n{ex}", ConsoleColor.Red);
+            Utils.print($"Got exception on save buffer. Not sending data:{ex}", ConsoleColor.Red);
+        }
+        finally
+        {
+            Buffer_DataTypes.SyncedBufferProfiles.Update();
+            Buffer_DataTypes.SyncedBufferBuffs.Update();
         }
     }
 
     private static void OnBufferProfilesFileChange()
     {
-        try
-        {
-            IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.BufferProfilesConfig);
-            ReadBufferProfiles(profiles);
-            IReadOnlyList<string> database = File.ReadAllLines(Market_Paths.BufferDatabaseConfig);
-            ReadBufferDatabase(database);
-        }
-        catch (Exception ex)
-        {
-            Utils.print($"Got exception on save buffer. Not sending data:{ex}", ConsoleColor.Red);
-            return;
-        }
+        ReadBufferConfigs();
         Utils.print("Buffer Profiles / Database Changed. Sending new info to all clients");
     }
 
 
     private static void ReadBufferProfiles(IReadOnlyList<string> profiles)
     {
-        Buffer_DataTypes.SyncedBufferProfiles.Value.Clear();
         string splitProfile = "default";
         for (int i = 0; i < profiles.Count; i++)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
             {
-                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ","").ToLower();
+                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
             }
             else
             {
@@ -60,13 +75,10 @@ public static class Buffer_Main_Server
                 }
             }
         }
-
-        Buffer_DataTypes.SyncedBufferProfiles.Update();
     }
 
     private static void ReadBufferDatabase(IReadOnlyList<string> profiles)
     {
-        Buffer_DataTypes.SyncedBufferBuffs.Value.Clear();
         string dbProfile = null;
         for (int i = 0; i < profiles.Count; i++)
         {
@@ -143,7 +155,5 @@ public static class Buffer_Main_Server
                 dbProfile = null;
             }
         }
-
-        Buffer_DataTypes.SyncedBufferBuffs.Update();
     }
 }

@@ -125,6 +125,36 @@ public static class DistancedUI_UI
             }
         }
 
+        private static bool HasAny(NPCtype_Internal type)
+        {
+            List<string> premiumSource = type switch
+            {
+                NPCtype_Internal.Trader => DistancedUI_DataType.SyncedPremiumSystemData.Value.TraderProfiles,
+                NPCtype_Internal.Banker => DistancedUI_DataType.SyncedPremiumSystemData.Value.BankerProfiles,
+                NPCtype_Internal.Teleporter => DistancedUI_DataType.SyncedPremiumSystemData.Value.TeleporterProfiles,
+                NPCtype_Internal.Gambler => DistancedUI_DataType.SyncedPremiumSystemData.Value.GamblerProfiles,
+                NPCtype_Internal.Buffer => DistancedUI_DataType.SyncedPremiumSystemData.Value.BufferProfiles,
+                NPCtype_Internal.Quests => DistancedUI_DataType.SyncedPremiumSystemData.Value.QuestProfiles,
+                NPCtype_Internal.Info => DistancedUI_DataType.SyncedPremiumSystemData.Value.InfoProfiles,
+                NPCtype_Internal.Transmogrification => DistancedUI_DataType.SyncedPremiumSystemData.Value.TransmogrificationProfiles,
+                _ => new()
+            };
+            List<string> source = type switch
+            {
+                NPCtype_Internal.Trader => Trader_DataTypes.ClientSideItemList.Keys.ToList(),
+                NPCtype_Internal.Banker => Banker_DataTypes.SyncedBankerProfiles.Value.Keys.ToList(),
+                NPCtype_Internal.Teleporter => Teleporter_DataTypes.SyncedTeleporterData.Value.Keys.ToList(),
+                NPCtype_Internal.Gambler => Gambler_DataTypes.SyncedGamblerData.Value.Keys.ToList(), 
+                NPCtype_Internal.Buffer => Buffer_DataTypes.ClientSideBufferProfiles.Keys.ToList(),
+                NPCtype_Internal.Quests => Quests_DataTypes.SyncedQuestProfiles.Value.Keys.ToList(),
+                NPCtype_Internal.Info => ServerInfo_DataTypes.SyncedServerInfoData.Value.Keys.ToList(),
+                NPCtype_Internal.Transmogrification => Transmogrification_DataTypes.SyncedTransmogData.Value.Keys.ToList(),
+                _ => new()
+            };
+            
+            return premiumSource.Any(source.Contains);
+        }
+
         private static void ClickOpen(NPCtype_Internal type)
         {
             if (!DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
@@ -279,12 +309,21 @@ public static class DistancedUI_UI
             {
                 Left.SetActive(false);
                 Right.SetActive(true);
+                Buttons_Images[1].gameObject.SetActive(HasAny(NPCtype_Internal.Trader));
+                Buttons_Images[2].gameObject.SetActive(HasAny(NPCtype_Internal.Banker));
+                Buttons_Images[3].gameObject.SetActive(HasAny(NPCtype_Internal.Teleporter));
+                Buttons_Images[4].gameObject.SetActive(HasAny(NPCtype_Internal.Gambler));
+                Buttons_Images[5].gameObject.SetActive(HasAny(NPCtype_Internal.Buffer));
+                Buttons_Images[6].gameObject.SetActive(HasAny(NPCtype_Internal.Quests));
+                Buttons_Images[7].gameObject.SetActive(HasAny(NPCtype_Internal.Info));
+                Buttons_Images[8].gameObject.SetActive(HasAny(NPCtype_Internal.Transmogrification));
             }
         }
 
         public static void Show(bool allowMarket)
         {
             Buttons_Images[0].gameObject.SetActive(allowMarket);
+            
             Default();
             UI.SetActive(true);
         }

@@ -17,11 +17,9 @@ public static class Trader_Main_Server
         ReadServerTraderProfiles();
         Utils.print("Trader Changed. Sending new info to all clients");
     }
-    
-     private static void ReadServerTraderProfiles()
+
+    private static void ProcessTraderProfiles(IReadOnlyList<string> profiles)
     {
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TraderConfig);
-        Trader_DataTypes.SyncedTraderItemList.Value.Clear();
         string splitProfile = "default";
         bool _NeedToKnow = false;
         for (int i = 0; i < profiles.Count; i++)
@@ -165,7 +163,20 @@ public static class Trader_Main_Server
                     return;
                 }
             }
-            
+        }
+    }
+    
+     private static void ReadServerTraderProfiles()
+    {
+        Trader_DataTypes.SyncedTraderItemList.Value.Clear();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TraderConfig);
+        ProcessTraderProfiles(profiles);
+        string folder = Market_Paths.AdditionalConfigsTraderProfilesConfig;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            profiles = File.ReadAllLines(file).ToList();
+            ProcessTraderProfiles(profiles);
         }
         Trader_DataTypes.SyncedTraderItemList.Update();
     }

@@ -10,17 +10,14 @@ public static class Quests_Main_Server
 {
     private static void OnInit()
     {
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestProfilesPath);
-        ReadQuestProfiles(profiles);
+        ReadQuestProfiles();
         ReadQuestDatabase();
-        IReadOnlyList<string> events = File.ReadAllLines(Market_Paths.QuestEventsPath);
-        ReadEventDatabase(events);
+        ReadEventDatabase();
     }
 
     private static void OnQuestsProfilesFileChange()
     {
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestProfilesPath);
-        ReadQuestProfiles(profiles);
+        ReadQuestProfiles();
         Utils.print("Quests Profiles Changed. Sending new info to all clients");
     }
 
@@ -38,14 +35,12 @@ public static class Quests_Main_Server
 
     private static void OnQuestsEventFileChange()
     {
-        IReadOnlyList<string> events = File.ReadAllLines(Market_Paths.QuestEventsPath);
-        ReadEventDatabase(events);
+        ReadEventDatabase();
         Utils.print("Quests Events Changed. Sending new info to all clients");
     }
 
-    private static void ReadQuestProfiles(IReadOnlyList<string> profiles)
+    private static void ProcessQuestProfiles(IReadOnlyList<string> profiles)
     {
-        Quests_DataTypes.SyncedQuestProfiles.Value.Clear();
         string splitProfile = "default";
         for (int i = 0; i < profiles.Count; i++)
         {
@@ -69,7 +64,20 @@ public static class Quests_Main_Server
                 }
             }
         }
+    }
 
+    private static void ReadQuestProfiles()
+    {
+        Quests_DataTypes.SyncedQuestProfiles.Value.Clear();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestProfilesPath);
+        ProcessQuestProfiles(profiles);
+        string folder = Market_Paths.AdditionalConfigsQuestsProfilesConfig;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            profiles = File.ReadAllLines(file).ToList();
+            ProcessQuestProfiles(profiles);
+        }
         Quests_DataTypes.SyncedQuestProfiles.Update();
     }
 
@@ -292,7 +300,7 @@ public static class Quests_Main_Server
         Quests_DataTypes.SyncedQuestData.Value.Clear();
         IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestDatabasePath);
         ProcessQuestDatabaseProfiles(profiles);
-        string folder = Market_Paths.AdditionalConfigsQuestsFolder;
+        string folder = Market_Paths.AdditionalConfigsQuestsDatabaseConfig;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
@@ -304,10 +312,8 @@ public static class Quests_Main_Server
         
     }
 
-    private static void ReadEventDatabase(IReadOnlyList<string> profiles)
+    private static void ProcessEventDatabase(IReadOnlyList<string> profiles)
     {
-        Quests_DataTypes.SyncedQuestsEvents.Value.Clear();
-
         bool ValidateEventArguments(Quests_DataTypes.QuestEventAction action, string args, string QuestID)
         {
             string[] split = args.Split(',');
@@ -333,7 +339,7 @@ public static class Quests_Main_Server
 
             return result;
         }
-
+        
         string splitProfile = "default";
         for (int i = 0; i < profiles.Count; i++)
         {
@@ -372,7 +378,20 @@ public static class Quests_Main_Server
                 }
             }
         }
-
+    }
+    
+    private static void ReadEventDatabase()
+    {
+        Quests_DataTypes.SyncedQuestsEvents.Value.Clear();
+        IReadOnlyList<string> events = File.ReadAllLines(Market_Paths.QuestEventsPath);
+        ProcessEventDatabase(events);
+        string folder = Market_Paths.AdditionalConfigsQuestsEventsConfig;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            events = File.ReadAllLines(file).ToList();
+            ProcessEventDatabase(events);
+        }
         Quests_DataTypes.SyncedQuestsEvents.Update();
         
     }

@@ -14,11 +14,11 @@ namespace Marketplace
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
         public const string PluginVersion = "8.8.0";
-        internal static Marketplace _thistype; 
+        internal static Marketplace _thistype;
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW;
         public static Action<float> Global_Updator;
-        public static Action<float> Global_FixedUpdator;  
+        public static Action<float> Global_FixedUpdator;
         public static Action Global_OnGUI_Updator;
         public static Action Global_Start;
         public static Type TempJewelcraftingType;
@@ -26,9 +26,10 @@ namespace Marketplace
 
         public static readonly ConfigSync configSync = new(GUID)
         {
-            DisplayName = GUID, ModRequired = true, MinimumRequiredVersion = PluginVersion, CurrentVersion = PluginVersion
+            DisplayName = GUID, ModRequired = true, MinimumRequiredVersion = PluginVersion,
+            CurrentVersion = PluginVersion
         };
- 
+
         public enum WorkingAs
         {
             Client,
@@ -37,12 +38,12 @@ namespace Marketplace
         }
 
         public static WorkingAs WorkingAsType;
-        
+
         private void Awake()
         {
             WorkingAsType = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null
                 ? WorkingAs.Server
-                : Config.Bind("General", "Use Marketplace Locally", false, "Enable Market Local Usage").Value 
+                : Config.Bind("General", "Use Marketplace Locally", false, "Enable Market Local Usage").Value
                     ? WorkingAs.Both
                     : WorkingAs.Client;
             Utils.print($"Marketplace Working As: {WorkingAsType}");
@@ -66,7 +67,7 @@ namespace Marketplace
                 .Select(x => new KeyValuePair<Market_Autoload, Type>(x.GetCustomAttribute<Market_Autoload>(), x))
                 .OrderBy(x => x.Key.priority).Where(x => WorkingAsType switch
                 {
-                    WorkingAs.Client => x.Key.type != Market_Autoload.Type.Server, 
+                    WorkingAs.Client => x.Key.type != Market_Autoload.Type.Server,
                     WorkingAs.Server => x.Key.type != Market_Autoload.Type.Client,
                     _ => true
                 });
@@ -129,6 +130,7 @@ namespace Marketplace
         private static void InitFSW(string folderPath)
         {
             if (WorkingAsType is WorkingAs.Client) return;
+            FillFolderRoutes();
             try
             {
                 FSW = new FileSystemWatcher(folderPath)
@@ -146,33 +148,43 @@ namespace Marketplace
             }
         }
 
+        private static readonly Dictionary<string, string> FoldersToFiles = new();
+        private static void FillFolderRoutes()
+        {
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsQuestsDatabaseConfig, Path.GetFileName(Market_Paths.QuestDatabasePath));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsQuestsEventsConfig, Path.GetFileName(Market_Paths.QuestEventsPath));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsQuestsProfilesConfig, Path.GetFileName(Market_Paths.QuestProfilesPath));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsDialoguesFolder, Path.GetFileName(Market_Paths.NpcDialoguesConfig));
+            FoldersToFiles.Add(Market_Paths.AdditionalCondfigsTerritoriesFolder, Path.GetFileName(Market_Paths.TerritoriesConfigPath));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsBankerProfilesConfig, Path.GetFileName(Market_Paths.BankerFile));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsTeleportHubProfilesConfig, Path.GetFileName(Market_Paths.TeleporterConfig));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsTraderProfilesConfig, Path.GetFileName(Market_Paths.TraderConfig));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsTransmogrificationConfig, Path.GetFileName(Market_Paths.TransmogrificationConfig));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsBufferDatabaseConfig, Path.GetFileName(Market_Paths.BufferDatabaseConfig));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsBufferProfilesConfig, Path.GetFileName(Market_Paths.BufferProfilesConfig));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsServerInfoProfilesConfig, Path.GetFileName(Market_Paths.ServerInfoConfig));
+            FoldersToFiles.Add(Market_Paths.AdditionalConfigsGamblerProfilesConfig, Path.GetFileName(Market_Paths.GamblerConfig));
+        }
+
         private static readonly Dictionary<string, Action> FSW_Lookup = new();
         private static readonly Dictionary<string, DateTime> LastConfigChangeTime = new();
 
         private static void MarketplaceConfigChanged(object sender, FileSystemEventArgs e)
         {
             if (e.ChangeType != WatcherChangeTypes.Changed) return;
-
-            string fName = Path.GetFileName(e.Name)!;  
- 
-            string folderPath = Path.GetDirectoryName(e.FullPath)!; 
-            if (folderPath.Contains(Market_Paths.AdditionalConfigsQuestsFolder))
-                fName = Path.GetFileName(Market_Paths.QuestDatabasePath);
-            else if (folderPath.Contains(Market_Paths.AdditionalConfigsDialoguesFolder))
-                fName = Path.GetFileName(Market_Paths.NpcDialoguesConfig); 
-            else if (folderPath.Contains(Market_Paths.AdditionalCondfigsTerritoriesFolder))
-                fName = Path.GetFileName(Market_Paths.TerritoriesConfigPath); 
- 
-            if (!FSW_Lookup.TryGetValue(fName, out Action action)) return; 
+            string folderPath = Path.GetDirectoryName(e.FullPath)!;
+            if (!FoldersToFiles.TryGetValue(folderPath, out string fName)) fName = Path.GetFileName(e.Name); 
+            if (!FSW_Lookup.TryGetValue(fName, out Action action)) return;
             if (!ZNet.instance || !ZNet.instance.IsServer())
-            { 
-                Utils.print($"FSW: Not a server, ignoring ({e.Name})", ConsoleColor.Red); 
+            {
+                Utils.print($"FSW: Not a server, ignoring ({e.Name})", ConsoleColor.Red);
                 return;
             }
+
             if (!LastConfigChangeTime.ContainsKey(fName)) LastConfigChangeTime[fName] = DateTime.MinValue;
             if (LastConfigChangeTime[fName] > DateTime.Now.AddSeconds(-5)) return;
             LastConfigChangeTime[fName] = DateTime.Now;
-            Utils.DelayedAction(action); 
+            Utils.DelayedAction(action);
         }
     }
 }

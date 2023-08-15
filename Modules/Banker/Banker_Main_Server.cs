@@ -32,10 +32,8 @@ public static class Banker_Main_Server
         Utils.print("Banker Changed. Sending new info to all clients");
     }
 
-    private static void ReadServerBankerProfiles()
+    private static void ProcessBankerProfiles(IReadOnlyList<string> profiles)
     {
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.BankerFile);
-        Banker_DataTypes.SyncedBankerProfiles.Value.Clear();
         string splitProfile = "default";
         for (int i = 0; i < profiles.Count; i++)
         {
@@ -57,7 +55,20 @@ public static class Banker_Main_Server
                 }
             }
         }
+    }
 
+    private static void ReadServerBankerProfiles()
+    {
+        Banker_DataTypes.SyncedBankerProfiles.Value.Clear();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.BankerFile);
+        ProcessBankerProfiles(profiles);
+        string folder = Market_Paths.AdditionalConfigsBankerProfilesConfig;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            profiles = File.ReadAllLines(file).ToList();
+            ProcessBankerProfiles(profiles);
+        }
         Banker_DataTypes.SyncedBankerProfiles.Update();
     }
 

@@ -7,7 +7,6 @@ namespace Marketplace.Modules.ServerInfo;
     new[] { "ServerInfoProfiles.cfg" }, new[] { "OnServerInfoProfileChange" })]
 public static class ServerInfo_Main_Server
 {
-  
     private static void OnInit()
     {
         ReadServerInfoProfiles();
@@ -19,11 +18,9 @@ public static class ServerInfo_Main_Server
         Utils.print("Info Profiles Changed. Sending new info to all clients");
     }
 
-    private static void ReadServerInfoProfiles()
+    private static void ProcessServerInfoProfiles(IReadOnlyList<string> profiles)
     {
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.ServerInfoConfig);
-        ServerInfo_DataTypes.SyncedServerInfoData.Value.Clear();
-        string splitProfile = "default";
+         string splitProfile = "default";
         List<ServerInfo_DataTypes.ServerInfoQueue.Info> _infoQueue = new();
         string data = "";
         for (int i = 0; i < profiles.Count; i++)
@@ -87,6 +84,20 @@ public static class ServerInfo_Main_Server
             _infoQueue.Clear();
         }
 
+    }
+    
+    private static void ReadServerInfoProfiles()
+    {
+        ServerInfo_DataTypes.SyncedServerInfoData.Value.Clear();
+        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.ServerInfoConfig);
+        ProcessServerInfoProfiles(profiles);
+        string folder = Market_Paths.AdditionalConfigsServerInfoProfilesConfig;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            profiles = File.ReadAllLines(file).ToList();
+            ProcessServerInfoProfiles(profiles);
+        }
         ServerInfo_DataTypes.SyncedServerInfoData.Update();
     }
 }

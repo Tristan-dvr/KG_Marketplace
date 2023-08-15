@@ -26,7 +26,7 @@ public static class Market_Paths
     public static string MarketLeaderboardJSON => Path.Combine(DataFolder, "LeaderboardV2.json");
 
     public static string TeleporterPinsFolder => Path.Combine(MainPath, "MapPinsIcons");
-    public static string TeleporterPinsConfig => Path.Combine(MainPath, "TeleportHubProfiles.cfg");
+    public static string TeleporterConfig => Path.Combine(MainPath, "TeleportHubProfiles.cfg");
 
     public static string TraderConfig => Path.Combine(MainPath, "TraderProfiles.cfg");
 
@@ -47,9 +47,19 @@ public static class Market_Paths
     public static string MainConfig => Path.Combine(MainPath, "MarketPlace.cfg");
 
     private static string AdditionalConfigsFolder => Path.Combine(MainPath, "AdditionalConfigs");
-    public static string AdditionalConfigsQuestsFolder => Path.Combine(AdditionalConfigsFolder, "Quests");
+    public static string AdditionalConfigsQuestsDatabaseConfig => Path.Combine(AdditionalConfigsFolder, "Quests");
     public static string AdditionalConfigsDialoguesFolder => Path.Combine(AdditionalConfigsFolder, "Dialogues");
     public static string AdditionalCondfigsTerritoriesFolder => Path.Combine(AdditionalConfigsFolder, "Territories");
+    public static string AdditionalConfigsQuestsProfilesConfig => Path.Combine(AdditionalConfigsFolder, "QuestProfiles");
+    public static string AdditionalConfigsQuestsEventsConfig => Path.Combine(AdditionalConfigsFolder, "QuestEvents");
+    public static string AdditionalConfigsBankerProfilesConfig => Path.Combine(AdditionalConfigsFolder, "Bankers");
+    public static string AdditionalConfigsTeleportHubProfilesConfig => Path.Combine(AdditionalConfigsFolder, "Teleporters");
+    public static string AdditionalConfigsTraderProfilesConfig => Path.Combine(AdditionalConfigsFolder, "Traders");
+    public static string AdditionalConfigsServerInfoProfilesConfig => Path.Combine(AdditionalConfigsFolder, "ServerInfos");
+    public static string AdditionalConfigsGamblerProfilesConfig => Path.Combine(AdditionalConfigsFolder, "Gamblers");
+    public static string AdditionalConfigsBufferDatabaseConfig => Path.Combine(AdditionalConfigsFolder, "Buffers");
+    public static string AdditionalConfigsBufferProfilesConfig => Path.Combine(AdditionalConfigsFolder, "BufferProfiles");
+    public static string AdditionalConfigsTransmogrificationConfig => Path.Combine(AdditionalConfigsFolder, "Transmogrifications");
 
     public static string PlayerTagsConfig => Path.Combine(MainPath, "PlayerTags.cfg");
 
@@ -74,12 +84,32 @@ public static class Market_Paths
                 Directory.CreateDirectory(DistancedUIFolder);
             if (!Directory.Exists(AdditionalConfigsFolder))
                 Directory.CreateDirectory(AdditionalConfigsFolder);
-            if (!Directory.Exists(AdditionalConfigsQuestsFolder))
-                Directory.CreateDirectory(AdditionalConfigsQuestsFolder);
+            if (!Directory.Exists(AdditionalConfigsQuestsDatabaseConfig))
+                Directory.CreateDirectory(AdditionalConfigsQuestsDatabaseConfig);
             if (!Directory.Exists(AdditionalConfigsDialoguesFolder))
                 Directory.CreateDirectory(AdditionalConfigsDialoguesFolder);
             if (!Directory.Exists(AdditionalCondfigsTerritoriesFolder))
                 Directory.CreateDirectory(AdditionalCondfigsTerritoriesFolder);
+            if (!Directory.Exists(AdditionalConfigsQuestsProfilesConfig))
+                Directory.CreateDirectory(AdditionalConfigsQuestsProfilesConfig);
+            if (!Directory.Exists(AdditionalConfigsQuestsEventsConfig))
+                Directory.CreateDirectory(AdditionalConfigsQuestsEventsConfig);
+            if (!Directory.Exists(AdditionalConfigsBankerProfilesConfig))
+                Directory.CreateDirectory(AdditionalConfigsBankerProfilesConfig);
+            if (!Directory.Exists(AdditionalConfigsTeleportHubProfilesConfig))
+                Directory.CreateDirectory(AdditionalConfigsTeleportHubProfilesConfig);
+            if (!Directory.Exists(AdditionalConfigsTraderProfilesConfig))
+                Directory.CreateDirectory(AdditionalConfigsTraderProfilesConfig);
+            if (!Directory.Exists(AdditionalConfigsServerInfoProfilesConfig))
+                Directory.CreateDirectory(AdditionalConfigsServerInfoProfilesConfig);
+            if (!Directory.Exists(AdditionalConfigsGamblerProfilesConfig))
+                Directory.CreateDirectory(AdditionalConfigsGamblerProfilesConfig);
+            if (!Directory.Exists(AdditionalConfigsBufferDatabaseConfig))
+                Directory.CreateDirectory(AdditionalConfigsBufferDatabaseConfig);
+            if (!Directory.Exists(AdditionalConfigsBufferProfilesConfig))
+                Directory.CreateDirectory(AdditionalConfigsBufferProfilesConfig);
+            if (!Directory.Exists(AdditionalConfigsTransmogrificationConfig))
+                Directory.CreateDirectory(AdditionalConfigsTransmogrificationConfig);
 
             if (!File.Exists(QuestProfilesPath)) File.Create(QuestProfilesPath).Dispose();
             if (!File.Exists(QuestEventsPath)) File.Create(QuestEventsPath).Dispose();
@@ -97,7 +127,7 @@ public static class Market_Paths
             
             if (!File.Exists(BankerFile)) File.Create(BankerFile).Dispose();
             if (!File.Exists(BankerDataJSONFile)) File.Create(BankerDataJSONFile).Dispose();
-            if (!File.Exists(TeleporterPinsConfig)) File.Create(TeleporterPinsConfig).Dispose();
+            if (!File.Exists(TeleporterConfig)) File.Create(TeleporterConfig).Dispose();
             if (!File.Exists(MarketLeaderboardJSON)) File.Create(MarketLeaderboardJSON).Dispose();
             if (!File.Exists(TraderConfig)) File.Create(TraderConfig).Dispose();
             if (!File.Exists(ServerInfoConfig)) File.Create(ServerInfoConfig).Dispose();
