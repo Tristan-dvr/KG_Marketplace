@@ -32,8 +32,8 @@ public static class Buffer_DataTypes
 
     public class BufferBuffData : ISerializableParameter
     {
-        public string? UniqueName;
-        public string? Name;
+        public string UniqueName;
+        public string Name;
         public int Duration;
         public float ModifyAttack = 1f;
         public float ModifyHealthRegen = 1f;
@@ -47,12 +47,12 @@ public static class Buffer_DataTypes
         public float ModifyJumpStaminaUsage = 1f;
         public float DamageReduction;
 
-        public string? NeededPrefab;
+        public string NeededPrefab;
         public int NeededPrefabCount;
         public WhatToModify Flags;
-        public string? SpritePrefab;
-        public string? StartEffectPrefab;
-        public string? BuffGroup;
+        public string SpritePrefab;
+        public string StartEffectPrefab;
+        public string BuffGroup;
 
         public void Serialize(ref ZPackage pkg)
         {
@@ -109,7 +109,7 @@ public static class Buffer_DataTypes
         private string NeededItemName = null!;
         private Sprite Icon = null!;
         private Sprite NeededItemIcon = null!;
-        private GameObject? StartEffect;
+        private GameObject StartEffect;
 
         public bool? IsValid;
 

@@ -29,7 +29,7 @@ public static class Marketplace_Main_Server
             Marketplace_Messages.Messenger.PlayerMessages = JSON.ToObject<Dictionary<string, string>>(messagesData);
     }
 
-    private static void SavePlayersIncomeAndSendToClients(ZNetPeer? target = null)
+    private static void SavePlayersIncomeAndSendToClients(ZNetPeer target = null)
     {
         Market_Paths.MarketPlayersIncomeJSON.WriteFile(JSON.ToJSON(PlayersIncome));
 

@@ -21,7 +21,7 @@ public static class Leaderboard_DataTypes
         public Dictionary<string, int> Harvested = new();
         public float MapExplored;
         public int DeathAmount;
-        public string? PlayerName;
+        public string PlayerName;
 
         public int KilledPlayers => KilledCreatures.TryGetValue("Player", out int amount) ? amount : 0;
     }
@@ -41,8 +41,8 @@ public static class Leaderboard_DataTypes
     public class Achievement
     {
         public int ID;
-        public string? Name;
-        public string? Description;
+        public string Name;
+        public string Description;
         public string Prefab = null!;
         public int MinAmount;
         public Color32 Color;
@@ -69,7 +69,7 @@ public static class Leaderboard_DataTypes
 
     internal class Client_Leaderboard : ISerializableParameter
     {
-        public string? PlayerName;
+        public string PlayerName;
         public int KilledCreatures;
         public int KilledPlayers;
         public int BuiltStructures;
@@ -118,9 +118,9 @@ public static class Leaderboard_DataTypes
     internal class Client_Achievement : ISerializableParameter
     {
         public int ID;
-        public string? Name;
+        public string Name;
         public int Score;
-        public string? Description;
+        public string Description;
         public Color32 Color;
 
         public void Serialize(ref ZPackage pkg)

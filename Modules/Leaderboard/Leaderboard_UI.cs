@@ -35,7 +35,7 @@ public static class Leaderboard_UI
 
     private static int CurrentPage = 1;
     private const int MaxPerPage = 10;
-    private static GameObject? CurrentSelectedElement;
+    private static GameObject CurrentSelectedElement;
     private static List<Leaderboard_DataTypes.Client_Leaderboard> SortedList = new();
 
     public static void Init()

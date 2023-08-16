@@ -61,7 +61,7 @@ public static class KG_Chat
     }
     
 
-    private static Coroutine? _corout;
+    private static Coroutine _corout;
 
     private static void ResetScroll()
     {

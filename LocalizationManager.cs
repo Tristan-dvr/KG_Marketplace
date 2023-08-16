@@ -132,7 +132,7 @@ public class Localizer
 			throw new Exception($"Localization for mod {plugin.Info.Metadata.Name} failed: Localization file was empty.");
 		}
 
-		string? localizationData = null;
+		string localizationData = null;
 		if (language != "English")
 		{
 			if (localizationFiles.ContainsKey(language))

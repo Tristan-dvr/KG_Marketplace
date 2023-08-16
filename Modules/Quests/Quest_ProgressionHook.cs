@@ -172,7 +172,7 @@ private static void Postfix()
     [ClientOnlyPatch]
     private static class HookBuildQuest
     {
-        public static void PlacedPiece(GameObject? obj)
+        public static void PlacedPiece(GameObject obj)
         {
             if (obj?.GetComponent<Piece>() is not { } piece) return;
             string pieceName = global::Utils.GetPrefabName(piece.gameObject);
@@ -290,7 +290,7 @@ private static void Postfix(ItemDrop __instance)
     [ClientOnlyPatch]
     private static class TranspileRecipeQuestTest
     {
-        private static void ChangeRecipeName(Recipe r, ref string str, ItemDrop.ItemData? item)
+        private static void ChangeRecipeName(Recipe r, ref string str, ItemDrop.ItemData item)
         {
             if (!Quests_DataTypes.Quest.IsQuestTarget(r, item?.m_quality + 1 ?? 1)) return;
             if (!str.Contains('★'))

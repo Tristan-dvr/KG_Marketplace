@@ -175,9 +175,9 @@ public static class Utils
         return num;
     }
 
-    public static Minimap.PinData? GetCustomPin(Minimap.PinType type, Vector3 pos, float radius)
+    public static Minimap.PinData GetCustomPin(Minimap.PinType type, Vector3 pos, float radius)
     {
-        Minimap.PinData? pinData = null;
+        Minimap.PinData pinData = null;
         float num = 999999f;
         foreach (Minimap.PinData pinData2 in Minimap.instance.m_pins)
             if (pinData2.m_type == type)

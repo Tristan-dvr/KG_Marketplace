@@ -50,11 +50,11 @@ public static class Gambler_DataTypes
     
     public class Item
     {
-        public string? Prefab;
+        public string Prefab;
         public int Min, Max;
         private Sprite icon = null!;
-        private string? LocalizedName;
-        private string? rawName;
+        private string LocalizedName;
+        private string rawName;
         public Sprite Sprite => icon;
         public string Name => LocalizedName!;
         public string RawName => rawName!;

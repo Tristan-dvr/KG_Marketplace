@@ -76,7 +76,7 @@ public static class Buffer_Main_Server
 
     private static void ReadBufferDatabase(IReadOnlyList<string> profiles)
     {
-        string? dbProfile = null;
+        string dbProfile = null;
         for (int i = 0; i < profiles.Count; i++)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;

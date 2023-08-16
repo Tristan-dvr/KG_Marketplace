@@ -86,7 +86,7 @@ public static class NPC_MapController
     private static bool Control(bool leftClick)
     {
         Vector3 pos = Minimap.instance.ScreenToWorldPoint(Input.mousePosition);
-        Minimap.PinData? closestPin = Utils.GetCustomPin(PINTYPENPC, pos, Minimap.instance.m_removeRadius * (Minimap.instance.m_largeZoom * 2f));
+        Minimap.PinData closestPin = Utils.GetCustomPin(PINTYPENPC, pos, Minimap.instance.m_removeRadius * (Minimap.instance.m_largeZoom * 2f));
         if (closestPin != null && _pins.TryGetValue(closestPin, out var zdo))
         {
             if (leftClick)

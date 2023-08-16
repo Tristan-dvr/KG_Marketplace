@@ -61,7 +61,7 @@ public abstract class ItemData
     // If null, stacking disallowed.
     // If non-null, the new item will have ItemData with this new string-value
     // By default stacking is disallowed. Set AllowStackingIdenticalValues property to true for trivial by Value comparisons.
-    public virtual string? TryStack(ItemData? data) =>
+    public virtual string TryStack(ItemData data) =>
         AllowStackingIdenticalValues && data?.Value == Value ? Value : null;
 }
 
@@ -74,7 +74,7 @@ public class ItemInfo : IEnumerable<ItemData>
 {
     public static HashSet<Type> ForceLoadTypes = new();
 
-    internal static string? _modGuid;
+    internal static string _modGuid;
 
     internal static string modGuid => _modGuid ??= ((Func<string>)(() =>
     {
@@ -143,7 +143,7 @@ public class ItemInfo : IEnumerable<ItemData>
 
     internal static string dataKey(string key) => $"{modGuid}#{key}";
 
-    public string? this[string key]
+    public string this[string key]
     {
         get => Get<StringItemData>(key)?.Value;
         set => GetOrCreate<StringItemData>(key).Value = value ?? "";
@@ -797,12 +797,12 @@ public class ItemInfo : IEnumerable<ItemData>
 [PublicAPI]
 public class ForeignItemInfo : IEnumerable<object>
 {
-    public string Mod => (string?)foreignItemInfo.GetType().GetProperty(nameof(Mod))?.GetValue(foreignItemInfo) ?? "";
+    public string Mod => (string)foreignItemInfo.GetType().GetProperty(nameof(Mod))?.GetValue(foreignItemInfo) ?? "";
     public ItemDrop.ItemData ItemData { get; private set; }
 
     public readonly object foreignItemInfo;
 
-    public string? this[string key]
+    public string this[string key]
     {
         get
         {
@@ -810,7 +810,7 @@ public class ForeignItemInfo : IEnumerable<object>
                     BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty, null, foreignItemInfo,
                     new object[] { key }) is { } stringData)
             {
-                return (string?)stringData.GetType().GetProperty("Value")?.GetValue(stringData);
+                return (string)stringData.GetType().GetProperty("Value")?.GetValue(stringData);
             }
 
             return null;

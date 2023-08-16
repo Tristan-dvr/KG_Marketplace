@@ -97,34 +97,34 @@ public class NPC_DataTypes
     
     public class NpcData
     {
-        public string? PrefabOverride;
-        public string? LeftItem;
-        public string? RightItem;
-        public string? HelmetItem;
-        public string? ChestItem;
-        public string? LegsItem;
-        public string? CapeItem;
-        public string? HairItem;
-        public string? HairItemColor;
-        public string? ModelScale;
-        public string? LeftItemHidden;
-        public string? RightItemHidden;
-        public string? NPCinteractAnimation;
-        public string? NPCgreetAnimation;
-        public string? NPCbyeAnimation;
-        public string? NPCgreetText;
-        public string? NPCbyeText;
-        public string? SkinColor;
-        public string? NPCcraftingAnimation;
-        public string? BeardItem;
-        public string? BeardItemColor;
-        public string? InteractAudioClip;
-        public string? TextSize;
-        public string? TextHeight;
-        public string? PeriodicAnimation;
-        public string? PeriodicAnimationTime;
+        public string PrefabOverride;
+        public string LeftItem;
+        public string RightItem;
+        public string HelmetItem;
+        public string ChestItem;
+        public string LegsItem;
+        public string CapeItem;
+        public string HairItem;
+        public string HairItemColor;
+        public string ModelScale;
+        public string LeftItemHidden;
+        public string RightItemHidden;
+        public string NPCinteractAnimation;
+        public string NPCgreetAnimation;
+        public string NPCbyeAnimation;
+        public string NPCgreetText;
+        public string NPCbyeText;
+        public string SkinColor;
+        public string NPCcraftingAnimation;
+        public string BeardItem;
+        public string BeardItemColor;
+        public string InteractAudioClip;
+        public string TextSize;
+        public string TextHeight;
+        public string PeriodicAnimation;
+        public string PeriodicAnimationTime;
         public string PeriodicSound = "";
         public string PeriodicSoundTime = "0";
-        public string? IMAGE;
+        public string IMAGE;
     }
 }

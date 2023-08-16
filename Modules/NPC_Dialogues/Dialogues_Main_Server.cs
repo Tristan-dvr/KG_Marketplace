@@ -27,8 +27,8 @@ public class Dialogues_Main_Server
 
     private static void ProcessDialogueProfiles(IReadOnlyList<string> profiles)
     {
-        Dialogues_DataTypes.RawDialogue? dialogue = null;
-        List<Dialogues_DataTypes.RawDialogue.RawPlayerOption>? options = null;
+        Dialogues_DataTypes.RawDialogue dialogue = null;
+        List<Dialogues_DataTypes.RawDialogue.RawPlayerOption> options = null;
         for (int i = 0; i < profiles.Count; i++)
         {
             try

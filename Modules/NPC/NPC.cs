@@ -289,14 +289,14 @@ public static class Market_NPC
 
         public static readonly List<NPCcomponent> ALL = new();
         public ZNetView znv = null!;
-        public GameObject? pastOverrideModel;
+        public GameObject pastOverrideModel;
         public NPCType _currentNpcType;
 
         public ZSyncAnimation zanim = null!;
         private TMP_Text canvas = null!;
         public AudioSource NPC_SoundSource = null!;
         private bool WasClose;
-        private Vector2[]? PatrolArray;
+        private Vector2[] PatrolArray;
         private float MaxSpeed;
         private float ForwardSpeed;
         private float PatrolTime;
@@ -598,9 +598,9 @@ public static class Market_NPC
             return Regex.Replace(GetNPCName(), @"</?(?!color\b)\w+[^>]*>", "");
         }
 
-        public void OpenUIForType(string? type, string? profile) => OpenUIForType(type == null ? null : (NPCType)Enum.Parse(typeof(NPCType), type, true), profile);
+        public void OpenUIForType(string type, string profile) => OpenUIForType(type == null ? null : (NPCType)Enum.Parse(typeof(NPCType), type, true), profile);
 
-        public void OpenUIForType(NPCType? type = null, string? profile = null)
+        public void OpenUIForType(NPCType? type = null, string profile = null)
         {
             if (string.IsNullOrEmpty(profile))
                 profile = znv.m_zdo.GetString("KGnpcProfile", "default");
@@ -826,7 +826,7 @@ public static class Market_NPC
                         EquipItemsOnModel(skin, chestItem, capsule);
                         EquipItemsOnModel(skin, legsItem, capsule);
                         string hairItem = "Hair" + fashion.HairItem;
-                        GameObject? hair = EquipItemsOnModel(helmetJoint, hairItem, skin);
+                        GameObject hair = EquipItemsOnModel(helmetJoint, hairItem, skin);
                         ColorUtility.TryParseHtmlString(fashion.HairColor, out Color c);
                         if (hair)
                         {
@@ -836,7 +836,7 @@ public static class Market_NPC
                         }
 
                         string beardItem = "Beard" + fashion.BeardItem;
-                        GameObject? beard = EquipItemsOnModel(helmetJoint, beardItem, skin);
+                        GameObject beard = EquipItemsOnModel(helmetJoint, beardItem, skin);
                         ColorUtility.TryParseHtmlString(fashion.BeardColor, out Color beardColor);
                         if (beard)
                         {
@@ -1012,12 +1012,12 @@ public static class Market_NPC
             }
         }
 
-        private GameObject? AttachItem(int itemHash, int variant, Transform joint, SkinnedMeshRenderer m_bodyModel,
+        private GameObject AttachItem(int itemHash, int variant, Transform joint, SkinnedMeshRenderer m_bodyModel,
             bool INVERT)
         {
             GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemHash);
             if (itemPrefab == null) return null;
-            GameObject? childGameObject = null;
+            GameObject childGameObject = null;
             int childCount = itemPrefab.transform.childCount;
             for (int i = 0; i < childCount; i++)
             {
@@ -1070,7 +1070,7 @@ public static class Market_NPC
         }
 
 
-        private GameObject? EquipItemsOnModel(Transform joint, string prefab, SkinnedMeshRenderer mesh,
+        private GameObject EquipItemsOnModel(Transform joint, string prefab, SkinnedMeshRenderer mesh,
             bool INVERT = false)
         {
             if (joint == null || ObjectDB.instance.GetItemPrefab(prefab.GetStableHashCode()) == null) return null;
@@ -1127,7 +1127,7 @@ public static class Market_NPC
                 isFemale = true;
             }
 
-            GameObject? original = ZNetScene.instance.GetPrefab(prefab);
+            GameObject original = ZNetScene.instance.GetPrefab(prefab);
             if (!original) return false;
             if (original.GetComponent<Character>() == null)
             {
@@ -1273,7 +1273,7 @@ public static class Market_NPC
                             EquipItemsOnModel(skin, chestItem, capsule);
                             EquipItemsOnModel(skin, legsItem, capsule);
                             string hairItem = "Hair" + znv.m_zdo.GetString("KGhairItem");
-                            GameObject? hair = EquipItemsOnModel(helmetJoint, hairItem, skin);
+                            GameObject hair = EquipItemsOnModel(helmetJoint, hairItem, skin);
                             ColorUtility.TryParseHtmlString(znv.m_zdo.GetString("KGhairItemColor"), out Color c);
                             if (hair)
                             {
@@ -1282,7 +1282,7 @@ public static class Market_NPC
                                     render.material.SetColor(SkinColor, c);
                             }
 
-                            GameObject? beard = EquipItemsOnModel(helmetJoint, beardItem, skin);
+                            GameObject beard = EquipItemsOnModel(helmetJoint, beardItem, skin);
                             ColorUtility.TryParseHtmlString(znv.m_zdo.GetString("KGbeardColor"), out Color beardColor);
                             if (beard)
                             {
@@ -1389,9 +1389,9 @@ public static class Market_NPC
 
     public static class NPCUI
     {
-        private static Action? _callback;
+        private static Action _callback;
         private static GameObject UI = null!;
-        private static ZDO? _currentNPC;
+        private static ZDO _currentNPC;
         private static GameObject MAIN = null!;
         private static GameObject FASHION = null!;
         private static Transform NPCTypeButtons = null!;
@@ -1658,7 +1658,7 @@ public static class Market_NPC
             }
         }
 
-        public static void ShowFashion(ZDO _npc, Action? callback = null)
+        public static void ShowFashion(ZDO _npc, Action callback = null)
         {
             FASHION.SetActive(true);
             MAIN.SetActive(false);
@@ -1696,7 +1696,7 @@ public static class Market_NPC
             _callback = callback;
         }
 
-        public static void ShowMain(ZDO _npc, Action? callback = null)
+        public static void ShowMain(ZDO _npc, Action callback = null)
         {
             FASHION.SetActive(false);
             MAIN.SetActive(true);

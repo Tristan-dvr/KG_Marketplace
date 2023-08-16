@@ -78,16 +78,16 @@ public static class Dialogues_DataTypes
 
     public class RawDialogue : ISerializableParameter
     {
-        public string? UID;
-        public string? Text;
-        public string? BG_ImageLink;
+        public string UID;
+        public string Text;
+        public string BG_ImageLink;
         public RawPlayerOption[] Options = Array.Empty<RawPlayerOption>();
 
         public class RawPlayerOption
         {
-            public string? Text;
-            public string? Icon;
-            public string? NextUID;
+            public string Text;
+            public string Icon;
+            public string NextUID;
             public string[] Commands = Array.Empty<string>();
             public string[] Conditions = Array.Empty<string>();
             public bool AlwaysVisible = true;
@@ -159,17 +159,17 @@ public static class Dialogues_DataTypes
 
     public class Dialogue
     {
-        public string? Text;
+        public string Text;
         public Sprite BG_Image = null!;
         public PlayerOption[] Options = Array.Empty<PlayerOption>();
 
         public class PlayerOption
         {
-            public string? Text;
+            public string Text;
             public Sprite Icon = null!;
-            public string? NextUID;
-            public Action<Market_NPC.NPCcomponent>? Command;
-            public Dialogue_Condition? Condition;
+            public string NextUID;
+            public Action<Market_NPC.NPCcomponent> Command;
+            public Dialogue_Condition Condition;
             public bool AlwaysVisible;
             public Color Color = Color.white;
 
@@ -186,9 +186,9 @@ public static class Dialogues_DataTypes
             }
         }
 
-        private static Action<Market_NPC.NPCcomponent>? TryParseCommands(IEnumerable<string> commands)
+        private static Action<Market_NPC.NPCcomponent> TryParseCommands(IEnumerable<string> commands)
         {
-            Action<Market_NPC.NPCcomponent>? result = null;
+            Action<Market_NPC.NPCcomponent> result = null;
             foreach (string command in commands)
             {
                 try
@@ -412,9 +412,9 @@ public static class Dialogues_DataTypes
         }
 
 
-        private static Dialogue_Condition? TryParseConditions(IEnumerable<string> conditions)
+        private static Dialogue_Condition TryParseConditions(IEnumerable<string> conditions)
         {
-            Dialogue_Condition? result = null;
+            Dialogue_Condition result = null;
             foreach (string condition in conditions)
             {
                 try

@@ -28,8 +28,8 @@ public static class Marketplace_UI
     private static string SEARCHVALUE = "";
     private static int CurrentPage;
     private static int CurrentMaxPage;
-    private static Marketplace_DataTypes.ClientMarketSendData? CurrentSendData;
-    private static Marketplace_DataTypes.ServerMarketSendData? CurrentBuyData;
+    private static Marketplace_DataTypes.ClientMarketSendData CurrentSendData;
+    private static Marketplace_DataTypes.ServerMarketSendData CurrentBuyData;
     private static int CurrentPrice;
     private static int CurrentQuantity;
     private static int CurrentBUYQuantity;

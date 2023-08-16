@@ -81,7 +81,7 @@ public static class Dialogues_UI
     }
 
 
-    private static Coroutine? FadeCoroutine;
+    private static Coroutine FadeCoroutine;
 
     private enum Fade
     {

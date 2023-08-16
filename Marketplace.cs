@@ -17,12 +17,12 @@ namespace Marketplace
         internal static Marketplace _thistype = null!;
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW = null!; 
-        public static Action<float>? Global_Updator;
-        public static Action<float>? Global_FixedUpdator;
-        public static Action? Global_OnGUI_Updator;
-        public static Action? Global_Start;
-        public static Type? TempJewelcraftingType;
-        public static Type? TempProfessionsType;
+        public static Action<float> Global_Updator;
+        public static Action<float> Global_FixedUpdator;
+        public static Action Global_OnGUI_Updator;
+        public static Action Global_Start;
+        public static Type TempJewelcraftingType;
+        public static Type TempProfessionsType;
 
         public static readonly ConfigSync configSync = new(GUID)
         {

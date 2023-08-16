@@ -8,7 +8,7 @@ namespace Marketplace.Modules.MainMarketplace;
 public static class Marketplace_Main_Client
 {
     public static int IncomeValue;
-    public static Action? OnUpdateCurrency;
+    public static Action OnUpdateCurrency;
 
     [UsedImplicitly]
     private static void OnInit()
