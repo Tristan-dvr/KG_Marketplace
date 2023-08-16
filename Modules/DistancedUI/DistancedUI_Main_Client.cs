@@ -1,9 +1,12 @@
-﻿namespace Marketplace.Modules.DistancedUI;
+﻿using Marketplace.Modules.Global_Options;
+
+namespace Marketplace.Modules.DistancedUI;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class DistancedUI_Main_Client
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         DistancedUI_UI.Init();
@@ -15,12 +18,13 @@ public static class DistancedUI_Main_Client
     [ClientOnlyPatch]
     private static class ZNetScene_Awake_Patch
     {
+        [UsedImplicitly]
         private static void Postfix() => OnPremiumSystemUpdator();
     }
     
     private static void OnPremiumSystemUpdator()
     {
-        DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed = DistancedUI_DataType.SyncedPremiumSystemData.Value.Users.Contains(Global_Values._localUserID) ||
+        DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed = DistancedUI_DataType.SyncedPremiumSystemData.Value.Users.Contains(Global_Configs._localUserID) ||
                                                                         DistancedUI_DataType.SyncedPremiumSystemData.Value.EveryoneIsVIP;
         if (DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed)
         {

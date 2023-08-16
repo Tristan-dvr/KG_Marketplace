@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using BepInEx.Configuration;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
-namespace ServerSync;
+namespace Marketplace;
 
 [PublicAPI]
 public abstract class OwnConfigEntryBase

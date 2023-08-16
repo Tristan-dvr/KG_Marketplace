@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using BepInEx.Configuration;
-using Marketplace.Modules.Marketplace_NPC;
+using Marketplace.Modules.MainMarketplace;
 using Marketplace.Paths;
 
-namespace Marketplace;
+namespace Marketplace.DiscordStuff;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Last, "OnInit", 
@@ -19,11 +19,12 @@ public static class DiscordStuff
         Quest
     }
 
-    private static ConfigFile DiscordConfig;
-    private static Dictionary<Webhooks, ConfigEntry<string>> WebhookLinks;
-    private static Dictionary<Webhooks, ConfigEntry<string>> LocalizedWebhookTitles;
-    private static Dictionary<Webhooks, ConfigEntry<string>> WebhookMessages;
+    private static ConfigFile DiscordConfig = null!;
+    private static Dictionary<Webhooks, ConfigEntry<string>> WebhookLinks = null!;
+    private static Dictionary<Webhooks, ConfigEntry<string>> LocalizedWebhookTitles = null!;
+    private static Dictionary<Webhooks, ConfigEntry<string>> WebhookMessages = null!;
 
+    [UsedImplicitly]
     private static void OnInit()
     {
         string filePath = Path.Combine(Market_Paths.DiscordStuffFolder, "DiscordSettings.cfg");
@@ -56,6 +57,7 @@ public static class DiscordStuff
         };
     }
 
+    [UsedImplicitly]
     private static void OnDiscordSettingsChange()
     {
         Utils.DelayReloadConfig(DiscordConfig);
@@ -128,6 +130,7 @@ public static class DiscordStuff
     [ServerOnlyPatch]
     private static class ZrouteMethodsServerWebhooks
     {
+        [UsedImplicitly]
         private static void Postfix()
         {
             if(!ZNet.instance.IsServer()) return;

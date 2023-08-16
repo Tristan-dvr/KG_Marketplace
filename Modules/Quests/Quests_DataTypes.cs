@@ -1,6 +1,8 @@
-﻿using Marketplace_APIs;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.Leaderboard;
 using Marketplace.Modules.NPC;
+using Marketplace.OtherModsAPIs;
 
 namespace Marketplace.Modules.Quests;
 
@@ -95,10 +97,6 @@ public static class Quests_DataTypes
         public QuestEventCondition cond;
         public QuestEventAction action;
         public string args;
-
-        public QuestEvent()
-        {
-        }
 
         public QuestEvent(QuestEventCondition cond, QuestEventAction action, string args)
         {
@@ -494,7 +492,7 @@ public static class Quests_DataTypes
                 if (CheckQuest.RequirementType[i] is QuestRequirementType.IsVIP)
                 {
                     message = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
-                    bool result = Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Values._localUserID);
+                    bool result = Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Configs._localUserID);
                     if (result)
                     {
                         continue;
@@ -753,7 +751,7 @@ public static class Quests_DataTypes
             if (ZNet.instance.GetServerPeer() != null)
             {
                 ZPackage pkg = new();
-                pkg.Write((int)DiscordStuff.Webhooks.Quest);
+                pkg.Write((int)DiscordStuff.DiscordStuff.Webhooks.Quest);
                 pkg.Write(Player.m_localPlayer?.GetPlayerName() ?? "LocalPlayer");
                 pkg.Write(AllQuests[UID].Name);
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks",
@@ -780,7 +778,7 @@ public static class Quests_DataTypes
         public static void ClickQuestButton(int UID)
         {
             if (!Player.m_localPlayer || !AllQuests.ContainsKey(UID)) return;
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             if (IsOnCooldown(UID, out int left))
             {
                 MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
@@ -790,7 +788,7 @@ public static class Quests_DataTypes
 
             if (!IsAccepted(UID))
             {
-                if (AcceptedQuests.Count >= Global_Values.SyncedGlobalOptions.Value._maxAcceptedQuests)
+                if (AcceptedQuests.Count >= Global_Configs.SyncedGlobalOptions.Value._maxAcceptedQuests)
                 {
                     return;
                 }
@@ -839,7 +837,7 @@ public static class Quests_DataTypes
                             ToAutocomplete.Add(quest.Key);
                         }
 
-                        if (!Global_Values.SyncedGlobalOptions.Value._allowMultipleQuestScore)
+                        if (!Global_Configs.SyncedGlobalOptions.Value._allowMultipleQuestScore)
                             break;
                     }
                 }
@@ -1027,7 +1025,7 @@ public static class Quests_DataTypes
                             ToAutocomplete.Add(quest.Key);
                         }
 
-                        if (!Global_Values.SyncedGlobalOptions.Value._allowMultipleQuestScore)
+                        if (!Global_Configs.SyncedGlobalOptions.Value._allowMultipleQuestScore)
                             break;
                     }
                 }
@@ -1115,7 +1113,7 @@ public static class Quests_DataTypes
                             ToAutocomplete.Add(quest.Key);
                         }
 
-                        if (!Global_Values.SyncedGlobalOptions.Value._allowMultipleQuestScore)
+                        if (!Global_Configs.SyncedGlobalOptions.Value._allowMultipleQuestScore)
                             break;
                     }
                 }
@@ -1232,8 +1230,8 @@ public static class Quests_DataTypes
                         break;
                     case QuestEventAction.PlaySound:
                         string sound = split[0];
-                        if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(sound, out AudioClip clip))
-                            AssetStorage.AssetStorage.AUsrc.PlayOneShot(clip);
+                        if (AssetStorage.NPC_AudioClips.TryGetValue(sound, out AudioClip clip))
+                            AssetStorage.AUsrc.PlayOneShot(clip);
                         break;
                     case QuestEventAction.NpcText:
                         string text = quest.args;

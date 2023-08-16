@@ -1,15 +1,17 @@
-﻿namespace Marketplace.Modules.Buffer;
+﻿using Marketplace.ExternalLoads;
+
+namespace Marketplace.Modules.Buffer;
 
 public static class Buffer_UI
 {
-    private static GameObject UI;
-    private static GameObject BufferGroup;
-    private static GameObject BufferItem;
-    private static Transform MainTransform;
-    private static Text NPCName;
-    private static Scrollbar Scrollbar;
-    private static string CurrentProfile;
-    private static GameObject Explosion;
+    private static GameObject UI = null!;
+    private static GameObject BufferGroup = null!;
+    private static GameObject BufferItem = null!;
+    private static Transform MainTransform = null!;
+    private static Text NPCName = null!;
+    private static Scrollbar Scrollbar = null!;
+    private static string CurrentProfile = "";
+    private static GameObject Explosion = null!;
     private static readonly List<GameObject> AllElements = new();
     private static readonly Dictionary<GameObject, Buffer_DataTypes.BufferBuffData> tempBuffData = new();
 
@@ -22,10 +24,10 @@ public static class Buffer_UI
 
     public static void Init()
     {
-        UI = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("BufferHud"));
-        Explosion = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceBuffExplosion");
-        BufferGroup = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("BufferGroup");
-        BufferItem = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("BufferListItem");
+        UI = UnityEngine.Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("BufferHud"));
+        Explosion = AssetStorage.asset.LoadAsset<GameObject>("MarketplaceBuffExplosion");
+        BufferGroup = AssetStorage.asset.LoadAsset<GameObject>("BufferGroup");
+        BufferItem = AssetStorage.asset.LoadAsset<GameObject>("BufferListItem");
         MainTransform = UI.transform.Find("Canvas/Buffer/BufferList/ListPanel/Scroll View/Viewport/Content");
         Scrollbar = UI.GetComponentInChildren<Scrollbar>();
         UnityEngine.Object.DontDestroyOnLoad(UI);
@@ -104,7 +106,7 @@ public static class Buffer_UI
 
     private static void ApplyBuff(Buffer_DataTypes.BufferBuffData buff)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         if (!Player.m_localPlayer) return;
         if (buff.CanTake())
         {
@@ -125,7 +127,7 @@ public static class Buffer_UI
         Dictionary<string, List<Buffer_DataTypes.BufferBuffData>> tempDictionary = new();
         foreach (Buffer_DataTypes.BufferBuffData buff in Buffer_DataTypes.ClientSideBufferProfiles[CurrentProfile])
         {
-            string group = buff.BuffGroup;
+            string group = buff.BuffGroup!;
             if (string.IsNullOrEmpty(group)) group = "No Group";
             if (!tempDictionary.ContainsKey(group)) tempDictionary[group] = new List<Buffer_DataTypes.BufferBuffData>();
             tempDictionary[group].Add(buff);
@@ -197,7 +199,8 @@ public static class Buffer_UI
     [ClientOnlyPatch]
     private static class ZNetScene_Awake_Patch
     {
-        private static void Postfix(ZNetScene __instance)
+        [UsedImplicitly]
+private static void Postfix(ZNetScene __instance)
         {
             __instance.m_prefabs.Add(Explosion);
             __instance.m_namedPrefabs.Add(Explosion.name.GetStableHashCode(), Explosion);
@@ -208,7 +211,8 @@ public static class Buffer_UI
     [ClientOnlyPatch]
     private static class BufferUIFix
     {
-        private static void Postfix(ref bool __result)
+        [UsedImplicitly]
+private static void Postfix(ref bool __result)
         {
             if (IsVisible()) __result = true;
         }

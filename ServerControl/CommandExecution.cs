@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using UnityEngine;
-namespace ServerControl;
+
+namespace kg.ServerControl;
 
 public static class CommandExecution
 {

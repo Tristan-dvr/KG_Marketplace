@@ -1,21 +1,23 @@
-﻿using Object = UnityEngine.Object;
+﻿using Marketplace.Modules.Global_Options;
+using Object = UnityEngine.Object;
 
-namespace Marketplace.Modules.Marketplace_NPC;
+namespace Marketplace.Modules.MainMarketplace;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Marketplace_Main_Client
 {
     public static int IncomeValue;
-    public static Action OnUpdateCurrency;
+    public static Action? OnUpdateCurrency;
 
+    [UsedImplicitly]
     private static void OnInit()
     {
         Marketplace_UI.Init();
         Marketplace.Global_Updator += Update;
         Marketplace.Global_OnGUI_Updator += Marketplace_Messages.OnGUI;
         Marketplace_DataTypes.SyncedMarketplaceData.ValueChanged += OnMarketplaceUpdate;
-        Global_Values.SyncedGlobalOptions.ValueChanged += () => OnUpdateCurrency();
+        Global_Configs.SyncedGlobalOptions.ValueChanged += () => OnUpdateCurrency?.Invoke();
     }
 
     private static void OnMarketplaceUpdate()
@@ -38,6 +40,7 @@ public static class Marketplace_Main_Client
     [ClientOnlyPatch]
     private static class MarketplaceUIFix
     {
+        [UsedImplicitly]
         private static void Postfix(ref bool __result)
         {
             if (Marketplace_UI.IsPanelVisible()) __result = true;
@@ -48,6 +51,7 @@ public static class Marketplace_Main_Client
     [ClientOnlyPatch]
     private static class ZrouteMethodsClient
     {
+        [UsedImplicitly]
         private static void Postfix()
         {
             ZRoutedRpc.instance.Register("KGmarket BuyItemAnswer",

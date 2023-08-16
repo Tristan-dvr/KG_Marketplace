@@ -1,20 +1,22 @@
-﻿using Marketplace.Paths;
+﻿using Marketplace.Modules.Global_Options;
+using Marketplace.Paths;
 
 namespace Marketplace.Modules.Leaderboard;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Last, "OnInit",
-    new[] { "LeaderboardAchievements.cfg" },
+    new[] { "LA" },
     new[] { "OnAchievementsFileChange" })]
 public static class Leaderboard_Server_Main
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         string data = File.ReadAllText(Market_Paths.MarketLeaderboardJSON);
         if (!string.IsNullOrEmpty(data))
             Leaderboard_DataTypes.ServersidePlayersLeaderboard =
                 JSON.ToObject<Dictionary<string, Leaderboard_DataTypes.Player_Leaderboard>>(data);
-        ReadAchievementsProfiles(File.ReadAllLines(Market_Paths.AchievementsProfiles));
+        ReadAchievementsProfiles();
         SendToPlayers();
         Marketplace._thistype.StartCoroutine(SaveAndUpdate());
     }
@@ -23,13 +25,14 @@ public static class Leaderboard_Server_Main
     [ServerOnlyPatch]
     private static class ZNetScene_Awake_Patch
     {
+        [UsedImplicitly]
         private static void Postfix() =>
             ZRoutedRpc.instance.Register<int, ZPackage>("Marketplace_Leaderboard_Receive", RPC_ReceiveLeaderboardEvent);
     }
 
     private static void RPC_ReceiveLeaderboardEvent(long sender, int type, ZPackage pkg)
     {
-        if (!Global_Values.SyncedGlobalOptions.Value._useLeaderboard) return;
+        if (!Global_Configs.SyncedGlobalOptions.Value._useLeaderboard) return;
         Leaderboard_DataTypes.TriggerType triggerType = (Leaderboard_DataTypes.TriggerType)type;
         ZNetPeer peer = ZNet.instance.GetPeer(sender);
         if (peer == null) return;
@@ -93,7 +96,7 @@ public static class Leaderboard_Server_Main
         {
             yield return new WaitForSecondsRealtime(5 * 60);
             if (!ZNet.instance || !ZNet.instance.IsServer() ||
-                !Global_Values.SyncedGlobalOptions.Value._useLeaderboard) continue;
+                !Global_Configs.SyncedGlobalOptions.Value._useLeaderboard) continue;
             File.WriteAllText(Market_Paths.MarketLeaderboardJSON,
                 JSON.ToNiceJSON(Leaderboard_DataTypes.ServersidePlayersLeaderboard));
             SendToPlayers();
@@ -130,10 +133,9 @@ public static class Leaderboard_Server_Main
         Leaderboard_DataTypes.SyncedClientLeaderboard.Update();
     }
 
-    private static void ReadAchievementsProfiles(IReadOnlyList<string> profiles)
+    private static void ProcessAchievementsProfile(IReadOnlyList<string> profiles)
     {
-        Leaderboard_DataTypes.AllAchievements.Clear();
-        Leaderboard_DataTypes.Achievement currentAchievement = null;
+        Leaderboard_DataTypes.Achievement? currentAchievement = null;
         for (int i = 0; i < profiles.Count; i++)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
@@ -187,7 +189,7 @@ public static class Leaderboard_Server_Main
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Failed to parse achievement {currentAchievement.Name}: {ex.Message}",
+                    Utils.print($"Failed to parse achievement {currentAchievement!.Name}: {ex.Message}",
                         ConsoleColor.Red);
                     i += 5;
                 }
@@ -208,13 +210,25 @@ public static class Leaderboard_Server_Main
                 Score = achievement.Score
             });
         }
-
+    }
+    
+    private static void ReadAchievementsProfiles()
+    {
+        Leaderboard_DataTypes.AllAchievements.Clear();
+        string folder = Market_Paths.LeaderboardAchievementsFolder;
+        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        foreach (string file in files)
+        {
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
+            ProcessAchievementsProfile(profiles);
+        }
         Leaderboard_DataTypes.SyncedClientAchievements.Update();
     }
 
+    [UsedImplicitly]
     private static void OnAchievementsFileChange()
     {
-        ReadAchievementsProfiles(File.ReadAllLines(Market_Paths.AchievementsProfiles));
+        ReadAchievementsProfiles();
         Utils.print("Achievements Changed. Sending new info to all clients");
     }
 }

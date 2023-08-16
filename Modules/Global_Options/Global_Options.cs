@@ -1,12 +1,12 @@
 ﻿using BepInEx.Configuration;
 using Marketplace.Paths;
 
-namespace Marketplace;
+namespace Marketplace.Modules.Global_Options;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "MarketPlace.cfg" },
     new[] { "OnChange" })]
-public static class Global_Values
+public static class Global_Configs
 {
     public static string CurrencyName =>
         ObjectDB.instance?.GetItemPrefab(SyncedGlobalOptions.Value._serverCurrency.GetStableHashCode()) is { } item
@@ -19,12 +19,14 @@ public static class Global_Values
     [ClientOnlyPatch]
     private static class Game_Awake_Patch
     {
+        [UsedImplicitly]
         public static IEnumerable<MethodInfo> TargetMethods()
         {
             yield return AccessTools.Method(typeof(ZNet), nameof(ZNet.Start));
             yield return AccessTools.Method(typeof(FejdStartup), nameof(FejdStartup.Awake));
         }
 
+        [UsedImplicitly]
         private static void Postfix()
         {
             Utils.print($"Searching User ID...", ConsoleColor.Cyan);
@@ -69,24 +71,24 @@ public static class Global_Values
 
         public void Serialize(ref ZPackage pkg)
         {
-            pkg.Write(_blockedPrefabsServer ?? "");
-            pkg.Write(_blockedPlayerList ?? "");
+            pkg.Write(_blockedPrefabsServer);
+            pkg.Write(_blockedPlayerList);
             pkg.Write(_itemMarketLimit);
             pkg.Write(_marketTaxes);
             pkg.Write(_canTeleportWithOre);
             pkg.Write(_vipmarketTaxes);
-            pkg.Write(_vipPlayerList ?? "");
-            pkg.Write(_serverCurrency ?? "");
+            pkg.Write(_vipPlayerList);
+            pkg.Write(_serverCurrency);
             pkg.Write(_gamblerEnableNotifications);
             pkg.Write(_allowMultipleQuestScore);
             pkg.Write(_maxAcceptedQuests);
             pkg.Write(_hideOtherQuestRequirementQuests);
             pkg.Write(_allowKillQuestsInParty);
             pkg.Write(_enableKGChat);
-            pkg.Write( _mailPostRecipe ?? "");
+            pkg.Write( _mailPostRecipe);
             pkg.Write(_mailPostWaitTime);
-            pkg.Write(_mailPostExcludeItems ?? "");
-            pkg.Write(_pieceSaverRecipe ?? "");
+            pkg.Write(_mailPostExcludeItems);
+            pkg.Write(_pieceSaverRecipe);
             pkg.Write(_useLeaderboard);
             pkg.Write(_rebuildHeightmap);
         }
@@ -118,7 +120,7 @@ public static class Global_Values
 
 
     //local server
-    public static string WebHookLink;
+    public static string WebHookLink = "webhook link";
     public static int BankerIncomeTime;
     public static float BankerIncomeMultiplier;
     public static float BankerVIPIncomeMultiplier;
@@ -127,19 +129,16 @@ public static class Global_Values
     public static string BankerInterestItems = "All";
 
 
-    private static ConfigFile _config;
-
-    public static ConfigEntry<T> Register<T>(string section, string key, T value, string description)
-    {
-        return _config.Bind(section, key, value, description);
-    }
+    private static ConfigFile _config = null!;
     
+    [UsedImplicitly]
     private static void OnInit()
     {
         _config = new ConfigFile(Market_Paths.MainConfig, true);
         ReadConfigValues();
     }
 
+    [UsedImplicitly]
     private static void OnChange()
     {
         Utils.DelayReloadConfig(_config, ReadConfigValues);
@@ -203,8 +202,7 @@ public static class Global_Values
         private static void Postfix()
         {
             if (!ZNet.instance.IsServer()) return;
-            ItemDrop currencyItem = ZNetScene.instance.GetPrefab(SyncedGlobalOptions.Value._serverCurrency)
-                ?.GetComponent<ItemDrop>();
+            ItemDrop currencyItem = ZNetScene.instance.GetPrefab(SyncedGlobalOptions.Value._serverCurrency)?.GetComponent<ItemDrop>()!;
             if (currencyItem)
             {
                 Utils.print($"New server currency accepted, Currency Name: {CurrencyName}");

@@ -1,4 +1,6 @@
-﻿namespace Marketplace.Modules.Trader;
+﻿using Marketplace.ExternalLoads;
+
+namespace Marketplace.Modules.Trader;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
@@ -28,7 +30,8 @@ public static class Trader_Main_Client
     [ClientOnlyPatch, HarmonyPriority(-10000)]
     private static class ZNetScene_Awake_Patch
     {
-        private static void Postfix() => InitTraderItems();
+        [UsedImplicitly]
+private static void Postfix() => InitTraderItems();
     }
 
     public static void InitTraderItems()
@@ -62,7 +65,7 @@ public static class Trader_Main_Client
                     GameObject resultItemPrefab = ZNetScene.instance.GetPrefab(RI.ItemPrefab);
                     if (!resultItemPrefab)
                     {
-                        RI.SetIcon(AssetStorage.AssetStorage.NullSprite);
+                        RI.SetIcon(AssetStorage.NullSprite);
                         RI.ItemName = Utils.LocalizeSkill(RI.ItemPrefab) + " EXP";
                         RI.IsMonster = false;
                         RI.IsSkill = true;
@@ -86,7 +89,7 @@ public static class Trader_Main_Client
                         Character c = resultItemPrefab.GetComponent<Character>();
                         PhotoManager.__instance.MakeSprite(resultItemPrefab, 0.6f, 0.25f, RI.Level);
                         RI.SetIcon(PhotoManager.__instance.GetSprite(resultItemPrefab.name,
-                            AssetStorage.AssetStorage.PlaceholderMonsterIcon, RI.Level));
+                            AssetStorage.PlaceholderMonsterIcon, RI.Level));
                         RI.ItemName = Localization.instance.Localize(c.m_name ?? "Default");
                         RI.IsMonster = true;
                         RI.DisplayStars = true;

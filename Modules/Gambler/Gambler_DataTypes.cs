@@ -50,20 +50,19 @@ public static class Gambler_DataTypes
     
     public class Item
     {
-        public string Prefab;
+        public string? Prefab;
         public int Min, Max;
-        private Sprite icon;
-        private string localiedName;
-        private string rawName;
+        private Sprite icon = null!;
+        private string? LocalizedName;
+        private string? rawName;
         public Sprite Sprite => icon;
-        public string Name => localiedName;
-
-        public string RawName => rawName;
+        public string Name => LocalizedName!;
+        public string RawName => rawName!;
 
         public void SetData(string RAWNAME, Sprite s)
         {
             rawName = RAWNAME;
-            localiedName = Localization.instance.Localize(rawName);
+            LocalizedName = Localization.instance.Localize(rawName);
             icon = s;
         }
     }

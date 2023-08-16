@@ -1,9 +1,9 @@
-﻿using System.Security.Policy;
-using Marketplace_APIs;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.Leaderboard;
 using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
-using UnityEngine.Networking;
+using Marketplace.OtherModsAPIs;
 using Random = UnityEngine.Random;
 
 namespace Marketplace.Modules.NPC_Dialogues;
@@ -78,18 +78,18 @@ public static class Dialogues_DataTypes
 
     public class RawDialogue : ISerializableParameter
     {
-        public string UID;
-        public string Text;
-        public string BG_ImageLink;
+        public string? UID;
+        public string? Text;
+        public string? BG_ImageLink;
         public RawPlayerOption[] Options = Array.Empty<RawPlayerOption>();
 
         public class RawPlayerOption
         {
-            public string Text;
-            public string Icon;
-            public string NextUID;
-            public string[] Commands;
-            public string[] Conditions;
+            public string? Text;
+            public string? Icon;
+            public string? NextUID;
+            public string[] Commands = Array.Empty<string>();
+            public string[] Conditions = Array.Empty<string>();
             public bool AlwaysVisible = true;
             public Color Color = Color.white;
         }
@@ -108,13 +108,13 @@ public static class Dialogues_DataTypes
                 pkg.Write(option.Commands.Length);
                 foreach (string command in option.Commands)
                 {
-                    pkg.Write(command ?? "");
+                    pkg.Write(command);
                 }
 
                 pkg.Write(option.Conditions.Length);
                 foreach (string condition in option.Conditions)
                 {
-                    pkg.Write(condition ?? "");
+                    pkg.Write(condition);
                 }
 
                 pkg.Write(option.AlwaysVisible);
@@ -159,17 +159,17 @@ public static class Dialogues_DataTypes
 
     public class Dialogue
     {
-        public string Text;
-        public Sprite BG_Image;
+        public string? Text;
+        public Sprite BG_Image = null!;
         public PlayerOption[] Options = Array.Empty<PlayerOption>();
 
         public class PlayerOption
         {
-            public string Text;
-            public Sprite Icon;
-            public string NextUID;
-            public Action<Market_NPC.NPCcomponent> Command;
-            public Dialogue_Condition Condition;
+            public string? Text;
+            public Sprite Icon = null!;
+            public string? NextUID;
+            public Action<Market_NPC.NPCcomponent>? Command;
+            public Dialogue_Condition? Condition;
             public bool AlwaysVisible;
             public Color Color = Color.white;
 
@@ -186,9 +186,9 @@ public static class Dialogues_DataTypes
             }
         }
 
-        private static Action<Market_NPC.NPCcomponent> TryParseCommands(IEnumerable<string> commands)
+        private static Action<Market_NPC.NPCcomponent>? TryParseCommands(IEnumerable<string> commands)
         {
-            Action<Market_NPC.NPCcomponent> result = null;
+            Action<Market_NPC.NPCcomponent>? result = null;
             foreach (string command in commands)
             {
                 try
@@ -222,13 +222,12 @@ public static class Dialogues_DataTypes
                                 break;
                             case OptionCommand.OpenUI:
                                 result += (npc) => npc.OpenUIForType(
-                                    split.Length > 1 ? split[1] : null,
-                                    split.Length > 2 ? split[2] : null);
+                                    split.Length > 1 ? split[1] : null, split.Length > 2 ? split[2] : null);
                                 break;
                             case OptionCommand.PlaySound:
                                 result += (npc) =>
                                 {
-                                    if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(split[1],
+                                    if (AssetStorage.NPC_AudioClips.TryGetValue(split[1],
                                             out AudioClip clip))
                                     {
                                         npc.NPC_SoundSource.Stop();
@@ -413,9 +412,9 @@ public static class Dialogues_DataTypes
         }
 
 
-        private static Dialogue_Condition TryParseConditions(IEnumerable<string> conditions)
+        private static Dialogue_Condition? TryParseConditions(IEnumerable<string> conditions)
         {
-            Dialogue_Condition result = null;
+            Dialogue_Condition? result = null;
             foreach (string condition in conditions)
             {
                 try
@@ -473,7 +472,7 @@ public static class Dialogues_DataTypes
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needtitlescore")}: <color=#00ff00>{split[1]}</color>";
                                     return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
-                                               Global_Values._localUserID + "_" +
+                                               Global_Configs._localUserID + "_" +
                                                Game.instance.m_playerProfile.m_playerName,
                                                out Leaderboard_DataTypes.Client_Leaderboard LB) &&
                                            Leaderboard_UI.GetAchievementScore(LB.Achievements) >=
@@ -486,7 +485,7 @@ public static class Dialogues_DataTypes
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_dontneedtitlescore")}: <color=#00ff00>{split[1]}</color>";
                                     return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
-                                               Global_Values._localUserID + "_" +
+                                               Global_Configs._localUserID + "_" +
                                                Game.instance.m_playerProfile.m_playerName,
                                                out Leaderboard_DataTypes.Client_Leaderboard LB) &&
                                            Leaderboard_UI.GetAchievementScore(LB.Achievements) <
@@ -566,7 +565,7 @@ public static class Dialogues_DataTypes
                                 result += (out string reason) =>
                                 {
                                     reason = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
-                                    return Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Values
+                                    return Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Configs
                                         ._localUserID);
                                 };
                                 break;
@@ -574,8 +573,8 @@ public static class Dialogues_DataTypes
                                 result += (out string reason) =>
                                 {
                                     reason = $"{Localization.instance.Localize("$mpasn_notforvip")}";
-                                    return !Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(
-                                        Global_Values
+                                    return !Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(
+                                        Global_Configs
                                             ._localUserID);
                                 };
                                 break;
@@ -598,8 +597,7 @@ public static class Dialogues_DataTypes
                             case OptionCondition.HasBuff:
                                 result += (out string reason) =>
                                 {
-                                    StatusEffect findSe =
-                                        ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1]);
+                                    StatusEffect findSe = ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1])!;
                                     string seName = findSe == null
                                         ? split[1]
                                         : Localization.instance.Localize(findSe.m_name);
@@ -611,8 +609,7 @@ public static class Dialogues_DataTypes
                             case OptionCondition.NotHasBuff:
                                 result += (out string reason) =>
                                 {
-                                    StatusEffect findSe =
-                                        ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1]);
+                                    StatusEffect findSe = ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1])!;
                                     string seName = findSe == null
                                         ? split[1]
                                         : Localization.instance.Localize(findSe.m_name);
@@ -726,13 +723,13 @@ public static class Dialogues_DataTypes
                 Text = raw.Text,
                 Options = new PlayerOption[raw.Options.Length]
             };
-            Utils.LoadImageFromWEB(raw.BG_ImageLink, (sprite) => dialogue.BG_Image = sprite);
+            Utils.LoadImageFromWEB(raw.BG_ImageLink!, (sprite) => dialogue.BG_Image = sprite);
             for (int i = 0; i < raw.Options.Length; ++i)
             {
                 dialogue.Options[i] = new PlayerOption
                 {
                     Text = raw.Options[i].Text,
-                    Icon = Utils.TryFindIcon(raw.Options[i].Icon),
+                    Icon = Utils.TryFindIcon(raw.Options[i].Icon!),
                     NextUID = raw.Options[i].NextUID,
                     Command = TryParseCommands(raw.Options[i].Commands),
                     Condition = TryParseConditions(raw.Options[i].Conditions),

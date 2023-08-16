@@ -1,19 +1,20 @@
-﻿using Marketplace.Modules.NPC;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.NPC;
 
 namespace Marketplace.Modules.NPC_Dialogues;
 
 public static class Dialogues_UI
 {
-    private static GameObject UI;
-    private static GameObject Dialogue_Element;
+    private static GameObject UI = null!;
+    private static GameObject Dialogue_Element = null!;
     private static readonly List<GameObject> Elements = new();
-    private static Text NPC_Name;
-    private static Text Dialogue_Text;
-    private static Image BG_Image;
-    private static Transform Content;
+    private static Text NPC_Name = null!;
+    private static Text Dialogue_Text = null!;
+    private static Image BG_Image = null!;
+    private static Transform Content = null!;
 
 
-    private static CanvasGroup CanvasAlpha;
+    private static CanvasGroup CanvasAlpha = null!;
     private static readonly Dictionary<int, Action> HotbarActions = new();
 
     public static bool IsVisible()
@@ -33,9 +34,9 @@ public static class Dialogues_UI
 
     public static void Init()
     {
-        UI = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("NPCDialogueUI"));
+        UI = UnityEngine.Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("NPCDialogueUI"));
         CanvasAlpha = UI.GetComponent<CanvasGroup>();
-        Dialogue_Element = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Dialogue_Option");
+        Dialogue_Element = AssetStorage.asset.LoadAsset<GameObject>("Dialogue_Option");
         UnityEngine.Object.DontDestroyOnLoad(UI);
         UI.SetActive(false);
 
@@ -80,7 +81,7 @@ public static class Dialogues_UI
     }
 
 
-    private static Coroutine FadeCoroutine;
+    private static Coroutine? FadeCoroutine;
 
     private enum Fade
     {
@@ -175,12 +176,12 @@ public static class Dialogues_UI
 
             void OnClick()
             {
-                AssetStorage.AssetStorage.AUsrc.Play();
+                AssetStorage.AUsrc.Play();
                 if (!npc || !Player.m_localPlayer) return;
                 option.Command?.Invoke(npc);
                 if (!string.IsNullOrWhiteSpace(option.NextUID))
                 {
-                    LoadDialogue(npc, option.NextUID);
+                    LoadDialogue(npc, option.NextUID!);
                 }
                 else
                 {
@@ -218,7 +219,8 @@ public static class Dialogues_UI
     [ClientOnlyPatch]
     private static class BankerUIFix
     {
-        private static void Postfix(ref bool __result)
+        [UsedImplicitly]
+private static void Postfix(ref bool __result)
         {
             if (IsVisible()) __result = true;
         }
@@ -228,6 +230,7 @@ public static class Dialogues_UI
     [ClientOnlyPatch]
     private static class Player_OnDeath_Patch
     {
+        [UsedImplicitly]
         private static void Prefix()
         {
             Hide();

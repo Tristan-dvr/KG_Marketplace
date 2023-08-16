@@ -1,4 +1,5 @@
-﻿using Marketplace.Modules.NPC;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.NPC;
 using UnityEngine.PostProcessing;
 
 namespace Marketplace;
@@ -241,7 +242,7 @@ public static class PhotoManager
             {
                 ClearRendering();
                 Utils.print(ex, ConsoleColor.Red);
-                CachedSprites[prefabArg.name.GetStableHashCode()] = AssetStorage.AssetStorage.PlaceholderMonsterIcon;
+                CachedSprites[prefabArg.name.GetStableHashCode()] = AssetStorage.PlaceholderMonsterIcon;
             }
         }
 

@@ -1,9 +1,12 @@
-﻿namespace Marketplace.Modules.PlayersTag;
+﻿using Marketplace.Modules.Global_Options;
+
+namespace Marketplace.Modules.PlayersTag;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client)]
 public static class PlayerTag_Main_Client
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         PlayersTag_DataTypes.SyncedPlayersTagData.ValueChanged += OnTagsUpdate;
@@ -13,7 +16,7 @@ public static class PlayerTag_Main_Client
     {
         if (!Game.instance || !Player.m_localPlayer) return;
         Player.m_localPlayer.m_nview.m_zdo.Set("Marketplace_PlayerTag",
-            PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Values._localUserID, out string tag)
+            PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Configs._localUserID, out string tag)
                 ? tag
                 : "");
     }
@@ -22,6 +25,7 @@ public static class PlayerTag_Main_Client
     [ClientOnlyPatch]
     private static class Player_GetHoverName_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(Player __instance, ref string __result)
         {
             if(!__instance.m_nview.IsValid()) return;
@@ -35,10 +39,11 @@ public static class PlayerTag_Main_Client
     [ClientOnlyPatch]
     static class Player_SetPlayerID_Patch
     {
+        [UsedImplicitly]
         static void Postfix()
         {
             Player.m_localPlayer.m_nview.m_zdo.Set("Marketplace_PlayerTag",
-                PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Values._localUserID, out string tag)
+                PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Configs._localUserID, out string tag)
                     ? tag
                     : "");
         }
@@ -48,9 +53,10 @@ public static class PlayerTag_Main_Client
     [ClientOnlyPatch]
     private static class UserInfo_GetLocalUser_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(ref UserInfo __result)
         {
-            if (PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Values._localUserID,
+            if (PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Configs._localUserID,
                     out string SpecialTag))
             {
                 __result.Name = $"{SpecialTag} {__result.Name}";

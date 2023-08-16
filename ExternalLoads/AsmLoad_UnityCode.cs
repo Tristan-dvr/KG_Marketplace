@@ -1,10 +1,10 @@
-﻿namespace Marketplace.AssetStorage;
+﻿namespace Marketplace.ExternalLoads;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Init)]
 public static class AsmLoad_UnityCode
 {
-    // ReSharper disable once UnusedMember.Global
+    [UsedImplicitly]
     private static void OnInit()
     {
         LoadAsm("Marketplace_TransmogCode");
@@ -12,8 +12,9 @@ public static class AsmLoad_UnityCode
     }
     private static void LoadAsm(string name)
     {
-        Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Marketplace.Resources." + name + ".dll");
-        byte[] buffer = new byte[stream!.Length];
+        Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Marketplace.Resources." + name + ".dll")!;
+        byte[] buffer = new byte[stream.Length];
+        // ReSharper disable once MustUseReturnValue
         stream.Read(buffer, 0, buffer.Length); 
         try
         {

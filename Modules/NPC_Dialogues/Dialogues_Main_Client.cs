@@ -4,6 +4,7 @@
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Dialogues_Main_Client
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         Dialogues_UI.Init();
@@ -22,6 +23,7 @@ public static class Dialogues_Main_Client
     [ClientOnlyPatch, HarmonyPriority(-10000)]
     private static class ZNetScene_Awake_Patch
     {
+        [UsedImplicitly]
         private static void Postfix() => InitDialogues();
     }
 
@@ -31,7 +33,7 @@ public static class Dialogues_Main_Client
         Dialogues_DataTypes.ClientReadyDialogues.Clear();
         foreach (Dialogues_DataTypes.RawDialogue dialogue in Dialogues_DataTypes.SyncedDialoguesData.Value)
         {
-            Dialogues_DataTypes.ClientReadyDialogues[dialogue.UID] = dialogue;
+            Dialogues_DataTypes.ClientReadyDialogues[dialogue.UID!] = dialogue;
         }
     }
 }

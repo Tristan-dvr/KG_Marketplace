@@ -3,7 +3,7 @@
 namespace Marketplace.Modules.Trader;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "TraderProfiles.cfg" },
+[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "TR" },
     new[] { "OnTraderProfilesFileChange" })]
 public static class Trader_Main_Server
 {
@@ -169,13 +169,11 @@ public static class Trader_Main_Server
      private static void ReadServerTraderProfiles()
     {
         Trader_DataTypes.SyncedTraderItemList.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TraderConfig);
-        ProcessTraderProfiles(profiles);
-        string folder = Market_Paths.AdditionalConfigsTraderProfilesConfig;
+        string folder = Market_Paths.TraderProfilesFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            profiles = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessTraderProfiles(profiles);
         }
         Trader_DataTypes.SyncedTraderItemList.Update();

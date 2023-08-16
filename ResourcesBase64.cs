@@ -1,4 +1,4 @@
-﻿namespace Marketplace.Base64;
+﻿namespace Marketplace;
 
 public static class ResourcesBase64
 {

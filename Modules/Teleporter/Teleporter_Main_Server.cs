@@ -4,26 +4,13 @@ namespace Marketplace.Modules.Teleporter;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
-    new[] { "TeleportHubProfiles.cfg" }, new[] { "OnTeleporterProfilesChange" })]
+    new[] { "TE" }, new[] { "OnTeleporterProfilesChange" })]
 public static class Teleporter_Main_Server
 {
     
     private static void OnInit()
     {
-        ProcessTeleporterData();
-    }
-    
-    private static void ReadServerTeleporterSprites()
-    {
-        Teleporter_DataTypes.SyncedTeleporterSprites.Value.Clear();
-        string[] files = Directory.GetFiles(Market_Paths.TeleporterPinsFolder, "*.png", SearchOption.AllDirectories);
-        foreach (string file in files)
-        {
-            string name = Path.GetFileNameWithoutExtension(file);
-            byte[] data = File.ReadAllBytes(file);
-            Teleporter_DataTypes.SyncedTeleporterSprites.Value[name] = new Teleporter_DataTypes.TransferBytes(){array = data};
-        }
-        Teleporter_DataTypes.SyncedTeleporterSprites.Update();
+        ReadServerTeleporterProfiles();
     }
 
     private static void ProcessTeleporterProfiles(IReadOnlyList<string> profiles)
@@ -88,30 +75,23 @@ public static class Teleporter_Main_Server
         }
     }
     
-    private static void ReadServerTeleporterProfile()
+    private static void ReadServerTeleporterProfiles()
     {
         Teleporter_DataTypes.SyncedTeleporterData.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TeleporterConfig);
-        ProcessTeleporterProfiles(profiles);
-        string folder = Market_Paths.AdditionalConfigsTeleportHubProfilesConfig;
+        string folder = Market_Paths.TeleportHubProfilesFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            profiles = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessTeleporterProfiles(profiles);
         }
         Teleporter_DataTypes.SyncedTeleporterData.Update();
     }
     
-    private static void ProcessTeleporterData()
-    {
-        ReadServerTeleporterSprites();
-        ReadServerTeleporterProfile();
-    }
 
     private static void OnTeleporterProfilesChange()
     {
-        ProcessTeleporterData();
+        ReadServerTeleporterProfiles();
         Utils.print("TeleportHub changed, sending options to peers");
     }
     

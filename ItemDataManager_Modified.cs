@@ -3,7 +3,7 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 
-namespace ItemDataManager;
+namespace Marketplace;
 
 [PublicAPI]
 public abstract class ItemData

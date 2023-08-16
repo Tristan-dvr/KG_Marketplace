@@ -4,6 +4,7 @@
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Buffer_Main_Client
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         Buffer_UI.Init();
@@ -26,6 +27,7 @@ public static class Buffer_Main_Client
     [ClientOnlyPatch]
     private static class ObjectDB_Awake_Patch
     {
+        [UsedImplicitly]
         private static void Postfix() => OnBufferUpdate();
     }
     

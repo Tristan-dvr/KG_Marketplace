@@ -1,4 +1,6 @@
-﻿namespace Marketplace.Modules.Buffer;
+﻿using Marketplace.ExternalLoads;
+
+namespace Marketplace.Modules.Buffer;
 
 public static class Buffer_DataTypes
 {
@@ -30,8 +32,8 @@ public static class Buffer_DataTypes
 
     public class BufferBuffData : ISerializableParameter
     {
-        public string UniqueName;
-        public string Name;
+        public string? UniqueName;
+        public string? Name;
         public int Duration;
         public float ModifyAttack = 1f;
         public float ModifyHealthRegen = 1f;
@@ -45,12 +47,12 @@ public static class Buffer_DataTypes
         public float ModifyJumpStaminaUsage = 1f;
         public float DamageReduction;
 
-        public string NeededPrefab;
+        public string? NeededPrefab;
         public int NeededPrefabCount;
         public WhatToModify Flags;
-        public string SpritePrefab;
-        public string StartEffectPrefab;
-        public string BuffGroup;
+        public string? SpritePrefab;
+        public string? StartEffectPrefab;
+        public string? BuffGroup;
 
         public void Serialize(ref ZPackage pkg)
         {
@@ -100,14 +102,14 @@ public static class Buffer_DataTypes
             BuffGroup = pkg.ReadString();
         }
 
-        private BufferMain Main;
+        private BufferMain Main = null!;
 
         public BufferMain GetMain() => Main;
         public string GetItemName() => NeededItemName;
-        private string NeededItemName;
-        private Sprite Icon;
-        private Sprite NeededItemIcon;
-        private GameObject StartEffect;
+        private string NeededItemName = null!;
+        private Sprite Icon = null!;
+        private Sprite NeededItemIcon = null!;
+        private GameObject? StartEffect;
 
         public bool? IsValid;
 
@@ -121,13 +123,13 @@ public static class Buffer_DataTypes
                 return;
 
             NeededItemName = neededItemPrefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
-            Icon = AssetStorage.AssetStorage.PlaceholderGamblerIcon;
+            Icon = AssetStorage.PlaceholderGamblerIcon;
             if (obj)
             {
                 if (obj.GetComponent<Character>())
                 {
                     PhotoManager.__instance.MakeSprite(obj, 0.6f, 0.25f);
-                    Icon = PhotoManager.__instance.GetSprite(obj.name, AssetStorage.AssetStorage.PlaceholderMonsterIcon,
+                    Icon = PhotoManager.__instance.GetSprite(obj.name, AssetStorage.PlaceholderMonsterIcon,
                         1);
                 }
                 else if (obj.GetComponent<ItemDrop>())
@@ -137,7 +139,7 @@ public static class Buffer_DataTypes
             }
             else
             {
-                if (AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(SpritePrefab, out Sprite sprite))
+                if (AssetStorage.GlobalCachedSprites.TryGetValue(SpritePrefab!, out Sprite sprite))
                 {
                     Icon = sprite;
                 }
@@ -195,7 +197,7 @@ public static class Buffer_DataTypes
 
     public class BufferMain : StatusEffect
     {
-        public BufferBuffData Data;
+        public BufferBuffData Data = null!;
 
         public override void ModifyAttack(Skills.SkillType skill, ref HitData hitData)
         {

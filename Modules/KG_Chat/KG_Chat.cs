@@ -2,6 +2,8 @@
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using Fishlabs;
+using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
 using UnityEngine.EventSystems;
 using Object = UnityEngine.Object;
 
@@ -11,25 +13,26 @@ namespace Marketplace.Modules.KG_Chat;
 [Market_Autoload(Market_Autoload.Type.Client)]
 public static class KG_Chat
 {
-    private static GameObject original_KG_Chat;
+    private static GameObject original_KG_Chat = null!;
     private static readonly GameObject[] origStuff = new GameObject[3];
-    private static TMP_FontAsset origFont;
-    private static TMP_FontAsset origFont2;
-    private static ConfigEntry<int> kgchat_Fontsize;
-    private static ConfigEntry<bool> useTypeSound;
-    private static ConfigEntry<ChatController.Transparency> kgchat_Transparency;
-    private static Chat kgChat;
-    private static Scrollbar kgChat_Scrollbar;
+    private static TMP_FontAsset origFont = null!;
+    private static TMP_FontAsset origFont2 = null!;
+    private static ConfigEntry<int> kgchat_Fontsize = null!;
+    private static ConfigEntry<bool> useTypeSound = null!;
+    private static ConfigEntry<ChatController.Transparency> kgchat_Transparency = null!;
+    private static Chat kgChat = null!;
+    private static Scrollbar kgChat_Scrollbar = null!; 
 
+    [UsedImplicitly]
     private static void OnInit()
     {
         kgchat_Fontsize = Marketplace._thistype.Config.Bind("KG Chat", "Font Size", 18, "KG Chat Font Size");
         useTypeSound = Marketplace._thistype.Config.Bind("KG Chat", "Use Type Sound", false, "Use KG Chat Type Sound");
         kgchat_Transparency = Marketplace._thistype.Config.Bind("KG Chat", "Transparency",
             ChatController.Transparency.Two, "KG Chat Transparency");
-        original_KG_Chat = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_KGChat");
+        original_KG_Chat = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_KGChat");
 
-        Global_Values.SyncedGlobalOptions.ValueChanged += ApplyKGChat;
+        Global_Configs.SyncedGlobalOptions.ValueChanged += ApplyKGChat;
 
         string spritesheetPath_Original =
             Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet_original.png");
@@ -57,13 +60,8 @@ public static class KG_Chat
         }
     }
     
-    private static IEnumerator corout_MoveToEnd()
-    {
-        yield return null;
-        Chat.instance.m_input.MoveTextEnd(false);
-    }
 
-    private static Coroutine _corout;
+    private static Coroutine? _corout;
 
     private static void ResetScroll()
     {
@@ -81,10 +79,10 @@ public static class KG_Chat
 
     public class ResizeUI : MonoBehaviour, IDragHandler, IEndDragHandler
     {
-        private static RectTransform dragRect;
-        private static TextMeshProUGUI text;
-        private static ConfigEntry<float> UI_X;
-        private static ConfigEntry<float> UI_Y;
+        private static RectTransform dragRect = null!;
+        private static TextMeshProUGUI text = null!;
+        private static ConfigEntry<float> UI_X = null!;
+        private static ConfigEntry<float> UI_Y = null!;
         public Vector3 Scale => new(dragRect.localScale.x, dragRect.localScale.y, 1f);
 
         public static void Default()
@@ -99,9 +97,9 @@ public static class KG_Chat
 
         public void Setup()
         {
-            text = transform.parent.parent.Find("Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text")
-                .GetComponent<TextMeshProUGUI>();
-            dragRect = transform.parent.parent.parent.GetComponent<RectTransform>();
+            var parent = transform.parent.parent;
+            text = parent.Find("Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text").GetComponent<TextMeshProUGUI>();
+            dragRect = parent.parent.GetComponent<RectTransform>();
             UI_X = Marketplace._thistype.Config.Bind("KG Chat", "UI_sizeX", 1f, "UI X size");
             UI_Y = Marketplace._thistype.Config.Bind("KG Chat", "UI_sizeY", 1f, "UI Y size");
             dragRect.localScale = new Vector3(UI_X.Value, UI_Y.Value, 1f);
@@ -111,20 +109,23 @@ public static class KG_Chat
         public void OnDrag(PointerEventData eventData)
         {
             Vector2 vec = -eventData.delta;
-            Vector2 sizeDelta = dragRect.sizeDelta + new Vector2(34f * dragRect.localScale.x, 0f);
+            var localScale = dragRect.localScale;
+            Vector2 sizeDelta = dragRect.sizeDelta + new Vector2(34f * localScale.x, 0f);
             vec.x /= sizeDelta.x;
-            Vector3 resized = dragRect.localScale + new Vector3(vec.x, vec.x, 0);
+            Vector3 resized = localScale + new Vector3(vec.x, vec.x, 0);
             resized.x = Mathf.Clamp(resized.x, 0.5f, 1.5f);
             resized.y = Mathf.Clamp(resized.y, 0.5f, 1.5f);
             resized.z = 1f;
-            dragRect.localScale = resized;
+            localScale = resized;
+            dragRect.localScale = localScale;
             text.fontSize = (int)(kgchat_Fontsize.Value + 16 * Mathf.Abs(1f - resized.x));
         }
 
         public void OnEndDrag(PointerEventData data)
         {
-            UI_X.Value = dragRect.localScale.x;
-            UI_Y.Value = dragRect.localScale.y;
+            var localScale = dragRect.localScale;
+            UI_X.Value = localScale.x;
+            UI_Y.Value = localScale.y;
             Marketplace._thistype.Config.Save();
             Chat.instance.m_input.MoveTextEnd(false);
         }
@@ -132,9 +133,9 @@ public static class KG_Chat
 
     public class DragUI : MonoBehaviour, IDragHandler, IEndDragHandler
     {
-        private static RectTransform dragRect;
-        private static ConfigEntry<float> UI_X;
-        private static ConfigEntry<float> UI_Y;
+        private static RectTransform dragRect = null!;
+        private static ConfigEntry<float> UI_X = null!;
+        private static ConfigEntry<float> UI_Y = null!;
         private readonly Transform[] Markers = new Transform[4];
 
         public static void Default()
@@ -164,9 +165,11 @@ public static class KG_Chat
 
         public void OnDrag(PointerEventData eventData)
         {
-            Vector2 vec = dragRect.anchoredPosition + eventData.delta / dragRect.lossyScale * dragRect.localScale;
-            Vector2 lastPos = dragRect.anchoredPosition;
-            dragRect.anchoredPosition = vec;
+            var anchoredPosition = dragRect.anchoredPosition;
+            Vector2 vec = anchoredPosition + eventData.delta / dragRect.lossyScale * dragRect.localScale;
+            Vector2 lastPos = anchoredPosition;
+            anchoredPosition = vec;
+            dragRect.anchoredPosition = anchoredPosition;
             if (CheckMarkersOutsideScreen(new Vector2(Screen.width, Screen.height)))
                 dragRect.anchoredPosition = lastPos;
         }
@@ -175,8 +178,9 @@ public static class KG_Chat
         {
             foreach (Transform marker in Markers)
             {
-                float markerX = marker.position.x;
-                float markerY = marker.position.y;
+                var position = marker.position;
+                float markerX = position.x;
+                float markerY = position.y;
                 if (markerX < 0 || markerX > screen.x || markerY < 0 || markerY > screen.y)
                     return true;
             }
@@ -186,8 +190,9 @@ public static class KG_Chat
 
         public void OnEndDrag(PointerEventData data)
         {
-            UI_X.Value = dragRect.anchoredPosition.x;
-            UI_Y.Value = dragRect.anchoredPosition.y;
+            var anchoredPosition = dragRect.anchoredPosition;
+            UI_X.Value = anchoredPosition.x;
+            UI_Y.Value = anchoredPosition.y;
             Marketplace._thistype.Config.Save();
             Chat.instance.m_input.MoveTextEnd(false);
         }
@@ -197,12 +202,13 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class ZNetScene_Awake_Patch
     {
-        private static void Postfix() => ApplyKGChat(); 
+        [UsedImplicitly]
+private static void Postfix() => ApplyKGChat(); 
     }
 
     private static void ApplyKGChat()
     {
-        if (!Global_Values.SyncedGlobalOptions.Value._enableKGChat || kgChat || !Chat.instance) return;
+        if (!Global_Configs.SyncedGlobalOptions.Value._enableKGChat || kgChat || !Chat.instance) return;
         Utils.print($"Switching to KG Chat", ConsoleColor.Cyan);
         ZRoutedRpc.instance.m_functions.Remove("ChatMessage".GetStableHashCode());
         ZRoutedRpc.instance.m_functions.Remove("RPC_TeleportPlayer".GetStableHashCode());
@@ -221,7 +227,7 @@ public static class KG_Chat
                 {
                     ResizeUI.Default(); 
                     DragUI.Default();
-                    AssetStorage.AssetStorage.AUsrc.Play();
+                    AssetStorage.AUsrc.Play();
                 });
         kgChat.GetComponentInChildren<GuiInputField>(true).onValueChanged.AddListener(IF_OnValueChanged);
         kgChat_Scrollbar = kgChat.GetComponentInChildren<Scrollbar>(true);
@@ -237,6 +243,7 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class GuiInputField_Update_Patch
     {
+        [UsedImplicitly]
         private static bool Prefix()
         {
             return !kgChat;
@@ -252,7 +259,7 @@ public static class KG_Chat
     private static void IF_OnValueChanged(string value)
     {
         if (useTypeSound.Value && !string.IsNullOrEmpty(value))
-            AssetStorage.AssetStorage.AUsrc.PlayOneShot(AssetStorage.AssetStorage.TypeClip,
+            AssetStorage.AUsrc.PlayOneShot(AssetStorage.TypeClip,
                 UnityEngine.Random.Range(0.65f, 0.75f));
         switch (value)
         {
@@ -281,6 +288,7 @@ public static class KG_Chat
     {
         private static bool isKGChat(GameObject go) => go.name.Replace("(Clone)", "") == original_KG_Chat.name;
 
+        [UsedImplicitly]
         private static void Prefix(Chat __instance)
         {
             if (!isKGChat(__instance.gameObject))
@@ -310,7 +318,8 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class Menu_Patch
     {
-        private static void Postfix(ref bool __result)
+        [UsedImplicitly]
+private static void Postfix(ref bool __result)
         {
             if (!kgChat) return;
             __result |= Chat.instance.m_input.gameObject.activeInHierarchy;
@@ -322,6 +331,7 @@ public static class KG_Chat
     private static class Chat_Patches3
     {
         [HarmonyTranspiler]
+        [UsedImplicitly]
         private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> list = new List<CodeInstruction>(instructions);
@@ -344,6 +354,7 @@ public static class KG_Chat
     private static class Chat_Patches2
     {
         [HarmonyTranspiler]
+        [UsedImplicitly]
         private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> list = new List<CodeInstruction>(instructions);
@@ -368,6 +379,7 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class Terminal_UpdateChat_Patch
     {
+        [UsedImplicitly]
         private static void Prefix(Terminal __instance)
         {
             if (__instance != kgChat) return;
@@ -375,6 +387,7 @@ public static class KG_Chat
             __instance.m_maxVisibleBufferLength = 45;
         }
 
+        [UsedImplicitly]
         private static void Postfix(Terminal __instance)
         {
             if (__instance == kgChat && !__instance.m_input.isFocused)
@@ -416,9 +429,9 @@ public static class KG_Chat
 
     public class ChatController : MonoBehaviour
     {
-        public static ChatController Instance;
+        public static ChatController Instance = null!;
         public SendMode mode;
-        private Transform Emojis_Tab;
+        private Transform Emojis_Tab = null!;
 
         public void Setup()
         {
@@ -448,12 +461,12 @@ public static class KG_Chat
             transform.Find("CHATWINDOW/Input Field/Emojis").GetComponent<Button>().onClick.AddListener(() =>
             {
                 Emojis_Tab.gameObject.SetActive(!Emojis_Tab.gameObject.activeSelf);
-                AssetStorage.AssetStorage.AUsrc.Play();
+                AssetStorage.AUsrc.Play();
             });
             _muteSoundsButton.transform.Find("TF").gameObject.SetActive(!useTypeSound.Value);
             _muteSoundsButton.onClick.AddListener(() =>
             {
-                AssetStorage.AssetStorage.AUsrc.Play();
+                AssetStorage.AUsrc.Play();
                 useTypeSound.Value = !useTypeSound.Value;
                 Marketplace._thistype.Config.Save();
                 _muteSoundsButton.transform.Find("TF").gameObject.SetActive(!useTypeSound.Value);
@@ -467,7 +480,7 @@ public static class KG_Chat
             Button _transparencyButton = transform.Find("CHATWINDOW/Input Field/Transparency").GetComponent<Button>();
             _transparencyButton.onClick.AddListener(() =>
             {
-                AssetStorage.AssetStorage.AUsrc.Play();
+                AssetStorage.AUsrc.Play();
                 kgchat_Transparency.Value = (Transparency)(((int)kgchat_Transparency.Value + 1) % 6);
                 bgone.GetComponent<Image>().color = new Color(0, 0, 0, Transparency_Map[kgchat_Transparency.Value]);
                 bgtwo.GetComponent<Image>().color = new Color(0, 0, 0, Transparency_Map[kgchat_Transparency.Value]);
@@ -513,7 +526,7 @@ public static class KG_Chat
         private void EmojiClick(string key)
         {
             if (!Chat.instance) return;
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             Chat.instance.m_input.text += key + " ";
             Chat.instance.m_input.MoveTextEnd(false);
         }
@@ -525,13 +538,13 @@ public static class KG_Chat
             ShoutImage.color = mode == SendMode.Shout ? Color.green : Color.white;
             WhisperImage.color = mode == SendMode.Whisper ? Color.green : Color.white;
             GroupImage.color = mode == SendMode.Group ? Color.green : Color.white;
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
         }
 
-        private Image SayImage;
-        private Image ShoutImage;
-        private Image WhisperImage;
-        private Image GroupImage;
+        private Image SayImage = null!;
+        private Image ShoutImage = null!;
+        private Image WhisperImage = null!;
+        private Image GroupImage = null!;
 
         public enum SendMode
         {
@@ -560,9 +573,11 @@ public static class KG_Chat
             };
         }
         
+        [UsedImplicitly]
         private static void Postfix() => ResetScroll();
 
         [HarmonyTranspiler]
+        [UsedImplicitly]
         private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
         {
             bool isdone = false;
@@ -584,14 +599,14 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class EmojiPatch
     {
-        private static FieldInfo textField;
+        private static FieldInfo textField = null!;
 
+        [UsedImplicitly]
         private static MethodInfo TargetMethod()
         {
             const string targetClass = "<>c__DisplayClass11_0";
             const string targetMethod = "<OnNewChatMessage>b__2";
-            Type type = typeof(Chat).GetNestedTypes(BindingFlags.NonPublic)
-                .FirstOrDefault(t => t.Name == targetClass);
+            Type type = typeof(Chat).GetNestedTypes(BindingFlags.NonPublic).FirstOrDefault(t => t.Name == targetClass)!;
             textField = AccessTools.Field(type, "text");
             return AccessTools.Method(type, targetMethod);
         }
@@ -604,6 +619,7 @@ public static class KG_Chat
         }
 
         [HarmonyTranspiler]
+        [UsedImplicitly]
         private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> code)
         {
             FieldInfo targetField = AccessTools.Field(typeof(Chat), nameof(Chat.m_hideTimer));
@@ -624,6 +640,7 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class Chat_AddInworldText_Patch
     {
+        [UsedImplicitly]
         private static void Prefix(ref string text)
         {
             if (!kgChat) return;
@@ -635,6 +652,7 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class Chat_isAllowedCommand_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(ref bool __result) => __result |= (kgChat && Utils.IsDebug);
     }
 }

@@ -1,18 +1,21 @@
-﻿namespace Marketplace.Modules.Leaderboard;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
+
+namespace Marketplace.Modules.Leaderboard;
 
 using Object = UnityEngine.Object;
 
 public static class Leaderboard_UI
 {
-    private static GameObject UI;
-    private static GameObject Main;
+    private static GameObject UI = null!;
+    private static GameObject Main = null!;
     private static SortBy CurrentSort;
-    private static GameObject Element;
-    private static Transform Content;
-    private static GameObject Achievements;
-    private static GameObject AchievementsElement;
-    private static Transform AchievementContent;
-    private static Text PageText;
+    private static GameObject Element = null!;
+    private static Transform Content = null!;
+    private static GameObject Achievements = null!;
+    private static GameObject AchievementsElement = null!;
+    private static Transform AchievementContent = null!;
+    private static Text PageText = null!;
 
     public static bool IsVisible() => Main && Main.activeSelf;
 
@@ -32,14 +35,14 @@ public static class Leaderboard_UI
 
     private static int CurrentPage = 1;
     private const int MaxPerPage = 10;
-    private static GameObject CurrentSelectedElement;
+    private static GameObject? CurrentSelectedElement;
     private static List<Leaderboard_DataTypes.Client_Leaderboard> SortedList = new();
 
     public static void Init()
     {
-        UI = Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceLeaderboardUI"));
+        UI = Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("MarketplaceLeaderboardUI"));
         Main = UI.transform.Find("GO").gameObject;
-        Element = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceLB_PlayerElement");
+        Element = AssetStorage.asset.LoadAsset<GameObject>("MarketplaceLB_PlayerElement");
         Object.DontDestroyOnLoad(UI);
         Transform buttonsTransform = UI.transform.Find("GO/Header_Buttons");
         SortButtons.Add(SortBy.CreaturesKilled, buttonsTransform.Find("CreaturesKilled").GetComponent<Button>());
@@ -53,7 +56,7 @@ public static class Leaderboard_UI
         foreach (KeyValuePair<SortBy, Button> button in SortButtons)
             button.Value.onClick.AddListener(() =>
             {
-                AssetStorage.AssetStorage.AUsrc.Play();
+                AssetStorage.AUsrc.Play();
                 SetSortBy(button.Key);
                 CreateElements();
             });
@@ -62,11 +65,11 @@ public static class Leaderboard_UI
         UI.transform.Find("GO/PageRight").GetComponent<Button>().onClick.AddListener(NextPage);
         UI.transform.Find("GO/PageLeft").GetComponent<Button>().onClick.AddListener(PrevPage);
         Achievements = UI.transform.Find("Achievements").gameObject;
-        AchievementsElement = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_Achievement_Element");
+        AchievementsElement = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_Achievement_Element");
         AchievementContent = Achievements.transform.Find("Scroll Rect/Viewport/Content");
         UI.transform.Find("Open").GetComponent<Button>().onClick.AddListener(() =>
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             if (IsVisible()) Hide();
             else Show();
         });
@@ -74,13 +77,13 @@ public static class Leaderboard_UI
         Main.SetActive(false);
         Achievements.SetActive(false);
         SetSortBy(SortBy.TotalAchievements);
-        Global_Values.SyncedGlobalOptions.ValueChanged += OnChange;
+        Global_Configs.SyncedGlobalOptions.ValueChanged += OnChange;
         Localization.instance.Localize(UI.transform);
     }
 
     private static void OnChange()
     {
-        if (Global_Values.SyncedGlobalOptions.Value._useLeaderboard)
+        if (Global_Configs.SyncedGlobalOptions.Value._useLeaderboard)
         {
             ShowTF();
         }
@@ -92,7 +95,7 @@ public static class Leaderboard_UI
 
     private static void NextPage()
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         int maxPage = Mathf.CeilToInt(SortedList.Count / (float)MaxPerPage);
         if (CurrentPage + 1 > maxPage) return;
         CurrentPage++;
@@ -103,7 +106,7 @@ public static class Leaderboard_UI
 
     private static void PrevPage()
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         if (CurrentPage - 1 < 1) return;
         CurrentPage--;
         int maxPage = Mathf.CeilToInt(SortedList.Count / (float)MaxPerPage);
@@ -216,7 +219,7 @@ public static class Leaderboard_UI
 
     private static void OnElementClick(GameObject go, Leaderboard_DataTypes.Client_Leaderboard board)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         if (CurrentSelectedElement == go)
         {
             CurrentSelectedElement.transform.Find("fill").GetComponent<Image>().color = Color.white;
@@ -252,7 +255,7 @@ public static class Leaderboard_UI
 
     public static void Show()
     {
-        if (!Global_Values.SyncedGlobalOptions.Value._useLeaderboard) return;
+        if (!Global_Configs.SyncedGlobalOptions.Value._useLeaderboard) return;
         Default();
         Main.SetActive(true);
         CreateElements();
@@ -280,14 +283,16 @@ public static class Leaderboard_UI
     [ClientOnlyPatch]
     private static class Menu_IsVisible_Patch
     {
-        private static void Postfix(ref bool __result) => __result |= IsVisible();
+        [UsedImplicitly]
+private static void Postfix(ref bool __result) => __result |= IsVisible();
     }
 
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     [ClientOnlyPatch]
     private static class Menu_OnLogoutYes_Patch
     {
-        private static void Postfix()
+        [UsedImplicitly]
+private static void Postfix()
         {
             HideTF();
         }

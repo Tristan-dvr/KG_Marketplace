@@ -8,6 +8,7 @@ namespace Marketplace.Modules.PlayersTag;
     new[] { "OnPlayerTagsChange" })]
 public static class PlayerTags_Main_Server
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         ReadPlayerTags();
@@ -26,6 +27,7 @@ public static class PlayerTags_Main_Server
         PlayersTag_DataTypes.SyncedPlayersTagData.Update();
     }
 
+    [UsedImplicitly]
     private static void OnPlayerTagsChange()
     {
         ReadPlayerTags();
@@ -36,6 +38,7 @@ public static class PlayerTags_Main_Server
     [ServerOnlyPatch]
     private static class ZNet_UpdatePlayerList_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(ZNet __instance)
         {
             for (int i = 0; i < __instance.m_players.Count; ++i)

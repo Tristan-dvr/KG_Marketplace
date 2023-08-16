@@ -1,4 +1,5 @@
-﻿using Object = UnityEngine.Object;
+﻿using Marketplace.ExternalLoads;
+using Object = UnityEngine.Object;
 
 namespace Marketplace.Modules.TerritorySystem;
 
@@ -12,8 +13,8 @@ public static class ZoneVisualizer
 
     private static void OnInit()
     {
-        ZoneVisualizer_Square = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("SquareZoneVisualizer");
-        ZoneVisualizer_Circle = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("CircleZoneVisualizer");
+        ZoneVisualizer_Square = AssetStorage.asset.LoadAsset<GameObject>("SquareZoneVisualizer");
+        ZoneVisualizer_Circle = AssetStorage.asset.LoadAsset<GameObject>("CircleZoneVisualizer");
     }
 
     public static void OnMapChange()

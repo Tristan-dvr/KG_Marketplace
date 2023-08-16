@@ -1,4 +1,6 @@
-﻿namespace Marketplace.Modules.ServerInfo;
+﻿using Marketplace.ExternalLoads;
+
+namespace Marketplace.Modules.ServerInfo;
 
 public static class ServerInfo_UI
 {
@@ -16,7 +18,7 @@ public static class ServerInfo_UI
     public static void Init()
     {
         UI = UnityEngine.Object.Instantiate(
-            AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceInfoNewUI"));
+            AssetStorage.asset.LoadAsset<GameObject>("MarketplaceInfoNewUI"));
         UnityEngine.Object.DontDestroyOnLoad(UI);
         NPCname = UI.transform.Find("Canvas/Header/Text").GetComponent<Text>();
         Content = UI.transform.Find("Canvas/Scroll View/Viewport/Content/");
@@ -90,7 +92,8 @@ public static class ServerInfo_UI
     [ClientOnlyPatch]
     private static class InfoUIFix
     {
-        private static void Postfix(ref bool __result)
+        [UsedImplicitly]
+private static void Postfix(ref bool __result)
         {
             if (IsPanelVisible()) __result = true;
         }

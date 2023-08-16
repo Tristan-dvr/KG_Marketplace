@@ -1,16 +1,18 @@
-﻿namespace Marketplace.Modules.Banker;
+﻿using Marketplace.ExternalLoads;
+
+namespace Marketplace.Modules.Banker;
 
 public static class Banker_UI
 {
-    private static GameObject UI;
-    private static GameObject ItemElement;
-    private static Transform ContentTransform;
+    private static GameObject UI = null!;
+    private static GameObject ItemElement = null!;
+    private static Transform ContentTransform = null!;
     private static readonly List<GameObject> CurrentObjects = new();
     private static readonly List<InputField> CurrentValues = new();
     private static string CurrentProfile = "";
-    private static Scrollbar MainBar;
+    private static Scrollbar MainBar = null!;
     private static readonly List<ContentSizeFitter> AllFilters = new();
-    private static Text NPCName;
+    private static Text NPCName = null!;
 
     public static bool IsPanelVisible()
     {
@@ -21,6 +23,7 @@ public static class Banker_UI
     [ClientOnlyPatch]
     private static class BankerUIFix
     {
+        [UsedImplicitly]        
         private static void Postfix(ref bool __result)
         {
             if (IsPanelVisible()) __result = true;
@@ -29,9 +32,8 @@ public static class Banker_UI
 
     public static void Init()
     {
-        UI = UnityEngine.Object.Instantiate(
-            AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceBankerNewUI"));
-        ItemElement = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("BankerItem");
+        UI = UnityEngine.Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("MarketplaceBankerNewUI"));
+        ItemElement = AssetStorage.asset.LoadAsset<GameObject>("BankerItem");
         ContentTransform = UI.transform.Find("Canvas/Trader/ItemList/ListPanel/Scroll View/Viewport/Content");
         UnityEngine.Object.DontDestroyOnLoad(UI);
         MainBar = UI.GetComponentInChildren<Scrollbar>();
@@ -87,7 +89,7 @@ public static class Banker_UI
         for (int i = 0; i < Banker_DataTypes.SyncedBankerProfiles.Value[profile].Count; i++)
         {
             int data = Banker_DataTypes.SyncedBankerProfiles.Value[profile][i];
-            ItemDrop item = ZNetScene.instance.GetPrefab(data)?.GetComponent<ItemDrop>();
+            ItemDrop item = ZNetScene.instance.GetPrefab(data)?.GetComponent<ItemDrop>()!;
             if (item == null) break;
             GameObject go = UnityEngine.Object.Instantiate(ItemElement, ContentTransform);
             string text = Localization.instance.Localize(item.m_itemData.m_shared.m_name);
@@ -116,7 +118,7 @@ public static class Banker_UI
 
     private static void ValueChange(int index, string data)
     {
-        AssetStorage.AssetStorage.AUsrc.PlayOneShot(AssetStorage.AssetStorage.TypeClip, 0.7f);
+        AssetStorage.AUsrc.PlayOneShot(AssetStorage.TypeClip, 0.7f);
         if (int.TryParse(data, out int value) && value < 0)
         {
             CurrentValues[index].text = "0";
@@ -125,7 +127,7 @@ public static class Banker_UI
 
     private static void ClickBUTTON(int index, int hash, bool DEPOSIT)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         if (!int.TryParse(CurrentValues[index].text, out int value)) return;
         CurrentValues[index].text = "";
         if (value <= 0) return;

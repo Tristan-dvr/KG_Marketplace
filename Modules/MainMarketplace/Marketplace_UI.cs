@@ -1,15 +1,17 @@
 ﻿using BepInEx.Configuration;
+using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
 using Object = UnityEngine.Object;
 
-namespace Marketplace.Modules.Marketplace_NPC;
+namespace Marketplace.Modules.MainMarketplace;
 
 public static class Marketplace_UI
 {
     private const int MAXITEMSPERPAGE = 14;
-    private static GameObject UI;
-    private static GameObject ElementBUY;
-    private static GameObject ElementSELL;
-    private static Action OnSort;
+    private static GameObject UI = null!;
+    private static GameObject ElementBUY = null!;
+    private static GameObject ElementSELL = null!;
+    private static Action OnSort = null!;
     private static readonly List<Marketplace_DataTypes.ClientMarketSendData> InventorySellData = new();
     private static List<Marketplace_DataTypes.ClientMarketSendData> InventorySellDataSORTED = new();
     private static List<Marketplace_DataTypes.ServerMarketSendData> ServerMarketSendDataSORTED = new();
@@ -19,29 +21,29 @@ public static class Marketplace_UI
     private static Marketplace_DataTypes.SortBy currentSortMode;
     private static Marketplace_DataTypes.SortType currentSortType;
     private static readonly Button[] CategoryButtons = new Button[6];
-    private static Button BuyButtonCategory;
-    private static Button SellButtonCategory;
+    private static Button BuyButtonCategory = null!;
+    private static Button SellButtonCategory = null!;
     private static readonly Color DefaultCategoryColorNotActive = new(1, 0.6941177f, 0);
     private static readonly Color DefaultCategoryColorActive = new(0.08995318f, 1, 0);
-    private static string SEARCHVALUE;
+    private static string SEARCHVALUE = "";
     private static int CurrentPage;
     private static int CurrentMaxPage;
-    private static Marketplace_DataTypes.ClientMarketSendData CurrentSendData;
-    private static Marketplace_DataTypes.ServerMarketSendData CurrentBuyData;
+    private static Marketplace_DataTypes.ClientMarketSendData? CurrentSendData;
+    private static Marketplace_DataTypes.ServerMarketSendData? CurrentBuyData;
     private static int CurrentPrice;
     private static int CurrentQuantity;
     private static int CurrentBUYQuantity;
     private static bool IsAnon;
     private static bool MySalesOnly;
-    private static Text PageNumber;
-    private static Transform BUYTAB;
-    private static Transform SELLTAB;
-    private static Text GoldCount;
-    private static Text IncomeCount;
-    private static Text MySalesText;
-    private static List<ContentSizeFitter> ALLFILTERS;
-    private static List<Scrollbar> ALLSCROLLS;
-    private static List<Transform> JC_Api;
+    private static Text PageNumber = null!;
+    private static Transform BUYTAB = null!;
+    private static Transform SELLTAB = null!;
+    private static Text GoldCount = null!;
+    private static Text IncomeCount = null!;
+    private static Text MySalesText = null!;
+    private static List<ContentSizeFitter> ALLFILTERS = null!;
+    private static List<Scrollbar> ALLSCROLLS = null!;
+    private static List<Transform> JC_Api = null!;
 
     private enum MarketSize
     {
@@ -50,7 +52,7 @@ public static class Marketplace_UI
         Small
     }
 
-    private static Image IncomeImage;
+    private static Image IncomeImage = null!;
     private static void ERRORBLOCKED()
     {
         Hide();
@@ -81,11 +83,11 @@ public static class Marketplace_UI
 
     public static void Init()
     {
-        UI = Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketPlaceUI"));
+        UI = Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("MarketPlaceUI"));
         ALLFILTERS = UI.GetComponentsInChildren<ContentSizeFitter>(true).ToList();
         ALLSCROLLS = UI.GetComponentsInChildren<Scrollbar>(true).ToList();
-        ElementBUY = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("BuyTabGO");
-        ElementSELL = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("SellTabGO");
+        ElementBUY = AssetStorage.asset.LoadAsset<GameObject>("BuyTabGO");
+        ElementSELL = AssetStorage.asset.LoadAsset<GameObject>("SellTabGO");
         OnSort += SortValueList;
         Object.DontDestroyOnLoad(UI);
         string[] EnumNames = Enum.GetNames(typeof(Marketplace_DataTypes.ItemData_ItemCategory));
@@ -148,7 +150,7 @@ public static class Marketplace_UI
             delegate
             {
                 Hide();
-                AssetStorage.AssetStorage.AUsrc.Play();
+                AssetStorage.AUsrc.Play();
             });
         UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Size").GetComponent<Button>().onClick
             .AddListener(() => ChangeSize(true));
@@ -193,10 +195,10 @@ public static class Marketplace_UI
     {
         List<Marketplace_DataTypes.ClientMarketSendData> data = new List<Marketplace_DataTypes.ClientMarketSendData>();
         Player player = Player.m_localPlayer;
-        List<ItemDrop.ItemData> list = player?.m_inventory?.GetAllItems();
+        List<ItemDrop.ItemData> list = player?.m_inventory?.GetAllItems()!;
         if (list == null || list.Count == 0) return data;
         foreach (ItemDrop.ItemData item in list)
-            if (!Global_Values.SyncedGlobalOptions.Value._blockedPrefabsServer.Replace(" ","").Split(',').Contains(item.m_dropPrefab.name))
+            if (!Global_Configs.SyncedGlobalOptions.Value._blockedPrefabsServer.Replace(" ","").Split(',').Contains(item.m_dropPrefab.name))
             {
                 Marketplace_DataTypes.ItemData_ItemCategory best = ChooseBestCategory(item);
                 string displayName = item.m_shared.m_name;
@@ -234,13 +236,13 @@ public static class Marketplace_UI
     }
 
 
-    private static ConfigEntry<MarketSize> _marketSize;
+    private static ConfigEntry<MarketSize> _marketSize = null!;
 
     private static void ChangeSize(bool increase)
     {
         if (increase)
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             _marketSize.Value = _marketSize.Value switch
             {
                 MarketSize.Small => MarketSize.Medium,
@@ -273,14 +275,14 @@ public static class Marketplace_UI
     private static void ResetCurrency()
     {
         UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Gold/Image").GetComponent<Image>().sprite =
-            ZNetScene.instance.GetPrefab(Global_Values.SyncedGlobalOptions.Value._serverCurrency).GetComponent<ItemDrop>().m_itemData.m_shared
+            ZNetScene.instance.GetPrefab(Global_Configs.SyncedGlobalOptions.Value._serverCurrency).GetComponent<ItemDrop>().m_itemData.m_shared
                 .m_icons[0];
     }
 
 
     private static void ClickAnonButton()
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         IsAnon = !IsAnon;
         UpdateAnnonIcon();
     }
@@ -293,14 +295,14 @@ public static class Marketplace_UI
 
     private static void OpenMessenger()
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         UI.SetActive(false);
         Marketplace_Messages._showMessageBox = true;
     }
 
     private static void MySalesClick()
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         if (!MySalesOnly)
         {
             DefaultBUY();
@@ -316,8 +318,8 @@ public static class Marketplace_UI
 
     private static void ClickGetIncome(bool toBanker)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
-        if (Global_Values.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Values._localUserID))
+        AssetStorage.AUsrc.Play();
+        if (Global_Configs.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Configs._localUserID))
         {
             ERRORBLOCKED();
             return;
@@ -332,7 +334,7 @@ public static class Marketplace_UI
     public static void ResetIncome()
     {
         GoldCount.text =
-            $"{Localization.instance.Localize("$mpasn_currency")}: {Player.m_localPlayer?.m_inventory.CountItems(Global_Values.CurrencyName)}";
+            $"{Localization.instance.Localize("$mpasn_currency")}: {Player.m_localPlayer?.m_inventory.CountItems(Global_Configs.CurrencyName)}";
         IncomeCount.text = $"{Localization.instance.Localize("$mpasn_income")} (<color=#00ff00>{Marketplace_Main_Client.IncomeValue}</color>)";
         IncomeCount.color = Marketplace_Main_Client.IncomeValue > 0 ? Color.yellow : Color.red;
         IncomeImage.color = Marketplace_Main_Client.IncomeValue > 0 ? Color.green : Color.red;
@@ -340,7 +342,7 @@ public static class Marketplace_UI
 
     private static void BUYITEMCLICK()
     {
-        if (Global_Values.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Values._localUserID))
+        if (Global_Configs.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Configs._localUserID))
         {
             ERRORBLOCKED();
             return;
@@ -352,18 +354,18 @@ public static class Marketplace_UI
             return;
         }
 
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         int totalPrice = 0;
 
         if (CurrentBUYQuantity > CurrentBuyData.Count)
             CurrentBUYQuantity = CurrentBuyData.Count;
 
-        if (Global_Values._localUserID != CurrentBuyData.SellerUserID)
+        if (Global_Configs._localUserID != CurrentBuyData.SellerUserID)
         {
             totalPrice = CurrentBUYQuantity * CurrentBuyData.Price;
-            int goldCount = Player.m_localPlayer.m_inventory.CountItems(Global_Values.CurrencyName);
+            int goldCount = Player.m_localPlayer.m_inventory.CountItems(Global_Configs.CurrencyName);
             if (goldCount >= totalPrice)
-                Player.m_localPlayer.m_inventory.RemoveItem(Global_Values.CurrencyName,
+                Player.m_localPlayer.m_inventory.RemoveItem(Global_Configs.CurrencyName,
                     totalPrice);
             else
                 return;
@@ -377,14 +379,14 @@ public static class Marketplace_UI
 
     private static void SELLITEMCLICK()
     {
-        if (Global_Values.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Values._localUserID))
+        if (Global_Configs.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Configs._localUserID))
         {
             ERRORBLOCKED();
             return;
         }
 
-        if (Marketplace_DataTypes.SyncedMarketplaceData.Value.Count(data => data.SellerUserID == Global_Values._localUserID) >=
-            Global_Values.SyncedGlobalOptions.Value._itemMarketLimit)
+        if (Marketplace_DataTypes.SyncedMarketplaceData.Value.Count(data => data.SellerUserID == Global_Configs._localUserID) >=
+            Global_Configs.SyncedGlobalOptions.Value._itemMarketLimit)
         {
             ERRORLIMIT();
             return;
@@ -396,10 +398,9 @@ public static class Marketplace_UI
             return;
         }
 
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
 
-        ItemDrop originalItem =
-            ZNetScene.instance.GetPrefab(CurrentSendData.ItemPrefab)?.GetComponent<ItemDrop>();
+        ItemDrop originalItem = ZNetScene.instance.GetPrefab(CurrentSendData.ItemPrefab)?.GetComponent<ItemDrop>()!;
         if (originalItem == null)
         {
             ERROR();
@@ -446,12 +447,13 @@ public static class Marketplace_UI
                 p.m_crafterID == send.CrafterID && p.m_crafterName == send.CrafterName)
             .Select(p => p);
 
-        int count = selectMany.Sum(p => p.m_stack);
+        var itemDatas = selectMany as ItemDrop.ItemData[] ?? selectMany.ToArray();
+        int count = itemDatas.Sum(p => p.m_stack);
         if (count < cQuantity) return false;
 
         while (cQuantity > 0)
         {
-            foreach (ItemDrop.ItemData itemData in selectMany)
+            foreach (ItemDrop.ItemData itemData in itemDatas)
             {
                 if (cQuantity <= 0) break;
                 if (itemData.m_stack <= cQuantity)
@@ -473,7 +475,7 @@ public static class Marketplace_UI
 
     private static void ChangeSortBy(int whichOne)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         SELLTAB.transform.Find("itemname/Text").GetComponent<Text>().text =
             Localization.instance.Localize("$mpasn_itemnamemarket");
         SELLTAB.transform.Find("count/Text").GetComponent<Text>().text =
@@ -532,7 +534,7 @@ public static class Marketplace_UI
     private static void SetPriceValueChange(string value)
     {
         if (value != "0" && !string.IsNullOrWhiteSpace(value))
-            AssetStorage.AssetStorage.AUsrc.PlayOneShot(AssetStorage.AssetStorage.TypeClip, 0.7f);
+            AssetStorage.AUsrc.PlayOneShot(AssetStorage.TypeClip, 0.7f);
         if (string.IsNullOrWhiteSpace(value))
         {
             CurrentPrice = 0;
@@ -552,7 +554,7 @@ public static class Marketplace_UI
         }
 
         SELLTAB.Find("AFTERPRESS/BUTTON/Text").GetComponent<Text>().text =
-            $"<size=42>{Localization.instance.Localize("$mpasn_sellmarketplace")}</size>\n<color=#FF00FF>{Localization.instance.Localize("$mpasn_quantitymarketplace")}: {CurrentQuantity}</color> x <color=yellow>{CurrentPrice}</color>\n<color=#00FFFF>{Localization.instance.Localize("$mpasn_youget")}:</color> <color=yellow>{(long)CurrentQuantity * CurrentPrice} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>";
+            $"<size=42>{Localization.instance.Localize("$mpasn_sellmarketplace")}</size>\n<color=#FF00FF>{Localization.instance.Localize("$mpasn_quantitymarketplace")}: {CurrentQuantity}</color> x <color=yellow>{CurrentPrice}</color>\n<color=#00FFFF>{Localization.instance.Localize("$mpasn_youget")}:</color> <color=yellow>{(long)CurrentQuantity * CurrentPrice} {Localization.instance.Localize(Global_Configs.CurrencyName)}</color>";
     }
 
 
@@ -563,7 +565,7 @@ public static class Marketplace_UI
     {
         if (CurrentBuyData == null || SkipQuantityCheck) return;
         if (!SkipNextSound)
-            AssetStorage.AssetStorage.AUsrc.PlayOneShot(AssetStorage.AssetStorage.TypeClip, 0.7f);
+            AssetStorage.AUsrc.PlayOneShot(AssetStorage.TypeClip, 0.7f);
         SkipNextSound = false;
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -583,7 +585,7 @@ public static class Marketplace_UI
         BUYTAB.Find("AFTERPRESS/SetQuantity").GetComponent<InputField>().text = CurrentBUYQuantity.ToString();
         SkipQuantityCheck = false;
 
-        int goldCount = Player.m_localPlayer.m_inventory.CountItems(Global_Values.CurrencyName);
+        int goldCount = Player.m_localPlayer.m_inventory.CountItems(Global_Configs.CurrencyName);
         string SELLBUYColor = "white";
         BUYTAB.transform.Find("AFTERPRESS/BUTTON").GetComponent<Image>().color = Color.red;
         if (goldCount >= CurrentBuyData.Price * CurrentBUYQuantity)
@@ -593,8 +595,8 @@ public static class Marketplace_UI
         }
 
         string text =
-            $"<size=42><color={SELLBUYColor}>{Localization.instance.Localize("$mpasn_buymarketplace")}</color></size>\n<color=#FF00FF>{Localization.instance.Localize("$mpasn_quantitymarketplace")}: {CurrentBUYQuantity}</color> x <color=yellow>{CurrentBuyData.Price}</color>\n<color=#00FFFF>{Localization.instance.Localize("$mpasn_youneed")}:</color> <color=yellow>{CurrentBUYQuantity * CurrentBuyData.Price} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>";
-        if (CurrentBuyData.SellerUserID == Global_Values._localUserID)
+            $"<size=42><color={SELLBUYColor}>{Localization.instance.Localize("$mpasn_buymarketplace")}</color></size>\n<color=#FF00FF>{Localization.instance.Localize("$mpasn_quantitymarketplace")}: {CurrentBUYQuantity}</color> x <color=yellow>{CurrentBuyData.Price}</color>\n<color=#00FFFF>{Localization.instance.Localize("$mpasn_youneed")}:</color> <color=yellow>{CurrentBUYQuantity * CurrentBuyData.Price} {Localization.instance.Localize(Global_Configs.CurrencyName)}</color>";
+        if (CurrentBuyData.SellerUserID == Global_Configs._localUserID)
         {
             BUYTAB.transform.Find("AFTERPRESS/BUTTON").GetComponent<Image>().color = Color.red;
             text = $"<size=100>{Localization.instance.Localize("$mpasn_cancel")}</size>";
@@ -607,7 +609,7 @@ public static class Marketplace_UI
     {
         if (CurrentSendData == null) return;
         if (value != "1" && !string.IsNullOrWhiteSpace(value))
-            AssetStorage.AssetStorage.AUsrc.PlayOneShot(AssetStorage.AssetStorage.TypeClip, 0.7f);
+            AssetStorage.AUsrc.PlayOneShot(AssetStorage.TypeClip, 0.7f);
         if (string.IsNullOrWhiteSpace(value))
         {
             CurrentQuantity = 1;
@@ -649,12 +651,12 @@ public static class Marketplace_UI
         }
 
         SELLTAB.Find("AFTERPRESS/BUTTON/Text").GetComponent<Text>().text =
-            $"<size=42>{Localization.instance.Localize("$mpasn_sellmarketplace")}</size>\n<color=#FF00FF>{Localization.instance.Localize("$mpasn_quantitymarketplace")}: {CurrentQuantity}</color> x <color=yellow>{CurrentPrice}</color>\n<color=#00FFFF>{Localization.instance.Localize("$mpasn_youget")}:</color> <color=yellow>{CurrentQuantity * CurrentPrice} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>";
+            $"<size=42>{Localization.instance.Localize("$mpasn_sellmarketplace")}</size>\n<color=#FF00FF>{Localization.instance.Localize("$mpasn_quantitymarketplace")}: {CurrentQuantity}</color> x <color=yellow>{CurrentPrice}</color>\n<color=#00FFFF>{Localization.instance.Localize("$mpasn_youget")}:</color> <color=yellow>{CurrentQuantity * CurrentPrice} {Localization.instance.Localize(Global_Configs.CurrencyName)}</color>";
     }
 
     private static void SearchTabValue(string data)
     {
-        if (!string.IsNullOrWhiteSpace(data)) AssetStorage.AssetStorage.AUsrc.PlayOneShot(AssetStorage.AssetStorage.TypeClip, 0.7f);
+        if (!string.IsNullOrWhiteSpace(data)) AssetStorage.AUsrc.PlayOneShot(AssetStorage.TypeClip, 0.7f);
         SEARCHVALUE = data;
         OnSort();
     }
@@ -663,7 +665,7 @@ public static class Marketplace_UI
     {
         if (currentMarketMode != Marketplace_DataTypes.MarketMode.BUY) return;
         int page = CurrentPage;
-        Marketplace_DataTypes.ServerMarketSendData data = CurrentBuyData;
+        Marketplace_DataTypes.ServerMarketSendData data = CurrentBuyData!;
         OnSort();
         CurrentPage = page;
         CreateBuyGameObjects();
@@ -714,6 +716,7 @@ public static class Marketplace_UI
         }
         catch
         {
+            // ignored
         }
 
         return Localization.instance.Localize(item.GetTooltip());
@@ -721,7 +724,7 @@ public static class Marketplace_UI
 
     private static void PageIncrementor(int value)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         SELLTAB.Find("AFTERPRESS").gameObject.SetActive(false);
         BUYTAB.Find("AFTERPRESS").gameObject.SetActive(false);
         int test = CurrentPage;
@@ -734,7 +737,7 @@ public static class Marketplace_UI
 
     private static void OnClickBUYItem(int value)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         CurrentPrice = 0;
         CurrentQuantity = 1;
         BUYTAB.transform.Find("AFTERPRESS").gameObject.SetActive(true);
@@ -746,7 +749,7 @@ public static class Marketplace_UI
             icons.m_icons.Length > CurrentBuyData.Variant
                 ? icons.m_icons[CurrentBuyData.Variant]
                 : icons.m_icons[0];
-        string extention = GetTempItemTooltip(CurrentBuyData.ItemPrefab, CurrentBuyData.Quality,
+        string extention = GetTempItemTooltip(CurrentBuyData.ItemPrefab!, CurrentBuyData.Quality,
             CurrentBuyData.Count, CurrentBuyData.Variant, CurrentBuyData.CrafterID, CurrentBuyData.CrafterName,
             CurrentBuyData.CUSTOMdata);
         string itemName = Localization.instance.Localize(CurrentBuyData.ItemName);
@@ -774,7 +777,7 @@ public static class Marketplace_UI
 
     private static void OnClickSELLItem(int value)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         CurrentPrice = 0;
         CurrentQuantity = 1;
         SELLTAB.transform.Find("AFTERPRESS").gameObject.SetActive(true);
@@ -786,7 +789,7 @@ public static class Marketplace_UI
             icons.m_icons.Length > CurrentSendData.Variant
                 ? icons.m_icons[CurrentSendData.Variant]
                 : icons.m_icons[0];
-        string extention = GetTempItemTooltip(CurrentSendData.ItemPrefab, CurrentSendData.Quality,
+        string extention = GetTempItemTooltip(CurrentSendData.ItemPrefab!, CurrentSendData.Quality,
             CurrentSendData.Count, CurrentSendData.Variant, CurrentSendData.CrafterID, CurrentSendData.CrafterName,
             CurrentSendData.CUSTOMdata);
         string itemName = Localization.instance.Localize(CurrentSendData.ItemName);
@@ -800,7 +803,7 @@ public static class Marketplace_UI
             CurrentQuantity.ToString();
         SELLTAB.transform.Find("AFTERPRESS/SetPrice").GetComponent<InputField>().text = CurrentPrice.ToString();
         string text2 =
-            $"<size=42>{Localization.instance.Localize("$mpasn_sellmarketplace")}</size>\n<color=#FF00FF>{Localization.instance.Localize("$mpasn_quantitymarketplace")}: 1</color> x <color=yellow>0</color>\n<color=#00FFFF>{Localization.instance.Localize("$mpasn_youget")}:</color> <color=yellow>0 {Localization.instance.Localize(Global_Values.CurrencyName)}</color>";
+            $"<size=42>{Localization.instance.Localize("$mpasn_sellmarketplace")}</size>\n<color=#FF00FF>{Localization.instance.Localize("$mpasn_quantitymarketplace")}: 1</color> x <color=yellow>0</color>\n<color=#00FFFF>{Localization.instance.Localize("$mpasn_youget")}:</color> <color=yellow>0 {Localization.instance.Localize(Global_Configs.CurrencyName)}</color>";
         SELLTAB.transform.Find("AFTERPRESS/BUTTON/Text").GetComponent<Text>().text = text2;
 
         foreach (GameObject obj in CurrentGameObjects)
@@ -825,8 +828,7 @@ public static class Marketplace_UI
              i < Mathf.Min(ServerMarketSendDataSORTED.Count, MAXITEMSPERPAGE + start);
              i++)
         {
-            ItemDrop item = ZNetScene.instance.GetPrefab(ServerMarketSendDataSORTED[i].ItemPrefab)
-                ?.GetComponent<ItemDrop>();
+            ItemDrop item = ZNetScene.instance.GetPrefab(ServerMarketSendDataSORTED[i].ItemPrefab)?.GetComponent<ItemDrop>()!;
             GameObject go = Object.Instantiate(ElementBUY, parent);
             CurrentGameObjects.Add(go);
 
@@ -836,7 +838,7 @@ public static class Marketplace_UI
                 int id = ServerMarketSendDataSORTED[i].UID;
                 go.transform.Find("AdminRemove").GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    AssetStorage.AssetStorage.AUsrc.Play();
+                    AssetStorage.AUsrc.Play();
                     ZRoutedRpc.instance.InvokeRoutedRPC("KGmarket RemoveItemAdmin", id);
                 });
             }
@@ -907,7 +909,7 @@ public static class Marketplace_UI
     {
         ResetIncome();
         MySalesText.text =
-            $"{Localization.instance.Localize("$mpasn_mysales")} (<color=#00ff00>{Marketplace_DataTypes.SyncedMarketplaceData.Value.Count(data => data.SellerUserID == Global_Values._localUserID)}</color>)";
+            $"{Localization.instance.Localize("$mpasn_mysales")} (<color=#00ff00>{Marketplace_DataTypes.SyncedMarketplaceData.Value.Count(data => data.SellerUserID == Global_Configs._localUserID)}</color>)";
         CurrentSendData = null;
         CurrentBuyData = null;
         ServerMarketSendDataSORTED.Clear();
@@ -993,7 +995,7 @@ public static class Marketplace_UI
             if (MySalesOnly)
             {
                 ServerMarketSendDataSORTED = ServerMarketSendDataSORTED
-                    .Where(data => data.SellerUserID == Global_Values._localUserID).ToList();
+                    .Where(data => data.SellerUserID == Global_Configs._localUserID).ToList();
             }
 
             ServerMarketSendDataSORTED = ServerMarketSendDataSORTED.OrderByDescending(data => data.TimeStamp).ToList();
@@ -1070,14 +1072,14 @@ public static class Marketplace_UI
     ////////////////////BUY SELL BUTTONS/////////////
     private static void ClickBUYcategoryButton()
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         DefaultBUY();
     }
 
 
     private static void ClickSELLcategoryButton()
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         DefaultSELL();
     }
     /////////////////////////////////////////////
@@ -1101,7 +1103,7 @@ public static class Marketplace_UI
         SellButtonCategory.transform.Find("Text").GetComponent<Text>().color = DefaultCategoryColorNotActive;
         Transform afterpress = BUYTAB.Find("AFTERPRESS");
         afterpress.gameObject.SetActive(false);
-        afterpress.transform.Find("icon").GetComponent<Image>().sprite = AssetStorage.AssetStorage.NullSprite;
+        afterpress.transform.Find("icon").GetComponent<Image>().sprite = AssetStorage.NullSprite;
         afterpress.transform.Find("Text").GetComponent<Text>().text = "";
         afterpress.transform.Find("TooltipView/Viewport/Content/EpiclootText").GetComponent<Text>().text = "";
         afterpress.transform.Find("BUTTON/Text").GetComponent<Text>().text = "";
@@ -1141,7 +1143,7 @@ public static class Marketplace_UI
         SellButtonCategory.transform.Find("Text").GetComponent<Text>().color = DefaultCategoryColorActive;
         Transform afterpress = SELLTAB.Find("AFTERPRESS");
         afterpress.gameObject.SetActive(false);
-        afterpress.transform.Find("icon").GetComponent<Image>().sprite = AssetStorage.AssetStorage.NullSprite;
+        afterpress.transform.Find("icon").GetComponent<Image>().sprite = AssetStorage.NullSprite;
         afterpress.transform.Find("Text").GetComponent<Text>().text = "";
         afterpress.transform.Find("TooltipView/Viewport/Content/EpiclootText").GetComponent<Text>().text = "";
         afterpress.transform.Find("BUTTON/Text").GetComponent<Text>().text = "";
@@ -1169,7 +1171,7 @@ public static class Marketplace_UI
     ////////////////////CATEGORY SET/////////////
     private static void SetCategory(int whichOne)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         currenCategory = (Marketplace_DataTypes.ItemData_ItemCategory)whichOne;
         foreach (Button button in CategoryButtons)
             button.transform.Find("Text").GetComponent<Text>().color = DefaultCategoryColorNotActive;
@@ -1194,19 +1196,19 @@ public static class Marketplace_UI
         UI.SetActive(true);
         DefaultBUY();
         OnSort();
-        if (!Global_Values.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Values._localUserID))
+        if (!Global_Configs.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Configs._localUserID))
         {
-            if (Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Values._localUserID))
+            if (Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Configs._localUserID))
             {
                 UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
-                    Global_Values._localUserID + "\n\t    <size=35>(VIP)</size>";
+                    Global_Configs._localUserID + "\n\t    <size=35>(VIP)</size>";
                 UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().color =
                     new Color(0, 1, 0);
             }
             else
             {
                 UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
-                    Global_Values._localUserID +
+                    Global_Configs._localUserID +
                     $"\n\t    <size=35>({Localization.instance.Localize("$mpasn_allowed")})</size>";
                 UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().color =
                     new Color(0.8352942f, 0.8196079f, 0.7254902f);
@@ -1215,16 +1217,16 @@ public static class Marketplace_UI
         else
         {
             UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
-                Global_Values._localUserID +
+                Global_Configs._localUserID +
                 $"\n\t    <size=35>({Localization.instance.Localize("$mpasn_banned")})</size>";
             UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().color =
                 Color.red;
         }
 
         UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/MarketLimit/Text").GetComponent<Text>().text =
-            Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Values._localUserID)
-                ? $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Values.SyncedGlobalOptions.Value._itemMarketLimit}\n<color=#00ff00>{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Values.SyncedGlobalOptions.Value._vipmarketTaxes}%</color>"
-                : $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Values.SyncedGlobalOptions.Value._itemMarketLimit}\n{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Values.SyncedGlobalOptions.Value._marketTaxes}%";
+            Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Configs._localUserID)
+                ? $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Configs.SyncedGlobalOptions.Value._itemMarketLimit}\n<color=#00ff00>{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Configs.SyncedGlobalOptions.Value._vipmarketTaxes}%</color>"
+                : $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Configs.SyncedGlobalOptions.Value._itemMarketLimit}\n{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Configs.SyncedGlobalOptions.Value._marketTaxes}%";
 
 
         UpdateAnnonIcon();

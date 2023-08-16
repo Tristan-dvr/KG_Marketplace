@@ -14,20 +14,20 @@ namespace Marketplace
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
         public const string PluginVersion = "8.8.0";
-        internal static Marketplace _thistype;
+        internal static Marketplace _thistype = null!;
         private static readonly Harmony _harmony = new(GUID);
-        private static FileSystemWatcher FSW;
-        public static Action<float> Global_Updator;
-        public static Action<float> Global_FixedUpdator;
-        public static Action Global_OnGUI_Updator;
-        public static Action Global_Start;
-        public static Type TempJewelcraftingType;
-        public static Type TempProfessionsType;
+        private static FileSystemWatcher FSW = null!; 
+        public static Action<float>? Global_Updator;
+        public static Action<float>? Global_FixedUpdator;
+        public static Action? Global_OnGUI_Updator;
+        public static Action? Global_Start;
+        public static Type? TempJewelcraftingType;
+        public static Type? TempProfessionsType;
 
         public static readonly ConfigSync configSync = new(GUID)
         {
-            DisplayName = GUID, ModRequired = true, MinimumRequiredVersion = PluginVersion,
-            CurrentVersion = PluginVersion
+            DisplayName = GUID, ModRequired = true, 
+            MinimumRequiredVersion = PluginVersion, CurrentVersion = PluginVersion
         };
 
         public enum WorkingAs
@@ -48,7 +48,7 @@ namespace Marketplace
                     : WorkingAs.Client;
             Utils.print($"Marketplace Working As: {WorkingAsType}");
             _thistype = this;
-            Type.GetType("Groups.Initializer, kg.Marketplace")!.GetMethod("Init")!.Invoke(null, null);
+            Type.GetType("Groups.Initializer, kg.Marketplace")!.GetMethod("Init")!.Invoke(null, null); 
             HarmonyLib.Tools.Logger.ChannelFilter = HarmonyLib.Tools.Logger.LogChannel.Error;
             Localizer.Load();
             TempJewelcraftingType = Type.GetType("Jewelcrafting.Jewelcrafting, Jewelcrafting")!;
@@ -138,7 +138,8 @@ namespace Marketplace
                     Filter = "*.*",
                     EnableRaisingEvents = true,
                     IncludeSubdirectories = true,
-                    SynchronizingObject = ThreadingHelper.SynchronizingObject
+                    SynchronizingObject = ThreadingHelper.SynchronizingObject,
+                    NotifyFilter = NotifyFilters.LastWrite
                 };
                 FSW.Changed += MarketplaceConfigChanged;
             }
@@ -151,19 +152,20 @@ namespace Marketplace
         private static readonly Dictionary<string, string> FoldersToFiles = new();
         private static void FillFolderRoutes()
         {
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsQuestsDatabaseConfig, Path.GetFileName(Market_Paths.QuestDatabasePath));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsQuestsEventsConfig, Path.GetFileName(Market_Paths.QuestEventsPath));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsQuestsProfilesConfig, Path.GetFileName(Market_Paths.QuestProfilesPath));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsDialoguesFolder, Path.GetFileName(Market_Paths.NpcDialoguesConfig));
-            FoldersToFiles.Add(Market_Paths.AdditionalCondfigsTerritoriesFolder, Path.GetFileName(Market_Paths.TerritoriesConfigPath));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsBankerProfilesConfig, Path.GetFileName(Market_Paths.BankerFile));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsTeleportHubProfilesConfig, Path.GetFileName(Market_Paths.TeleporterConfig));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsTraderProfilesConfig, Path.GetFileName(Market_Paths.TraderConfig));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsTransmogrificationConfig, Path.GetFileName(Market_Paths.TransmogrificationConfig));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsBufferDatabaseConfig, Path.GetFileName(Market_Paths.BufferDatabaseConfig));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsBufferProfilesConfig, Path.GetFileName(Market_Paths.BufferProfilesConfig));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsServerInfoProfilesConfig, Path.GetFileName(Market_Paths.ServerInfoConfig));
-            FoldersToFiles.Add(Market_Paths.AdditionalConfigsGamblerProfilesConfig, Path.GetFileName(Market_Paths.GamblerConfig));
+            FoldersToFiles.Add(Market_Paths.QuestsDatabaseFolder, "QD");
+            FoldersToFiles.Add(Market_Paths.QuestsEventsFolder, "QE");
+            FoldersToFiles.Add(Market_Paths.QuestsProfilesFolder, "QP");
+            FoldersToFiles.Add(Market_Paths.DialoguesFolder, "DI");
+            FoldersToFiles.Add(Market_Paths.TerritoriesFolder, "TR");
+            FoldersToFiles.Add(Market_Paths.BankerProfilesFolder, "BA");
+            FoldersToFiles.Add(Market_Paths.TeleportHubProfilesFolder,"TE");
+            FoldersToFiles.Add(Market_Paths.TraderProfilesFolder, "TR");
+            FoldersToFiles.Add(Market_Paths.TransmogrificationFolder, "TM");
+            FoldersToFiles.Add(Market_Paths.BufferDatabaseFolder, "BD");
+            FoldersToFiles.Add(Market_Paths.BufferProfilesFolder, "BP");
+            FoldersToFiles.Add(Market_Paths.ServerInfoProfilesFolder, "SI");
+            FoldersToFiles.Add(Market_Paths.GamblerProfilesFolder, "GP");
+            FoldersToFiles.Add(Market_Paths.LeaderboardAchievementsFolder, "LA");
         }
 
         private static readonly Dictionary<string, Action> FSW_Lookup = new();
@@ -171,9 +173,9 @@ namespace Marketplace
 
         private static void MarketplaceConfigChanged(object sender, FileSystemEventArgs e)
         {
-            if (e.ChangeType != WatcherChangeTypes.Changed) return;
-            string folderPath = Path.GetDirectoryName(e.FullPath)!;
-            if (!FoldersToFiles.TryGetValue(folderPath, out string fName)) fName = Path.GetFileName(e.Name); 
+            if (e.ChangeType is not (WatcherChangeTypes.Changed or WatcherChangeTypes.Deleted)) return;
+            string folderPath = Path.GetDirectoryName(e.FullPath);
+            if (!FoldersToFiles.TryGetValue(folderPath, out string fName)) fName = Path.GetFileName(e.Name);
             if (!FSW_Lookup.TryGetValue(fName, out Action action)) return;
             if (!ZNet.instance || !ZNet.instance.IsServer())
             {

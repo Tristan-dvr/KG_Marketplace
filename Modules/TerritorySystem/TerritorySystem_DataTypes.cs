@@ -1,4 +1,6 @@
-﻿namespace Marketplace.Modules.TerritorySystem;
+﻿using Marketplace.Modules.Global_Options;
+
+namespace Marketplace.Modules.TerritorySystem;
 
 public static class TerritorySystem_DataTypes
 {
@@ -237,7 +239,7 @@ public static class TerritorySystem_DataTypes
         public bool IsOwner()
         {
             if (Player.m_debugMode) return true;
-            IsOwnerCached ??= Owners.Contains(Global_Values._localUserID) || Owners.Contains("ALL");
+            IsOwnerCached ??= Owners.Contains(Global_Configs._localUserID) || Owners.Contains("ALL");
             return IsOwnerCached.Value;
         }
 

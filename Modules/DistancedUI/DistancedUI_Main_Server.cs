@@ -8,19 +8,20 @@ namespace Marketplace.Modules.DistancedUI;
     new[] { "OnConfigChange" })]
 public static class DistanceUI_Main_Server
 {
-    private static ConfigFile PremiumSystem_Config;
-    private static ConfigEntry<bool> CanUseMarketplace_PremiumSystem;
-    private static ConfigEntry<bool> EveryoneIsVIP_PremiumSystem;
-    private static ConfigEntry<string> Users_PremiumSystem;
-    private static ConfigEntry<string> TraderProfiles_PremiumSystem;
-    private static ConfigEntry<string> BankerProfiles_PremiumSystem;
-    private static ConfigEntry<string> TeleporterProfiles_PremiumSystem;
-    private static ConfigEntry<string> GamblerProfiles_PremiumSystem;
-    private static ConfigEntry<string> BufferProfiles_PremiumSystem;
-    private static ConfigEntry<string> QuestProfiles_PremiumSystem;
-    private static ConfigEntry<string> InfoProfiles_PremiumSystem;
-    private static ConfigEntry<string> TransmogrificationProfiles_PremiumSystem;
+    private static ConfigFile PremiumSystem_Config = null!;
+    private static ConfigEntry<bool> CanUseMarketplace_PremiumSystem = null!;
+    private static ConfigEntry<bool> EveryoneIsVIP_PremiumSystem = null!;
+    private static ConfigEntry<string> Users_PremiumSystem = null!;
+    private static ConfigEntry<string> TraderProfiles_PremiumSystem = null!;
+    private static ConfigEntry<string> BankerProfiles_PremiumSystem = null!;
+    private static ConfigEntry<string> TeleporterProfiles_PremiumSystem = null!;
+    private static ConfigEntry<string> GamblerProfiles_PremiumSystem = null!;
+    private static ConfigEntry<string> BufferProfiles_PremiumSystem = null!;
+    private static ConfigEntry<string> QuestProfiles_PremiumSystem = null!;
+    private static ConfigEntry<string> InfoProfiles_PremiumSystem = null!;
+    private static ConfigEntry<string> TransmogrificationProfiles_PremiumSystem = null!;
 
+    [UsedImplicitly]
     private static void OnInit()
     {
         PremiumSystem_Config = new ConfigFile(Market_Paths.DistancedUIConfig, true);
@@ -70,6 +71,7 @@ public static class DistanceUI_Main_Server
         };
     }
 
+    [UsedImplicitly]
     private static void OnConfigChange()
     {
         Utils.DelayReloadConfig(PremiumSystem_Config, ReadPremiumSystemData);

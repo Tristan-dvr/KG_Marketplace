@@ -4,10 +4,11 @@ namespace Marketplace.Modules.Buffer;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
-    new[] { "BufferProfiles.cfg", "BufferDatabase.cfg" },
+    new[] { "BP", "BD" },
     new[] { "OnBufferProfilesFileChange", "OnBufferProfilesFileChange" })]
 public static class Buffer_Main_Server
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         ReadBufferConfigs();
@@ -19,24 +20,19 @@ public static class Buffer_Main_Server
         Buffer_DataTypes.SyncedBufferBuffs.Value.Clear();
         try
         {
-            IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.BufferProfilesConfig);
-            ReadBufferProfiles(profiles);
-            string folder = Market_Paths.AdditionalConfigsBufferProfilesConfig;
+            string folder = Market_Paths.BufferProfilesFolder;
             string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
             foreach (string file in files)
             {
-                profiles = File.ReadAllLines(file).ToList();
+                IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
                 ReadBufferProfiles(profiles);
             }
-
-            IReadOnlyList<string> database = File.ReadAllLines(Market_Paths.BufferDatabaseConfig);
-            ReadBufferDatabase(database);
-            folder = Market_Paths.AdditionalConfigsBufferDatabaseConfig;
+            folder = Market_Paths.BufferDatabaseFolder;
             files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
             foreach (string file in files)
             {
-                database = File.ReadAllLines(file).ToList();
-                ReadBufferDatabase(database);
+                IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
+                ReadBufferDatabase(profiles);
             }
         }
         catch (Exception ex)
@@ -50,6 +46,7 @@ public static class Buffer_Main_Server
         }
     }
 
+    [UsedImplicitly]
     private static void OnBufferProfilesFileChange()
     {
         ReadBufferConfigs();
@@ -60,18 +57,18 @@ public static class Buffer_Main_Server
     private static void ReadBufferProfiles(IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
-        for (int i = 0; i < profiles.Count; i++)
+        foreach (var line in profiles)
         {
-            if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
-            if (profiles[i].StartsWith("["))
+            if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#")) continue;
+            if (line.StartsWith("["))
             {
-                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
+                splitProfile = line.Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
             }
             else
             {
                 if (!Buffer_DataTypes.SyncedBufferProfiles.Value.ContainsKey(splitProfile))
                 {
-                    Buffer_DataTypes.SyncedBufferProfiles.Value.Add(splitProfile, profiles[i].Replace(" ", ""));
+                    Buffer_DataTypes.SyncedBufferProfiles.Value.Add(splitProfile, line.Replace(" ", ""));
                 }
             }
         }
@@ -79,7 +76,7 @@ public static class Buffer_Main_Server
 
     private static void ReadBufferDatabase(IReadOnlyList<string> profiles)
     {
-        string dbProfile = null;
+        string? dbProfile = null;
         for (int i = 0; i < profiles.Count; i++)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;

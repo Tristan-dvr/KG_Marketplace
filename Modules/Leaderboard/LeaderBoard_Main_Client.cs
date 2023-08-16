@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Marketplace.Modules.Global_Options;
 
 namespace Marketplace.Modules.Leaderboard;
 
@@ -8,6 +9,7 @@ namespace Marketplace.Modules.Leaderboard;
 [Market_Autoload(Market_Autoload.Type.Client)]
 public static class LeaderBoard_Main_Client
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         GameEvents.OnPlayerDeath += () => SendToServer(Leaderboard_DataTypes.TriggerType.Died);
@@ -44,7 +46,7 @@ public static class LeaderBoard_Main_Client
     public static bool HasAchievement(string achievementID)
     {
         int toId = achievementID.Replace(" ", "").ToLower().GetStableHashCode();
-        return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(Global_Values._localUserID + "_" + Game.instance.m_playerProfile.m_playerName,
+        return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(Global_Configs._localUserID + "_" + Game.instance.m_playerProfile.m_playerName,
             out Leaderboard_DataTypes.Client_Leaderboard LB) && LB.Achievements.Contains(toId);
     }
 
@@ -56,7 +58,7 @@ public static class LeaderBoard_Main_Client
 
     private static void SendToServer(Leaderboard_DataTypes.TriggerType type, params object[] args)
     {
-        if (!Global_Values.SyncedGlobalOptions.Value._useLeaderboard) return;
+        if (!Global_Configs.SyncedGlobalOptions.Value._useLeaderboard) return;
         switch (type)
         {
             case Leaderboard_DataTypes.TriggerType.MonstersKilled:
@@ -90,10 +92,11 @@ public static class LeaderBoard_Main_Client
     {
         private static float _time;
 
+        [UsedImplicitly]
         private static void Postfix(Player __instance)
         {
             if (!Minimap.instance || __instance != Player.m_localPlayer ||
-                !Global_Values.SyncedGlobalOptions.Value._useLeaderboard) return;
+                !Global_Configs.SyncedGlobalOptions.Value._useLeaderboard) return;
             _time += Time.deltaTime;
             if (_time >= 3 * 60)
             {

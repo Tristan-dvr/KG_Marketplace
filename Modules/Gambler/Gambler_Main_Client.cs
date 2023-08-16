@@ -1,9 +1,12 @@
-﻿namespace Marketplace.Modules.Gambler;
+﻿using Marketplace.ExternalLoads;
+
+namespace Marketplace.Modules.Gambler;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Gambler_Main_Client
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         Gambler_UI.Init();
@@ -31,7 +34,8 @@ public static class Gambler_Main_Client
     [ClientOnlyPatch, HarmonyPriority(-10000)]
     private static class ZNetScene_Awake_Patch
     {
-        private static void Postfix() => GamblerInit();
+        [UsedImplicitly]
+private static void Postfix() => GamblerInit();
     }
     
     public static void GamblerInit()
@@ -44,11 +48,11 @@ public static class Gambler_Main_Client
                 GameObject prefab = ZNetScene.instance.GetPrefab(data.Prefab);
                 if (!prefab)
                 {
-                    data.SetData(data.Prefab, AssetStorage.AssetStorage.PlaceholderGamblerIcon);
+                    data.SetData(data.Prefab!, AssetStorage.PlaceholderGamblerIcon);
                 }
                 else
                 {
-                    Sprite hook = prefab.GetComponent<ItemDrop>()?.m_itemData.GetIcon();
+                    Sprite hook = prefab.GetComponent<ItemDrop>()?.m_itemData.GetIcon()!;
                     string name = prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
                     data.SetData(name, hook);
                 }
@@ -57,11 +61,11 @@ public static class Gambler_Main_Client
             GameObject reqPrefab = ZNetScene.instance.GetPrefab(item.Value.RequiredItem.Prefab);
             if (!reqPrefab)
             {
-                item.Value.RequiredItem.SetData(item.Value.RequiredItem.Prefab, AssetStorage.AssetStorage.PlaceholderGamblerIcon);
+                item.Value.RequiredItem.SetData(item.Value.RequiredItem.Prefab!, AssetStorage.PlaceholderGamblerIcon);
             }
             else
             {
-                Sprite hook = reqPrefab.GetComponent<ItemDrop>()?.m_itemData.GetIcon();
+                Sprite hook = reqPrefab.GetComponent<ItemDrop>()?.m_itemData.GetIcon()!;
                 string name = reqPrefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
                 item.Value.RequiredItem.SetData(name, hook);
             }

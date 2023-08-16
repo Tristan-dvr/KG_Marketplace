@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Configuration;
@@ -12,9 +11,8 @@ using BepInEx.Logging;
 using fastJSON;
 using HarmonyLib;
 using UnityEngine;
-using Random = System.Random;
 
-namespace ServerControl
+namespace kg.ServerControl
 {
     [BepInPlugin(GUID, GUID, VERSION)]
     public class ServerControl : BaseUnityPlugin

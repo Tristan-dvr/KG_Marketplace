@@ -1,8 +1,8 @@
-﻿using Marketplace.Modules.Transmogrification;
+﻿using Marketplace.ExternalLoads;
 using UnityEngine.EventSystems;
 using LightType = UnityEngine.LightType;
 
-namespace Marketplace;
+namespace Marketplace.Modules.Transmogrification;
 
 public static class PlayerModelPreview
 {
@@ -26,11 +26,11 @@ public static class PlayerModelPreview
     static PlayerModelPreview()
     {
         UI = UnityEngine.Object.Instantiate(
-            AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplacePreviewUI"));
+            AssetStorage.asset.LoadAsset<GameObject>("MarketplacePreviewUI"));
         UI.transform.Find("Canvas/Preview/Background/Close").GetComponent<Button>().onClick
             .AddListener(() =>
             {
-                AssetStorage.AssetStorage.AUsrc.Play();
+                AssetStorage.AUsrc.Play();
                 StopPreview();
             });
         UI.transform.Find("Canvas/Preview/Background/Light").GetComponent<Button>().onClick.AddListener(ChangeLight);
@@ -322,7 +322,7 @@ public static class PlayerModelPreview
 
     private static void ResetWall(string newWall)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         if (BehindWallRender) UnityEngine.Object.Destroy(BehindWallRender);
         CurrentWall = newWall;
 
@@ -366,7 +366,7 @@ public static class PlayerModelPreview
 
     private static void ChangeLight()
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         LightIntensity = (Intensity)(((int)LightIntensity + 1) % 5);
         switch (LightIntensity)
         {

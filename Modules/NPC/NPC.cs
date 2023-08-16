@@ -1,10 +1,11 @@
 ﻿using System.Text.RegularExpressions;
-using API;
+using Marketplace.ExternalLoads;
 using Marketplace.Modules.Banker;
 using Marketplace.Modules.Buffer;
 using Marketplace.Modules.Feedback;
 using Marketplace.Modules.Gambler;
-using Marketplace.Modules.Marketplace_NPC;
+using Marketplace.Modules.Global_Options;
+using Marketplace.Modules.MainMarketplace;
 using Marketplace.Modules.NPC_Dialogues;
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.ServerInfo;
@@ -21,8 +22,8 @@ namespace Marketplace.Modules.NPC;
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Normal)]
 public static class Market_NPC
 {
-    private static GameObject NPC;
-    private static GameObject PinnedNPC;
+    private static GameObject NPC = null!;
+    private static GameObject PinnedNPC = null!;
     private static readonly string[] TypeNames = Enum.GetNames(typeof(NPCType));
     private static readonly int SkinColor = Shader.PropertyToID("_SkinColor");
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
@@ -35,7 +36,6 @@ public static class Market_NPC
     private static readonly int LegsMetal = Shader.PropertyToID("_LegsMetal");
     private static readonly int Wakeup = Animator.StringToHash("wakeup");
     private static readonly int Crafting = Animator.StringToHash("crafting");
-    private static readonly int Stagger = Animator.StringToHash("stagger");
 
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     [ClientOnlyPatch]
@@ -43,19 +43,15 @@ public static class Market_NPC
     {
         private static bool done;
 
+        [UsedImplicitly]
         private static void Postfix(FejdStartup __instance)
         {
-            if (!done)
-            {
-                done = true;
-                if (__instance.transform.Find("StartGame/Panel/JoinPanel/serverCount")
-                        ?.GetComponent<TextMeshProUGUI>() is { } tmp)
-                {
-                    NPC.transform.Find("TMP").GetComponent<TMP_Text>().font = tmp.font;
-                    NPC.transform.Find("TMP").GetComponent<TMP_Text>().outlineWidth = 0.075f;
-                    Utils.print("Replaced TMP for NPC");
-                }
-            }
+            if (done) return;
+            done = true;
+            if (__instance.transform.Find("StartGame/Panel/JoinPanel/serverCount")?.GetComponent<TextMeshProUGUI>() is not { } tmp) return;
+            NPC.transform.Find("TMP").GetComponent<TMP_Text>().font = tmp.font;
+            NPC.transform.Find("TMP").GetComponent<TMP_Text>().outlineWidth = 0.075f;
+            Utils.print("Replaced TMP for NPC");
         }
     }
 
@@ -74,10 +70,10 @@ public static class Market_NPC
         Marketplace
     }
 
-    // ReSharper disable once UnusedMember.Global
+    [UsedImplicitly]
     private static void OnInit()
     {
-        NPC = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketPlaceNPC");
+        NPC = AssetStorage.asset.LoadAsset<GameObject>("MarketPlaceNPC");
         if (Marketplace.WorkingAsType is Marketplace.WorkingAs.Server) return;
         NPC.AddComponent<NPCcomponent>();
         NPC.transform.Find("TMP").gameObject.AddComponent<TextComponent>();
@@ -112,6 +108,7 @@ public static class Market_NPC
     {
         private static bool firstInit;
 
+        [UsedImplicitly]
         private static void Postfix(ZNetScene __instance)
         {
             if (!firstInit)
@@ -127,15 +124,15 @@ public static class Market_NPC
 
             __instance.m_namedPrefabs.Add(NPC.name.GetStableHashCode(), NPC);
             __instance.m_namedPrefabs.Add(PinnedNPC.name.GetStableHashCode(), PinnedNPC);
-            GameObject goblin = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_GOBLIN");
+            GameObject goblin = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_GOBLIN");
             __instance.m_namedPrefabs.Add(goblin.name.GetStableHashCode(), goblin);
-            GameObject skeleton = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_SKELETON");
+            GameObject skeleton = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_SKELETON");
             __instance.m_namedPrefabs.Add(skeleton.name.GetStableHashCode(), skeleton);
-            GameObject questboard = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_QUESTBOARD");
+            GameObject questboard = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_QUESTBOARD");
             __instance.m_namedPrefabs.Add(questboard.name.GetStableHashCode(), questboard);
-            GameObject teleporter = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_TELEPORTER");
+            GameObject teleporter = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_TELEPORTER");
             __instance.m_namedPrefabs.Add(teleporter.name.GetStableHashCode(), teleporter);
-            GameObject defaultnpc = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("Marketplace_DEFAULTNPC");
+            GameObject defaultnpc = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_DEFAULTNPC");
             foreach (Material material in defaultnpc.GetComponentInChildren<SkinnedMeshRenderer>().materials)
             {
                 material.shader = Shader.Find("Custom/Creature");
@@ -149,6 +146,7 @@ public static class Market_NPC
     [ClientOnlyPatch]
     private static class OdinFix
     {
+        [UsedImplicitly]
         private static void Postfix(ZNetScene __instance)
         {
             GameObject odin = __instance.GetPrefab("odin");
@@ -161,6 +159,7 @@ public static class Market_NPC
     [ClientOnlyPatch]
     private static class IsVisiblePatch
     {
+        [UsedImplicitly]
         private static void Postfix(ref bool __result)
         {
             if (NPCUI.IsVisible()) __result = true;
@@ -183,9 +182,9 @@ public static class Market_NPC
     {
         private static readonly Dictionary<string, Sprite> Cache = new();
         private bool HasImage;
-        private Image _image;
-        private Sprite _sprite;
-        private Transform _tt;
+        private Image _image = null!;
+        private Sprite _sprite = null!;
+        private Transform _tt = null!;
 
         private void Awake()
         {
@@ -236,15 +235,16 @@ public static class Market_NPC
 
     private class CustomLookAt : MonoBehaviour
     {
-        private Animator animator;
+        private Animator animator = null!;
         private Vector3 currentLookAt = Vector3.zero;
-        private ZNetView _znet;
+        private ZNetView _znet = null!;
 
         private void Awake()
         {
             _znet = GetComponentInParent<ZNetView>();
             animator = GetComponent<Animator>();
-            currentLookAt = transform.position + transform.forward * 4f + Vector3.up * 1.2f;
+            var transform1 = transform;
+            currentLookAt = transform1.position + transform1.forward * 4f + Vector3.up * 1.2f;
         }
 
         private void OnAnimatorIK(int layerIndex)
@@ -256,7 +256,8 @@ public static class Market_NPC
                 Vector3 target = Player.m_localPlayer.m_head.position;
                 if (Vector3.Distance(target, transform.position) > 4f)
                 {
-                    target = transform.position + transform.forward * 3f + Vector3.up * 1.2f;
+                    var transform1 = transform;
+                    target = transform1.position + transform1.forward * 3f + Vector3.up * 1.2f;
                     speed = 4f;
                 }
                 else
@@ -267,7 +268,8 @@ public static class Market_NPC
                     float num = Mathf.Abs(Mathf.DeltaAngle(playerVec, enemyVec));
                     if (num < 100f)
                     {
-                        target = transform.position + transform.forward * 3f + Vector3.up * 1.2f;
+                        var transform1 = transform;
+                        target = transform1.position + transform1.forward * 3f + Vector3.up * 1.2f;
                     }
                 }
 
@@ -286,15 +288,15 @@ public static class Market_NPC
         private const string GoBackPatrol = "KGmarket GoBack";
 
         public static readonly List<NPCcomponent> ALL = new();
-        public ZNetView znv;
-        public GameObject pastOverrideModel;
+        public ZNetView znv = null!;
+        public GameObject? pastOverrideModel;
         public NPCType _currentNpcType;
 
-        public ZSyncAnimation zanim;
-        private TMP_Text canvas;
-        public AudioSource NPC_SoundSource;
+        public ZSyncAnimation zanim = null!;
+        private TMP_Text canvas = null!;
+        public AudioSource NPC_SoundSource = null!;
         private bool WasClose;
-        private Vector2[] PatrolArray;
+        private Vector2[]? PatrolArray;
         private float MaxSpeed;
         private float ForwardSpeed;
         private float PatrolTime;
@@ -306,6 +308,7 @@ public static class Market_NPC
         [ClientOnlyPatch]
         private static class MonoUpdaters_Update_Patch
         {
+            [UsedImplicitly]
             private static void Postfix()
             {
                 foreach (NPCcomponent ccomponent in ALL)
@@ -317,6 +320,7 @@ public static class Market_NPC
         [ClientOnlyPatch]
         private static class MonoUpdaters_FixedUpdate_Patch
         {
+            [UsedImplicitly]
             private static void Postfix()
             {
                 foreach (NPCcomponent ccomponent in ALL)
@@ -371,10 +375,11 @@ public static class Market_NPC
             if (zanim.enabled)
                 zanim.SetFloat(Character.s_forwardSpeed, ForwardSpeed * 1.5f);
             int currentPatrolPoint = znv.m_zdo.GetInt(LatestPatrolPoint);
-            Vector2 currentPos = new Vector2(transform.position.x, transform.position.z);
+            var position = transform.position;
+            Vector2 currentPos = new Vector2(position.x, position.z);
             Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint],
                 Time.deltaTime * ForwardSpeed);
-            Vector3 targetPoint = new Vector3(move.x, transform.position.y, move.y);
+            Vector3 targetPoint = new Vector3(move.x, position.y, move.y);
             Utils.CustomFindFloor(targetPoint, out float height);
             height = Mathf.Max(30, height, ZoneSystem.instance.GetGroundHeight(targetPoint));
             if (ForwardSpeed > 0)
@@ -453,7 +458,7 @@ public static class Market_NPC
                     periodicSoundTimer = 0;
                     if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGperiodicSound")))
                     {
-                        if (AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(znv.m_zdo.GetString("KGperiodicSound"),
+                        if (AssetStorage.NPC_AudioClips.TryGetValue(znv.m_zdo.GetString("KGperiodicSound"),
                                 out AudioClip sound))
                         {
                             if (!NPC_SoundSource.isPlaying)
@@ -539,7 +544,7 @@ public static class Market_NPC
             }
 
             OverrideModel(0, znv.m_zdo.GetString("KGnpcModelOverride"));
-            GameObject go = Instantiate(AssetStorage.AssetStorage.MarketplaceQuestQuestionIcon, transform);
+            GameObject go = Instantiate(AssetStorage.MarketplaceQuestQuestionIcon, transform);
             go.transform.position += Vector3.up * 4.5f;
             go.name = "MPASNquest";
             go.SetActive(Quests_DataTypes.Quest.IsQuestTarget(GetNPCName()));
@@ -585,28 +590,27 @@ public static class Market_NPC
 
         public string GetNPCName()
         {
-            return znv?.m_zdo?.GetString("KGnpcNameOverride") ?? "";
+            return znv.m_zdo?.GetString("KGnpcNameOverride") ?? "";
         }
 
         public string GetClearNPCName()
         {
-            return Regex.Replace(GetNPCName(), @"<\/?(?!color\b)\w+[^>]*>", "");
+            return Regex.Replace(GetNPCName(), @"</?(?!color\b)\w+[^>]*>", "");
         }
 
-        public void OpenUIForType(string type, string profile) =>
-            OpenUIForType(type == null ? null : (NPCType)Enum.Parse(typeof(NPCType), type, true), profile);
+        public void OpenUIForType(string? type, string? profile) => OpenUIForType(type == null ? null : (NPCType)Enum.Parse(typeof(NPCType), type, true), profile);
 
-        public void OpenUIForType(NPCType? type = null, string profile = null)
+        public void OpenUIForType(NPCType? type = null, string? profile = null)
         {
             if (string.IsNullOrEmpty(profile))
                 profile = znv.m_zdo.GetString("KGnpcProfile", "default");
             string npcName = znv.m_zdo.GetString("KGnpcNameOverride");
-            profile = profile.ToLower();
+            profile = profile!.ToLower();
             type ??= _currentNpcType;
             switch (type)
             {
                 case NPCType.Marketplace:
-                    if (!string.IsNullOrWhiteSpace(Global_Values._localUserID) && !ZNet.IsSinglePlayer)
+                    if (!string.IsNullOrWhiteSpace(Global_Configs._localUserID) && !ZNet.IsSinglePlayer)
                         Marketplace_UI.Show();
                     break;
                 case NPCType.Info:
@@ -649,7 +653,7 @@ public static class Market_NPC
             string interactAudio = znv.m_zdo.GetString("KGinteractSound");
             NPC_SoundSource.Stop();
             if (!string.IsNullOrEmpty(interactAudio) &&
-                AssetStorage.AssetStorage.NPC_AudioClips.TryGetValue(interactAudio, out AudioClip interactClip))
+                AssetStorage.NPC_AudioClips.TryGetValue(interactAudio, out AudioClip interactClip))
             {
                 NPC_SoundSource.clip = interactClip;
                 NPC_SoundSource.Play();
@@ -657,13 +661,13 @@ public static class Market_NPC
 
             if (Input.GetKey(KeyCode.LeftAlt) && Utils.IsDebug)
             {
-                NPCUI.ShowFashion(this.znv.m_zdo);
+                NPCUI.ShowFashion(znv.m_zdo);
                 return true;
             }
 
             if (alt && Utils.IsDebug)
             {
-                NPCUI.ShowMain(this.znv.m_zdo);
+                NPCUI.ShowMain(znv.m_zdo);
                 return true;
             }
 
@@ -753,7 +757,7 @@ public static class Market_NPC
             string prefab = znv.m_zdo.GetString("KGnpcModelOverride");
             if (TryOverrideModel(ref prefab, out bool isFemale, false))
             {
-                pastOverrideModel.GetComponent<Animator>()?.SetBool(Wakeup, false);
+                pastOverrideModel!.GetComponent<Animator>()?.SetBool(Wakeup, false);
                 if (int.TryParse(fashion.CraftingAnimation, out int CRAFTING))
                 {
                     pastOverrideModel.GetComponent<Animator>()?.SetInteger(Crafting, CRAFTING);
@@ -822,21 +826,21 @@ public static class Market_NPC
                         EquipItemsOnModel(skin, chestItem, capsule);
                         EquipItemsOnModel(skin, legsItem, capsule);
                         string hairItem = "Hair" + fashion.HairItem;
-                        GameObject hair = EquipItemsOnModel(helmetJoint, hairItem, skin);
+                        GameObject? hair = EquipItemsOnModel(helmetJoint, hairItem, skin);
                         ColorUtility.TryParseHtmlString(fashion.HairColor, out Color c);
                         if (hair)
                         {
-                            Renderer[] componentsInChildren = hair.GetComponentsInChildren<Renderer>();
+                            Renderer[] componentsInChildren = hair!.GetComponentsInChildren<Renderer>();
                             foreach (Renderer render in componentsInChildren)
                                 render.material.SetColor(SkinColor, c);
                         }
 
                         string beardItem = "Beard" + fashion.BeardItem;
-                        GameObject beard = EquipItemsOnModel(helmetJoint, beardItem, skin);
+                        GameObject? beard = EquipItemsOnModel(helmetJoint, beardItem, skin);
                         ColorUtility.TryParseHtmlString(fashion.BeardColor, out Color beardColor);
                         if (beard)
                         {
-                            Renderer[] componentsInChildren = beard.GetComponentsInChildren<Renderer>();
+                            Renderer[] componentsInChildren = beard!.GetComponentsInChildren<Renderer>();
                             foreach (Renderer render in componentsInChildren)
                                 render.material.SetColor(SkinColor, beardColor);
                         }
@@ -862,7 +866,7 @@ public static class Market_NPC
                 if (!float.TryParse(fashion.ModelScale, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                         out float val)) val = 1f;
                 if (val < 0.1f) val = 0.1f;
-                pastOverrideModel.transform.localScale *= val;
+                pastOverrideModel!.transform.localScale *= val;
             }
 
             float.TryParse(fashion.TextSize, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
@@ -870,8 +874,9 @@ public static class Market_NPC
             float.TryParse(fashion.TextHeight, NumberStyles.Any, CultureInfo.InvariantCulture,
                 out float textAdditionalHeight);
             canvas.gameObject.transform.localScale = new Vector3(textSize, textSize, textSize);
-            canvas.transform.localPosition = new Vector3(0, 3.4f, 0);
-            canvas.transform.localPosition += new Vector3(0, textAdditionalHeight, 0);
+            var localPosition = new Vector3(0, 3.4f, 0);
+            localPosition += new Vector3(0, textAdditionalHeight, 0);
+            canvas.transform.localPosition = localPosition;
         }
 
 
@@ -884,9 +889,10 @@ public static class Market_NPC
             CheckNameOnIcons(znv.m_zdo.GetString("KGnpcNameOverride"));
             float KGtextSize = znv.m_zdo.GetFloat("KGtextSize", 3f);
             canvas.transform.localScale = new Vector3(KGtextSize, KGtextSize, KGtextSize);
-            canvas.transform.localPosition = new Vector3(0, 3.4f, 0);
+            var localPosition = new Vector3(0, 3.4f, 0);
             float KGtextDistance = znv.m_zdo.GetFloat("KGtextHeight");
-            canvas.transform.localPosition += new Vector3(0, KGtextDistance, 0);
+            localPosition += new Vector3(0, KGtextDistance, 0);
+            canvas.transform.localPosition = localPosition;
 
             if (!TryOverrideModel(ref newModelName, out _))
             {
@@ -919,9 +925,12 @@ public static class Market_NPC
         private void SnapAndRotate(long sender, ZPackage pkg)
         {
             Quaternion rotation = pkg.ReadQuaternion();
-            ZoneSystem.instance.FindFloor(transform.position, out float height);
-            transform.position = new Vector3(transform.position.x, height, transform.position.z);
-            transform.rotation = rotation;
+            var position = transform.position;
+            ZoneSystem.instance.FindFloor(position, out float height);
+            position = new Vector3(position.x, height, position.z);
+            var transform1 = transform;
+            transform1.position = position;
+            transform1.rotation = rotation;
             if (znv.IsOwner())
             {
                 znv.m_zdo.SetPosition(transform.position);
@@ -957,8 +966,9 @@ public static class Market_NPC
                     GameObject gameObjectLocal;
                     if (text == "skin")
                     {
-                        gameObjectLocal = Instantiate(child.gameObject, m_bodyModel.transform.position,
-                            m_bodyModel.transform.parent.rotation, m_bodyModel.transform.parent);
+                        var transform1 = m_bodyModel.transform;
+                        Transform parent;
+                        gameObjectLocal = Instantiate(child.gameObject, transform1.position, (parent = transform1.parent).rotation, parent);
                         gameObjectLocal.SetActive(true);
                         foreach (SkinnedMeshRenderer skinnedMeshRenderer in
                                  gameObjectLocal.GetComponentsInChildren<SkinnedMeshRenderer>())
@@ -981,7 +991,7 @@ public static class Market_NPC
                     }
                     else
                     {
-                        Transform transformLocal = global::Utils.FindChild(pastOverrideModel.transform, text);
+                        Transform transformLocal = global::Utils.FindChild(pastOverrideModel!.transform, text);
                         if (transformLocal == null) return;
                         gameObjectLocal = Instantiate(child.gameObject, transformLocal, true);
                         gameObjectLocal.SetActive(true);
@@ -1002,12 +1012,12 @@ public static class Market_NPC
             }
         }
 
-        private GameObject AttachItem(int itemHash, int variant, Transform joint, SkinnedMeshRenderer m_bodyModel,
+        private GameObject? AttachItem(int itemHash, int variant, Transform joint, SkinnedMeshRenderer m_bodyModel,
             bool INVERT)
         {
             GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemHash);
             if (itemPrefab == null) return null;
-            GameObject childGameObject = null;
+            GameObject? childGameObject = null;
             int childCount = itemPrefab.transform.childCount;
             for (int i = 0; i < childCount; i++)
             {
@@ -1060,7 +1070,7 @@ public static class Market_NPC
         }
 
 
-        private GameObject EquipItemsOnModel(Transform joint, string prefab, SkinnedMeshRenderer mesh,
+        private GameObject? EquipItemsOnModel(Transform joint, string prefab, SkinnedMeshRenderer mesh,
             bool INVERT = false)
         {
             if (joint == null || ObjectDB.instance.GetItemPrefab(prefab.GetStableHashCode()) == null) return null;
@@ -1117,7 +1127,7 @@ public static class Market_NPC
                 isFemale = true;
             }
 
-            GameObject original = ZNetScene.instance.GetPrefab(prefab);
+            GameObject? original = ZNetScene.instance.GetPrefab(prefab);
             if (!original) return false;
             if (original.GetComponent<Character>() == null)
             {
@@ -1170,7 +1180,7 @@ public static class Market_NPC
                 original = original.GetComponentInChildren<Animator>()?.gameObject;
                 if (!original) return false;
                 pastOverrideModel = Instantiate(original, transform);
-                foreach (ParticleSystem particleSystem in pastOverrideModel.GetComponentsInChildren<ParticleSystem>())
+                foreach (ParticleSystem particleSystem in pastOverrideModel!.GetComponentsInChildren<ParticleSystem>())
                 {
                     ParticleSystem.EmissionModule em = particleSystem.emission;
                     em.enabled = false;
@@ -1263,20 +1273,20 @@ public static class Market_NPC
                             EquipItemsOnModel(skin, chestItem, capsule);
                             EquipItemsOnModel(skin, legsItem, capsule);
                             string hairItem = "Hair" + znv.m_zdo.GetString("KGhairItem");
-                            GameObject hair = EquipItemsOnModel(helmetJoint, hairItem, skin);
+                            GameObject? hair = EquipItemsOnModel(helmetJoint, hairItem, skin);
                             ColorUtility.TryParseHtmlString(znv.m_zdo.GetString("KGhairItemColor"), out Color c);
                             if (hair)
                             {
-                                Renderer[] componentsInChildren = hair.GetComponentsInChildren<Renderer>();
+                                Renderer[] componentsInChildren = hair!.GetComponentsInChildren<Renderer>();
                                 foreach (Renderer render in componentsInChildren)
                                     render.material.SetColor(SkinColor, c);
                             }
 
-                            GameObject beard = EquipItemsOnModel(helmetJoint, beardItem, skin);
+                            GameObject? beard = EquipItemsOnModel(helmetJoint, beardItem, skin);
                             ColorUtility.TryParseHtmlString(znv.m_zdo.GetString("KGbeardColor"), out Color beardColor);
                             if (beard)
                             {
-                                Renderer[] componentsInChildren = beard.GetComponentsInChildren<Renderer>();
+                                Renderer[] componentsInChildren = beard!.GetComponentsInChildren<Renderer>();
                                 foreach (Renderer render in componentsInChildren)
                                     render.material.SetColor(SkinColor, beardColor);
                             }
@@ -1334,9 +1344,9 @@ public static class Market_NPC
                 if (split.Length == 2)
                 {
                     split[1] = split[1].Replace("</icon>", "");
-                    if (AssetStorage.AssetStorage.GlobalCachedSprites.ContainsKey(split[1]))
+                    if (AssetStorage.GlobalCachedSprites.ContainsKey(split[1]))
                     {
-                        icon.sprite = AssetStorage.AssetStorage.GlobalCachedSprites[split[1]];
+                        icon.sprite = AssetStorage.GlobalCachedSprites[split[1]];
                         icon.gameObject.SetActive(true);
                         return;
                     }
@@ -1357,7 +1367,7 @@ public static class Market_NPC
                     {
                         PhotoManager.__instance.MakeSprite(prefab, 0.6f, 0.25f);
                         icon.sprite = PhotoManager.__instance.GetSprite(prefab.name,
-                            AssetStorage.AssetStorage.PlaceholderMonsterIcon, 1);
+                            AssetStorage.PlaceholderMonsterIcon, 1);
                         icon.gameObject.SetActive(true);
                     }
                 }
@@ -1367,7 +1377,7 @@ public static class Market_NPC
         public void Damage(HitData hit)
         {
             if (!znv.IsValid() || !zanim.m_animator) return;
-            zanim?.SetTrigger("stagger");
+            zanim.SetTrigger("stagger");
         }
 
         public DestructibleType GetDestructibleType()
@@ -1379,50 +1389,50 @@ public static class Market_NPC
 
     public static class NPCUI
     {
-        private static Action _callback;
-        private static GameObject UI;
-        private static ZDO _currentNPC;
-        private static GameObject MAIN;
-        private static GameObject FASHION;
-        private static Transform NPCTypeButtons;
+        private static Action? _callback;
+        private static GameObject UI = null!;
+        private static ZDO? _currentNPC;
+        private static GameObject MAIN = null!;
+        private static GameObject FASHION = null!;
+        private static Transform NPCTypeButtons = null!;
         private static NPCType _currentType;
-        private static InputField _npcprofile;
-        private static InputField _npcname;
-        private static InputField _npcmodel;
-        private static InputField _patroldata;
-        private static InputField _npcDialogue;
+        private static InputField _npcprofile = null!;
+        private static InputField _npcname = null!;
+        private static InputField _npcmodel = null!;
+        private static InputField _patroldata = null!;
+        private static InputField _npcDialogue = null!;
 
-        private static InputField LeftItemFashion,
-            RightItemFashion,
-            HelmetItemFashion,
-            ChestItemFashion,
-            LegsItemFashion,
-            RightItemHiddenFashion,
-            LeftItemHiddenFashion,
-            HairItemFashion,
-            SkinColorFashion,
-            HairItemFashionColor,
-            ModelScaleFashion,
-            CapeItemFashion,
-            NPCinteractAnimation,
-            NPCgreetAnimation,
-            NPCgreetText,
-            NPCbyeAnimation,
-            NPCbyeText,
-            NPCcraftingAnimation,
-            BeardItemFashion,
-            BeardItemFashionColor,
-            InteractAudioClip,
-            TextSize,
-            TextHeight,
-            PeriodicAnimation,
-            PeriodicAnimationTime,
-            PeriodicSound,
-            PeriodicSoundTime;
+        private static InputField LeftItemFashion = null!,
+            RightItemFashion = null!,
+            HelmetItemFashion = null!,
+            ChestItemFashion = null!,
+            LegsItemFashion = null!,
+            RightItemHiddenFashion = null!,
+            LeftItemHiddenFashion = null!,
+            HairItemFashion = null!,
+            SkinColorFashion = null!,
+            HairItemFashionColor  = null!,
+            ModelScaleFashion = null!,
+            CapeItemFashion = null!,
+            NPCinteractAnimation = null!,
+            NPCgreetAnimation = null!,
+            NPCgreetText = null!,
+            NPCbyeAnimation = null!,
+            NPCbyeText = null!,
+            NPCcraftingAnimation = null!,
+            BeardItemFashion = null!,
+            BeardItemFashionColor = null!,
+            InteractAudioClip = null!,
+            TextSize = null!,
+            TextHeight = null!,
+            PeriodicAnimation = null!,
+            PeriodicAnimationTime = null!,
+            PeriodicSound = null!,
+            PeriodicSoundTime = null!;
 
         public static void Init()
         {
-            UI = Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceNPCUI"));
+            UI = Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("MarketplaceNPCUI"));
             Object.DontDestroyOnLoad(UI);
             UI.SetActive(false);
             NPCTypeButtons = UI.transform.Find("Canvas/MAIN/Pergament/NPCTYPE");
@@ -1444,7 +1454,7 @@ public static class Market_NPC
                 int i1 = i;
                 child.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    AssetStorage.AssetStorage.AUsrc.Play();
+                    AssetStorage.AUsrc.Play();
                     _currentType = (NPCType)i1;
                     CheckColors();
                 });
@@ -1504,7 +1514,7 @@ public static class Market_NPC
 
         private static void ApplyFashion()
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             if (_currentNPC == null || !_currentNPC.IsValid())
             {
                 Hide();
@@ -1582,19 +1592,19 @@ public static class Market_NPC
 
         private static void Snap()
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             ZPackage pkg = new ZPackage();
             Quaternion rot = Quaternion.LookRotation(GameCamera.instance.transform.forward);
             rot.x = 0;
             rot.z = 0;
             pkg.Write(rot);
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZNetView.Everybody, _currentNPC.m_uid, "KGmarket snapandrotate", pkg);
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZNetView.Everybody, _currentNPC!.m_uid, "KGmarket snapandrotate", pkg);
             Hide();
         }
 
         private static void ApplyMain()
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             if (_currentNPC == null || !_currentNPC.IsValid())
             {
                 Hide();
@@ -1616,7 +1626,7 @@ public static class Market_NPC
             }
             else
             {
-                _currentNPC.NPC_Type((API.Marketplace_API.NPCType)_currentType);
+                _currentNPC.NPC_Type((Marketplace_API.NPCType)_currentType);
                 _currentNPC.NPC_Name(_npcname.text);
                 _currentNPC.NPC_Profile(_npcprofile.text);
                 _currentNPC.NPC_Dialogue(_npcDialogue.text);
@@ -1648,7 +1658,7 @@ public static class Market_NPC
             }
         }
 
-        public static void ShowFashion(ZDO _npc, Action callback = null)
+        public static void ShowFashion(ZDO _npc, Action? callback = null)
         {
             FASHION.SetActive(true);
             MAIN.SetActive(false);
@@ -1686,7 +1696,7 @@ public static class Market_NPC
             _callback = callback;
         }
 
-        public static void ShowMain(ZDO _npc, Action callback = null)
+        public static void ShowMain(ZDO _npc, Action? callback = null)
         {
             FASHION.SetActive(false);
             MAIN.SetActive(true);
@@ -1709,6 +1719,7 @@ public static class Market_NPC
     [ClientOnlyPatch]
     private static class DebugModeBuildCheck
     {
+        [UsedImplicitly]
         private static bool Prefix(Piece piece)
         {
             if (piece.GetComponent<NPCcomponent>() && !Utils.IsDebug)
@@ -1726,6 +1737,7 @@ public static class Market_NPC
     [ClientOnlyPatch]
     private static class PieceTable_UpdateAvailable_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(PieceTable __instance)
         {
             if (__instance.m_availablePieces.Count == 0) return;

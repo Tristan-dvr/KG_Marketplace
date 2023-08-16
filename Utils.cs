@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using Marketplace.ExternalLoads;
 using Marketplace.Modules.Buffer;
 using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
@@ -174,9 +175,9 @@ public static class Utils
         return num;
     }
 
-    public static Minimap.PinData GetCustomPin(Minimap.PinType type, Vector3 pos, float radius)
+    public static Minimap.PinData? GetCustomPin(Minimap.PinType type, Vector3 pos, float radius)
     {
-        Minimap.PinData pinData = null;
+        Minimap.PinData? pinData = null;
         float num = 999999f;
         foreach (Minimap.PinData pinData2 in Minimap.instance.m_pins)
             if (pinData2.m_type == type)
@@ -339,7 +340,7 @@ public static class Utils
     public static Sprite TryFindIcon(string name)
     {
         if (string.IsNullOrEmpty(name)) return null;
-        if (AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(name, out Sprite img))
+        if (AssetStorage.GlobalCachedSprites.TryGetValue(name, out Sprite img))
         {
             return img;
         }
@@ -382,7 +383,7 @@ public static class Utils
         if (!Enum.TryParse(name, out Skills.SkillType skill))
         {
             Skills.SkillDef SkillDef = Player.m_localPlayer.m_skills.GetSkillDef((Skills.SkillType)Mathf.Abs(name.GetStableHashCode()));
-            return SkillDef == null ? AssetStorage.AssetStorage.NullSprite : SkillDef.m_icon;
+            return SkillDef == null ? AssetStorage.NullSprite : SkillDef.m_icon;
         }
         else
         {
@@ -394,7 +395,7 @@ public static class Utils
     public static void LoadImageFromWEB(string url, Action<Sprite> callback)
     {
         if (string.IsNullOrWhiteSpace(url) || !Uri.TryCreate(url, UriKind.Absolute, out _)) return;
-        if (!AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(url, out Sprite sprite))
+        if (!AssetStorage.GlobalCachedSprites.TryGetValue(url, out Sprite sprite))
         {
             Marketplace._thistype.StartCoroutine(_Internal_LoadImage(url, callback));
         }
@@ -415,8 +416,8 @@ public static class Utils
             Texture2D newTempTexture = new Texture2D(texture.width, texture.height);
             newTempTexture.SetPixels(texture.GetPixels());
             newTempTexture.Apply();
-            AssetStorage.AssetStorage.GlobalCachedSprites[url] = Sprite.Create(newTempTexture, new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
-            callback?.Invoke(AssetStorage.AssetStorage.GlobalCachedSprites[url]);
+            AssetStorage.GlobalCachedSprites[url] = Sprite.Create(newTempTexture, new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
+            callback?.Invoke(AssetStorage.GlobalCachedSprites[url]);
         }
     }
 

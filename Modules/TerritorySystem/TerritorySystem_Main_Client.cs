@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Emit;
 using System.Threading.Tasks;
+using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.Teleporter;
 
 namespace Marketplace.Modules.TerritorySystem;
@@ -135,7 +136,7 @@ public static class TerritorySystem_Main_Client
 
     private static void OnTerritoryUpdate()
     {
-        API.ClientSide.FillingTerritoryData = true;
+        ClientSide.FillingTerritoryData = true;
         foreach (KeyValuePair<TerritorySystem_DataTypes.TerritoryFlags, List<TerritorySystem_DataTypes.Territory>>
                      territoriesByFlag in TerritoriesByFlags)
         {
@@ -151,7 +152,7 @@ public static class TerritorySystem_Main_Client
 
         if (TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Count == 0)
         {
-            API.ClientSide.FillingTerritoryData = false;
+            ClientSide.FillingTerritoryData = false;
             DoMapMagic();
             return;
         }
@@ -182,10 +183,10 @@ public static class TerritorySystem_Main_Client
             .Sort((a, b) => a.Priority.CompareTo(b.Priority));
         TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.LimitZoneHeight]
             .Sort((a, b) => a.Priority.CompareTo(b.Priority));
-        API.ClientSide.FillingTerritoryData = false;
+        ClientSide.FillingTerritoryData = false;
         DoMapMagic();
         ZoneVisualizer.OnMapChange();
-        if (Global_Values.SyncedGlobalOptions.Value._rebuildHeightmap &&
+        if (Global_Configs.SyncedGlobalOptions.Value._rebuildHeightmap &&
             (TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.AddGroundHeight].Count > 0 ||
              TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.ForceGroundHeight].Count > 0 ||
              TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.LimitZoneHeight].Count > 0))

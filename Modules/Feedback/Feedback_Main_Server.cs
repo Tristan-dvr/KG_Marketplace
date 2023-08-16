@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using Marketplace.Modules.Global_Options;
 
 namespace Marketplace.Modules.Feedback;
 
@@ -9,6 +10,7 @@ public static class Feedback_Main_Server
     [ServerOnlyPatch]
     private static class ZrouteMethodsServerFeedback
     {
+        [UsedImplicitly]
         private static void Postfix()
         {
             if(!ZNet.instance.IsServer()) return;
@@ -31,7 +33,7 @@ public static class Feedback_Main_Server
                     @"""},""title"":""Subject"",""description"":""" + Subject +
                     @""",""color"":15258703,""fields"":[{""name"":""Message"",""value"":""" + Message +
                     @""",""inline"":true}]}]}";
-                SendMSG(Global_Values.WebHookLink, json);
+                SendMSG(Global_Configs.WebHookLink, json);
             });
         }
     }

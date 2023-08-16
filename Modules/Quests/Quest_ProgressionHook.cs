@@ -1,6 +1,7 @@
 ﻿using System.Reflection.Emit;
 using Groups;
-using Mono.CSharp;
+using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
 
 namespace Marketplace.Modules.Quests;
 
@@ -10,6 +11,7 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class Pickable_Interact_Patch
     {
+        [UsedImplicitly]
         private static void Prefix(Pickable __instance, long sender)
         {
             if (__instance.m_picked) return;
@@ -22,7 +24,7 @@ public static class Quest_ProgressionHook
     {
         if (InventoryGui.instance.m_craftRecipe == null || InventoryGui.instance.m_selectedRecipe.Key == null) return;
         KeyValuePair<Recipe, ItemDrop.ItemData> recipe = InventoryGui.instance.m_selectedRecipe;
-        string CraftedItemName = recipe.Key.m_item?.gameObject.name;
+        string CraftedItemName = recipe.Key.m_item?.gameObject.name!;
         if (string.IsNullOrEmpty(CraftedItemName)) return;
         GameEvents.OnItemCrafted?.Invoke(CraftedItemName, recipe.Value?.m_quality ?? 1);
         Quests_DataTypes.Quest.TryAddRewardCraft(CraftedItemName, recipe.Value?.m_quality ?? 1);
@@ -32,6 +34,7 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class HOOKCRAFTING
     {
+        [UsedImplicitly]
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo target = AccessTools.Method(typeof(Inventory), nameof(Inventory.AddItem),
@@ -53,6 +56,7 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class QuestEnemyKill
     {
+        [UsedImplicitly]
         private static void Prefix(Character __instance, long sender, HitData hit)
         {
             if (__instance.GetHealth() <= 0) return;
@@ -73,7 +77,8 @@ public static class Quest_ProgressionHook
             }
         }
 
-        private static void Postfix(Character __instance)
+        [UsedImplicitly]
+private static void Postfix(Character __instance)
         {
             if (__instance.GetHealth() <= 0f && CharacterLastDamageList.ContainsKey(__instance))
             {
@@ -90,7 +95,8 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class Character_ApplyDamage_Patch
     {
-        private static void Postfix(Character __instance)
+        [UsedImplicitly]
+private static void Postfix(Character __instance)
         {
             if (__instance.GetHealth() <= 0f && CharacterLastDamageList.ContainsKey(__instance))
             {
@@ -107,7 +113,8 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class Character_OnDestroy_Patch
     {
-        private static void Postfix(Character __instance)
+        [UsedImplicitly]
+private static void Postfix(Character __instance)
         {
             if (CharacterLastDamageList.ContainsKey(__instance)) CharacterLastDamageList.Remove(__instance);
         }
@@ -118,7 +125,8 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     public static class ZNetScene_Awake_Patch_QuestsInit
     {
-        private static void Postfix()
+        [UsedImplicitly]
+private static void Postfix()
         {
             ZRoutedRpc.instance.Register("KGmarket QuestKill",
                 new RoutedMethod<string, int, Vector3, bool>.Method(QuestKillEvent));
@@ -136,8 +144,8 @@ public static class Quest_ProgressionHook
         {
             if (!Player.m_localPlayer) return;
             GameEvents.OnCreatureKilled?.Invoke(prefab, level);
-            if (Global_Values.SyncedGlobalOptions.Value._allowKillQuestsInParty && ownerRPC && Groups.API.IsLoaded() &&
-                Groups.API.GroupPlayers() is { Count: > 1 } group)
+            if (Global_Configs.SyncedGlobalOptions.Value._allowKillQuestsInParty && ownerRPC && API.IsLoaded() &&
+                API.GroupPlayers() is { Count: > 1 } group)
                 foreach (PlayerReference member in group)
                     if (member.peerId != ZDOMan.instance.m_sessionID)
                         ZRoutedRpc.instance.InvokeRoutedRPC(member.peerId, "KGmarket QuestKill", prefab, level, pos,
@@ -152,6 +160,7 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class Player_OnInventoryChanged_Patch
     {
+        [UsedImplicitly]
         private static void Postfix()
         {
             if (!Player.m_localPlayer || Player.m_localPlayer.m_isLoading) return;
@@ -163,7 +172,7 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class HookBuildQuest
     {
-        public static void PlacedPiece(GameObject obj)
+        public static void PlacedPiece(GameObject? obj)
         {
             if (obj?.GetComponent<Piece>() is not { } piece) return;
             string pieceName = global::Utils.GetPrefabName(piece.gameObject);
@@ -175,6 +184,7 @@ public static class Quest_ProgressionHook
             }
         }
 
+        [UsedImplicitly]
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo method =
@@ -195,11 +205,12 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class Character_Awake_Quest
     {
-        private static void Postfix(Humanoid __instance)
+        [UsedImplicitly]
+private static void Postfix(Humanoid __instance)
         {
             float radius = __instance.m_collider.radius;
             float height = __instance.m_collider.height - 1.7f;
-            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon,
+            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.MarketplaceQuestTargetIcon,
                 __instance.transform);
             go.name = "MPASNquest";
             go.transform.localPosition += Vector3.up * height;
@@ -212,10 +223,11 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class Pickable_Awake_Quest
     {
-        private static void Postfix(Pickable __instance)
+        [UsedImplicitly]
+private static void Postfix(Pickable __instance)
         {
             __instance.gameObject.AddComponent<Pickable_Hook>();
-            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon,
+            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.MarketplaceQuestTargetIcon,
                 __instance.transform);
             go.name = "MPASNquest";
             go.SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
@@ -226,9 +238,10 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class ItemDrop_Awake_Quest
     {
-        private static void Postfix(ItemDrop __instance)
+        [UsedImplicitly]
+private static void Postfix(ItemDrop __instance)
         {
-            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.MarketplaceQuestTargetIcon,
+            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.MarketplaceQuestTargetIcon,
                 __instance.transform);
             go.name = "MPASNquest";
             go.SetActive(false);
@@ -239,10 +252,10 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class ItemDrop_Awake_Quest2
     {
+        [UsedImplicitly]
         private static void Postfix(ItemDrop __instance)
         {
-            __instance.transform.Find("MPASNquest")?.gameObject
-                .SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
+            __instance.transform.Find("MPASNquest")?.gameObject.SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
         }
     }
 
@@ -250,7 +263,7 @@ public static class Quest_ProgressionHook
     public class Pickable_Hook : MonoBehaviour
     {
         private static readonly List<Pickable> pickables = new();
-        private Pickable pick;
+        private Pickable pick = null!;
 
         private void Awake()
         {
@@ -277,17 +290,16 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class TranspileRecipeQuestTest
     {
-        private static void ChangeRecipeName(Recipe r, ref string str, ItemDrop.ItemData level)
+        private static void ChangeRecipeName(Recipe r, ref string str, ItemDrop.ItemData? item)
         {
-            if (Quests_DataTypes.Quest.IsQuestTarget(r, level?.m_quality + 1 ?? 1))
-            {
-                if (!str.Contains('★'))
-                    str = "<color=#00ff00>★</color> " + str;
-            }
+            if (!Quests_DataTypes.Quest.IsQuestTarget(r, item?.m_quality + 1 ?? 1)) return;
+            if (!str.Contains('★'))
+                str = "<color=#00ff00>★</color> " + str;
         }
 
 
         [HarmonyTranspiler]
+        [UsedImplicitly]
         private static IEnumerable<CodeInstruction> TanspileRecipeQuest(IEnumerable<CodeInstruction> code)
         {
             MethodInfo method = AccessTools.DeclaredMethod(typeof(TranspileRecipeQuestTest), nameof(ChangeRecipeName));
@@ -311,6 +323,7 @@ public static class Quest_ProgressionHook
     [ClientOnlyPatch]
     private static class Piece_DropResources_Patch
     {
+        [UsedImplicitly]
         private static bool Prefix(Piece __instance)
         {
             return !__instance.m_nview.m_zdo.GetBool("MPASNquestBuild");
@@ -324,9 +337,10 @@ public static class Quest_ProgressionHook
     {
         public static int ChildNumber;
 
+        [UsedImplicitly]
         private static void Postfix(Hud __instance)
         {
-            GameObject instant = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("QuestBuild");
+            GameObject instant = AssetStorage.asset.LoadAsset<GameObject>("QuestBuild");
             GameObject go = UnityEngine.Object.Instantiate(instant);
             go.name = "QuestBuild";
             // ReSharper disable once Unity.InstantiateWithoutParent
@@ -351,6 +365,7 @@ public static class Quest_ProgressionHook
 
 
         [HarmonyTranspiler]
+        [UsedImplicitly]
         private static IEnumerable<CodeInstruction> Patch(IEnumerable<CodeInstruction> code)
         {
             MethodInfo method = AccessTools.DeclaredPropertySetter(typeof(Image), nameof(Image.sprite));

@@ -1,39 +1,41 @@
-﻿using UnityEngine.EventSystems;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
+using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 
 namespace Marketplace.Modules.Gambler;
 
 public static class Gambler_UI
 {
-    private static GameObject UI;
-    private static Transform MainTransform;
+    private static GameObject UI = null!;
+    private static Transform MainTransform = null!;
     private static string CurrentProfile = "";
     private static readonly List<Transform> Elements = new();
     private static readonly HashSet<int> Exclude = new();
     private static readonly Dictionary<Transform, Gambler_DataTypes.Item> tempDictionary = new();
-    private static Transform Button;
-    private static List<int> currentShuffle;
+    private static Transform Button = null!;
+    private static List<int> currentShuffle = new();
     private static readonly bool[] Shuffling = new bool[2];
     private static readonly List<Image> ElementsAlpha = new();
     private static readonly List<Transform> ALLELEMENTS = new();
     private static readonly List<Image> ALLIMAGES = new();
     public static Status CurrentStatus;
     private static readonly List<GameObject> CurrentCircleEffects = new();
-    private static Text Description;
-    private static Text NeededItemText;
-    private static Transform RequiredTab;
+    private static Text Description = null!;
+    private static Text NeededItemText = null!;
+    private static Transform RequiredTab = null!;
     private static int CurrentRollMAX = 1;
     private static readonly HashSet<int> AlreadyClicked = new();
     private static bool DisableSound;
 
     private static readonly List<Vector3> InitialPositions = new();
-    private static GameObject ClickEffect;
-    private static GameObject SmokeEffect;
-    private static Sprite QuestionMarkIcon;
-    private static GameObject CircleEffect;
-    private static AudioClip SOUNDEFFECT;
-    private static AudioClip SOUNDEFFECT2;
-    public static AudioClip SOUNDEFFECT3;
+    private static GameObject ClickEffect = null!;
+    private static GameObject SmokeEffect = null!;
+    private static Sprite QuestionMarkIcon = null!;
+    private static GameObject CircleEffect = null!;
+    private static AudioClip SOUNDEFFECT = null!;
+    private static AudioClip SOUNDEFFECT2 = null!;
+    public static AudioClip SOUNDEFFECT3 = null!;
 
     public enum Status
     {
@@ -59,14 +61,14 @@ public static class Gambler_UI
     {
         if (!DisableSound)
         {
-            AssetStorage.AssetStorage.AUsrc.PlayOneShot(clip, volume);
+            AssetStorage.AUsrc.PlayOneShot(clip, volume);
         }
     }
 
     private class OnHoverGambler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        private Transform t;
-        private Image img;
+        private Transform t = null!;
+        private Image img = null!;
 
         private void Start()
         {
@@ -123,15 +125,15 @@ public static class Gambler_UI
         if (UI) UnityEngine.Object.Destroy(UI);
         DisableSound = Marketplace._thistype.Config.Bind("General", "Mute Gambler Sounds", false).Value;
         UI = UnityEngine.Object.Instantiate(
-            AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceGamblerNewUI"));
+            AssetStorage.asset.LoadAsset<GameObject>("MarketplaceGamblerNewUI"));
         UnityEngine.Object.DontDestroyOnLoad(UI);
-        ClickEffect = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("RINGEFFECT");
-        CircleEffect = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("CircleEffect");
-        SmokeEffect = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("SMOKEEFFECT");
-        SOUNDEFFECT = AssetStorage.AssetStorage.asset.LoadAsset<AudioClip>("GAMBLERSOUND2");
-        SOUNDEFFECT2 = AssetStorage.AssetStorage.asset.LoadAsset<AudioClip>("BURSTGAMBLE");
-        SOUNDEFFECT3 = AssetStorage.AssetStorage.asset.LoadAsset<AudioClip>("GAMBLERDONE");
-        QuestionMarkIcon = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("qCS 2");
+        ClickEffect = AssetStorage.asset.LoadAsset<GameObject>("RINGEFFECT");
+        CircleEffect = AssetStorage.asset.LoadAsset<GameObject>("CircleEffect");
+        SmokeEffect = AssetStorage.asset.LoadAsset<GameObject>("SMOKEEFFECT");
+        SOUNDEFFECT = AssetStorage.asset.LoadAsset<AudioClip>("GAMBLERSOUND2");
+        SOUNDEFFECT2 = AssetStorage.asset.LoadAsset<AudioClip>("BURSTGAMBLE");
+        SOUNDEFFECT3 = AssetStorage.asset.LoadAsset<AudioClip>("GAMBLERDONE");
+        QuestionMarkIcon = AssetStorage.asset.LoadAsset<Sprite>("qCS 2");
         CurrentStatus = Status.Idle;
         Shuffling[0] = false;
         Shuffling[1] = false;
@@ -139,11 +141,12 @@ public static class Gambler_UI
         InitialPositions.Clear();
         ALLIMAGES.Clear();
         MainTransform = UI.transform.Find("Canvas/GambleElements");
-        Button = MainTransform.parent.Find("Start");
+        var parent = MainTransform.parent;
+        Button = parent.Find("Start");
         Button.GetComponent<Button>().onClick.AddListener(StartShuffle);
-        Description = MainTransform.parent.Find("Description").GetComponent<Text>();
-        NeededItemText = MainTransform.parent.Find("Required/Text").GetComponent<Text>();
-        RequiredTab = MainTransform.parent.Find("Required");
+        Description = parent.Find("Description").GetComponent<Text>();
+        NeededItemText = parent.Find("Required/Text").GetComponent<Text>();
+        RequiredTab = parent.Find("Required");
         int count = 0;
         for (int i = 0; i < 18; i++)
         {
@@ -172,7 +175,8 @@ public static class Gambler_UI
     [ClientOnlyPatch]
     private static class INPUTPATCHforGambler
     {
-        private static void Postfix(ref bool __result)
+        [UsedImplicitly]
+private static void Postfix(ref bool __result)
         {
             if (IsPanelVisible()) __result = true;
         }
@@ -302,8 +306,9 @@ public static class Gambler_UI
 
         if (main.GetComponent<ItemDrop>())
         {
+            var transform = p.transform;
             GameObject go = UnityEngine.Object.Instantiate(main,
-                p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f,
+                transform.position + transform.forward * 1.5f + Vector3.up * 1.5f,
                 Quaternion.identity);
             ItemDrop itemDrop = go.GetComponent<ItemDrop>();
             itemDrop.m_itemData.m_stack = count;
@@ -318,7 +323,7 @@ public static class Gambler_UI
             if (ZNet.instance.GetServerPeer() != null)
             {
                 ZPackage pkg = new();
-                pkg.Write((int)DiscordStuff.Webhooks.Gambler);
+                pkg.Write((int)DiscordStuff.DiscordStuff.Webhooks.Gambler);
                 pkg.Write(Player.m_localPlayer.GetPlayerName());
                 pkg.Write(count);
                 pkg.Write(itemDrop.m_itemData.m_shared.m_name);
@@ -326,7 +331,7 @@ public static class Gambler_UI
                     pkg);
             }
 
-            if (Global_Values.SyncedGlobalOptions.Value._gamblerEnableNotifications)
+            if (Global_Configs.SyncedGlobalOptions.Value._gamblerEnableNotifications)
             {
                 string sendText =
                     $"{Player.m_localPlayer.GetPlayerName()} just won {Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name)} x{count}";
@@ -349,8 +354,9 @@ public static class Gambler_UI
         {
             for (int i = 0; i < count; i++)
             {
+                var transform = p.transform;
                 GameObject monster = UnityEngine.Object.Instantiate(main,
-                    p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f,
+                    transform.position + transform.forward * 1.5f + Vector3.up * 1.5f,
                     Quaternion.identity);
                 if (monster.GetComponent<Tameable>())
                 {
@@ -362,7 +368,7 @@ public static class Gambler_UI
 
     private static void StartShuffle()
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         if (CurrentStatus != Status.Idle || !CanRoll() || !Player.m_localPlayer) return;
         ResetDefault();
 

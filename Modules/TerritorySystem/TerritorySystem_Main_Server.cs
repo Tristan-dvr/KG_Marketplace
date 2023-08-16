@@ -4,7 +4,7 @@ namespace Marketplace.Modules.TerritorySystem;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
-    new[] { "TerritoryDatabase.cfg" },
+    new[] { "TD" },
     new[] { "OnTerritoryConfigChange" })]
 public static class TerritorySystem_Main_Server
 {
@@ -247,13 +247,11 @@ public static class TerritorySystem_Main_Server
     private static void ReadServerTerritoryDatabase()
     {
         TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TerritoriesConfigPath);
-        ProcessTerritoryConfig(profiles);
-        string folder = Market_Paths.AdditionalCondfigsTerritoriesFolder;
+        string folder = Market_Paths.TerritoriesFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            profiles = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessTerritoryConfig(profiles);
         }
 

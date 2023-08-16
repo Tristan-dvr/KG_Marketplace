@@ -1,4 +1,4 @@
-﻿namespace Marketplace.Modules.Marketplace_NPC;
+﻿namespace Marketplace.Modules.MainMarketplace;
 
 public static class Marketplace_DataTypes
 {
@@ -8,11 +8,11 @@ public static class Marketplace_DataTypes
     public class ServerMarketSendData : ISerializableParameter
     {
         public int UID;
-        public string ItemPrefab;
+        public string? ItemPrefab;
         public int Count;
         public int Price;
-        public string SellerName;
-        public string SellerUserID;
+        public string? SellerName;
+        public string? SellerUserID;
         public ItemData_ItemCategory ItemCategory;
         public int Quality;
         public int Variant;
@@ -21,7 +21,7 @@ public static class Marketplace_DataTypes
         public string CUSTOMdata = "{}";
         public byte DurabilityPercent;
         public uint TimeStamp;
-
+        
         public ServerMarketSendData()
         {
         }
@@ -46,9 +46,7 @@ public static class Marketplace_DataTypes
                 UID = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         }
 
-        public string ItemName => ZNetScene.instance.GetPrefab(ItemPrefab) is { } item
-            ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name
-            : ItemPrefab;
+        public string ItemName => (ZNetScene.instance.GetPrefab(ItemPrefab) is { } item ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name : ItemPrefab)!;
 
         public void Serialize(ref ZPackage pkg)
         {
@@ -61,9 +59,9 @@ public static class Marketplace_DataTypes
             pkg.Write((int)ItemCategory);
             pkg.Write(Quality);
             pkg.Write(Variant);
-            pkg.Write(CrafterName ?? "");
+            pkg.Write(CrafterName);
             pkg.Write(CrafterID);
-            pkg.Write(CUSTOMdata ?? "{}");
+            pkg.Write(CUSTOMdata);
             pkg.Write(TimeStamp);
             pkg.Write(DurabilityPercent);
         }
@@ -90,10 +88,10 @@ public static class Marketplace_DataTypes
 
     public class ClientMarketSendData
     {
-        public string ItemPrefab;
+        public string? ItemPrefab;
         public int Count;
         public int Price;
-        public string SellerName;
+        public string? SellerName;
         public ItemData_ItemCategory ItemCategory;
         public int Quality;
         public int Variant;
@@ -102,9 +100,7 @@ public static class Marketplace_DataTypes
         public long CrafterID;
         public byte DurabilityPercent;
 
-        public string ItemName => ZNetScene.instance.GetPrefab(ItemPrefab) is { } item
-            ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name
-            : ItemPrefab;
+        public string ItemName => (ZNetScene.instance.GetPrefab(ItemPrefab) is { } item ? item.GetComponent<ItemDrop>().m_itemData.m_shared.m_name : ItemPrefab)!;
     }
 
     public enum ItemData_ItemCategory

@@ -4,6 +4,7 @@
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Feedback_Main_Client
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         Feedback_UI.Init();

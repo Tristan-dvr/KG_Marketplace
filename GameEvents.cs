@@ -2,19 +2,20 @@
 
 public static class GameEvents
 {
-    public static Action OnPlayerFirstSpawn;
-    public static Action<string, int> OnCreatureKilled;
-    public static Action<string> OnStructureBuilt;
-    public static Action<string, int> OnItemCrafted;
-    public static Action<string> KilledBy;
-    public static Action<string> OnHarvest;
-    public static Action OnPlayerDeath;
+    public static Action? OnPlayerFirstSpawn;
+    public static Action<string, int>? OnCreatureKilled;
+    public static Action<string>? OnStructureBuilt;
+    public static Action<string, int>? OnItemCrafted;
+    public static Action<string>? KilledBy;
+    public static Action<string>? OnHarvest;
+    public static Action? OnPlayerDeath;
 
     [HarmonyPatch(typeof(Player),nameof(Player.SetLocalPlayer))]
     [ClientOnlyPatch]
     private static class Player_SetLocalPlayer_Patch
     {
         public static bool firstTime = true;
+        [UsedImplicitly]
         private static void Postfix()
         {
             if (firstTime)
@@ -29,6 +30,7 @@ public static class GameEvents
     [ClientOnlyPatch]
     private static class FejdStartup_Awake_Patch
     {
+        [UsedImplicitly]
         private static void Postfix() => Player_SetLocalPlayer_Patch.firstTime = true;
     }
     
@@ -36,6 +38,7 @@ public static class GameEvents
     [ClientOnlyPatch]
     private static class Player_OnDeath_Patch
     {
+        [UsedImplicitly]
         private static void Prefix() => OnPlayerDeath?.Invoke();
     }
     
@@ -43,6 +46,7 @@ public static class GameEvents
     [ClientOnlyPatch]
     private static class Character_ApplyDamage_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(Character __instance, ref HitData hit)
         {
             if(__instance != Player.m_localPlayer) return;

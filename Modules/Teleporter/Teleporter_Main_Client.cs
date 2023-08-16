@@ -1,4 +1,7 @@
-﻿namespace Marketplace.Modules.Teleporter;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
+
+namespace Marketplace.Modules.Teleporter;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
@@ -9,24 +12,6 @@ public static class Teleporter_Main_Client
     private const Minimap.PinType PINTYPE = (Minimap.PinType)177;
     private static bool TeleporterJump;
     public static bool DEBUG_TELEPORTTO_TERRITORY;
-
-    private static void OnInit()
-    {
-        Teleporter_DataTypes.SyncedTeleporterSprites.ValueChanged += OnTeleporterUpdate;
-    }
-
-
-    private static void OnTeleporterUpdate()
-    {
-        foreach (KeyValuePair<string, Teleporter_DataTypes.TransferBytes> raw in Teleporter_DataTypes.SyncedTeleporterSprites.Value)
-        {
-            if (AssetStorage.AssetStorage.GlobalCachedSprites.ContainsKey(raw.Key)) continue;
-            Texture2D tex = new Texture2D(1, 1);
-            tex.LoadImage(raw.Value.array);
-            Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0));
-            AssetStorage.AssetStorage.GlobalCachedSprites.Add(raw.Key, sprite);
-        }
-    }
 
     internal static void ShowTeleporterUI(string profile)
     {
@@ -54,9 +39,9 @@ public static class Teleporter_Main_Client
             if (item)
                 icon = item.GetComponent<ItemDrop>().m_itemData.m_shared.m_icons[0];
             else
-                icon = AssetStorage.AssetStorage.GlobalCachedSprites.TryGetValue(data.sprite, out Sprite sprite)
+                icon = AssetStorage.GlobalCachedSprites.TryGetValue(data.sprite, out Sprite sprite)
                     ?  sprite
-                    :  AssetStorage.AssetStorage.PortalIconDefault;
+                    :  AssetStorage.PortalIconDefault;
             pinData.m_icon = icon;
             pinData.m_save = false;
             pinData.m_checked = false;
@@ -81,7 +66,7 @@ public static class Teleporter_Main_Client
             Minimap.PinData closestPin = Utils.GetCustomPin(PINTYPE, pos, __instance.m_removeRadius * (__instance.m_largeZoom * 2f));
             if (closestPin != null)
             {
-                if (!Global_Values.SyncedGlobalOptions.Value._canTeleportWithOre && !Player.m_localPlayer.IsTeleportable())
+                if (!Global_Configs.SyncedGlobalOptions.Value._canTeleportWithOre && !Player.m_localPlayer.IsTeleportable())
                 {
                     MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
                         $"<color=red>{Localization.instance.Localize("$mpasn_teleportwithore")}</color>");
@@ -176,10 +161,10 @@ public static class Teleporter_Main_Client
     
      private static IEnumerator MarketplaceTeleporterMovement(int speed, Vector3 startPos, Vector3 targetPos)
     {
-        GameObject mainEffect = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.Teleporter_VFX1, startPos, Player.m_localPlayer.transform.rotation);
+        GameObject mainEffect = UnityEngine.Object.Instantiate(AssetStorage.Teleporter_VFX1, startPos, Player.m_localPlayer.transform.rotation);
         TeleporterJump = true;
         Player p = Player.m_localPlayer;
-        UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.Teleporter_VFX2, p.transform.position + Vector3.up, p.transform.rotation);
+        UnityEngine.Object.Instantiate(AssetStorage.Teleporter_VFX2, p.transform.position + Vector3.up, p.transform.rotation);
         p.m_nview.InvokeRPC(ZNetView.Everybody, "HideMarketplaceTeleporter", false);
         p.m_nview.m_zdo.Set("MarketplaceTeleporterHide", true);
         p.m_zanim.SetTrigger("emote_stop");
@@ -238,7 +223,7 @@ public static class Teleporter_Main_Client
         p.m_lastGroundTouch = 0f;
         p.m_maxAirAltitude = 0f;
         p.m_nview.InvokeRPC(ZNetView.Everybody, "HideMarketplaceTeleporter", true);
-        UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.Teleporter_VFX2, p.transform.position + Vector3.up, p.transform.rotation);
+        UnityEngine.Object.Instantiate(AssetStorage.Teleporter_VFX2, p.transform.position + Vector3.up, p.transform.rotation);
     }
     
 }

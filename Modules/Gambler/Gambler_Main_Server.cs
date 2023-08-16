@@ -1,17 +1,18 @@
 ﻿using Marketplace.Paths;
-
 namespace Marketplace.Modules.Gambler;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
-    new[] { "GamblerProfiles.cfg" }, new[] { "OnGamblerProfilesFileChange" })]
+    new[] { "GP" }, new[] { "OnGamblerProfilesFileChange" })]
 public static class Gambler_Main_Server
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         ReadGamblerProfiles();
     }
 
+    [UsedImplicitly]
     private static void OnGamblerProfilesFileChange()
     {
         ReadGamblerProfiles();
@@ -21,13 +22,11 @@ public static class Gambler_Main_Server
     private static void ReadGamblerProfiles()
     {
         Gambler_DataTypes.SyncedGamblerData.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.GamblerConfig);
-        ReadGamblerProfiles(profiles);
-        string folder = Market_Paths.AdditionalConfigsGamblerProfilesConfig;
+        string folder = Market_Paths.GamblerProfilesFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            profiles = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ReadGamblerProfiles(profiles);
         }
         ClientClearData();

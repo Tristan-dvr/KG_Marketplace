@@ -1,4 +1,5 @@
-﻿using Marketplace.Paths;
+﻿using Marketplace.Modules.Global_Options;
+using Marketplace.Paths;
 
 namespace Marketplace;
 
@@ -15,8 +16,8 @@ internal static class Market_Logger
 
     internal static void Log(LogType type, string message)
     {
-        if(type is LogType.Trader && !Global_Values.EnableTraderLog) return;
-        if(type is LogType.Transmog && !Global_Values.EnableTransmogLog) return;
+        if(type is LogType.Trader && !Global_Configs.EnableTraderLog) return;
+        if(type is LogType.Transmog && !Global_Configs.EnableTransmogLog) return;
         string LogStr = type switch
         {
             LogType.Banker => $"[{DateTime.Now}] [Banker] " + message + "\n",

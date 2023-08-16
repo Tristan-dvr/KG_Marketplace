@@ -1,4 +1,6 @@
-﻿using Marketplace.Modules.Banker;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.Banker;
+using Marketplace.Modules.Global_Options;
 using Marketplace.UI_OptimizationHandler;
 using Object = UnityEngine.Object;
 
@@ -47,8 +49,8 @@ public static class Trader_UI
 
     public static void Init()
     {
-        UI = Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceTraderNewUI"));
-        BuyElement = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("TraderInstantiateV2");
+        UI = Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("MarketplaceTraderNewUI"));
+        BuyElement = AssetStorage.asset.LoadAsset<GameObject>("TraderInstantiateV2");
         ContentTransform = UI.transform.Find("Canvas/Scroll View/Viewport/Content");
         Object.DontDestroyOnLoad(UI);
         UI.SetActive(false);
@@ -68,7 +70,7 @@ public static class Trader_UI
             int i1 = i;
             ModifierButtons[i].GetComponent<Button>().onClick.AddListener(() =>
             {
-                AssetStorage.AssetStorage.AUsrc.Play();
+                AssetStorage.AUsrc.Play();
                 SetModifier((Modifier)i1);
                 CreateElementsNew();
             });
@@ -76,7 +78,7 @@ public static class Trader_UI
 
         UI.transform.Find("Canvas/Background/ToBank").GetComponent<Button>().onClick.AddListener(() =>
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             ToBank = !ToBank;
             UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color =
                 ToBank ? Enabled : Disabled;
@@ -92,7 +94,8 @@ public static class Trader_UI
     [ClientOnlyPatch]
     private static class InventoryGui_Awake_Patch
     {
-        private static void Postfix(InventoryGui __instance)
+        [UsedImplicitly]
+private static void Postfix(InventoryGui __instance)
         {
             foreach (UITooltip uiTooltip in BuyElement.GetComponentsInChildren<UITooltip>(true))
             {
@@ -106,7 +109,8 @@ public static class Trader_UI
     [ClientOnlyPatch]
     private static class TraderUIFix
     {
-        private static void Postfix(ref bool __result)
+        [UsedImplicitly]
+private static void Postfix(ref bool __result)
         {
             if (IsPanelVisible()) __result = true;
         }
@@ -126,7 +130,7 @@ public static class Trader_UI
 
     private static void OnSearchInput(string arg0)
     {
-        AssetStorage.AssetStorage.AUsrc.PlayOneShot(AssetStorage.AssetStorage.TypeClip, 0.7f);
+        AssetStorage.AUsrc.PlayOneShot(AssetStorage.TypeClip, 0.7f);
         SortList();
         CreateElementsNew();
     }
@@ -272,8 +276,8 @@ public static class Trader_UI
     {
         Player p = Player.m_localPlayer;
         string logMessage =
-            $"{Player.m_localPlayer.GetPlayerName()} ({Global_Values._localUserID}) TraderNPC: ";
-        AssetStorage.AssetStorage.AUsrc.Play();
+            $"{Player.m_localPlayer.GetPlayerName()} ({Global_Configs._localUserID}) TraderNPC: ";
+        AssetStorage.AUsrc.Play();
         if (!CanBuy(data)) return;
 
         foreach (Trader_DataTypes.TraderItem neededItem in data.NeededItems)

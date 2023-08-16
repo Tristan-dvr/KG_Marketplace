@@ -1,14 +1,16 @@
 ﻿using Jewelcrafting;
 using Jewelcrafting.GemEffects;
-namespace Marketplace.Modules.Marketplace_NPC;
+using Marketplace.ExternalLoads;
+namespace Marketplace.Modules.MainMarketplace;
+
 public static class JC_API_Class
 {
     private static class JC_GemHandler
     {
         static JC_GemHandler()
         {
-            Type idm = Type.GetType("ItemDataManager.ItemInfo, Jewelcrafting");
-            Type idmExtentions = Type.GetType("ItemDataManager.ItemExtensions, Jewelcrafting");
+            Type idm = Type.GetType("ItemDataManager.ItemInfo, Jewelcrafting")!;
+            Type idmExtentions = Type.GetType("ItemDataManager.ItemExtensions, Jewelcrafting")!;
             GetMethod = AccessTools.Method(idm, "Get", new[] { typeof(string) })
                 .MakeGenericMethod(typeof(ItemContainer));
             DataExtention = AccessTools.Method(idmExtentions, "Data", new[] { typeof(ItemDrop.ItemData) });
@@ -57,7 +59,7 @@ public static class JC_API_Class
                     {
                         string socket = sockets.socketedGems[i - 1].Name;
                         string text = "$jc_empty_socket_text";
-                        Sprite sprite = AssetStorage.AssetStorage.NullSprite;
+                        Sprite sprite = AssetStorage.NullSprite;
                         if (ZNetScene.instance.GetPrefab(socket) is { } gameObject)
                         {
                             if (sockets is not Box)

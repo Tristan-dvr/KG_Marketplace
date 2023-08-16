@@ -4,7 +4,7 @@ namespace Marketplace.Modules.Transmogrification;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
-    new[] { "TransmogrificationProfiles.cfg" },
+    new[] { "TM" },
     new[] { "OnTransmogrificationProfileChanged" })]
 public static class Transmogrification_Main_Server
 {
@@ -53,7 +53,7 @@ public static class Transmogrification_Main_Server
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Error while parsing line {i + 1} in {Market_Paths.TransmogrificationConfig}: {ex}",
+                    Utils.print($"Error while parsing line {i + 1} in TransmogConfig: {ex}",
                         ConsoleColor.Red);
                 }
             }
@@ -63,13 +63,11 @@ public static class Transmogrification_Main_Server
     private static void ReadTransmogrificationProfiles()
     {
         Transmogrification_DataTypes.SyncedTransmogData.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.TransmogrificationConfig);
-        ProcessTransmogrificationProfiles(profiles);
-        string folder = Market_Paths.AdditionalConfigsTransmogrificationConfig;
+        string folder = Market_Paths.TransmogrificationFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            profiles = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessTransmogrificationProfiles(profiles);
         }
         Transmogrification_DataTypes.SyncedTransmogData.Update();

@@ -1,4 +1,5 @@
 ﻿using ItemDataManager;
+using Marketplace.ExternalLoads;
 using Marketplace.Modules.Gambler;
 
 namespace Marketplace.Modules.Transmogrification;
@@ -59,7 +60,7 @@ public static class Transmogrification_UI
     public static void Init()
     {
         UI = UnityEngine.Object.Instantiate(
-            AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketplaceTransmogUI"));
+            AssetStorage.asset.LoadAsset<GameObject>("MarketplaceTransmogUI"));
         UnityEngine.Object.DontDestroyOnLoad(UI);
         UI.SetActive(false);
         MainBar = UI.transform.Find("Canvas/SelectItemTab/ItemList/ListPanel/Scroll View/Scrollbar")
@@ -67,17 +68,17 @@ public static class Transmogrification_UI
         SubBar = UI.transform.Find("Canvas/SelectTransmogTab/ItemList/ListPanel/Scroll View/Scrollbar")
             .GetComponent<Scrollbar>();
         AllFillers.AddRange(UI.GetComponentsInChildren<ContentSizeFitter>(true).ToList());
-        Inventory_Element = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("TransmogInventoryItem");
+        Inventory_Element = AssetStorage.asset.LoadAsset<GameObject>("TransmogInventoryItem");
         Inventory_Content =
             UI.transform.Find("Canvas/SelectItemTab/ItemList/ListPanel/Scroll View/Viewport/Content");
-        Category_Element = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("TransmogCategory");
+        Category_Element = AssetStorage.asset.LoadAsset<GameObject>("TransmogCategory");
         Category_Content =
             UI.transform.Find("Canvas/SelectTransmogTab/ItemList/ListPanel/Scroll View/Viewport/Content");
-        Transmog_Element = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("TransmogItem");
+        Transmog_Element = AssetStorage.asset.LoadAsset<GameObject>("TransmogItem");
         ChoosenItem_Transform = UI.transform.Find("Canvas/SelectItemTab/ItemList/ChoosenItem");
-        ClickEffect = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("TransmogClick");
-        ClickEffect2 = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("TransmogClick2");
-        ClickEffectReverse = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("TransmogReverse");
+        ClickEffect = AssetStorage.asset.LoadAsset<GameObject>("TransmogClick");
+        ClickEffect2 = AssetStorage.asset.LoadAsset<GameObject>("TransmogClick2");
+        ClickEffectReverse = AssetStorage.asset.LoadAsset<GameObject>("TransmogReverse");
         UI.transform.Find("Canvas/SelectItemTab/ItemList/DestroyTransmog").GetComponent<Button>().onClick
             .AddListener(TransformReverse);
     }
@@ -332,7 +333,7 @@ public static class Transmogrification_UI
 
     private static void ClickRightLeftButton(GameObject element, bool right)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         int currentCounter = int.Parse(element.transform.Find("Premium").GetChild(0).name);
         int newCounter = right ? currentCounter + 1 : currentCounter - 1;
         if (newCounter < 0) newCounter = 20;
@@ -345,7 +346,7 @@ public static class Transmogrification_UI
 
     private static void ClickTransmog(Transmogrification_DataTypes.TransmogItem_Data data, GameObject element)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         if (CurrentChoosenItem == null) return;
         GameObject priceItem = ZNetScene.instance.GetPrefab(data.Price_Prefab);
         if (priceItem == null) return;
@@ -372,7 +373,7 @@ public static class Transmogrification_UI
         eff.transform.SetAsLastSibling();
         GameObject eff2 = UnityEngine.Object.Instantiate(ClickEffect2, ChoosenItem_Transform);
         eff2.GetComponent<RectTransform>().position = element.transform.position;
-        AssetStorage.AssetStorage.AUsrc.PlayOneShot(Gambler_UI.SOUNDEFFECT3, 0.6f);
+        AssetStorage.AUsrc.PlayOneShot(Gambler_UI.SOUNDEFFECT3, 0.6f);
         LoadCategories(CurrentChoosenItem);
         Inventory_Content.GetChild(IndexOfChoosenItem).Find("Text").GetComponent<Text>().color =
             new Color(1f, 0.31f, 0.31f);
@@ -384,12 +385,12 @@ public static class Transmogrification_UI
 
     private static void TransformReverse()
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         if(CurrentChoosenItem?.Data().Get<Transmogrification_DataTypes.TransmogItem_Component>() == null) return;
         CurrentChoosenItem.Data().Remove<Transmogrification_DataTypes.TransmogItem_Component>();
         GameObject eff = UnityEngine.Object.Instantiate(ClickEffectReverse, ChoosenItem_Transform);
         eff.transform.SetAsLastSibling();
-        AssetStorage.AssetStorage.AUsrc.PlayOneShot(Gambler_UI.SOUNDEFFECT3, 0.6f);
+        AssetStorage.AUsrc.PlayOneShot(Gambler_UI.SOUNDEFFECT3, 0.6f);
         ChoosenItem_Transform.Find("EIDF").gameObject.SetActive(false);
         Inventory_Content.GetChild(IndexOfChoosenItem).Find("Text").GetComponent<Text>().color = Color.white;
     }
@@ -399,7 +400,7 @@ public static class Transmogrification_UI
 
     private static void ChooseItem(ItemDrop.ItemData item, int childIndex)
     {
-        AssetStorage.AssetStorage.AUsrc.Play();
+        AssetStorage.AUsrc.Play();
         if (item == CurrentChoosenItem)
         {
             CurrentChoosenItem = null;
@@ -428,7 +429,7 @@ public static class Transmogrification_UI
         CurrentChoosenItem = null;
         ChoosenItem_Transform.Find("Text").GetComponent<Text>().text = "";
         ChoosenItem_Transform.Find("Icon").GetComponent<Image>().sprite =
-            AssetStorage.AssetStorage.NullSprite;
+            AssetStorage.NullSprite;
         ChoosenItem_Transform.Find("EIDF").gameObject.SetActive(false);
         foreach (Transform child in Inventory_Content)
             UnityEngine.Object.Destroy(child.gameObject);
@@ -465,7 +466,8 @@ public static class Transmogrification_UI
     [ClientOnlyPatch]
     private static class visiblePatch
     {
-        private static void Postfix(ref bool __result)
+        [UsedImplicitly]
+private static void Postfix(ref bool __result)
         {
             if (IsVisble()) __result = true;
         }

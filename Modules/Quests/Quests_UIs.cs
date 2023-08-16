@@ -1,4 +1,6 @@
-﻿using UnityEngine.EventSystems;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
+using UnityEngine.EventSystems;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
 
@@ -40,10 +42,10 @@ public static class Quests_UIs
 
         public static void Init()
         {
-            UI = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("QuestHud"));
+            UI = UnityEngine.Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("QuestHud"));
             MainTransform = UI.transform.Find("Canvas/QuestPanel/QuestList/ListPanel/Scroll View/Viewport/Content");
-            QuestGO = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("QuestListItem");
-            RewardGO = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("RewardGO");
+            QuestGO = AssetStorage.asset.LoadAsset<GameObject>("QuestListItem");
+            RewardGO = AssetStorage.asset.LoadAsset<GameObject>("RewardGO");
             RewardTransform =
                 UI.transform.Find(
                     "Canvas/QuestPanel/QuestInfoTab/Description/Scroll View/Viewport/Content/RewardsContent");
@@ -69,8 +71,8 @@ public static class Quests_UIs
                 .Find("Canvas/QuestPanel/QuestInfoTab/Description/Scroll View/Viewport/Content/IMAGE")
                 .GetComponent<Image>();
 
-            QuestTarget = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("QuestTarget");
-            QuestTargetText = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("QuestTargetText");
+            QuestTarget = AssetStorage.asset.LoadAsset<GameObject>("QuestTarget");
+            QuestTargetText = AssetStorage.asset.LoadAsset<GameObject>("QuestTargetText");
 
             Localization.instance.Localize(UI.transform);
         }
@@ -80,7 +82,8 @@ public static class Quests_UIs
         [ClientOnlyPatch]
         private static class InventoryGui_Awake_Patch
         {
-            private static void Postfix(InventoryGui __instance)
+            [UsedImplicitly]
+private static void Postfix(InventoryGui __instance)
             {
                 foreach (UITooltip uiTooltip in RewardGO.GetComponentsInChildren<UITooltip>(true))
                 {
@@ -116,7 +119,7 @@ public static class Quests_UIs
             TOREMOVE.Clear();
             SetColors();
             AllGO[index].GetComponent<Image>().color = Color.yellow;
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             RestrictionText.gameObject.SetActive(false);
             RestrictionButton.gameObject.SetActive(false);
             DescriptionTransform.gameObject.SetActive(true);
@@ -171,7 +174,7 @@ public static class Quests_UIs
                     case Quests_DataTypes.QuestType.Kill or Quests_DataTypes.QuestType.Harvest:
                         TargetImage.sprite =
                             PhotoManager.__instance.GetSprite(quest.TargetPrefab[i],
-                                AssetStorage.AssetStorage.PlaceholderMonsterIcon,
+                                AssetStorage.PlaceholderMonsterIcon,
                                 quest.TargetLevel[i]);
                         break;
                     case Quests_DataTypes.QuestType.Collect or Quests_DataTypes.QuestType.Craft:
@@ -184,7 +187,7 @@ public static class Quests_UIs
                             .m_icon;
                         break;
                     case Quests_DataTypes.QuestType.Talk:
-                        TargetImage.sprite = AssetStorage.AssetStorage.PlaceholderGamblerIcon;
+                        TargetImage.sprite = AssetStorage.PlaceholderGamblerIcon;
                         break;
                 }
             }
@@ -217,7 +220,7 @@ public static class Quests_UIs
                     case Quests_DataTypes.QuestRewardType.Pet:
                         rewardImage.sprite =
                             PhotoManager.__instance.GetSprite(quest.RewardPrefab[i],
-                                AssetStorage.AssetStorage.PlaceholderMonsterIcon,
+                                AssetStorage.PlaceholderMonsterIcon,
                                 quest.RewardLevel[i]);
                         tooltip.m_topic = quest.GetLocalizedReward(i) +
                                           $" <color=#00ff00>{Star_Emoji}{quest.RewardLevel[i] - 1}</color>";
@@ -241,24 +244,24 @@ public static class Quests_UIs
                                          " x" + quest.RewardCount[i];
                         break;
                     case Quests_DataTypes.QuestRewardType.EpicMMO_EXP:
-                        rewardImage.sprite = AssetStorage.AssetStorage.EpicMMO_Exp;
+                        rewardImage.sprite = AssetStorage.EpicMMO_Exp;
                         tooltip.m_topic = Localization.instance.Localize("$mpasn_EpicMMO_EXP");
                         tooltip.m_text = Localization.instance.Localize("$mpasn_tooltip_epicmmo ") + "x" +
                                          quest.RewardCount[i];
                         break;
                     case Quests_DataTypes.QuestRewardType.MH_EXP:
-                        rewardImage.sprite = AssetStorage.AssetStorage.MH_Exp_Icon;
+                        rewardImage.sprite = AssetStorage.MH_Exp_Icon;
                         tooltip.m_topic = Localization.instance.Localize("$mpasn_MH_EXP");
                         tooltip.m_text = Localization.instance.Localize("$mpasn_tooltip_mh ") + "x" +
                                          quest.RewardCount[i];
                         break;
                     case Quests_DataTypes.QuestRewardType.Cozyheim_EXP:
-                        rewardImage.sprite = AssetStorage.AssetStorage.Cozyheim_Exp;
+                        rewardImage.sprite = AssetStorage.Cozyheim_Exp;
                         tooltip.m_topic = Localization.instance.Localize("$mpasn_Cozyheim_EXP");
                         tooltip.m_text = Localization.instance.Localize("$mpasn_tooltip_cozyheim ") + "x" + quest.RewardCount[i];
                         break;
                     case Quests_DataTypes.QuestRewardType.SetCustomValue or Quests_DataTypes.QuestRewardType.AddCustomValue:
-                        rewardImage.sprite = AssetStorage.AssetStorage.CustomValue_Icon;
+                        rewardImage.sprite = AssetStorage.CustomValue_Icon;
                         tooltip.m_topic = Localization.instance.Localize("$mpasn_CustomValue");
                         tooltip.m_text = $"{Localization.instance.Localize("$mpasn_CustomValue")} {quest.GetLocalizedReward(i)} {(quest.RewardCount[i] > 0 ? "+" : "-")}{quest.RewardCount[i]}";
                         break;
@@ -374,7 +377,7 @@ public static class Quests_UIs
                     bool canTake = Quests_DataTypes.Quest.CanTake(profileID, out _,
                         out Quests_DataTypes.QuestRequirementType type);
 
-                    if (!canTake && Global_Values.SyncedGlobalOptions.Value._hideOtherQuestRequirementQuests &&
+                    if (!canTake && Global_Configs.SyncedGlobalOptions.Value._hideOtherQuestRequirementQuests &&
                         type is Quests_DataTypes.QuestRequirementType.OtherQuest) continue;
 
                     if (!canTake && type is Quests_DataTypes.QuestRequirementType.IsVIP) continue;
@@ -411,7 +414,7 @@ public static class Quests_UIs
 
         public static void ClickJournal()
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             if (IsVisible())
             {
                 Hide();
@@ -473,7 +476,7 @@ public static class Quests_UIs
                 $"<color=yellow> [ {data.Name} ]</color>".Localize() + timeLeft;
             go.transform.Find("QuestName/Button").GetComponent<Button>().onClick.AddListener(() =>
             {
-                AssetStorage.AssetStorage.AUsrc.Play();
+                AssetStorage.AUsrc.Play();
                 Quests_DataTypes.Quest.RemoveQuestFailed(UID);
                 CheckQuests();
                 QuestUI.Reload();
@@ -531,9 +534,9 @@ public static class Quests_UIs
         public static void Init()
         {
             UI = UnityEngine.Object.Instantiate(
-                AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("MarketACCEPTEDquests"));
+                AssetStorage.asset.LoadAsset<GameObject>("MarketACCEPTEDquests"));
             MainTransform = UI.transform.Find("UI/panel/ALLSTUFF/Scroll View/Viewport/Content");
-            QuestGO = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("AcceptedQuestGONew");
+            QuestGO = AssetStorage.asset.LoadAsset<GameObject>("AcceptedQuestGONew");
             UI.transform.Find("UI/panel/btn").GetComponent<Button>().onClick.AddListener(ClickHideButton);
             UI.transform.Find("UI/panel/btn2").GetComponent<Button>().onClick.AddListener(QuestUI.ClickJournal);
             UnityEngine.Object.DontDestroyOnLoad(UI);
@@ -600,7 +603,7 @@ public static class Quests_UIs
 
         private static void ClickHideButton()
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             GameObject transform = UI.transform.Find("UI/panel/ALLSTUFF").gameObject;
             transform.SetActive(!transform.activeSelf);
         }
@@ -655,7 +658,8 @@ public static class Quests_UIs
     [ClientOnlyPatch]
     private static class QuestUIFix
     {
-        private static void Postfix(ref bool __result)
+        [UsedImplicitly]
+private static void Postfix(ref bool __result)
         {
             if (QuestUI.IsVisible()) __result = true;
         }

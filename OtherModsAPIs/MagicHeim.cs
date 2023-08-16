@@ -1,4 +1,4 @@
-﻿namespace Marketplace_APIs;
+﻿namespace Marketplace.OtherModsAPIs;
 
 internal static class MH_API
 {

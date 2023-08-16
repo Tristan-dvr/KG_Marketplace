@@ -12,7 +12,7 @@
         <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <LangVersion>10</LangVersion>
-        <Nullable>disable</Nullable>
+        <Nullable>annotations</Nullable>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
@@ -385,12 +385,12 @@
         <Compile Include="Modules\Gambler\Gambler_UI.cs" />
         <Compile Include="Modules\Global_Options\Global_Options.cs" />
         <Compile Include="Modules\KG_Chat\KG_Chat.cs" />
-        <Compile Include="Modules\Marketplace\JC_API.cs" />
-        <Compile Include="Modules\Marketplace\Marketplace_Main_Server.cs" />
-        <Compile Include="Modules\Marketplace\Marketplace_DataTypes.cs" />
-        <Compile Include="Modules\Marketplace\Marketplace_Main_Client.cs" />
-        <Compile Include="Modules\Marketplace\Marketplace_Messages.cs" />
-        <Compile Include="Modules\Marketplace\Marketplace_UI.cs" />
+        <Compile Include="Modules\MainMarketplace\JC_API.cs" />
+        <Compile Include="Modules\MainMarketplace\Marketplace_Main_Server.cs" />
+        <Compile Include="Modules\MainMarketplace\Marketplace_DataTypes.cs" />
+        <Compile Include="Modules\MainMarketplace\Marketplace_Main_Client.cs" />
+        <Compile Include="Modules\MainMarketplace\Marketplace_Messages.cs" />
+        <Compile Include="Modules\MainMarketplace\Marketplace_UI.cs" />
         <Compile Include="Modules\NPC\NPC.cs" />
         <Compile Include="Modules\NPC\NPC_MapPins.cs" />
         <Compile Include="Modules\NPC_Dialogues\Dialogues_DataTypes.cs" />

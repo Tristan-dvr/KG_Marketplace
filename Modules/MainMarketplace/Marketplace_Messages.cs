@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
 using Marketplace.Paths;
 
-namespace Marketplace.Modules.Marketplace_NPC;
+namespace Marketplace.Modules.MainMarketplace;
 
 public static class Marketplace_Messages
 {
@@ -10,8 +12,8 @@ public static class Marketplace_Messages
     private static int _currentPage;
     public static bool _showMessageBox;
     private static Rect _mainMenuRect;
-    private static GUIStyle guistylebutton2;
-    private static GUIStyle normalField;
+    private static GUIStyle guistylebutton2 = null!;
+    private static GUIStyle normalField = null!;
 
     private static void SetGuiStyles()
     {
@@ -48,7 +50,7 @@ public static class Marketplace_Messages
                 "");
             GUI.Window(431312538, _mainMenuRect, Test,
                 "");
-            GUI.DrawTextureWithTexCoords(_mainMenuRect,AssetStorage.AssetStorage.WoodTex,
+            GUI.DrawTextureWithTexCoords(_mainMenuRect,AssetStorage.WoodTex,
                 new Rect(0, 0,
                     _mainMenuRect.width /
                     _mainMenuRect.width,
@@ -62,7 +64,8 @@ public static class Marketplace_Messages
     [ClientOnlyPatch]
     private static class MSGUIFix
     {
-        private static void Postfix(ref bool __result)
+        [UsedImplicitly]
+private static void Postfix(ref bool __result)
         {
             if (_showMessageBox) __result = true;
         }
@@ -77,7 +80,7 @@ public static class Marketplace_Messages
         if (GUI.Button(new Rect(1920 * _mult1 - 100 * _mult1, 20, 70f * _mult1, 70f * _mult2), "X",
                 guistylebutton2))
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             Marketplace_UI.Show();
 
             _showMessageBox = false;
@@ -91,7 +94,7 @@ public static class Marketplace_Messages
             ZRoutedRpc.instance.InvokeRoutedRPC("KGmarket ClearMessages");
             Messenger.ClientPlayerMessages.Clear();
             Messenger.LocalCount = 0;
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
         }
 
         GUI.Label(new Rect(690 * _mult1, 1080 * _mult2 - 80, 130f * _mult1, 50f * _mult2),
@@ -99,14 +102,14 @@ public static class Marketplace_Messages
         if (GUI.Button(new Rect(820 * _mult1, 1080 * _mult2 - 80, 100f * _mult1, 50f * _mult2), "<",
                 guistylebutton2))
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             if (_currentPage > 0) _currentPage--;
         }
 
         if (GUI.Button(new Rect(920 * _mult1, 1080 * _mult2 - 80, 100f * _mult1, 50f * _mult2), ">",
                 guistylebutton2))
         {
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             if (_currentPage < Messenger.LocalCount / 36) _currentPage++;
         }
 
@@ -160,35 +163,35 @@ public static class Marketplace_Messages
         {
             if (buyer != seller)
             {
-                int applyTaxes = Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(seller) ? Global_Values.SyncedGlobalOptions.Value._vipmarketTaxes : Global_Values.SyncedGlobalOptions.Value._marketTaxes;
+                int applyTaxes = Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(seller) ? Global_Configs.SyncedGlobalOptions.Value._vipmarketTaxes : Global_Configs.SyncedGlobalOptions.Value._marketTaxes;
                 long value = howMany * data.Price;
                 value = (long)(value - value * (applyTaxes / 100f)); 
                 
                 if (PlayerMessages.ContainsKey(seller))
                     PlayerMessages[seller] =
-                        $"[{DateTime.Now}] You sold <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>Income : {value} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>. Taxes: {applyTaxes}%\n" +
+                        $"[{DateTime.Now}] You sold <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>Income : {value} {Localization.instance.Localize(Global_Configs.CurrencyName)}</color>. Taxes: {applyTaxes}%\n" +
                         PlayerMessages[seller];
                 else
                     PlayerMessages[seller] =
-                        $"[{DateTime.Now}] You sold <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>Income : {value} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>. Taxes: {applyTaxes}%";
+                        $"[{DateTime.Now}] You sold <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>Income : {value} {Localization.instance.Localize(Global_Configs.CurrencyName)}</color>. Taxes: {applyTaxes}%";
 
                 if (PlayerMessages.ContainsKey(buyer))
                     PlayerMessages[buyer] =
-                        $"[{DateTime.Now}] You bought <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>price: {data.Price * howMany} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>\n" +
+                        $"[{DateTime.Now}] You bought <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>price: {data.Price * howMany} {Localization.instance.Localize(Global_Configs.CurrencyName)}</color>\n" +
                         PlayerMessages[buyer];
                 else
                     PlayerMessages[buyer] =
-                        $"[{DateTime.Now}] You bought <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>price: {data.Price * howMany} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>";
+                        $"[{DateTime.Now}] You bought <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>price: {data.Price * howMany} {Localization.instance.Localize(Global_Configs.CurrencyName)}</color>";
             }
             else
             {
                 if (PlayerMessages.ContainsKey(buyer))
                     PlayerMessages[buyer] =
-                        $"[{DateTime.Now}] You cancelled <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color>| <color=yellow>price: {data.Price * howMany} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>\n" +
+                        $"[{DateTime.Now}] You cancelled <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color>| <color=yellow>price: {data.Price * howMany} {Localization.instance.Localize(Global_Configs.CurrencyName)}</color>\n" +
                         PlayerMessages[buyer];
                 else
                     PlayerMessages[buyer] =
-                        $"[{DateTime.Now}] You cancelled <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>price: {data.Price * howMany} {Localization.instance.Localize(Global_Values.CurrencyName)}</color>";
+                        $"[{DateTime.Now}] You cancelled <color=green>{Localization.instance.Localize(data.ItemName)}</color> <color=#FF00FF>x{howMany}</color> | <color=yellow>price: {data.Price * howMany} {Localization.instance.Localize(Global_Configs.CurrencyName)}</color>";
             }
             Marketplace_Main_Server.SendMessagesToClient(buyer);
             Marketplace_Main_Server.SendMessagesToClient(seller);

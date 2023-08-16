@@ -4,7 +4,7 @@ namespace Marketplace.Modules.Quests;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
-    new[] { "QuestsProfiles.cfg", "QuestsDatabase.cfg", "QuestsEvents.cfg" },
+    new[] { "QP", "QD", "QE" },
     new[] { "OnQuestsProfilesFileChange", "OnQuestDatabaseFileChange", "OnQuestsEventFileChange" })]
 public static class Quests_Main_Server
 {
@@ -69,13 +69,11 @@ public static class Quests_Main_Server
     private static void ReadQuestProfiles()
     {
         Quests_DataTypes.SyncedQuestProfiles.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestProfilesPath);
-        ProcessQuestProfiles(profiles);
-        string folder = Market_Paths.AdditionalConfigsQuestsProfilesConfig;
+        string folder = Market_Paths.QuestsProfilesFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            profiles = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessQuestProfiles(profiles);
         }
         Quests_DataTypes.SyncedQuestProfiles.Update();
@@ -298,13 +296,11 @@ public static class Quests_Main_Server
     {
         Quests_DataTypes.SyncedQuestRevision.Value = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         Quests_DataTypes.SyncedQuestData.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.QuestDatabasePath);
-        ProcessQuestDatabaseProfiles(profiles);
-        string folder = Market_Paths.AdditionalConfigsQuestsDatabaseConfig;
+        string folder = Market_Paths.QuestsDatabaseFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            profiles = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessQuestDatabaseProfiles(profiles);
         }
 
@@ -383,13 +379,11 @@ public static class Quests_Main_Server
     private static void ReadEventDatabase()
     {
         Quests_DataTypes.SyncedQuestsEvents.Value.Clear();
-        IReadOnlyList<string> events = File.ReadAllLines(Market_Paths.QuestEventsPath);
-        ProcessEventDatabase(events);
-        string folder = Market_Paths.AdditionalConfigsQuestsEventsConfig;
+        string folder = Market_Paths.QuestsEventsFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            events = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> events = File.ReadAllLines(file).ToList();
             ProcessEventDatabase(events);
         }
         Quests_DataTypes.SyncedQuestsEvents.Update();

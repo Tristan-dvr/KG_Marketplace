@@ -1,7 +1,8 @@
-﻿using Marketplace.Modules.Banker;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.Banker;
 using Marketplace.Modules.Buffer;
 using Marketplace.Modules.Gambler;
-using Marketplace.Modules.Marketplace_NPC;
+using Marketplace.Modules.MainMarketplace;
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.ServerInfo;
 using Marketplace.Modules.Teleporter;
@@ -26,18 +27,18 @@ public static class DistancedUI_UI
             Transmogrification
         }
 
-        private static GameObject UI;
-        private static GameObject Content_Element;
-        private static Transform Viewport_Content;
+        private static GameObject UI = null!;
+        private static GameObject Content_Element = null!;
+        private static Transform Viewport_Content = null!;
         private static readonly List<GameObject> Elements = new();
 
-        private static GameObject View;
-        private static GameObject View_Profiles;
-        private static GameObject Left;
-        private static GameObject Right;
+        private static GameObject View = null!;
+        private static GameObject View_Profiles = null!;
+        private static GameObject Left = null!;
+        private static GameObject Right = null!;
 
-        private static Image Profiles_Icon;
-        private static Text Profiles_Text;
+        private static Image Profiles_Icon = null!;
+        private static Text Profiles_Text = null!;
         private static readonly List<Image> Buttons_Images = new();
 
 
@@ -58,27 +59,27 @@ public static class DistancedUI_UI
 
         public static void Init()
         {
-            UI = UnityEngine.Object.Instantiate(AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("PremiumMemebershipUI"));
+            UI = UnityEngine.Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("PremiumMemebershipUI"));
             Viewport_Content = UI.transform.Find("Canvas/View_Profiles/CraftView/Scroll View/Viewport/Content");
             View = UI.transform.Find("Canvas/Open/View").gameObject;
             View_Profiles = UI.transform.Find("Canvas/View_Profiles").gameObject;
             Left = UI.transform.Find("Canvas/Open/Left").gameObject;
             Right = UI.transform.Find("Canvas/Open/Right").gameObject;
-            Content_Element = AssetStorage.AssetStorage.asset.LoadAsset<GameObject>("PremiumUI_Element");
+            Content_Element = AssetStorage.asset.LoadAsset<GameObject>("PremiumUI_Element");
             UI.transform.Find("Canvas/Open").GetComponent<Button>().onClick.AddListener(ClickView);
             UnityEngine.Object.DontDestroyOnLoad(UI);
             UI.SetActive(false);
             Profiles_Icon = UI.transform.Find("Canvas/View_Profiles/Image").GetComponent<Image>();
             Profiles_Text = UI.transform.Find("Canvas/View_Profiles/Text").GetComponent<Text>();
-            Icons[NPCtype_Internal.Marketplace] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("marketicon_pm");
-            Icons[NPCtype_Internal.Trader] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("trader_pm");
-            Icons[NPCtype_Internal.Banker] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("banker_pm");
-            Icons[NPCtype_Internal.Teleporter] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("teleporter_pm");
-            Icons[NPCtype_Internal.Gambler] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("gamble_pm");
-            Icons[NPCtype_Internal.Buffer] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("buffer_pm");
-            Icons[NPCtype_Internal.Quests] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("quests_pm");
-            Icons[NPCtype_Internal.Info] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("info_pm");
-            Icons[NPCtype_Internal.Transmogrification] = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("transmog_pm");
+            Icons[NPCtype_Internal.Marketplace] = AssetStorage.asset.LoadAsset<Sprite>("marketicon_pm");
+            Icons[NPCtype_Internal.Trader] = AssetStorage.asset.LoadAsset<Sprite>("trader_pm");
+            Icons[NPCtype_Internal.Banker] = AssetStorage.asset.LoadAsset<Sprite>("banker_pm");
+            Icons[NPCtype_Internal.Teleporter] = AssetStorage.asset.LoadAsset<Sprite>("teleporter_pm");
+            Icons[NPCtype_Internal.Gambler] = AssetStorage.asset.LoadAsset<Sprite>("gamble_pm");
+            Icons[NPCtype_Internal.Buffer] = AssetStorage.asset.LoadAsset<Sprite>("buffer_pm");
+            Icons[NPCtype_Internal.Quests] = AssetStorage.asset.LoadAsset<Sprite>("quests_pm");
+            Icons[NPCtype_Internal.Info] = AssetStorage.asset.LoadAsset<Sprite>("info_pm");
+            Icons[NPCtype_Internal.Transmogrification] = AssetStorage.asset.LoadAsset<Sprite>("transmog_pm");
             UI.transform.Find("Canvas/Open/View/Marketplace").GetComponent<Button>().onClick
                 .AddListener(() => ClickOpen(NPCtype_Internal.Marketplace));
             UI.transform.Find("Canvas/Open/View/Trader").GetComponent<Button>().onClick
@@ -166,7 +167,7 @@ public static class DistancedUI_UI
             }
 
             Menu.instance.OnClose();
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             Profiles_Icon.sprite = Icons[type];
             Profiles_Text.text = Localization.instance.Localize(Texts[type]);
             if (type is NPCtype_Internal.Marketplace)
@@ -241,7 +242,7 @@ public static class DistancedUI_UI
         {
             if (!DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
             Menu.instance.OnClose();
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             HideViewProfiles();
             HideView();
             switch (type)
@@ -296,7 +297,7 @@ public static class DistancedUI_UI
             ResetColors();
             if (!DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
             Menu.instance.OnClose();
-            AssetStorage.AssetStorage.AUsrc.Play();
+            AssetStorage.AUsrc.Play();
             View_Profiles.SetActive(false);
             bool active = View.activeSelf;
             View.SetActive(!active);
@@ -353,7 +354,8 @@ public static class DistancedUI_UI
         [ClientOnlyPatch]
         private static class Menu_IsVisible_Patch
         {
-            private static void Postfix(ref bool __result)
+            [UsedImplicitly]
+private static void Postfix(ref bool __result)
             {
                 if (IsViewProfilesVisible() || IsViewVisible())
                 {
@@ -366,7 +368,8 @@ public static class DistancedUI_UI
         [ClientOnlyPatch]
         private static class Menu_OnLogoutYes_Patch
         {
-            private static void Postfix()
+            [UsedImplicitly]
+private static void Postfix()
             {
                 Hide();
             }
@@ -376,7 +379,7 @@ public static class DistancedUI_UI
     
     public class HoverOnButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        private Image _image;
+        private Image _image = null!;
         public bool _locked;
  
         private void Awake()

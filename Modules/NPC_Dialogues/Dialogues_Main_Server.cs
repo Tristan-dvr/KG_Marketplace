@@ -4,10 +4,11 @@ namespace Marketplace.Modules.NPC_Dialogues;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
-    new[] { "NpcDialogues.cfg" },
+    new[] { "DI" },
     new[] { "OnDialoguesChange" })]
 public class Dialogues_Main_Server
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         ReadDialoguesData();
@@ -26,8 +27,8 @@ public class Dialogues_Main_Server
 
     private static void ProcessDialogueProfiles(IReadOnlyList<string> profiles)
     {
-        Dialogues_DataTypes.RawDialogue dialogue = null;
-        List<Dialogues_DataTypes.RawDialogue.RawPlayerOption> options = null;
+        Dialogues_DataTypes.RawDialogue? dialogue = null;
+        List<Dialogues_DataTypes.RawDialogue.RawPlayerOption>? options = null;
         for (int i = 0; i < profiles.Count; i++)
         {
             try
@@ -37,7 +38,7 @@ public class Dialogues_Main_Server
                 {
                     if (dialogue != null)
                     {
-                        dialogue.Options = options.ToArray();
+                        dialogue.Options = options!.ToArray();
                         Dialogues_DataTypes.SyncedDialoguesData.Value.Add(dialogue);
                         dialogue = null;
                     }
@@ -100,7 +101,7 @@ public class Dialogues_Main_Server
 
                         option.Commands = commands.ToArray();
                         option.Conditions = conditions.ToArray();
-                        options.Add(option);
+                        options!.Add(option);
                     }
                 }
             }
@@ -113,27 +114,26 @@ public class Dialogues_Main_Server
 
         if (dialogue != null)
         {
-            dialogue.Options = options?.ToArray();
+            dialogue.Options = options?.ToArray()!;
             Dialogues_DataTypes.SyncedDialoguesData.Value.Add(dialogue);
         }
     }
 
     private static void ReadDialoguesData()
     {
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.NpcDialoguesConfig);
         Dialogues_DataTypes.SyncedDialoguesData.Value.Clear();
-        ProcessDialogueProfiles(profiles);
-        string folder = Market_Paths.AdditionalConfigsDialoguesFolder;
+        string folder = Market_Paths.DialoguesFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            profiles = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessDialogueProfiles(profiles);
         }
 
         Dialogues_DataTypes.SyncedDialoguesData.Update();
     }
 
+    [UsedImplicitly]
     private static void OnDialoguesChange()
     {
         ReadDialoguesData();

@@ -1,4 +1,6 @@
-﻿namespace Marketplace.Modules.NPC;
+﻿using Marketplace.ExternalLoads;
+
+namespace Marketplace.Modules.NPC;
 
 public static class NPC_MapController
 {
@@ -11,9 +13,10 @@ public static class NPC_MapController
     [ClientOnlyPatch]
     private static class Minimap_GetSprite_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(Minimap.PinType type, ref Sprite __result)
         {
-            if (type is PINTYPENPC) __result = AssetStorage.AssetStorage.NPC_MapControl;
+            if (type is PINTYPENPC) __result = AssetStorage.NPC_MapControl;
         }
     }
 
@@ -52,7 +55,7 @@ public static class NPC_MapController
                     pinData.m_NamePinData = new Minimap.PinNameData(pinData);
                 }
 
-                pinData.m_icon = AssetStorage.AssetStorage.NPC_MapControl;
+                pinData.m_icon = AssetStorage.NPC_MapControl;
                 pinData.m_save = false;
                 pinData.m_checked = false;
                 pinData.m_ownerID = 0L;
@@ -65,6 +68,7 @@ public static class NPC_MapController
             }
         }
 
+        [UsedImplicitly]
         private static void Prefix(Minimap __instance, Minimap.MapMode mode)
         {
             if (mode != Minimap.MapMode.Large)
@@ -82,7 +86,7 @@ public static class NPC_MapController
     private static bool Control(bool leftClick)
     {
         Vector3 pos = Minimap.instance.ScreenToWorldPoint(Input.mousePosition);
-        Minimap.PinData closestPin = Utils.GetCustomPin(PINTYPENPC, pos, Minimap.instance.m_removeRadius * (Minimap.instance.m_largeZoom * 2f));
+        Minimap.PinData? closestPin = Utils.GetCustomPin(PINTYPENPC, pos, Minimap.instance.m_removeRadius * (Minimap.instance.m_largeZoom * 2f));
         if (closestPin != null && _pins.TryGetValue(closestPin, out var zdo))
         {
             if (leftClick)
@@ -102,6 +106,7 @@ public static class NPC_MapController
     [ClientOnlyPatch]
     private static class PatchClickIconMinimap
     {
+        [UsedImplicitly]
         private static bool Prefix() => Control(true);
     }
     
@@ -109,6 +114,7 @@ public static class NPC_MapController
     [ClientOnlyPatch]
     private static class PatchRightClickIconMinimap
     {
+        [UsedImplicitly]
         private static bool Prefix() => Control(false);
     }
 }

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using BepInEx.Configuration;
 using YamlDotNet.Serialization;
 
-namespace LocalizationManager;
+namespace Marketplace;
 
 [PublicAPI]
 public class Localizer
@@ -107,7 +107,7 @@ public class Localizer
 		localizationLanguage.Add(__instance, language);
 
 		Dictionary<string, string> localizationFiles = new();
-		foreach (string file in Directory.GetFiles(Path.GetDirectoryName(Paths.PluginPath)!, $"{plugin.Info.Metadata.Name}.*", SearchOption.AllDirectories).Where(f => fileExtensions.IndexOf(Path.GetExtension(f)) >= 0))
+		foreach (string file in Directory.GetFiles(Path.GetDirectoryName(BepInEx.Paths.PluginPath)!, $"{plugin.Info.Metadata.Name}.*", SearchOption.AllDirectories).Where(f => fileExtensions.IndexOf(Path.GetExtension(f)) >= 0))
 		{
 			string key = Path.GetFileNameWithoutExtension(file).Split('.')[1];
 			if (localizationFiles.ContainsKey(key))

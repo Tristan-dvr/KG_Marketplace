@@ -1,38 +1,36 @@
 ﻿using BepInEx.Bootstrap;
-using Marketplace.Base64;
 using Marketplace.Paths;
 using UnityEngine.Networking;
 
-namespace Marketplace.AssetStorage;
+namespace Marketplace.ExternalLoads;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.First)]
 public static class AssetStorage
 {
-    public static AssetBundle asset;
+    public static AssetBundle asset = null!;
 
     public static readonly Dictionary<string, Sprite> GlobalCachedSprites = new();
     public static readonly Dictionary<string, AudioClip> NPC_AudioClips = new();
-    public static GameObject MarketplaceQuestTargetIcon;
-    public static GameObject MarketplaceQuestQuestionIcon;
-    public static Sprite PlaceholderMonsterIcon;
-    public static Sprite PlaceholderGamblerIcon;
-    public static Sprite NPC_MapControl;
-    public static Sprite EpicMMO_Exp;
-    public static Sprite Cozyheim_Exp;
-    public static Sprite MH_Exp_Icon;
-    public static Sprite NullSprite;
-    public static Sprite CustomValue_Icon;
-    public static Texture WoodTex;
-    public static AudioClip TypeClip;
-    public static GameObject Teleporter_VFX1;
-    public static Sprite PortalIconDefault;
-    public static GameObject Teleporter_VFX2;
+    public static GameObject MarketplaceQuestTargetIcon = null!;
+    public static GameObject MarketplaceQuestQuestionIcon = null!;
+    public static Sprite PlaceholderMonsterIcon = null!;
+    public static Sprite PlaceholderGamblerIcon = null!;
+    public static Sprite NPC_MapControl = null!;
+    public static Sprite EpicMMO_Exp = null!;
+    public static Sprite Cozyheim_Exp = null!;
+    public static Sprite MH_Exp_Icon = null!;
+    public static Sprite NullSprite = null!;
+    public static Sprite CustomValue_Icon = null!;
+    public static Texture WoodTex = null!;
+    public static AudioClip TypeClip = null!;
+    public static GameObject Teleporter_VFX1 = null!;
+    public static Sprite PortalIconDefault = null!;
+    public static GameObject Teleporter_VFX2 = null!;
 
-    public static AudioSource AUsrc;
+    public static AudioSource AUsrc = null!;
     
-
-    // ReSharper disable once UnusedMember.Global
+    [UsedImplicitly]
     private static void OnInit()
     {
         asset = GetAssetBundle("kgmarketplacemod");
@@ -101,7 +99,7 @@ public static class AssetStorage
     {
         Assembly execAssembly = Assembly.GetExecutingAssembly();
         string resourceName = execAssembly.GetManifestResourceNames().Single(str => str.EndsWith(filename));
-        using Stream stream = execAssembly.GetManifestResourceStream(resourceName);
+        using Stream stream = execAssembly.GetManifestResourceStream(resourceName)!;
         return AssetBundle.LoadFromStream(stream);
     }
 
@@ -109,6 +107,7 @@ public static class AssetStorage
     [ClientOnlyPatch]
     private static class AudioMan_Awake_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(AudioMan __instance)
         {
             AUsrc = Chainloader.ManagerObject.AddComponent<AudioSource>();

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Marketplace.ExternalLoads;
 using Marketplace.Modules.Quests;
 
 namespace Marketplace.Modules.NPC;
@@ -13,8 +14,9 @@ public static class NPC_MapPins
     private static readonly List<ZDO> TempNPCList = new();
     private static readonly List<Minimap.PinData> TempNPCpins = new();
     public const Minimap.PinType PINTYPENPC = (Minimap.PinType)175;
-    private static Sprite QuestCompleteIcon;
+    private static Sprite QuestCompleteIcon = null!;
 
+    [UsedImplicitly]
     private static void OnInit()
     {
         Marketplace._thistype.StartCoroutine(SendNPCsToClients());
@@ -38,7 +40,7 @@ public static class NPC_MapPins
                 int index = 0;
                 while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName_Pinned, AllNPCs, ref index))
                 {
-                    if (!Player.m_localPlayer || ZDOMan.instance == null || !Minimap.instance) break;
+                    if (!Player.m_localPlayer || !Minimap.instance) break;
                     yield return null;
                 }
 
@@ -64,12 +66,12 @@ public static class NPC_MapPins
                         pinData.m_NamePinData = new Minimap.PinNameData(pinData);
                     }
 
-                    Sprite icon = AssetStorage.AssetStorage.PlaceholderGamblerIcon;
+                    Sprite icon = AssetStorage.PlaceholderGamblerIcon;
 
                     if (questTarget)
                     {
                         if (!QuestCompleteIcon)
-                            QuestCompleteIcon = AssetStorage.AssetStorage.asset.LoadAsset<Sprite>("questcomplete");
+                            QuestCompleteIcon = AssetStorage.asset.LoadAsset<Sprite>("questcomplete");
                         icon = QuestCompleteIcon;
                         pinData.m_animate = true;
                         pinData.m_doubleSize = true;
@@ -81,9 +83,9 @@ public static class NPC_MapPins
                         {
                             split[1] = split[1].Replace("</icon>", "");
                             GameObject prefab = ZNetScene.instance.GetPrefab(split[1]);
-                            if (AssetStorage.AssetStorage.GlobalCachedSprites.ContainsKey(split[1]))
+                            if (AssetStorage.GlobalCachedSprites.ContainsKey(split[1]))
                             {
-                                icon = AssetStorage.AssetStorage.GlobalCachedSprites[split[1]];
+                                icon = AssetStorage.GlobalCachedSprites[split[1]];
                             }
 
                             if (!prefab) goto GOTOLABEL;
@@ -95,7 +97,7 @@ public static class NPC_MapPins
                             {
                                 PhotoManager.__instance.MakeSprite(prefab, 0.6f, 0.25f);
                                 icon = PhotoManager.__instance.GetSprite(prefab.name,
-                                    AssetStorage.AssetStorage.PlaceholderMonsterIcon, 1);
+                                    AssetStorage.PlaceholderMonsterIcon, 1);
                             }
                         }
                     }
@@ -122,9 +124,10 @@ public static class NPC_MapPins
     [ClientOnlyPatch]
     private static class Minimap_GetSprite_Patch
     {
-        private static void Postfix(Minimap.PinType type, ref Sprite __result)
+        [UsedImplicitly]
+private static void Postfix(Minimap.PinType type, ref Sprite __result)
         {
-            if (type is PINTYPENPC) __result = AssetStorage.AssetStorage.PlaceholderGamblerIcon;
+            if (type is PINTYPENPC) __result = AssetStorage.PlaceholderGamblerIcon;
         }
     }
 
@@ -132,6 +135,7 @@ public static class NPC_MapPins
     [ClientOnlyPatch]
     private static class NPC_MapControllerPatch
     {
+        [UsedImplicitly]
         private static void Prefix(Minimap __instance, Minimap.MapMode mode)
         {
             if (mode != Minimap.MapMode.Large) return;

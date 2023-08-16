@@ -1,24 +1,26 @@
 ﻿using System.Threading.Tasks;
+using Marketplace.Modules.Global_Options;
+using Marketplace.Modules.MainMarketplace;
 using Marketplace.Paths;
-using Marketplace.Modules.Marketplace_NPC;
 
 namespace Marketplace.Modules.Banker;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "BankerProfiles.cfg" },
+[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "BA" },
     new[] { "OnBankerProfilesFileChange" })]
 public static class Banker_Main_Server
 {
     private static readonly Dictionary<string, Dictionary<int, int>> BankerServerSideData = new();
     private static readonly Dictionary<string, Dictionary<int, DateTime>> BankerTimeStamp = new();
 
+    [UsedImplicitly]
     private static void OnInit()
     {
         if (!File.Exists(Market_Paths.BankerDataJSONFile)) File.Create(Market_Paths.BankerDataJSONFile).Dispose();
         string bankData = Market_Paths.BankerDataJSONFile.ReadFile();
         if (!string.IsNullOrWhiteSpace(bankData))
             BankerServerSideData.AddRange(JSON.ToObject<Dictionary<string, Dictionary<int, int>>>(bankData));
-        if (Global_Values.BankerIncomeTime > 0)
+        if (Global_Configs.BankerIncomeTime > 0)
         {
             Marketplace._thistype.StartCoroutine(BankerIncome());
         }
@@ -26,6 +28,7 @@ public static class Banker_Main_Server
         ReadServerBankerProfiles();
     }
 
+    [UsedImplicitly]
     private static void OnBankerProfilesFileChange()
     {
         ReadServerBankerProfiles();
@@ -35,16 +38,16 @@ public static class Banker_Main_Server
     private static void ProcessBankerProfiles(IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
-        for (int i = 0; i < profiles.Count; i++)
+        foreach (var line in profiles)
         {
-            if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
-            if (profiles[i].StartsWith("["))
+            if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#")) continue;
+            if (line.StartsWith("["))
             {
-                splitProfile = profiles[i].Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
+                splitProfile = line.Replace("[", "").Replace("]", "").Replace(" ", "").ToLower();
             }
             else
             {
-                int test = profiles[i].Replace(" ", "").GetStableHashCode();
+                int test = line.Replace(" ", "").GetStableHashCode();
                 if (Banker_DataTypes.SyncedBankerProfiles.Value.TryGetValue(splitProfile, out List<int> value))
                 {
                     value.Add(test);
@@ -60,13 +63,11 @@ public static class Banker_Main_Server
     private static void ReadServerBankerProfiles()
     {
         Banker_DataTypes.SyncedBankerProfiles.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.BankerFile);
-        ProcessBankerProfiles(profiles);
-        string folder = Market_Paths.AdditionalConfigsBankerProfilesConfig;
+        string folder = Market_Paths.BankerProfilesFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            profiles = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessBankerProfiles(profiles);
         }
         Banker_DataTypes.SyncedBankerProfiles.Update();
@@ -76,26 +77,26 @@ public static class Banker_Main_Server
     {
         while (true)
         {
-            yield return new WaitForSecondsRealtime(Global_Values.BankerIncomeTime * 3600);
+            yield return new WaitForSecondsRealtime(Global_Configs.BankerIncomeTime * 3600);
             if (!ZNet.instance || !ZNet.instance.IsServer()) continue;
             Utils.print("Adding Banker Income");
             Task task = Task.Run(() =>
             {
                 HashSet<int> interestItems =
-                    new(Global_Values.BankerInterestItems.Split(',').Select(i => i.GetStableHashCode()));
+                    new(Global_Configs.BankerInterestItems.Split(',').Select(i => i.GetStableHashCode()));
                 foreach (string id in BankerServerSideData.Keys)
                 {
-                    float multiplier = Global_Values.SyncedGlobalOptions.Value._vipPlayerList.Contains(id)
-                        ? Global_Values.BankerVIPIncomeMultiplier
-                        : Global_Values.BankerIncomeMultiplier;
+                    float multiplier = Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(id)
+                        ? Global_Configs.BankerVIPIncomeMultiplier
+                        : Global_Configs.BankerIncomeMultiplier;
                     if (multiplier > 0)
                     {
                         foreach (int item in new List<int>(BankerServerSideData[id].Keys))
                         {
-                            if (Global_Values.BankerInterestItems != "All" && !interestItems.Contains(item)) continue;
+                            if (Global_Configs.BankerInterestItems != "All" && !interestItems.Contains(item)) continue;
                             if (!BankerTimeStamp.ContainsKey(id) || !BankerTimeStamp[id].ContainsKey(item) ||
                                 (DateTime.Now - BankerTimeStamp[id][item]).TotalHours >=
-                                Global_Values.BankerIncomeTime)
+                                Global_Configs.BankerIncomeTime)
                             {
                                 int val = BankerServerSideData[id][item];
                                 double toAdd = Math.Ceiling(val * multiplier);
@@ -111,10 +112,9 @@ public static class Banker_Main_Server
             });
             yield return new WaitUntil(() => task.IsCompleted);
             SaveBankerData();
-            foreach (string userID in BankerServerSideData.Keys)
+            foreach (var peer in BankerServerSideData.Keys.Select(userID => ZNet.instance.GetPeerByHostName(userID)).Where(peer => peer != null))
             {
-                ZNetPeer peer = ZNet.instance.GetPeerByHostName(userID);
-                if (peer != null) SendBankerDataToClient(peer);
+                SendBankerDataToClient(peer);
             }
         }
     }
@@ -143,6 +143,7 @@ public static class Banker_Main_Server
     [ServerOnlyPatch]
     private static class ZnetSyncBankerProfiles
     {
+        [UsedImplicitly]
         private static void Postfix(ZRpc rpc)
         {
             if (!ZNet.instance.IsServer()) return;
@@ -158,6 +159,7 @@ public static class Banker_Main_Server
     [ServerOnlyPatch]
     private static class ZrouteMethodsServerBanker
     {
+        [UsedImplicitly]
         private static void Postfix()
         {
             if (!ZNet.instance.IsServer()) return;

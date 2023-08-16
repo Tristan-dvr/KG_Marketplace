@@ -11,6 +11,7 @@ public static class Leaderboard_DataTypes
     public static List<Achievement> AllAchievements = new();
     internal static Dictionary<string, Player_Leaderboard> ServersidePlayersLeaderboard = new();
 
+    [Serializable]
     internal class Player_Leaderboard
     {
         public Dictionary<string, int> KilledCreatures = new();
@@ -20,7 +21,7 @@ public static class Leaderboard_DataTypes
         public Dictionary<string, int> Harvested = new();
         public float MapExplored;
         public int DeathAmount;
-        public string PlayerName;
+        public string? PlayerName;
 
         public int KilledPlayers => KilledCreatures.TryGetValue("Player", out int amount) ? amount : 0;
     }
@@ -31,8 +32,8 @@ public static class Leaderboard_DataTypes
         ItemsCrafted,
         StructuresBuilt,
         Died,
-        KilledBy,
-        Explored,
+        KilledBy, 
+        Explored, 
         Harvested,
         PlayersKilled = 100
     }
@@ -40,9 +41,9 @@ public static class Leaderboard_DataTypes
     public class Achievement
     {
         public int ID;
-        public string Name;
-        public string Description;
-        public string Prefab;
+        public string? Name;
+        public string? Description;
+        public string Prefab = null!;
         public int MinAmount;
         public Color32 Color;
         public int Score;
@@ -54,14 +55,10 @@ public static class Leaderboard_DataTypes
             Player_Leaderboard player = ServersidePlayersLeaderboard[id];
             return Type switch
             {
-                TriggerType.MonstersKilled => player.KilledCreatures.TryGetValue(Prefab, out int amount) &&
-                                              amount >= MinAmount,
-                TriggerType.ItemsCrafted => player.ItemsCrafted.TryGetValue(Prefab, out int amount) &&
-                                            amount >= MinAmount,
-                TriggerType.StructuresBuilt => player.BuiltStructures.TryGetValue(Prefab, out int amount) &&
-                                               amount >= MinAmount,
-                TriggerType.KilledBy => player.KilledBy.TryGetValue(Prefab, out int amount) && amount >= MinAmount,
-                TriggerType.Explored => player.MapExplored >= MinAmount,
+                TriggerType.MonstersKilled => player.KilledCreatures.TryGetValue(Prefab, out int amount) && amount >= MinAmount,
+                TriggerType.ItemsCrafted => player.ItemsCrafted.TryGetValue(Prefab, out int amount) && amount >= MinAmount,
+                TriggerType.StructuresBuilt => player.BuiltStructures.TryGetValue(Prefab, out int amount) && amount >= MinAmount,
+                TriggerType.KilledBy => player.KilledBy.TryGetValue(Prefab, out int amount) && amount >= MinAmount, TriggerType.Explored => player.MapExplored >= MinAmount,
                 TriggerType.Died => player.DeathAmount >= MinAmount,
                 TriggerType.PlayersKilled => player.KilledPlayers >= MinAmount,
                 TriggerType.Harvested => player.Harvested.TryGetValue(Prefab, out int amount) && amount >= MinAmount,
@@ -72,7 +69,7 @@ public static class Leaderboard_DataTypes
 
     internal class Client_Leaderboard : ISerializableParameter
     {
-        public string PlayerName;
+        public string? PlayerName;
         public int KilledCreatures;
         public int KilledPlayers;
         public int BuiltStructures;
@@ -80,7 +77,7 @@ public static class Leaderboard_DataTypes
         public int Died;
         public int Harvested;
         public float MapExplored;
-        public List<int> Achievements;
+        public List<int> Achievements = new();
         public void Serialize(ref ZPackage pkg)
         {
             pkg.Write(PlayerName ?? "");
@@ -121,9 +118,9 @@ public static class Leaderboard_DataTypes
     internal class Client_Achievement : ISerializableParameter
     {
         public int ID;
-        public string Name;
+        public string? Name;
         public int Score;
-        public string Description;
+        public string? Description;
         public Color32 Color;
 
         public void Serialize(ref ZPackage pkg)

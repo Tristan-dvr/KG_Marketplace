@@ -4,7 +4,7 @@ namespace Marketplace.Modules.ServerInfo;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
-    new[] { "ServerInfoProfiles.cfg" }, new[] { "OnServerInfoProfileChange" })]
+    new[] { "SI" }, new[] { "OnServerInfoProfileChange" })]
 public static class ServerInfo_Main_Server
 {
     private static void OnInit()
@@ -89,13 +89,11 @@ public static class ServerInfo_Main_Server
     private static void ReadServerInfoProfiles()
     {
         ServerInfo_DataTypes.SyncedServerInfoData.Value.Clear();
-        IReadOnlyList<string> profiles = File.ReadAllLines(Market_Paths.ServerInfoConfig);
-        ProcessServerInfoProfiles(profiles);
-        string folder = Market_Paths.AdditionalConfigsServerInfoProfilesConfig;
+        string folder = Market_Paths.ServerInfoProfilesFolder;
         string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            profiles = File.ReadAllLines(file).ToList();
+            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessServerInfoProfiles(profiles);
         }
         ServerInfo_DataTypes.SyncedServerInfoData.Update();
