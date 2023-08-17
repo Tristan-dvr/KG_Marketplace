@@ -10,16 +10,11 @@ public class NPC_DataTypes
         public string Prefab = "";
         public string Patrol = "";
         public string Dialogue = "";
+        public string IMAGE = "";
 
         public NPC_Main()
         {
             Type = Market_NPC.NPCType.None;
-        }
-
-        public override string ToString()
-        {
-            return
-                $"{Type} @|@ {NameOverride} @|@ {Profile} @|@ {Prefab} @|@ {Patrol} @|@ {Dialogue}";
         }
 
         public string Description
@@ -71,13 +66,6 @@ public class NPC_DataTypes
         public string PeriodicAnimationTime;
         public string PeriodicSound;
         public string PeriodicSoundTime;
-
-        public override string ToString()
-        {
-            return
-                $"{LeftItem} @|@ {RightItem} @|@ {HelmetItem} @|@ {ChestItem} @|@ {LegsItem} @|@ {CapeItem} @|@ {HairItem} @|@ {HairColor} @|@ {ModelScale} @|@ {LeftItemHidden} @|@ {RightItemHidden} @|@ {InteractAnimation} @|@ {GreetAnimation} @|@ {ByeAnimation} @|@ {GreetText} @|@ {ByeText} @|@ {SkinColor} @|@ {CraftingAnimation} @|@ {BeardItem} @|@ {BeardColor} @|@ {InteractAudioClip} @|@ {TextSize} @|@ {TextHeight} @|@ {PeriodicAnimation} @|@ {PeriodicAnimationTime} @|@ {PeriodicSound} @|@ {PeriodicSoundTime}";
-        }
-        
 
         public void Serialize(ref ZPackage pkg)
         {

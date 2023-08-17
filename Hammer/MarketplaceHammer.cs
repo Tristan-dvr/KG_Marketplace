@@ -9,12 +9,19 @@ using Random = UnityEngine.Random;
 
 namespace Marketplace.Hammer;
 
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit", new[] { "SN" }, new[] { "Reload" })]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit", new[] { "SN" },
+    new[] { "Reload" })]
 public static class MarketplaceHammer
 {
-    private static Dictionary<string, KeyValuePair<NPC_Main, NPC_Fashion>> _npcData = new();
+    private static Dictionary<string, Wrapper> _npcData = new();
     private static List<Piece> _pieces = new();
     private static GameObject CopyFrom;
+    
+    public struct Wrapper
+    {
+        public NPC_Main main;
+        public NPC_Fashion fashion;
+    }
 
     private static GameObject INACTIVE = new GameObject("INACTIVE_SAVEDNPCS")
     {
@@ -76,113 +83,31 @@ public static class MarketplaceHammer
         }
     }
 
-    private enum SpecificationsMain
+    private static void ProcessSavedNPC(string fileName, string data)
     {
-        Type,
-        NameOverride,
-        Profile,
-        Prefab,
-        Patrol,
-        Dialogue
-    }
-
-    private enum SpecificationsFashion
-    {
-        LeftItem,
-        RightItem,
-        HelmetItem,
-        ChestItem,
-        LegsItem,
-        CapeItem,
-        HairItem,
-        HairColor,
-        ModelScale,
-        LeftItemHidden,
-        RightItemHidden,
-        InteractAnimation,
-        GreetAnimation,
-        ByeAnimation,
-        GreetText,
-        ByeText,
-        SkinColor,
-        CraftingAnimation,
-        BeardItem,
-        BeardColor,
-        InteractAudioClip,
-        TextSize,
-        TextHeight,
-        PeriodicAnimation,
-        PeriodicAnimationTime,
-        PeriodicSound,
-        PeriodicSoundTime,
-    }
-    
-    private static void ProcessSavedNPC(IReadOnlyList<string> profiles)
-    {
-        for (int i = 0; i < profiles.Count; ++i)
+        try
         {
-            try
+            Wrapper KVP = fastJSON.JSON.ToObject<Wrapper>(data);
+            _npcData[fileName] = KVP;
+            GameObject copy = Object.Instantiate(CopyFrom, INACTIVE.transform);
+            copy.name = "MARKETNPC_HAMMER_BUILDED";
+            copy.GetComponent<Piece>().m_name = fileName;
+            copy.GetComponent<Piece>().m_description = KVP.main.Description;
+            if (!string.IsNullOrEmpty(KVP.main.IMAGE))
             {
-                if (profiles[i].StartsWith("["))
-                {
-                    NPC_Main mainData = new();
-                    NPC_Fashion fashionData = new();
-                    string UID = profiles[i].Replace("[", "").Replace("]", "").ToLower();
-
-                    string[] main = profiles[i + 1].Split(new string[] { "@|@" }, StringSplitOptions.None);
-                    mainData.Type = (Market_NPC.NPCType)Enum.Parse(typeof(Market_NPC.NPCType), main[0].Trim());
-                    mainData.NameOverride = main[1].Trim();
-                    mainData.Profile = main[2].Trim();
-                    mainData.Prefab = main[3].Trim();
-                    mainData.Patrol = main[4].Trim();
-                    mainData.Dialogue = main[5].Trim();
-
-                    string[] fashion = profiles[i + 2].Split(new string[] { "@|@" }, StringSplitOptions.None);
-                    fashionData.LeftItem = fashion[0].Trim();
-                    fashionData.RightItem = fashion[1].Trim();
-                    fashionData.HelmetItem = fashion[2].Trim();
-                    fashionData.ChestItem = fashion[3].Trim();
-                    fashionData.LegsItem = fashion[4].Trim();
-                    fashionData.CapeItem = fashion[5].Trim();
-                    fashionData.HairItem = fashion[6].Trim();
-                    fashionData.HairColor = fashion[7].Trim();
-                    fashionData.ModelScale = fashion[8].Trim();
-                    fashionData.LeftItemHidden = fashion[9].Trim();
-                    fashionData.RightItemHidden = fashion[10].Trim();
-                    fashionData.InteractAnimation = fashion[11].Trim();
-                    fashionData.GreetAnimation = fashion[12].Trim();
-                    fashionData.ByeAnimation = fashion[13].Trim();
-                    fashionData.GreetText = fashion[14].Trim();
-                    fashionData.ByeText = fashion[15].Trim();
-                    fashionData.SkinColor = fashion[16].Trim();
-                    fashionData.CraftingAnimation = fashion[17].Trim();
-                    fashionData.BeardItem = fashion[18].Trim();
-                    fashionData.BeardColor = fashion[19].Trim();
-                    fashionData.InteractAudioClip = fashion[20].Trim();
-                    fashionData.TextSize = fashion[21].Trim();
-                    fashionData.TextHeight = fashion[22].Trim();
-                    fashionData.PeriodicAnimation = fashion[23].Trim();
-                    fashionData.PeriodicAnimationTime = fashion[24].Trim();
-                    fashionData.PeriodicSound = fashion[25].Trim();
-                    fashionData.PeriodicSoundTime = fashion[26].Trim();
-                    
-                    string image = profiles[i + 3];
-                    _npcData[UID] = new KeyValuePair<NPC_Main, NPC_Fashion>(mainData, fashionData);
-                    GameObject copy = Object.Instantiate(CopyFrom, INACTIVE.transform);
-                    copy.name = "MARKETNPC_HAMMER_BUILDED";
-                    copy.GetComponent<Piece>().m_name = UID;
-                    copy.GetComponent<Piece>().m_description = mainData.Description;
-                    Texture2D loadTex = new(1, 1);
-                    loadTex.LoadImage(Convert.FromBase64String(image));
-                    copy.GetComponent<Piece>().m_icon = Sprite.Create(loadTex, new Rect(0, 0, loadTex.width, loadTex.height), new Vector2(0, 0));
-                    _pieces.Add(copy.GetComponent<Piece>());
-                    i += 3;
-                }
+                Texture2D loadTex = new(1, 1);
+                loadTex.LoadImage(Convert.FromBase64String(KVP.main.IMAGE));
+                copy.GetComponent<Piece>().m_icon = Sprite.Create(loadTex, new Rect(0, 0, loadTex.width, loadTex.height), new Vector2(0, 0));
             }
-            catch (Exception ex)
+            else
             {
-                Utils.print($"Failed to load NPC from file\n: {ex}");
+                copy.GetComponent<Piece>().m_icon = AssetStorage.NullSprite;
             }
+            _pieces.Add(copy.GetComponent<Piece>());
+        }
+        catch
+        {
+            
         }
     }
 
@@ -196,17 +121,18 @@ public static class MarketplaceHammer
 
     private static void Reload()
     {
-        MessageHud.instance?.ShowMessage(MessageHud.MessageType.Center,$"Reloading NPC Hammer List");
+        MessageHud.instance?.ShowMessage(MessageHud.MessageType.Center, $"Reloading NPC Hammer List");
         _npcData.Clear();
         _pieces.Clear();
         foreach (Transform transform in INACTIVE.transform)
             Object.Destroy(transform.gameObject);
         string folder = Market_Paths.NPC_Saved;
-        string[] files = Directory.GetFiles(folder, "*.cfg", SearchOption.AllDirectories);
+        string[] files = Directory.GetFiles(folder, "*.json", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
-            ProcessSavedNPC(profiles);
+            string fNameNoExt = Path.GetFileNameWithoutExtension(file);
+            string fContent = File.ReadAllText(file);
+            ProcessSavedNPC(fNameNoExt, fContent);
         }
     }
 
@@ -225,11 +151,21 @@ public static class MarketplaceHammer
         }
     }
 
+    private static JSONParameters NPC_Save_Params = new()
+    {
+        UseExtensions = false,
+        SerializeNullValues = true,
+        DateTimeMilliseconds = false,
+        UseUTCDateTime = true,
+        UseOptimizedDatasetSchema = true,
+        UseValuesOfEnums = false,
+    };
+
     public static void SaveNPC(Market_NPC.NPCcomponent npc)
     {
         string folder = Market_Paths.NPC_Saved;
         string random = $"{npc._currentNpcType} random{Random.Range(0, 100000)}";
-        string file = Path.Combine(folder, $"{random}.cfg");
+        string file = Path.Combine(folder, $"{random}.json");
         NPC_Main mainData = new();
         NPC_Fashion fashionData = new();
 
@@ -271,20 +207,16 @@ public static class MarketplaceHammer
         npc.transform.Find("TMP").gameObject.SetActive(false);
         string image = PlayerModelPreview.MakeScreenshot(npc.gameObject, 256);
         npc.transform.Find("TMP").gameObject.SetActive(true);
-
-        string parsed = $"[{random}]\n" +
-                        $"{mainData}\n" +
-                        $"{fashionData}\n" +
-                        $"{image}\n";
-
+        
         if (!File.Exists(file)) File.Create(file).Dispose();
-        File.WriteAllText(file, parsed);
+        
+        File.WriteAllText(file, fastJSON.JSON.ToNiceJSON(new Wrapper(){fashion = fashionData, main = mainData}, NPC_Save_Params));
         Utils.print($"Saved NPC to {file}");
         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, $"Saved NPC to {Path.GetFileName(file)}");
         Reload();
     }
-    
-    
+
+
     [HarmonyPatch(typeof(Player), nameof(Player.PlacePiece))]
     [ClientOnlyPatch]
     private static class HookBuild
@@ -293,7 +225,7 @@ public static class MarketplaceHammer
         {
             if (obj?.GetComponent<Piece>() is not { } piece) return;
             string objName = piece.name;
-            if(!objName.Contains("MARKETNPC_HAMMER_BUILDED")) return;
+            if (!objName.Contains("MARKETNPC_HAMMER_BUILDED")) return;
             var KVP = _npcData.TryGetValue(piece.m_name, out var value);
             Vector3 pos = piece.transform.position;
             Quaternion rot = piece.transform.rotation;
@@ -301,12 +233,12 @@ public static class MarketplaceHammer
             if (!KVP) return;
             var newNPC = Object.Instantiate(Market_NPC.NPC, pos, rot);
             Market_NPC.NPCcomponent comp = newNPC.GetComponent<Market_NPC.NPCcomponent>();
-            comp.ChangeNpcType(0, (int)value.Key.Type);
-            comp.ChangeProfile(0, value.Key.Profile, value.Key.Dialogue);
-            comp.OverrideName(0, value.Key.NameOverride);
-            comp.OverrideModel(0, value.Key.Prefab);
-            comp.GetPatrolData(0, value.Key.Patrol);
-            comp.FashionApply(0, value.Value);
+            comp.ChangeNpcType(0, (int)value.main.Type);
+            comp.ChangeProfile(0, value.main.Profile, value.main.Dialogue);
+            comp.OverrideName(0, value.main.NameOverride);
+            comp.OverrideModel(0, value.main.Prefab);
+            comp.GetPatrolData(0, value.main.Patrol);
+            comp.FashionApply(0, value.fashion);
         }
 
         [UsedImplicitly]
@@ -325,8 +257,4 @@ public static class MarketplaceHammer
             }
         }
     }
-    
-    
-    
-    
 }
