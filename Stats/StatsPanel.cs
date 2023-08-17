@@ -88,15 +88,13 @@ public static class StatsPanel
                 try
                 {
                     string gentypedefstr = field.FieldType.GetGenericTypeDefinition().ToString();
-                    bool cond = gentypedefstr.Contains("ServerSync.CustomSyncedValue");
-                    if (field.IsStatic && field.FieldType.IsGenericType && cond && field.FieldType !=
-                        typeof(CustomSyncedValue<Dictionary<string, Teleporter_DataTypes.TransferBytes>>))
+                    bool cond = gentypedefstr.Contains("Marketplace.CustomSyncedValue");
+                    if (field.IsStatic && field.FieldType.IsGenericType && cond)
                     {
                         StatsDict["Synced Data"]._statsList.Add(new(field, type.FullName, "Value", true));
                     }
                     
-                    bool cond2 = gentypedefstr.Contains("System.Collections.Generic.Dictionary") ||
-                                 gentypedefstr.Contains("System.Collections.Generic.List");
+                    bool cond2 = gentypedefstr.Contains("System.Collections.Generic.Dictionary") || gentypedefstr.Contains("System.Collections.Generic.List");
                     
                     if (type.Namespace != null && type.Namespace.Contains("Marketplace") && field.IsStatic && field.FieldType.IsGenericType && cond2)
                     {

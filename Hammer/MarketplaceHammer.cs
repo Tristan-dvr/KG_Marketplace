@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace Marketplace.Hammer;
 
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit", new[] { "SN" }, new[] { "Reload" })]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit")]
 public static class MarketplaceHammer
 {
     private static Dictionary<string, Wrapper> _npcData = new();
@@ -51,10 +51,10 @@ public static class MarketplaceHammer
 
     private static void ProcessSavedNPC(string fileName, string data)
     {
+        if(_npcData.ContainsKey(fileName)) return;
         try
         {
             YamlDotNet.Serialization.Deserializer deserializer = new();
-            /* fastJSON.JSON.ToObject<Wrapper>(data);*/
             Wrapper KVP = deserializer.Deserialize<Wrapper>(data);
             _npcData[fileName] = KVP;
             GameObject copy = Object.Instantiate(CopyFrom, INACTIVE.transform);
@@ -91,6 +91,7 @@ public static class MarketplaceHammer
     private static void Reload()
     {
         MessageHud.instance?.ShowMessage(MessageHud.MessageType.Center, $"Reloading NPC Hammer List");
+        Chat.instance?.AddString($"<color=green>Reloading NPC Hammer List</color>");
         _npcData.Clear();
         _pieces.Clear();
         foreach (Transform transform in INACTIVE.transform)
@@ -115,7 +116,6 @@ public static class MarketplaceHammer
         {
             new Terminal.ConsoleCommand("reloadnpcs", "Reloads all saved NPCs", (_) =>
             {
-                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, $"Reloading NPC Hammer List");
                 Reload();
             });
         }
@@ -190,9 +190,8 @@ public static class MarketplaceHammer
         
         YamlDotNet.Serialization.Serializer serializer = new();
         string yaml = serializer.Serialize(wrapper);
-        /*fastJSON.JSON.ToNiceJSON(wrapper, NPC_Save_Params)*/
         File.WriteAllText(fPath, yaml);
-        MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, $"Saved to {Path.GetFileName(fPath)}");
+        Chat.instance.AddString($"<color=green>NPC Saved to {Path.GetFileName(fPath)}. Write <color=yellow>/reloadnpcs</color> to reload NPC list in hammer</color>"); 
     }
 
 
