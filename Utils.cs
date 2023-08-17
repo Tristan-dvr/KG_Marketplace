@@ -192,6 +192,19 @@ public static class Utils
 
         return pinData;
     }
+    
+    public static Texture2D CustomSize(this Texture2D texture2D,int targetX,int targetY)
+    {
+        RenderTexture rt=new RenderTexture(targetX, targetY,24);
+        RenderTexture.active = rt;
+        Graphics.Blit(texture2D,rt);
+        Texture2D result=new Texture2D(targetX,targetY);
+        result.ReadPixels(new Rect(0,0,targetX,targetY),0,0);
+        result.Apply();
+        return result;
+    }
+    
+    public static string AsBase64(this string s) => Convert.ToBase64String(Encoding.UTF8.GetBytes(s));
 
     public static int CustomCountItemsNoLevel(string prefab)
     {

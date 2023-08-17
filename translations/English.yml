@@ -97,7 +97,6 @@ mpasn_damagereduction: Damage reduction
 mpasn_needhasitem: You need item
 mpasn_opennnpcui: NPC UI
 mpasn_fashionmenu: Fashion Menu
-mpasn_npcsaveload: NPC Save / Load Menu
 mpasn_removenpc: Remove NPC
 mpasn_interact: Interact
 mpasn_expired: EXPIRED
@@ -263,3 +262,4 @@ mpasn_dontneedcustomvalue: Too much Custom Value
 mpasn_CustomValue: Custom Value
 mpasn_SetCustomValue: Set Custom Value
 mpasn_AddCustomValue: Add Custom Value
+mpasn_savenpc : Save NPC

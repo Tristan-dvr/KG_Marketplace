@@ -4,8 +4,7 @@ using Marketplace.Paths;
 namespace Marketplace.Modules.Global_Options;
 
 [UsedImplicitly]
-[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit", new[] { "MarketPlace.cfg" },
-    new[] { "OnChange" })]
+[Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.First, "OnInit", new[] { "MarketPlace.cfg" }, new[] { "OnChange" })]
 public static class Global_Configs
 {
     public static string CurrencyName =>

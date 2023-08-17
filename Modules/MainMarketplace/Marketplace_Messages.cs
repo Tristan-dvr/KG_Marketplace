@@ -65,7 +65,7 @@ public static class Marketplace_Messages
     private static class MSGUIFix
     {
         [UsedImplicitly]
-private static void Postfix(ref bool __result)
+        private static void Postfix(ref bool __result)
         {
             if (_showMessageBox) __result = true;
         }

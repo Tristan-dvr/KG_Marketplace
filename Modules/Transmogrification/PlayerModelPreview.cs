@@ -260,6 +260,51 @@ public static class PlayerModelPreview
         Light.gameObject.SetActive(true);
     }
 
+    public static string MakeScreenshot(GameObject go, int texSize)
+    {
+        StopPreview();
+        if (!go) return null;
+        Vector3 prevPos = go.transform.position;
+        Quaternion prevRot = go.transform.rotation;
+        go.transform.position = Vector3.zero;
+        go.transform.rotation = Quaternion.Euler(2f, 0, 0);
+
+        Vector3 min = new Vector3(1000f, 1000f, 1000f);
+        Vector3 max = new Vector3(-1000f, -1000f, -1000f);
+        foreach (Renderer meshRenderer in go.GetComponentsInChildren<Renderer>())
+        {
+            if (meshRenderer is ParticleSystemRenderer) continue;
+            min = Vector3.Min(min, meshRenderer.bounds.min);
+            max = Vector3.Max(max, meshRenderer.bounds.max);
+        }
+
+        go.transform.position = SpawnPoint - (min + max) / 2f;
+        Light.transform.position = SpawnPoint + new Vector3(0, 2f, 2f);
+
+        var prevIntensity = Light.intensity;
+        Light.intensity = 2f;
+
+        Vector3 size = new Vector3(Mathf.Abs(min.x) + Mathf.Abs(max.x), Mathf.Abs(min.y) + Mathf.Abs(max.y), Mathf.Abs(min.z) + Mathf.Abs(max.z));
+        float maxMeshSize = Mathf.Max(size.x, size.y) + 0.1f;
+        float distance = maxMeshSize / Mathf.Tan(renderCamera.fieldOfView * Mathf.Deg2Rad) * 0.9f;
+        renderCamera.transform.position = SpawnPoint + new Vector3(0, 0.05f, distance);
+        renderCamera.gameObject.SetActive(true);
+        Light.gameObject.SetActive(true);
+
+        Texture2D tex = new Texture2D(2048, 2048, TextureFormat.RGBA32, false);
+        RenderTexture.active = renderCamera.targetTexture;
+        renderCamera.Render();
+        tex.ReadPixels(new Rect(0, 0, 2048, 2048), 0, 0);
+        tex.Apply();
+        RenderTexture.active = null;
+        go.transform.position = prevPos;
+        go.transform.rotation = prevRot;
+        Light.intensity = prevIntensity;
+        StopPreview();
+        byte[] bytes = tex.CustomSize(texSize,texSize).EncodeToPNG();
+        return Convert.ToBase64String(bytes);
+    }
+
     private static void StopPreview()
     {
         if (CurrentPreviewGO)
@@ -391,6 +436,7 @@ public static class PlayerModelPreview
     private static bool IsVisible => CurrentPreviewGO && CurrentPreviewGO.activeSelf;
 
     [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
+    [ClientOnlyPatch]
     private static class Menu_IsVisible_Patch
     {
         [UsedImplicitly]

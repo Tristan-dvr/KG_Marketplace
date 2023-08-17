@@ -347,6 +347,7 @@
         <Compile Include="ExternalLoads\AsmLoad_UnityCode.cs" />
         <Compile Include="ExternalLoads\AssetStorage.cs" />
         <Compile Include="GameEvents.cs" />
+        <Compile Include="Hammer\MarketplaceHammer.cs" />
         <Compile Include="LocalizationManager.cs" />
         <Compile Include="Modules\Leaderboard\Leaderboard_DataTypes.cs" />
         <Compile Include="Modules\Leaderboard\LeaderBoard_Main_Client.cs" />

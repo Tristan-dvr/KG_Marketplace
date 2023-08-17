@@ -7,7 +7,7 @@ namespace Marketplace.Modules.Teleporter;
     new[] { "TE" }, new[] { "OnTeleporterProfilesChange" })]
 public static class Teleporter_Main_Server
 {
-    
+    [UsedImplicitly]
     private static void OnInit()
     {
         ReadServerTeleporterProfiles();

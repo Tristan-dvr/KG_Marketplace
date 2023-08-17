@@ -2,6 +2,46 @@
 
 public class NPC_DataTypes
 {
+    public struct NPC_Main
+    {
+        public Market_NPC.NPCType Type;
+        public string NameOverride = "";
+        public string Profile = "";
+        public string Prefab = "";
+        public string Patrol = "";
+        public string Dialogue = "";
+
+        public NPC_Main()
+        {
+            Type = Market_NPC.NPCType.None;
+        }
+
+        public override string ToString()
+        {
+            return
+                $"{Type} @|@ {NameOverride} @|@ {Profile} @|@ {Prefab} @|@ {Patrol} @|@ {Dialogue}";
+        }
+
+        public string Description
+        {
+            get
+            {
+                string result = $"<color=yellow>Type:</color> {Type}. ";
+                if (!string.IsNullOrEmpty(NameOverride))
+                    result += $"<color=yellow>Name:</color> {NameOverride}. ";
+                if (!string.IsNullOrEmpty(Profile))
+                    result += $"<color=yellow>Profile:</color> {Profile}. ";
+                if (!string.IsNullOrEmpty(Prefab))
+                    result += $"<color=yellow>MovelOverride:</color> {Prefab}. ";
+                if (!string.IsNullOrEmpty(Dialogue))
+                    result += $"<color=yellow>Dialogue:</color> {Dialogue}. ";
+                if (!string.IsNullOrEmpty(Patrol))
+                    result += $"<color=yellow>Patrol:</color> {Patrol}\n";
+                return result;
+            }
+        }
+    }
+
     public struct NPC_Fashion : ISerializableParameter
     {
         public string LeftItem;
@@ -31,6 +71,13 @@ public class NPC_DataTypes
         public string PeriodicAnimationTime;
         public string PeriodicSound;
         public string PeriodicSoundTime;
+
+        public override string ToString()
+        {
+            return
+                $"{LeftItem} @|@ {RightItem} @|@ {HelmetItem} @|@ {ChestItem} @|@ {LegsItem} @|@ {CapeItem} @|@ {HairItem} @|@ {HairColor} @|@ {ModelScale} @|@ {LeftItemHidden} @|@ {RightItemHidden} @|@ {InteractAnimation} @|@ {GreetAnimation} @|@ {ByeAnimation} @|@ {GreetText} @|@ {ByeText} @|@ {SkinColor} @|@ {CraftingAnimation} @|@ {BeardItem} @|@ {BeardColor} @|@ {InteractAudioClip} @|@ {TextSize} @|@ {TextHeight} @|@ {PeriodicAnimation} @|@ {PeriodicAnimationTime} @|@ {PeriodicSound} @|@ {PeriodicSoundTime}";
+        }
+        
 
         public void Serialize(ref ZPackage pkg)
         {
@@ -93,38 +140,5 @@ public class NPC_DataTypes
             PeriodicSound = pkg.ReadString();
             PeriodicSoundTime = pkg.ReadString();
         }
-    }
-    
-    public class NpcData
-    {
-        public string PrefabOverride;
-        public string LeftItem;
-        public string RightItem;
-        public string HelmetItem;
-        public string ChestItem;
-        public string LegsItem;
-        public string CapeItem;
-        public string HairItem;
-        public string HairItemColor;
-        public string ModelScale;
-        public string LeftItemHidden;
-        public string RightItemHidden;
-        public string NPCinteractAnimation;
-        public string NPCgreetAnimation;
-        public string NPCbyeAnimation;
-        public string NPCgreetText;
-        public string NPCbyeText;
-        public string SkinColor;
-        public string NPCcraftingAnimation;
-        public string BeardItem;
-        public string BeardItemColor;
-        public string InteractAudioClip;
-        public string TextSize;
-        public string TextHeight;
-        public string PeriodicAnimation;
-        public string PeriodicAnimationTime;
-        public string PeriodicSound = "";
-        public string PeriodicSoundTime = "0";
-        public string IMAGE;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Marketplace.ExternalLoads;
+using Marketplace.Hammer;
 using Marketplace.Modules.Banker;
 using Marketplace.Modules.Buffer;
 using Marketplace.Modules.Feedback;
@@ -22,8 +23,8 @@ namespace Marketplace.Modules.NPC;
 [Market_Autoload(Market_Autoload.Type.Both, Market_Autoload.Priority.Normal)]
 public static class Market_NPC
 {
-    private static GameObject NPC = null!;
-    private static GameObject PinnedNPC = null!;
+    public static GameObject NPC = null!;
+    public static GameObject PinnedNPC = null!;
     private static readonly string[] TypeNames = Enum.GetNames(typeof(NPCType));
     private static readonly int SkinColor = Shader.PropertyToID("_SkinColor");
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
@@ -552,7 +553,7 @@ public static class Market_NPC
         }
 
 
-        private void GetPatrolData(long sender, string data)
+        public void GetPatrolData(long sender, string data)
         {
             if (znv.IsOwner())
             {
@@ -574,6 +575,8 @@ public static class Market_NPC
                   " " + Localization.instance.Localize("$mpasn_opennnpcui") +
                   "\n" + Localization.instance.Localize("[<color=yellow><b>ALT + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_fashionmenu") +
+                  "\n" + Localization.instance.Localize("[<color=yellow><b>C + $KEY_Use</b></color>]") +
+                    " " + Localization.instance.Localize("$mpasn_savenpc") +
                   "\n" + Localization.instance.Localize("[<color=red><b>DELETE + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_removenpc")
                 : "";
@@ -659,6 +662,12 @@ public static class Market_NPC
                 NPC_SoundSource.Play();
             }
 
+            if (Input.GetKey(KeyCode.C) && Utils.IsDebug)
+            {
+                MarketplaceHammer.SaveNPC(this);
+                return true;
+            }
+
             if (Input.GetKey(KeyCode.LeftAlt) && Utils.IsDebug)
             {
                 NPCUI.ShowFashion(znv.m_zdo);
@@ -697,7 +706,7 @@ public static class Market_NPC
             return false;
         }
 
-        private void FashionApply(long sender, NPC_DataTypes.NPC_Fashion fashion)
+        public void FashionApply(long sender, NPC_DataTypes.NPC_Fashion fashion)
         {
             if (znv.m_zdo.IsOwner())
             {
@@ -880,7 +889,7 @@ public static class Market_NPC
         }
 
 
-        private void OverrideModel(long sender, string newModelName)
+        public void OverrideModel(long sender, string newModelName)
         {
             if (znv.IsOwner()) znv.m_zdo.Set("KGnpcModelOverride", newModelName);
             foreach (string typeName in TypeNames)
@@ -902,16 +911,15 @@ public static class Market_NPC
             }
         }
 
-        private void OverrideName(long sender, string newName)
+        public void OverrideName(long sender, string newName)
         {
             if (znv.IsOwner()) znv.m_zdo.Set("KGnpcNameOverride", newName);
             CheckNameOnIcons(newName);
             transform.Find("MPASNquest").gameObject.SetActive(Quests_DataTypes.Quest.IsQuestTarget(newName));
         }
 
-        private void ChangeProfile(long sender, string profile, string dialogue)
+        public void ChangeProfile(long sender, string profile, string dialogue)
         {
-            Utils.print($"Internal change profile set. Profile: {profile} Dialogue: {dialogue}");
             if (znv.IsOwner())
             {
                 if (string.IsNullOrWhiteSpace(profile)) profile = "default";
@@ -1320,7 +1328,7 @@ public static class Market_NPC
         }
 
 
-        private void ChangeNpcType(long sende, int index)
+        public void ChangeNpcType(long sende, int index)
         {
             if (_currentNpcType == (NPCType)index) return;
             if (znv.IsOwner()) znv.m_zdo.Set("KGmarketNPC", index);
@@ -1557,33 +1565,33 @@ public static class Market_NPC
             }
             else
             {
-                _currentNPC.NPC_LeftItem(fashion.LeftItem);
-                _currentNPC.NPC_RightItem(fashion.RightItem);
-                _currentNPC.NPC_HelmetItem(fashion.HelmetItem);
-                _currentNPC.NPC_ChestItem(fashion.ChestItem);
-                _currentNPC.NPC_LegsItem(fashion.LegsItem);
-                _currentNPC.NPC_CapeItem(fashion.CapeItem);
-                _currentNPC.NPC_HairItem(fashion.HairItem);
-                _currentNPC.NPC_HairColor(fashion.HairColor);
-                _currentNPC.NPC_NPCScale(fashion.ModelScale);
-                _currentNPC.NPC_LeftItemBack(fashion.LeftItemHidden);
-                _currentNPC.NPC_RightItemBack(fashion.RightItemHidden);
-                _currentNPC.NPC_InteractAnimation(fashion.InteractAnimation);
-                _currentNPC.NPC_GreetingAnimation(fashion.GreetAnimation);
-                _currentNPC.NPC_ByeAnimation(fashion.ByeAnimation);
-                _currentNPC.NPC_GreetingText(fashion.GreetText);
-                _currentNPC.NPC_ByeText(fashion.ByeText);
-                _currentNPC.NPC_SkinColor(fashion.SkinColor);
-                _currentNPC.NPC_CraftingAnimation(fashion.CraftingAnimation);
-                _currentNPC.NPC_BeardItem(fashion.BeardItem);
-                _currentNPC.NPC_BeardColor(fashion.BeardColor);
-                _currentNPC.NPC_InteractSound(fashion.InteractAudioClip);
-                _currentNPC.NPC_TextSize(fashion.TextSize);
-                _currentNPC.NPC_TextHeight(fashion.TextHeight);
-                _currentNPC.NPC_PeriodicAnimation(fashion.PeriodicAnimation);
-                _currentNPC.NPC_PeriodicAnimationTime(fashion.PeriodicAnimationTime);
-                _currentNPC.NPC_PeriodicSound(fashion.PeriodicSound);
-                _currentNPC.NPC_PeriodicSoundTime(fashion.PeriodicSoundTime);
+                _currentNPC.SET_NPC_LeftItem(fashion.LeftItem);
+                _currentNPC.SET_NPC_RightItem(fashion.RightItem);
+                _currentNPC.SET_NPC_HelmetItem(fashion.HelmetItem);
+                _currentNPC.SET_NPC_ChestItem(fashion.ChestItem);
+                _currentNPC.SET_NPC_LegsItem(fashion.LegsItem);
+                _currentNPC.SET_NPC_CapeItem(fashion.CapeItem);
+                _currentNPC.SET_NPC_HairItem(fashion.HairItem);
+                _currentNPC.SET_NPC_HairColor(fashion.HairColor);
+                _currentNPC.SET_NPC_NPCScale(fashion.ModelScale);
+                _currentNPC.SET_NPC_LeftItemBack(fashion.LeftItemHidden);
+                _currentNPC.SET_NPC_RightItemBack(fashion.RightItemHidden);
+                _currentNPC.SET_NPC_InteractAnimation(fashion.InteractAnimation);
+                _currentNPC.SET_NPC_GreetingAnimation(fashion.GreetAnimation);
+                _currentNPC.SET_NPC_ByeAnimation(fashion.ByeAnimation);
+                _currentNPC.SET_NPC_GreetingText(fashion.GreetText);
+                _currentNPC.SET_NPC_ByeText(fashion.ByeText);
+                _currentNPC.SET_NPC_SkinColor(fashion.SkinColor);
+                _currentNPC.SET_NPC_CraftingAnimation(fashion.CraftingAnimation);
+                _currentNPC.SET_NPC_BeardItem(fashion.BeardItem);
+                _currentNPC.SET_NPC_BeardColor(fashion.BeardColor);
+                _currentNPC.SET_NPC_InteractSound(fashion.InteractAudioClip);
+                _currentNPC.SET_NPC_TextSize(fashion.TextSize);
+                _currentNPC.SET_NPC_TextHeight(fashion.TextHeight);
+                _currentNPC.SET_NPC_PeriodicAnimation(fashion.PeriodicAnimation);
+                _currentNPC.SET_NPC_PeriodicAnimationTime(fashion.PeriodicAnimationTime);
+                _currentNPC.SET_NPC_PeriodicSound(fashion.PeriodicSound);
+                _currentNPC.SET_NPC_PeriodicSoundTime(fashion.PeriodicSoundTime);
             }
 
             _callback?.Invoke();
@@ -1626,12 +1634,12 @@ public static class Market_NPC
             }
             else
             {
-                _currentNPC.NPC_Type((Marketplace_API.NPCType)_currentType);
-                _currentNPC.NPC_Name(_npcname.text);
-                _currentNPC.NPC_Profile(_npcprofile.text);
-                _currentNPC.NPC_Dialogue(_npcDialogue.text);
-                _currentNPC.NPC_Model(_npcmodel.text);
-                _currentNPC.NPC_PatrolData(_patroldata.text);
+                _currentNPC.SET_NPC_Type((Marketplace_API.API_NPCType)_currentType);
+                _currentNPC.SET_NPC_Name(_npcname.text);
+                _currentNPC.SET_NPC_Profile(_npcprofile.text);
+                _currentNPC.SET_NPC_Dialogue(_npcDialogue.text);
+                _currentNPC.SET_NPC_Model(_npcmodel.text);
+                _currentNPC.SET_NPC_PatrolData(_patroldata.text);
             }
 
             _callback?.Invoke();

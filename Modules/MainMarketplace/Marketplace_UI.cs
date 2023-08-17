@@ -1,4 +1,5 @@
-﻿using BepInEx.Configuration;
+﻿using System.Diagnostics;
+using BepInEx.Configuration;
 using Marketplace.ExternalLoads;
 using Marketplace.Modules.Global_Options;
 using Object = UnityEngine.Object;
@@ -274,6 +275,7 @@ public static class Marketplace_UI
 
     private static void ResetCurrency()
     {
+        if(!ZNetScene.instance) return;
         UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Gold/Image").GetComponent<Image>().sprite =
             ZNetScene.instance.GetPrefab(Global_Configs.SyncedGlobalOptions.Value._serverCurrency).GetComponent<ItemDrop>().m_itemData.m_shared
                 .m_icons[0];
