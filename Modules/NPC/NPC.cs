@@ -1757,13 +1757,6 @@ public static class Market_NPC
                 if (!avaliablePieces.Contains(PinnedNPC.GetComponent<Piece>()))
                     avaliablePieces.Add(PinnedNPC.GetComponent<Piece>());
             }
-            else
-            {
-                if (avaliablePieces.Contains(NPC.GetComponent<Piece>()))
-                    avaliablePieces.Remove(NPC.GetComponent<Piece>());
-                if (avaliablePieces.Contains(PinnedNPC.GetComponent<Piece>()))
-                    avaliablePieces.Remove(PinnedNPC.GetComponent<Piece>());
-            }
         }
     }
 }

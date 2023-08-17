@@ -73,11 +73,6 @@ public static class MarketplaceHammer
                 foreach (var data in _pieces)
                     avaliablePieces.Add(data);
             }
-            else
-            {
-                foreach (var data in _pieces)
-                    avaliablePieces.Remove(data);
-            }
         }
     }
 
@@ -201,7 +196,7 @@ public static class MarketplaceHammer
 
     private static void Reload()
     {
-        Utils.print($"Reloading NPC Hammer List");
+        MessageHud.instance?.ShowMessage(MessageHud.MessageType.Center,$"Reloading NPC Hammer List");
         _npcData.Clear();
         _pieces.Clear();
         foreach (Transform transform in INACTIVE.transform)
@@ -286,6 +281,7 @@ public static class MarketplaceHammer
         File.WriteAllText(file, parsed);
         Utils.print($"Saved NPC to {file}");
         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, $"Saved NPC to {Path.GetFileName(file)}");
+        Reload();
     }
     
     
