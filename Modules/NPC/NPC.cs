@@ -120,7 +120,7 @@ public static class Market_NPC
                 inactive.SetActive(false);
                 PinnedNPC = Object.Instantiate(NPC, inactive.transform);
                 PinnedNPC.name = "MarketPlaceNPCpinned";
-                PinnedNPC.GetComponent<Piece>().m_name += " <color=#00FFFF>(Map Pin Visible)</color>";
+                PinnedNPC.GetComponent<Piece>().m_description = "<color=#00FFFF>(Map Pin Visible)</color>";
             }
 
             __instance.m_namedPrefabs.Add(NPC.name.GetStableHashCode(), NPC);
@@ -378,8 +378,7 @@ public static class Market_NPC
             int currentPatrolPoint = znv.m_zdo.GetInt(LatestPatrolPoint);
             var position = transform.position;
             Vector2 currentPos = new Vector2(position.x, position.z);
-            Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint],
-                Time.deltaTime * ForwardSpeed);
+            Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint], Time.deltaTime * ForwardSpeed);
             Vector3 targetPoint = new Vector3(move.x, position.y, move.y);
             Utils.CustomFindFloor(targetPoint, out float height);
             height = Mathf.Max(30, height, ZoneSystem.instance.GetGroundHeight(targetPoint));
@@ -535,7 +534,6 @@ public static class Market_NPC
             if (!znv.m_functions.ContainsKey("KGMarket changeNpcType".GetStableHashCode()))
             {
                 znv.Register("KGMarket changeNpcType", new Action<long, int>(ChangeNpcType));
-                znv.Register("KGMarket removeNpc", RemoveNPC);
                 znv.Register("KGmarket snapandrotate", new Action<long, ZPackage>(SnapAndRotate));
                 znv.Register("KGmarket changeprofile", new Action<long, string, string>(ChangeProfile));
                 znv.Register("KGmarket overridename", new Action<long, string>(OverrideName));
@@ -576,9 +574,7 @@ public static class Market_NPC
                   "\n" + Localization.instance.Localize("[<color=yellow><b>ALT + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_fashionmenu") +
                   "\n" + Localization.instance.Localize("[<color=yellow><b>C + $KEY_Use</b></color>]") +
-                    " " + Localization.instance.Localize("$mpasn_savenpc") +
-                  "\n" + Localization.instance.Localize("[<color=red><b>DELETE + $KEY_Use</b></color>]") +
-                  " " + Localization.instance.Localize("$mpasn_removenpc")
+                    " " + Localization.instance.Localize("$mpasn_savenpc") 
                 : "";
             string text = Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>] ") +
                           Localization.instance.Localize("$mpasn_interact");
@@ -677,12 +673,6 @@ public static class Market_NPC
             if (alt && Utils.IsDebug)
             {
                 NPCUI.ShowMain(znv.m_zdo);
-                return true;
-            }
-
-            if (Input.GetKey(KeyCode.Delete) && Utils.IsDebug)
-            {
-                znv.InvokeRPC("KGMarket removeNpc");
                 return true;
             }
 
@@ -1145,7 +1135,7 @@ public static class Market_NPC
                 if (col == null) return false;
                 pastOverrideModel = new GameObject("OverrideModel")
                 {
-                    layer = LayerMask.NameToLayer("character"),
+                    layer = LayerMask.NameToLayer("piece"),
                     transform =
                     {
                         parent = transform,
@@ -1164,7 +1154,7 @@ public static class Market_NPC
 
                 foreach (Collider inChild in pastOverrideModel.GetComponentsInChildren<Collider>())
                 {
-                    inChild.gameObject.layer = LayerMask.NameToLayer("character");
+                    inChild.gameObject.layer = LayerMask.NameToLayer("piece");
                 }
 
                 if (!pastOverrideModel.GetComponentInChildren<Collider>())
@@ -1194,7 +1184,7 @@ public static class Market_NPC
                     em.enabled = false;
                 }
 
-                pastOverrideModel.layer = LayerMask.NameToLayer("character");
+                pastOverrideModel.layer = LayerMask.NameToLayer("piece");
                 Utils.CopyComponent(col, pastOverrideModel);
                 pastOverrideModel.transform.localPosition = Vector3.zero;
                 pastOverrideModel.transform.rotation = transform.rotation;
@@ -1321,12 +1311,6 @@ public static class Market_NPC
 
             return true;
         }
-
-        private void RemoveNPC(long obj)
-        {
-            if (znv.IsOwner()) znv.Destroy();
-        }
-
 
         public void ChangeNpcType(long sende, int index)
         {
@@ -1738,25 +1722,6 @@ public static class Market_NPC
             }
 
             return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable))]
-    [ClientOnlyPatch]
-    private static class PieceTable_UpdateAvailable_Patch
-    {
-        [UsedImplicitly]
-        private static void Postfix(PieceTable __instance)
-        {
-            if (__instance.m_availablePieces.Count == 0) return;
-            List<Piece> avaliablePieces = __instance.m_availablePieces[(int)Piece.PieceCategory.Misc];
-            if (Utils.IsDebug)
-            {
-                if (!avaliablePieces.Contains(NPC.GetComponent<Piece>()))
-                    avaliablePieces.Add(NPC.GetComponent<Piece>());
-                if (!avaliablePieces.Contains(PinnedNPC.GetComponent<Piece>()))
-                    avaliablePieces.Add(PinnedNPC.GetComponent<Piece>());
-            }
         }
     }
 }

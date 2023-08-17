@@ -267,7 +267,7 @@ public static class PlayerModelPreview
         Vector3 prevPos = go.transform.position;
         Quaternion prevRot = go.transform.rotation;
         go.transform.position = Vector3.zero;
-        go.transform.rotation = Quaternion.Euler(2f, 0, 0);
+        go.transform.rotation = Quaternion.Euler(2f, -24f, 0);
 
         Vector3 min = new Vector3(1000f, 1000f, 1000f);
         Vector3 max = new Vector3(-1000f, -1000f, -1000f);

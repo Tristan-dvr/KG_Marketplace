@@ -223,7 +223,7 @@ public static class Marketplace_API
     public static float GET_NPC_PeriodicAnimationTime(this ZDO zdo) => zdo.GetFloat("KGperiodicAnimationTime");
     public static string GET_NPC_PeriodicSound(this ZDO zdo) => zdo.GetString("KGperiodicSound");
     public static float GET_NPC_PeriodicSoundTime(this ZDO zdo) => zdo.GetFloat("KGperiodicSoundTime");
-    public static float GET_NPC_NPCScale(this ZDO zdo) => zdo.GetFloat("KGnpcScale");
+    public static float GET_NPC_NPCScale(this ZDO zdo) => zdo.GetFloat("KGnpcScale", 1f);
     
     
         

@@ -77,7 +77,7 @@ public static class AssetStorage
 
     private static IEnumerator LoadSoundsCoroutine(string path)
     {
-        foreach (string file in Directory.GetFiles(path))
+        foreach (string file in Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories))
         {
             using (UnityWebRequest stream = UnityWebRequestMultimedia.GetAudioClip(file, AudioType.MPEG))
             {

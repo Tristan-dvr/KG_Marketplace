@@ -5,9 +5,9 @@
 public static class Market_Paths
 {
     public static string MainPath => Path.Combine(BepInEx.Paths.ConfigPath, "Marketplace");
-    public static string NPC_SoundsPath => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceNPC_Sounds");
-    public static string NPC_Saved => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceNPC_Saved");
-    public static string CachedImagesFolder => Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceCachedImages");
+    public static string NPC_SoundsPath => Path.Combine(BepInEx.Paths.ConfigPath, "Marketplace_Sounds");
+    public static string NPC_Saved => Path.Combine(BepInEx.Paths.ConfigPath, "Marketplace_SavedNPCs");
+    public static string CachedImagesFolder => Path.Combine(BepInEx.Paths.ConfigPath, "Marketplace_CachedImages");
     public static string DiscordStuffFolder => Path.Combine(MainPath, "DiscordWebhooks");
     
 

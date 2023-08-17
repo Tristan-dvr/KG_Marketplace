@@ -9,62 +9,26 @@ using Random = UnityEngine.Random;
 
 namespace Marketplace.Hammer;
 
-[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit", new[] { "SN" },
-    new[] { "Reload" })]
+[Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Last, "OnInit", new[] { "SN" }, new[] { "Reload" })]
 public static class MarketplaceHammer
 {
     private static Dictionary<string, Wrapper> _npcData = new();
     private static List<Piece> _pieces = new();
     private static GameObject CopyFrom;
+    public static Piece.PieceCategory _category = Piece.PieceCategory.Misc;
     
     public struct Wrapper
     {
+        public bool isPinned;
         public NPC_Main main;
         public NPC_Fashion fashion;
     }
-
+    
     private static GameObject INACTIVE = new GameObject("INACTIVE_SAVEDNPCS")
     {
         hideFlags = HideFlags.HideAndDontSave
     };
-
-    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
-    [ClientOnlyPatch]
-    private static class ZNetScene_Awake_Patch
-    {
-        [UsedImplicitly]
-        private static void Postfix(ZNetScene __instance)
-        {
-            var hammer = AssetStorage.asset.LoadAsset<GameObject>("MarketplaceHammer");
-            __instance.m_namedPrefabs[hammer.name.GetStableHashCode()] = hammer;
-        }
-    }
-
-    [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]
-    [ClientOnlyPatch]
-    private static class ObjectDB_Awake_Patch
-    {
-        [UsedImplicitly]
-        private static void Postfix(ObjectDB __instance)
-        {
-            var hammer = AssetStorage.asset.LoadAsset<GameObject>("MarketplaceHammer");
-            __instance.m_items.Add(hammer);
-            __instance.m_itemByHash[hammer.name.GetStableHashCode()] = hammer;
-        }
-    }
-
-    [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB))]
-    [ClientOnlyPatch]
-    private static class ObjectDB_Awake_Patch2
-    {
-        [UsedImplicitly]
-        private static void Postfix(ObjectDB __instance)
-        {
-            var hammer = AssetStorage.asset.LoadAsset<GameObject>("MarketplaceHammer");
-            __instance.m_items.Add(hammer);
-            __instance.m_itemByHash[hammer.name.GetStableHashCode()] = hammer;
-        }
-    }
+    
 
     [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable))]
     [ClientOnlyPatch]
@@ -73,10 +37,12 @@ public static class MarketplaceHammer
         [UsedImplicitly]
         private static void Postfix(PieceTable __instance)
         {
-            if (__instance.name != "_MarketplacePieceTable") return;
-            List<Piece> avaliablePieces = __instance.m_availablePieces[(int)Piece.PieceCategory.Misc];
+            List<Piece> avaliablePieces = __instance.m_availablePieces[(int)_category];
             if (Utils.IsDebug)
             {
+                avaliablePieces.Add(Market_NPC.NPC.GetComponent<Piece>());
+                avaliablePieces.Add(Market_NPC.PinnedNPC.GetComponent<Piece>());
+                
                 foreach (var data in _pieces)
                     avaliablePieces.Add(data);
             }
@@ -87,12 +53,14 @@ public static class MarketplaceHammer
     {
         try
         {
-            Wrapper KVP = fastJSON.JSON.ToObject<Wrapper>(data);
+            YamlDotNet.Serialization.Deserializer deserializer = new();
+            /* fastJSON.JSON.ToObject<Wrapper>(data);*/
+            Wrapper KVP = deserializer.Deserialize<Wrapper>(data);
             _npcData[fileName] = KVP;
             GameObject copy = Object.Instantiate(CopyFrom, INACTIVE.transform);
             copy.name = "MARKETNPC_HAMMER_BUILDED";
             copy.GetComponent<Piece>().m_name = fileName;
-            copy.GetComponent<Piece>().m_description = KVP.main.Description;
+            copy.GetComponent<Piece>().m_description = KVP.main.Description();
             if (!string.IsNullOrEmpty(KVP.main.IMAGE))
             {
                 Texture2D loadTex = new(1, 1);
@@ -105,15 +73,16 @@ public static class MarketplaceHammer
             }
             _pieces.Add(copy.GetComponent<Piece>());
         }
-        catch
+        catch(Exception ex)
         {
-            
+            Utils.print($"Error file parsing saved npc: {fileName}: \n{ex}");
         }
     }
 
     [UsedImplicitly]
     private static void OnInit()
     {
+        _category = PieceManager.PiecePrefabManager.GetCategory("<color=cyan><b>Marketplace</b></color>");
         INACTIVE.SetActive(false);
         CopyFrom = AssetStorage.asset.LoadAsset<GameObject>("MarketplaceHammerCopyFrom");
         Reload();
@@ -127,8 +96,9 @@ public static class MarketplaceHammer
         foreach (Transform transform in INACTIVE.transform)
             Object.Destroy(transform.gameObject);
         string folder = Market_Paths.NPC_Saved;
-        string[] files = Directory.GetFiles(folder, "*.json", SearchOption.AllDirectories);
-        foreach (string file in files)
+        string[] yml =  Directory.GetFiles(folder, "*.yml", SearchOption.AllDirectories);
+        string[] yaml = Directory.GetFiles(folder, "*.yaml", SearchOption.AllDirectories);
+        foreach (string file in yml.Concat(yaml))
         {
             string fNameNoExt = Path.GetFileNameWithoutExtension(file);
             string fContent = File.ReadAllText(file);
@@ -164,11 +134,9 @@ public static class MarketplaceHammer
     public static void SaveNPC(Market_NPC.NPCcomponent npc)
     {
         string folder = Market_Paths.NPC_Saved;
-        string random = $"{npc._currentNpcType} random{Random.Range(0, 100000)}";
-        string file = Path.Combine(folder, $"{random}.json");
         NPC_Main mainData = new();
         NPC_Fashion fashionData = new();
-
+        
         mainData.Type = npc._currentNpcType;
         mainData.NameOverride = npc.znv.m_zdo.GET_NPC_Name();
         mainData.Profile = npc.znv.m_zdo.GET_NPC_Profile();
@@ -205,15 +173,26 @@ public static class MarketplaceHammer
         fashionData.PeriodicSoundTime = npc.znv.m_zdo.GET_NPC_PeriodicSoundTime().ToString();
 
         npc.transform.Find("TMP").gameObject.SetActive(false);
-        string image = PlayerModelPreview.MakeScreenshot(npc.gameObject, 256);
+        mainData.IMAGE = PlayerModelPreview.MakeScreenshot(npc.gameObject, 256);
         npc.transform.Find("TMP").gameObject.SetActive(true);
         
-        if (!File.Exists(file)) File.Create(file).Dispose();
+        string fName = $"{npc._currentNpcType} {mainData.NameOverride.NoRichText()} {mainData.Profile.NoRichText()}";
+        string fPath = Path.Combine(folder, $"{fName}.yml");
         
-        File.WriteAllText(file, fastJSON.JSON.ToNiceJSON(new Wrapper(){fashion = fashionData, main = mainData}, NPC_Save_Params));
-        Utils.print($"Saved NPC to {file}");
-        MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, $"Saved NPC to {Path.GetFileName(file)}");
-        Reload();
+        if (!File.Exists(fPath)) File.Create(fPath).Dispose();
+        
+        var wrapper = new Wrapper()
+        {
+            main = mainData,
+            fashion = fashionData,
+            isPinned = npc.gameObject.name.Contains(Market_NPC.PinnedNPC.name)
+        };
+        
+        YamlDotNet.Serialization.Serializer serializer = new();
+        string yaml = serializer.Serialize(wrapper);
+        /*fastJSON.JSON.ToNiceJSON(wrapper, NPC_Save_Params)*/
+        File.WriteAllText(fPath, yaml);
+        MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, $"Saved to {Path.GetFileName(fPath)}");
     }
 
 
@@ -231,7 +210,7 @@ public static class MarketplaceHammer
             Quaternion rot = piece.transform.rotation;
             UnityEngine.Object.Destroy(obj);
             if (!KVP) return;
-            var newNPC = Object.Instantiate(Market_NPC.NPC, pos, rot);
+            var newNPC = Object.Instantiate(value.isPinned ? Market_NPC.PinnedNPC : Market_NPC.NPC, pos, rot);
             Market_NPC.NPCcomponent comp = newNPC.GetComponent<Market_NPC.NPCcomponent>();
             comp.ChangeNpcType(0, (int)value.main.Type);
             comp.ChangeProfile(0, value.main.Profile, value.main.Dialogue);
@@ -257,4 +236,19 @@ public static class MarketplaceHammer
             }
         }
     }
+    
+    [HarmonyPatch(typeof(Piece),nameof(Piece.CanBeRemoved))]
+    private static class Piece_CanBeRemoved_Patch
+    {
+        [UsedImplicitly]
+        private static void Postfix(Piece __instance, ref bool __result)
+        {
+            if (__instance.GetComponent<Market_NPC.NPCcomponent>() && !Utils.IsDebug)
+            {
+                __result = false;
+            }
+        }
+    }
+    
+    
 }

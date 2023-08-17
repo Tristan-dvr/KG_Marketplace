@@ -1,5 +1,6 @@
 ﻿using System.IO.Compression;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using Marketplace.ExternalLoads;
@@ -115,6 +116,11 @@ public static class Utils
             ZoneSystem.instance.m_solidRayMask)
             ? hitInfo.point.y
             : 0.0f;
+    }
+
+    public static string NoRichText(this string source)
+    {
+        return Regex.Replace(source, @"<[^>]*>", "");
     }
 
     public static string RemoveRichTextDynamicTag(string input, string tag)

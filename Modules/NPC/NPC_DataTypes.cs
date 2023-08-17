@@ -17,23 +17,20 @@ public class NPC_DataTypes
             Type = Market_NPC.NPCType.None;
         }
 
-        public string Description
+        public string Description()
         {
-            get
-            {
-                string result = $"<color=yellow>Type:</color> {Type}. ";
-                if (!string.IsNullOrEmpty(NameOverride))
-                    result += $"<color=yellow>Name:</color> {NameOverride}. ";
-                if (!string.IsNullOrEmpty(Profile))
-                    result += $"<color=yellow>Profile:</color> {Profile}. ";
-                if (!string.IsNullOrEmpty(Prefab))
-                    result += $"<color=yellow>MovelOverride:</color> {Prefab}. ";
-                if (!string.IsNullOrEmpty(Dialogue))
-                    result += $"<color=yellow>Dialogue:</color> {Dialogue}. ";
-                if (!string.IsNullOrEmpty(Patrol))
-                    result += $"<color=yellow>Patrol:</color> {Patrol}\n";
-                return result;
-            }
+            string result = $"<color=yellow>Type:</color> {Type}. ";
+            if (!string.IsNullOrEmpty(NameOverride))
+                result += $"<color=yellow>Name:</color> {NameOverride}. ";
+            if (!string.IsNullOrEmpty(Profile))
+                result += $"<color=yellow>Profile:</color> {Profile}. ";
+            if (!string.IsNullOrEmpty(Prefab))
+                result += $"<color=yellow>MovelOverride:</color> {Prefab}. ";
+            if (!string.IsNullOrEmpty(Dialogue))
+                result += $"<color=yellow>Dialogue:</color> {Dialogue}. ";
+            if (!string.IsNullOrEmpty(Patrol))
+                result += $"<color=yellow>Patrol:</color> {Patrol}\n";
+            return result;
         }
     }
 
