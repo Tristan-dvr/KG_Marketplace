@@ -106,11 +106,11 @@ public static class CommandExecution
 
     public static void Init(string language = "English")
     {
-        var Localize = LOCALIZATION[language];
+        Dictionary<string, string> Localize = LOCALIZATION[language];
         _commands.Add(Command.ShowPlayers, (string[] _, out string result) =>
         {
             string players = "";
-            foreach (var player in ZNet.instance.m_peers)
+            foreach (ZNetPeer player in ZNet.instance.m_peers)
             {
                 ZDO zdo = ZDOMan.instance.GetZDO(player.m_characterID);
                 if (zdo == null) continue;
@@ -159,7 +159,7 @@ public static class CommandExecution
         _commands.Add(Command.BanList, (string[] _, out string result) =>
         {
             string players = "";
-            foreach (var id in ZNet.instance.m_bannedList.GetList())
+            foreach (string id in ZNet.instance.m_bannedList.GetList())
             {
                 players += $"\n{id}";
             }
@@ -192,7 +192,7 @@ public static class CommandExecution
 
                     if (maxStack > 1)
                     {
-                        var itemZdo = CreateZdoFromPrefab(prefab, pos + Vector3.up * 2f);
+                        ZDO itemZdo = CreateZdoFromPrefab(prefab, pos + Vector3.up * 2f);
                         itemZdo.Set("stack", count);
                         itemZdo.Set("quality", level);
                         itemZdo.Set("durability",
@@ -204,7 +204,7 @@ public static class CommandExecution
                         {
                             float value = UnityEngine.Random.Range(-1f, 1f);
                             float value2 = UnityEngine.Random.Range(-1f, 1f);
-                            var itemZdo = CreateZdoFromPrefab(prefab,
+                            ZDO itemZdo = CreateZdoFromPrefab(prefab,
                                 pos + Vector3.left * value + Vector3.forward * value2 + Vector3.up);
                             itemZdo.Set("stack", 1);
                             itemZdo.Set("quality", level);
@@ -243,7 +243,7 @@ public static class CommandExecution
                     float value = UnityEngine.Random.Range(-3f, 3f);
                     float value2 = UnityEngine.Random.Range(-3f, 3f);
 
-                    var zdo = CreateZdoFromPrefab(prefab,
+                    ZDO zdo = CreateZdoFromPrefab(prefab,
                         vec + Vector3.left * value + Vector3.forward * value2 + Vector3.up);
 
                     if (go.GetComponent<ItemDrop>())
@@ -361,7 +361,7 @@ public static class CommandExecution
                 result = ret;
                 return true;
             }
-            foreach (var value in counts)
+            foreach (KeyValuePair<long, int> value in counts)
             {
                 ret += $"Creator ID: {value.Key} - Quantity: {value.Value}\n";
             }
@@ -408,7 +408,7 @@ public static class CommandExecution
         _commands.Add(Command.Whitelist, (string[] _, out string result) =>
         {
             string players = "";
-            foreach (var id in ZNet.instance.m_permittedList.GetList())
+            foreach (string id in ZNet.instance.m_permittedList.GetList())
             {
                 players += $"\n{id}";
             }
@@ -433,7 +433,7 @@ public static class CommandExecution
         _commands.Add(Command.ShowGlobalKeys, (string[] _, out string result) =>
         {
             string keys = "";
-            foreach (var key in ZoneSystem.instance.GetGlobalKeys())
+            foreach (string key in ZoneSystem.instance.GetGlobalKeys())
             {
                 keys += $"\n{key}";
             }
@@ -474,7 +474,7 @@ public static class CommandExecution
         _commands.Add(Command.Adminlist, (string[] _, out string result) =>
         {
             string players = "";
-            foreach (var id in ZNet.instance.m_adminList.GetList())
+            foreach (string id in ZNet.instance.m_adminList.GetList())
             {
                 players += $"\n{id}";
             }
@@ -512,7 +512,7 @@ public static class CommandExecution
         
         _commands.Add(Command.StopEvent, (string[] _, out string result) =>
         {
-            var currentEvent = RandEventSystem.instance.m_activeEvent?.m_name ?? "Unknown";
+            string currentEvent = RandEventSystem.instance.m_activeEvent?.m_name ?? "Unknown";
             RandEventSystem.instance.SetRandomEventByName("stopEvent", Vector3.zero);
             result = $"Latest Event stopped ({currentEvent})";
             return true;
@@ -560,7 +560,7 @@ public static class CommandExecution
 
     public static bool Execute(Command cmd, string args, out string result)
     {
-        if (_commands.TryGetValue(cmd, out var execute))
+        if (_commands.TryGetValue(cmd, out Invoke execute))
         {
             try
             {

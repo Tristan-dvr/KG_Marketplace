@@ -449,7 +449,7 @@ public static class Marketplace_UI
                 p.m_crafterID == send.CrafterID && p.m_crafterName == send.CrafterName)
             .Select(p => p);
 
-        var itemDatas = selectMany as ItemDrop.ItemData[] ?? selectMany.ToArray();
+        ItemDrop.ItemData[] itemDatas = selectMany as ItemDrop.ItemData[] ?? selectMany.ToArray();
         int count = itemDatas.Sum(p => p.m_stack);
         if (count < cQuantity) return false;
 

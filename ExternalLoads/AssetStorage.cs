@@ -61,7 +61,7 @@ public static class AssetStorage
         def.LoadImage(Convert.FromBase64String(ResourcesBase64.defaultPortal));
         PortalIconDefault = Sprite.Create(def, new Rect(0, 0, def.width, def.height), new Vector2(0, 0));
         NPC_MapControl = asset.LoadAsset<Sprite>("NPC_MapControl");
-        foreach (string file in Directory.GetFiles(Market_Paths.CachedImagesFolder, "*.png", SearchOption.TopDirectoryOnly))
+        foreach (string file in Directory.GetFiles(Market_Paths.CachedImagesFolder, "*.png", SearchOption.AllDirectories))
         {
             string fileName = Path.GetFileNameWithoutExtension(file);
             byte[] data = File.ReadAllBytes(file);

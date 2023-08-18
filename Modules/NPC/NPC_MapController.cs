@@ -26,7 +26,7 @@ public static class NPC_MapController
     {
         public static void ReapplyPins()
         {
-            foreach (var pin in _pins) Minimap.instance.RemovePin(pin.Key);
+            foreach (KeyValuePair<Minimap.PinData, ZDO> pin in _pins) Minimap.instance.RemovePin(pin.Key);
             _pins.Clear();
             List<ZDO> AllNPCs = new();
             int index = 0;
@@ -62,7 +62,7 @@ public static class NPC_MapController
                 _pins.Add(pinData, zdo);
             }
 
-            foreach (var p in _pins)
+            foreach (KeyValuePair<Minimap.PinData, ZDO> p in _pins)
             {
                 Minimap.instance.m_pins.Add(p.Key);
             }
@@ -73,7 +73,7 @@ public static class NPC_MapController
         {
             if (mode != Minimap.MapMode.Large)
             {
-                foreach (var pin in _pins) __instance.RemovePin(pin.Key);
+                foreach (KeyValuePair<Minimap.PinData, ZDO> pin in _pins) __instance.RemovePin(pin.Key);
                 _pins.Clear();
             }
 
@@ -87,7 +87,7 @@ public static class NPC_MapController
     {
         Vector3 pos = Minimap.instance.ScreenToWorldPoint(Input.mousePosition);
         Minimap.PinData closestPin = Utils.GetCustomPin(PINTYPENPC, pos, Minimap.instance.m_removeRadius * (Minimap.instance.m_largeZoom * 2f));
-        if (closestPin != null && _pins.TryGetValue(closestPin, out var zdo))
+        if (closestPin != null && _pins.TryGetValue(closestPin, out ZDO zdo))
         {
             if (leftClick)
             {

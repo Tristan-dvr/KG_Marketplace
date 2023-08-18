@@ -3,6 +3,7 @@ using Marketplace.ExternalLoads;
 using Marketplace.Modules.NPC;
 using Marketplace.Modules.Transmogrification;
 using Marketplace.Paths;
+using YamlDotNet.Serialization;
 using Object = UnityEngine.Object;
 using static Marketplace.Modules.NPC.NPC_DataTypes;
 using Random = UnityEngine.Random;
@@ -44,7 +45,7 @@ public static class MarketplaceHammer
                 avaliablePieces.Add(Market_NPC.NPC.GetComponent<Piece>());
                 avaliablePieces.Add(Market_NPC.PinnedNPC.GetComponent<Piece>());
 
-                foreach (var data in _pieces)
+                foreach (Piece data in _pieces)
                     avaliablePieces.Add(data);
             }
         }
@@ -136,7 +137,6 @@ public static class MarketplaceHammer
         mainData.NameOverride = npc.znv.m_zdo.GET_NPC_Name();
         mainData.Profile = npc.znv.m_zdo.GET_NPC_Profile();
         mainData.Prefab = npc.znv.m_zdo.GET_NPC_Model();
-        mainData.Patrol = npc.znv.m_zdo.GET_NPC_PatrolData();
         mainData.Dialogue = npc.znv.m_zdo.GET_NPC_Dialogue();
 
         fashionData.LeftItem = npc.znv.m_zdo.GET_NPC_LeftItem();
@@ -176,15 +176,15 @@ public static class MarketplaceHammer
 
         if (!File.Exists(fPath)) File.Create(fPath).Dispose();
 
-        var wrapper = new Wrapper()
+        mainData.RandomModelOverrides = new string[] { "123", "test" };
+        Wrapper wrapper = new Wrapper()
         {
             main = mainData,
             fashion = fashionData,
             isPinned = npc.gameObject.name.Contains(Market_NPC.PinnedNPC.name)
         };
-
-        YamlDotNet.Serialization.Serializer serializer = new();
-        string yaml = serializer.Serialize(wrapper);
+        
+        string yaml = new SerializerBuilder().Build().Serialize(wrapper);
         File.WriteAllText(fPath, yaml);
         Chat.instance.m_hideTimer = 0f;
         Chat.instance.AddString(
@@ -201,18 +201,25 @@ public static class MarketplaceHammer
             if (obj?.GetComponent<Piece>() is not { } piece) return;
             string objName = piece.name;
             if (!objName.Contains("MARKETNPC_HAMMER_BUILDED")) return;
-            var KVP = _npcData.TryGetValue(piece.m_name, out var value);
+            bool hasValue = _npcData.TryGetValue(piece.m_name, out Wrapper value);
             Vector3 pos = piece.transform.position;
             Quaternion rot = piece.transform.rotation;
             UnityEngine.Object.Destroy(obj);
-            if (!KVP) return;
-            var newNPC = Object.Instantiate(value.isPinned ? Market_NPC.PinnedNPC : Market_NPC.NPC, pos, rot);
+            if (!hasValue) return;
+            GameObject newNPC = Object.Instantiate(value.isPinned ? Market_NPC.PinnedNPC : Market_NPC.NPC, pos, rot);
             Market_NPC.NPCcomponent comp = newNPC.GetComponent<Market_NPC.NPCcomponent>();
             comp.ChangeNpcType(0, (int)value.main.Type);
             comp.ChangeProfile(0, value.main.Profile, value.main.Dialogue);
             comp.OverrideName(0, value.main.NameOverride);
-            comp.OverrideModel(0, value.main.Prefab);
-            comp.GetPatrolData(0, value.main.Patrol);
+            if (value.main.RandomModelOverrides.Length == 0)
+            { 
+                comp.OverrideModel(0, value.main.Prefab);
+            }
+            else
+            {
+                comp.OverrideModel(0, value.main.RandomModelOverrides[Random.Range(0, value.main.RandomModelOverrides.Length)]);
+            }
+            
             comp.FashionApply(0, value.fashion);
         }
 

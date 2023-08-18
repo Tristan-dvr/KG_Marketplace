@@ -124,10 +124,10 @@ public static class PlayerModelPreview
 
         if (itemObj.transform.Find("attach") is { } attach)
         {
-            var attachPoint = attachments.TryGetValue(itemType, out var attachment)
+            Transform attachPoint = attachments.TryGetValue(itemType, out Transform attachment)
                 ? attachment
                 : attachments[ItemDrop.ItemData.ItemType.OneHandedWeapon];
-            var weapon = UnityEngine.Object.Instantiate(attach.gameObject, attachPoint);
+            GameObject weapon = UnityEngine.Object.Instantiate(attach.gameObject, attachPoint);
             weapon.transform.localPosition = Vector3.zero;
             weapon.transform.localRotation = Quaternion.identity;
             if (c != Color.white)
@@ -146,8 +146,8 @@ public static class PlayerModelPreview
         }
         else if (itemObj.transform.Find("attach_skin") is { } attach_skin)
         {
-            var attachPoint = go.transform;
-            var armor = UnityEngine.Object.Instantiate(attach_skin.gameObject, attachPoint.position,
+            Transform attachPoint = go.transform;
+            GameObject armor = UnityEngine.Object.Instantiate(attach_skin.gameObject, attachPoint.position,
                 attachPoint.rotation);
             armor.SetActive(true);
             armor.GetComponentInChildren<SkinnedMeshRenderer>().rootBone = body.rootBone;
@@ -281,7 +281,7 @@ public static class PlayerModelPreview
         go.transform.position = SpawnPoint - (min + max) / 2f;
         Light.transform.position = SpawnPoint + new Vector3(0, 2f, 2f);
 
-        var prevIntensity = Light.intensity;
+        float prevIntensity = Light.intensity;
         Light.intensity = 2f;
 
         Vector3 size = new Vector3(Mathf.Abs(min.x) + Mathf.Abs(max.x), Mathf.Abs(min.y) + Mathf.Abs(max.y), Mathf.Abs(min.z) + Mathf.Abs(max.z));
@@ -337,10 +337,10 @@ public static class PlayerModelPreview
             {
                 if (CurrentPreviewGO)
                 {
-                    var currentY = CurrentPreviewGO.transform.position.y;
-                    var newY = currentY + (eventData.delta.y / 400f);
+                    float currentY = CurrentPreviewGO.transform.position.y;
+                    float newY = currentY + (eventData.delta.y / 400f);
                     newY = Mathf.Clamp(newY, OriginalYPos - 1f, OriginalYPos + 1f);
-                    var position = CurrentPreviewGO.transform.position;
+                    Vector3 position = CurrentPreviewGO.transform.position;
                     position = new Vector3(position.x, newY, position.z);
                     CurrentPreviewGO.transform.position = position;
                 }
@@ -349,15 +349,15 @@ public static class PlayerModelPreview
 
         public void Update()
         {
-            var ScrollWheel = Input.GetAxis("Mouse ScrollWheel");
+            float ScrollWheel = Input.GetAxis("Mouse ScrollWheel");
             if (ScrollWheel != 0)
             {
                 if (CurrentPreviewGO)
                 {
-                    var currentZ = renderCamera.transform.position.z;
-                    var newZ = currentZ - (ScrollWheel * 100f);
+                    float currentZ = renderCamera.transform.position.z;
+                    float newZ = currentZ - (ScrollWheel * 100f);
                     newZ = Mathf.Clamp(newZ, OriginalCameraZPos - 120f, OriginalCameraZPos);
-                    var position = renderCamera.transform.position;
+                    Vector3 position = renderCamera.transform.position;
                     position = new Vector3(position.x, position.y, newZ);
                     renderCamera.transform.position = position;
                 }
@@ -379,11 +379,11 @@ public static class PlayerModelPreview
         Vector3 scale = new Vector3(1.3f, 1.3f, 0.2f);
         Transform t = wallObj.transform.Find("New");
         if (!t) return;
-        var pos = CurrentPreviewGO.transform.position;
+        Vector3 pos = CurrentPreviewGO.transform.position;
         pos.y = OriginalYPos;
         BehindWallRender = UnityEngine.Object.Instantiate(t.gameObject, pos, Quaternion.identity);
         BehindWallRender.transform.localScale = scale;
-        var position = BehindWallRender.transform.position + Vector3.up;
+        Vector3 position = BehindWallRender.transform.position + Vector3.up;
         position = new Vector3(position.x, position.y, position.z - 2f);
         BehindWallRender.transform.position = position;
         if (grey)

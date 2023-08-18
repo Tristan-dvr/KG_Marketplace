@@ -244,7 +244,7 @@ public static class Market_NPC
         {
             _znet = GetComponentInParent<ZNetView>();
             animator = GetComponent<Animator>();
-            var transform1 = transform;
+            Transform transform1 = transform;
             currentLookAt = transform1.position + transform1.forward * 4f + Vector3.up * 1.2f;
         }
 
@@ -257,7 +257,7 @@ public static class Market_NPC
                 Vector3 target = Player.m_localPlayer.m_head.position;
                 if (Vector3.Distance(target, transform.position) > 4f)
                 {
-                    var transform1 = transform;
+                    Transform transform1 = transform;
                     target = transform1.position + transform1.forward * 3f + Vector3.up * 1.2f;
                     speed = 4f;
                 }
@@ -269,7 +269,7 @@ public static class Market_NPC
                     float num = Mathf.Abs(Mathf.DeltaAngle(playerVec, enemyVec));
                     if (num < 100f)
                     {
-                        var transform1 = transform;
+                        Transform transform1 = transform;
                         target = transform1.position + transform1.forward * 3f + Vector3.up * 1.2f;
                     }
                 }
@@ -376,7 +376,7 @@ public static class Market_NPC
             if (zanim.enabled)
                 zanim.SetFloat(Character.s_forwardSpeed, ForwardSpeed * 1.5f);
             int currentPatrolPoint = znv.m_zdo.GetInt(LatestPatrolPoint);
-            var position = transform.position;
+            Vector3 position = transform.position;
             Vector2 currentPos = new Vector2(position.x, position.z);
             Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint], Time.deltaTime * ForwardSpeed);
             Vector3 targetPoint = new Vector3(move.x, position.y, move.y);
@@ -873,7 +873,7 @@ public static class Market_NPC
             float.TryParse(fashion.TextHeight, NumberStyles.Any, CultureInfo.InvariantCulture,
                 out float textAdditionalHeight);
             canvas.gameObject.transform.localScale = new Vector3(textSize, textSize, textSize);
-            var localPosition = new Vector3(0, 3.4f, 0);
+            Vector3 localPosition = new Vector3(0, 3.4f, 0);
             localPosition += new Vector3(0, textAdditionalHeight, 0);
             canvas.transform.localPosition = localPosition;
         }
@@ -888,7 +888,7 @@ public static class Market_NPC
             CheckNameOnIcons(znv.m_zdo.GetString("KGnpcNameOverride"));
             float KGtextSize = znv.m_zdo.GetFloat("KGtextSize", 3f);
             canvas.transform.localScale = new Vector3(KGtextSize, KGtextSize, KGtextSize);
-            var localPosition = new Vector3(0, 3.4f, 0);
+            Vector3 localPosition = new Vector3(0, 3.4f, 0);
             float KGtextDistance = znv.m_zdo.GetFloat("KGtextHeight");
             localPosition += new Vector3(0, KGtextDistance, 0);
             canvas.transform.localPosition = localPosition;
@@ -923,10 +923,10 @@ public static class Market_NPC
         private void SnapAndRotate(long sender, ZPackage pkg)
         {
             Quaternion rotation = pkg.ReadQuaternion();
-            var position = transform.position;
+            Vector3 position = transform.position;
             ZoneSystem.instance.FindFloor(position, out float height);
             position = new Vector3(position.x, height, position.z);
-            var transform1 = transform;
+            Transform transform1 = transform;
             transform1.position = position;
             transform1.rotation = rotation;
             if (znv.IsOwner())
@@ -964,7 +964,7 @@ public static class Market_NPC
                     GameObject gameObjectLocal;
                     if (text == "skin")
                     {
-                        var transform1 = m_bodyModel.transform;
+                        Transform transform1 = m_bodyModel.transform;
                         Transform parent;
                         gameObjectLocal = Instantiate(child.gameObject, transform1.position, (parent = transform1.parent).rotation, parent);
                         gameObjectLocal.SetActive(true);

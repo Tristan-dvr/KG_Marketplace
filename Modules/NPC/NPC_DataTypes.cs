@@ -1,20 +1,23 @@
-﻿namespace Marketplace.Modules.NPC;
+﻿using YamlDotNet.Core;
+using YamlDotNet.Serialization;
+
+namespace Marketplace.Modules.NPC;
 
 public class NPC_DataTypes
 {
     public struct NPC_Main
     {
-        public Market_NPC.NPCType Type;
+        public Market_NPC.NPCType Type = Market_NPC.NPCType.None;
         public string NameOverride = "";
         public string Profile = "";
         public string Prefab = "";
-        public string Patrol = "";
         public string Dialogue = "";
         public string IMAGE = "";
 
+        public string[] RandomModelOverrides = Array.Empty<string>();
+
         public NPC_Main()
         {
-            Type = Market_NPC.NPCType.None;
         }
 
         public string Description()
@@ -28,8 +31,6 @@ public class NPC_DataTypes
                 result += $"<color=yellow>MovelOverride:</color> {Prefab}. ";
             if (!string.IsNullOrEmpty(Dialogue))
                 result += $"<color=yellow>Dialogue:</color> {Dialogue}. ";
-            if (!string.IsNullOrEmpty(Patrol))
-                result += $"<color=yellow>Patrol:</color> {Patrol}\n";
             return result;
         }
     }

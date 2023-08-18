@@ -11,7 +11,7 @@ public static class Market_Paths
     public static string DiscordStuffFolder => Path.Combine(MainPath, "DiscordWebhooks");
     
 
-    private static string DataFolder => Path.Combine(MainPath, "DO NOT TOUCH");
+    private static string DataFolder => Path.Combine(MainPath, "SavedData_JSON");
 
     public static string BankerDataJSONFile => Path.Combine(DataFolder, "BankerData.json");
 

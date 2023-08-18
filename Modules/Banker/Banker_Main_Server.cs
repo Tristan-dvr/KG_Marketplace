@@ -38,7 +38,7 @@ public static class Banker_Main_Server
     private static void ProcessBankerProfiles(IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
-        foreach (var line in profiles)
+        foreach (string line in profiles)
         {
             if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#")) continue;
             if (line.StartsWith("["))
@@ -112,7 +112,7 @@ public static class Banker_Main_Server
             });
             yield return new WaitUntil(() => task.IsCompleted);
             SaveBankerData();
-            foreach (var peer in BankerServerSideData.Keys.Select(userID => ZNet.instance.GetPeerByHostName(userID)).Where(peer => peer != null))
+            foreach (ZNetPeer peer in BankerServerSideData.Keys.Select(userID => ZNet.instance.GetPeerByHostName(userID)).Where(peer => peer != null))
             {
                 SendBankerDataToClient(peer);
             }

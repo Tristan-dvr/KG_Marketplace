@@ -37,8 +37,8 @@ public static class KG_Chat
         Global_Configs.SyncedGlobalOptions.ValueChanged += ApplyKGChat;
 
         string spritesheetPath_Original =
-            Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet_original.png");
-        string spritesheetPath_New = Path.Combine(BepInEx.Paths.ConfigPath, "MarketplaceEmojis", "spritesheet.png");
+            Path.Combine(BepInEx.Paths.ConfigPath, "Marketplace_KGChat_Emojis", "spritesheet_original.png");
+        string spritesheetPath_New = Path.Combine(BepInEx.Paths.ConfigPath, "Marketplace_KGChat_Emojis", "spritesheet.png");
         if (!Directory.Exists(Path.GetDirectoryName(spritesheetPath_Original)))
             Directory.CreateDirectory(Path.GetDirectoryName(spritesheetPath_Original)!);
 
@@ -99,7 +99,7 @@ public static class KG_Chat
 
         public void Setup()
         {
-            var parent = transform.parent.parent;
+            Transform parent = transform.parent.parent;
             text = parent.Find("Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text")
                 .GetComponent<TextMeshProUGUI>();
             dragRect = parent.parent.GetComponent<RectTransform>();
@@ -112,7 +112,7 @@ public static class KG_Chat
         public void OnDrag(PointerEventData eventData)
         {
             Vector2 vec = -eventData.delta;
-            var localScale = dragRect.localScale;
+            Vector3 localScale = dragRect.localScale;
             Vector2 sizeDelta = dragRect.sizeDelta + new Vector2(34f * localScale.x, 0f);
             vec.x /= sizeDelta.x;
             Vector3 resized = localScale + new Vector3(vec.x, vec.x, 0);
@@ -126,7 +126,7 @@ public static class KG_Chat
 
         public void OnEndDrag(PointerEventData data)
         {
-            var localScale = dragRect.localScale;
+            Vector3 localScale = dragRect.localScale;
             UI_X.Value = localScale.x;
             UI_Y.Value = localScale.y;
             Marketplace._thistype.Config.Save();
@@ -168,7 +168,7 @@ public static class KG_Chat
 
         public void OnDrag(PointerEventData eventData)
         {
-            var anchoredPosition = dragRect.anchoredPosition;
+            Vector2 anchoredPosition = dragRect.anchoredPosition;
             Vector2 vec = anchoredPosition + eventData.delta / dragRect.lossyScale * dragRect.localScale;
             Vector2 lastPos = anchoredPosition;
             anchoredPosition = vec;
@@ -181,7 +181,7 @@ public static class KG_Chat
         {
             foreach (Transform marker in Markers)
             {
-                var position = marker.position;
+                Vector3 position = marker.position;
                 float markerX = position.x;
                 float markerY = position.y;
                 if (markerX < 0 || markerX > screen.x || markerY < 0 || markerY > screen.y)
@@ -193,7 +193,7 @@ public static class KG_Chat
 
         public void OnEndDrag(PointerEventData data)
         {
-            var anchoredPosition = dragRect.anchoredPosition;
+            Vector2 anchoredPosition = dragRect.anchoredPosition;
             UI_X.Value = anchoredPosition.x;
             UI_Y.Value = anchoredPosition.y;
             Marketplace._thistype.Config.Save();

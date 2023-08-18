@@ -141,7 +141,7 @@ public static class Gambler_UI
         InitialPositions.Clear();
         ALLIMAGES.Clear();
         MainTransform = UI.transform.Find("Canvas/GambleElements");
-        var parent = MainTransform.parent;
+        Transform parent = MainTransform.parent;
         Button = parent.Find("Start");
         Button.GetComponent<Button>().onClick.AddListener(StartShuffle);
         Description = parent.Find("Description").GetComponent<Text>();
@@ -306,7 +306,7 @@ private static void Postfix(ref bool __result)
 
         if (main.GetComponent<ItemDrop>())
         {
-            var transform = p.transform;
+            Transform transform = p.transform;
             GameObject go = UnityEngine.Object.Instantiate(main,
                 transform.position + transform.forward * 1.5f + Vector3.up * 1.5f,
                 Quaternion.identity);
@@ -354,7 +354,7 @@ private static void Postfix(ref bool __result)
         {
             for (int i = 0; i < count; i++)
             {
-                var transform = p.transform;
+                Transform transform = p.transform;
                 GameObject monster = UnityEngine.Object.Instantiate(main,
                     transform.position + transform.forward * 1.5f + Vector3.up * 1.5f,
                     Quaternion.identity);

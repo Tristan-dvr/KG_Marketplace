@@ -57,7 +57,7 @@ public static class Buffer_Main_Server
     private static void ReadBufferProfiles(IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
-        foreach (var line in profiles)
+        foreach (string line in profiles)
         {
             if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#")) continue;
             if (line.StartsWith("["))

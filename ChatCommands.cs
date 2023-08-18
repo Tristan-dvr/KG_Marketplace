@@ -122,7 +122,7 @@ public static class ChatCommands
                     }
 
                     playerName = playerName.Trim();
-                    var find = ZNet.instance.m_players.Find(p => p.m_name == playerName);
+                    ZNet.PlayerInfo find = ZNet.instance.m_players.Find(p => p.m_name == playerName);
                     if (find.m_name == null || find.m_host == null)
                     {
                         args.Context.AddString($"<color=red>Player {playerName} not found</color>");
@@ -154,7 +154,7 @@ public static class ChatCommands
                     }
 
                     playerName = playerName.Trim();
-                    var find = ZNet.instance.m_players.Find(p => p.m_name == playerName);
+                    ZNet.PlayerInfo find = ZNet.instance.m_players.Find(p => p.m_name == playerName);
                     if (find.m_name == null || find.m_host == null)
                     {
                         args.Context.AddString($"<color=red>Player {playerName} not found</color>");
@@ -187,14 +187,14 @@ public static class ChatCommands
         {
             ZRoutedRpc.instance.Register("Marketplace_ResetQuests", (_) =>
             {
-                foreach (var quest in Player.m_localPlayer.m_customData.Where(d => d.Key.Contains("[MPASN]quest="))
+                foreach (string quest in Player.m_localPlayer.m_customData.Where(d => d.Key.Contains("[MPASN]quest="))
                              .Select(d => d.Key).ToList())
                 {
                     Player.m_localPlayer.m_customData.Remove(quest);
                     Utils.print($"Cleared quest data: {quest.Replace("[MPASN]quest=", "")}");
                 }
 
-                foreach (var quest in Player.m_localPlayer.m_customData.Where(d => d.Key.Contains("[MPASN]questCD="))
+                foreach (string quest in Player.m_localPlayer.m_customData.Where(d => d.Key.Contains("[MPASN]questCD="))
                              .Select(d => d.Key).ToList())
                 {
                     Player.m_localPlayer.m_customData.Remove(quest);

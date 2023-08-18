@@ -186,7 +186,7 @@ public static class Dialogues_DataTypes
             }
         }
 
-        private static Action<Market_NPC.NPCcomponent> TryParseCommands(IEnumerable<string> commands)
+        private static Action<Market_NPC.NPCcomponent> ParseCommands(IEnumerable<string> commands)
         {
             Action<Market_NPC.NPCcomponent> result = null;
             foreach (string command in commands)
@@ -412,7 +412,7 @@ public static class Dialogues_DataTypes
         }
 
 
-        private static Dialogue_Condition TryParseConditions(IEnumerable<string> conditions)
+        private static Dialogue_Condition ParseConditions(IEnumerable<string> conditions)
         {
             Dialogue_Condition result = null;
             foreach (string condition in conditions)
@@ -565,8 +565,9 @@ public static class Dialogues_DataTypes
                                 result += (out string reason) =>
                                 {
                                     reason = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
-                                    return Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Configs
-                                        ._localUserID);
+                                    return Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(
+                                        Global_Configs
+                                            ._localUserID);
                                 };
                                 break;
                             case OptionCondition.NotIsVIP:
@@ -597,7 +598,8 @@ public static class Dialogues_DataTypes
                             case OptionCondition.HasBuff:
                                 result += (out string reason) =>
                                 {
-                                    StatusEffect findSe = ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1])!;
+                                    StatusEffect findSe =
+                                        ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1])!;
                                     string seName = findSe == null
                                         ? split[1]
                                         : Localization.instance.Localize(findSe.m_name);
@@ -609,7 +611,8 @@ public static class Dialogues_DataTypes
                             case OptionCondition.NotHasBuff:
                                 result += (out string reason) =>
                                 {
-                                    StatusEffect findSe = ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1])!;
+                                    StatusEffect findSe =
+                                        ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1])!;
                                     string seName = findSe == null
                                         ? split[1]
                                         : Localization.instance.Localize(findSe.m_name);
@@ -723,7 +726,8 @@ public static class Dialogues_DataTypes
                 Text = raw.Text,
                 Options = new PlayerOption[raw.Options.Length]
             };
-            Utils.LoadImageFromWEB(raw.BG_ImageLink!, (sprite) => dialogue.BG_Image = sprite);
+            if (!string.IsNullOrEmpty(raw.BG_ImageLink))
+                Utils.LoadImageFromWEB(raw.BG_ImageLink, (sprite) => dialogue.BG_Image = sprite);
             for (int i = 0; i < raw.Options.Length; ++i)
             {
                 dialogue.Options[i] = new PlayerOption
@@ -731,8 +735,8 @@ public static class Dialogues_DataTypes
                     Text = raw.Options[i].Text,
                     Icon = Utils.TryFindIcon(raw.Options[i].Icon!),
                     NextUID = raw.Options[i].NextUID,
-                    Command = TryParseCommands(raw.Options[i].Commands),
-                    Condition = TryParseConditions(raw.Options[i].Conditions),
+                    Command = ParseCommands(raw.Options[i].Commands),
+                    Condition = ParseConditions(raw.Options[i].Conditions),
                     AlwaysVisible = raw.Options[i].AlwaysVisible,
                     Color = raw.Options[i].Color
                 };

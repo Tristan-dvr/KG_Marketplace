@@ -364,9 +364,12 @@ public static class Utils
             return img;
         }
 
-        if (ZNetScene.instance.GetPrefab(name) is { } prefab && prefab.GetComponent<ItemDrop>() is { } item)
+        if (ZNetScene.instance.GetPrefab(name) is { } prefab)
         {
-            return item.m_itemData.GetIcon();
+            if(prefab.GetComponent<ItemDrop>() is { } item)
+                return item.m_itemData.GetIcon();
+            if(prefab.GetComponent<Piece>() is { } piece)
+                return piece.m_icon;
         }
 
         return null;
