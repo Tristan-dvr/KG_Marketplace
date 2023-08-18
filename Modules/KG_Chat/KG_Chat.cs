@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System.Diagnostics;
+using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using Fishlabs;
@@ -21,7 +22,8 @@ public static class KG_Chat
     private static ConfigEntry<bool> useTypeSound = null!;
     private static ConfigEntry<ChatController.Transparency> kgchat_Transparency = null!;
     private static Chat kgChat = null!;
-    private static Scrollbar kgChat_Scrollbar = null!; 
+    private static Scrollbar kgChat_Scrollbar = null!;
+    private static readonly List<ContentSizeFitter> fitters = new();
 
     [UsedImplicitly]
     private static void OnInit()
@@ -59,7 +61,7 @@ public static class KG_Chat
             }
         }
     }
-    
+
 
     private static Coroutine _corout;
 
@@ -98,7 +100,8 @@ public static class KG_Chat
         public void Setup()
         {
             var parent = transform.parent.parent;
-            text = parent.Find("Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text").GetComponent<TextMeshProUGUI>();
+            text = parent.Find("Tabs Content/MainTab/Scroll Rect/Viewport/Content/Text")
+                .GetComponent<TextMeshProUGUI>();
             dragRect = parent.parent.GetComponent<RectTransform>();
             UI_X = Marketplace._thistype.Config.Bind("KG Chat", "UI_sizeX", 1f, "UI X size");
             UI_Y = Marketplace._thistype.Config.Bind("KG Chat", "UI_sizeY", 1f, "UI Y size");
@@ -203,7 +206,7 @@ public static class KG_Chat
     private static class ZNetScene_Awake_Patch
     {
         [UsedImplicitly]
-private static void Postfix() => ApplyKGChat(); 
+        private static void Postfix() => ApplyKGChat();
     }
 
     private static void ApplyKGChat()
@@ -218,6 +221,8 @@ private static void Postfix() => ApplyKGChat();
         Chat.instance.m_output.gameObject.SetActive(false);
         Object.DestroyImmediate(Chat.instance);
         kgChat = Object.Instantiate(original_KG_Chat, parent).GetComponent<Chat>();
+        fitters.Clear();
+        fitters.AddRange(kgChat.GetComponentsInChildren<ContentSizeFitter>(true));
         kgChat.gameObject.AddComponent<ChatController>().Setup();
         kgChat.transform.Find("CHATWINDOW/Input Field/Resize").gameObject.AddComponent<ResizeUI>().Setup();
         kgChat.transform.Find("CHATWINDOW/Input Field/Move").gameObject.AddComponent<DragUI>().Setup();
@@ -225,7 +230,7 @@ private static void Postfix() => ApplyKGChat();
             .AddListener(
                 () =>
                 {
-                    ResizeUI.Default(); 
+                    ResizeUI.Default();
                     DragUI.Default();
                     AssetStorage.AUsrc.Play();
                 });
@@ -238,7 +243,7 @@ private static void Postfix() => ApplyKGChat();
 
         Marketplace.Global_FixedUpdator += KGChat_Update;
     }
-    
+
     [HarmonyPatch(typeof(GuiInputField), "Update")]
     [ClientOnlyPatch]
     private static class GuiInputField_Update_Patch
@@ -252,7 +257,7 @@ private static void Postfix() => ApplyKGChat();
 
     private static void KGChat_Update(float dt)
     {
-        if(!kgChat || !Chat.instance.m_input.IsActive()) return;
+        if (!kgChat || !Chat.instance.m_input.IsActive()) return;
         Chat.instance.m_input.ActivateInputField();
     }
 
@@ -319,7 +324,7 @@ private static void Postfix() => ApplyKGChat();
     private static class Menu_Patch
     {
         [UsedImplicitly]
-private static void Postfix(ref bool __result)
+        private static void Postfix(ref bool __result)
         {
             if (!kgChat) return;
             __result |= Chat.instance.m_input.gameObject.activeInHierarchy;
@@ -349,7 +354,8 @@ private static void Postfix(ref bool __result)
         }
     }
 
-    [HarmonyPatch(typeof(Terminal), nameof(Terminal.AddString), typeof(string), typeof(string), typeof(Talker.Type),typeof(bool))]
+    [HarmonyPatch(typeof(Terminal), nameof(Terminal.AddString), typeof(string), typeof(string), typeof(Talker.Type),
+        typeof(bool))]
     [ClientOnlyPatch]
     private static class Chat_Patches2
     {
@@ -394,7 +400,6 @@ private static void Postfix(ref bool __result)
             {
                 ResetScroll();
             }
-                
         }
     }
 
@@ -572,7 +577,7 @@ private static void Postfix(ref bool __result)
                 _ => "/say " + text
             };
         }
-        
+
         [UsedImplicitly]
         private static void Postfix() => ResetScroll();
 
@@ -631,7 +636,7 @@ private static void Postfix(ref bool __result)
                     yield return new CodeInstruction(OpCodes.Ldarg_0);
                     yield return new CodeInstruction(OpCodes.Call,
                         AccessTools.Method(typeof(EmojiPatch), nameof(StringReplacer)));
-                } 
+                }
             }
         }
     }

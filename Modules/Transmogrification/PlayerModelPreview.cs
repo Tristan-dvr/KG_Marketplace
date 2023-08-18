@@ -285,9 +285,9 @@ public static class PlayerModelPreview
         Light.intensity = 2f;
 
         Vector3 size = new Vector3(Mathf.Abs(min.x) + Mathf.Abs(max.x), Mathf.Abs(min.y) + Mathf.Abs(max.y), Mathf.Abs(min.z) + Mathf.Abs(max.z));
-        float maxMeshSize = Mathf.Max(size.x, size.y) + 0.1f;
-        float distance = maxMeshSize / Mathf.Tan(renderCamera.fieldOfView * Mathf.Deg2Rad) * 0.9f;
-        renderCamera.transform.position = SpawnPoint + new Vector3(0, 0.05f, distance);
+        float maxMeshSize = Mathf.Max(size.x, size.y);
+        float distance = maxMeshSize / Mathf.Tan(renderCamera.fieldOfView * Mathf.Deg2Rad);
+        renderCamera.transform.position = SpawnPoint + new Vector3(0, 0, distance);
         renderCamera.gameObject.SetActive(true);
         Light.gameObject.SetActive(true);
 

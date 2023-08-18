@@ -16,19 +16,18 @@ public static class MarketplaceHammer
     private static List<Piece> _pieces = new();
     private static GameObject CopyFrom;
     public static Piece.PieceCategory _category = Piece.PieceCategory.Misc;
-    
+
     public struct Wrapper
     {
         public bool isPinned;
         public NPC_Main main;
         public NPC_Fashion fashion;
     }
-    
+
     private static GameObject INACTIVE = new GameObject("INACTIVE_SAVEDNPCS")
     {
         hideFlags = HideFlags.HideAndDontSave
     };
-    
 
     [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable))]
     [ClientOnlyPatch]
@@ -37,12 +36,14 @@ public static class MarketplaceHammer
         [UsedImplicitly]
         private static void Postfix(PieceTable __instance)
         {
+            if (__instance.name != "_HammerPieceTable") return;
             List<Piece> avaliablePieces = __instance.m_availablePieces[(int)_category];
             if (Utils.IsDebug)
             {
+                avaliablePieces.RemoveAt(0);
                 avaliablePieces.Add(Market_NPC.NPC.GetComponent<Piece>());
                 avaliablePieces.Add(Market_NPC.PinnedNPC.GetComponent<Piece>());
-                
+
                 foreach (var data in _pieces)
                     avaliablePieces.Add(data);
             }
@@ -51,7 +52,7 @@ public static class MarketplaceHammer
 
     private static void ProcessSavedNPC(string fileName, string data)
     {
-        if(_npcData.ContainsKey(fileName)) return;
+        if (_npcData.ContainsKey(fileName)) return;
         try
         {
             YamlDotNet.Serialization.Deserializer deserializer = new();
@@ -65,15 +66,17 @@ public static class MarketplaceHammer
             {
                 Texture2D loadTex = new(1, 1);
                 loadTex.LoadImage(Convert.FromBase64String(KVP.main.IMAGE));
-                copy.GetComponent<Piece>().m_icon = Sprite.Create(loadTex, new Rect(0, 0, loadTex.width, loadTex.height), new Vector2(0, 0));
+                copy.GetComponent<Piece>().m_icon = Sprite.Create(loadTex,
+                    new Rect(0, 0, loadTex.width, loadTex.height), new Vector2(0, 0));
             }
             else
             {
                 copy.GetComponent<Piece>().m_icon = AssetStorage.NullSprite;
             }
+
             _pieces.Add(copy.GetComponent<Piece>());
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Utils.print($"Error file parsing saved npc: {fileName}: \n{ex}");
         }
@@ -91,13 +94,18 @@ public static class MarketplaceHammer
     private static void Reload()
     {
         MessageHud.instance?.ShowMessage(MessageHud.MessageType.Center, $"Reloading NPC Hammer List");
-        Chat.instance?.AddString($"<color=green>Reloading NPC Hammer List</color>");
+        if (Chat.instance)
+        {
+            Chat.instance.m_hideTimer = 0f;
+            Chat.instance.AddString($"<color=green>Reloading NPC Hammer List</color>");
+        }
+
         _npcData.Clear();
         _pieces.Clear();
         foreach (Transform transform in INACTIVE.transform)
             Object.Destroy(transform.gameObject);
         string folder = Market_Paths.NPC_Saved;
-        string[] yml =  Directory.GetFiles(folder, "*.yml", SearchOption.AllDirectories);
+        string[] yml = Directory.GetFiles(folder, "*.yml", SearchOption.AllDirectories);
         string[] yaml = Directory.GetFiles(folder, "*.yaml", SearchOption.AllDirectories);
         foreach (string file in yml.Concat(yaml))
         {
@@ -114,29 +122,16 @@ public static class MarketplaceHammer
         [UsedImplicitly]
         private static void Postfix(Terminal __instance)
         {
-            new Terminal.ConsoleCommand("reloadnpcs", "Reloads all saved NPCs", (_) =>
-            {
-                Reload();
-            });
+            new Terminal.ConsoleCommand("reloadnpcs", "Reloads all saved NPCs", (_) => { Reload(); });
         }
     }
-
-    private static JSONParameters NPC_Save_Params = new()
-    {
-        UseExtensions = false,
-        SerializeNullValues = true,
-        DateTimeMilliseconds = false,
-        UseUTCDateTime = true,
-        UseOptimizedDatasetSchema = true,
-        UseValuesOfEnums = false,
-    };
 
     public static void SaveNPC(Market_NPC.NPCcomponent npc)
     {
         string folder = Market_Paths.NPC_Saved;
         NPC_Main mainData = new();
         NPC_Fashion fashionData = new();
-        
+
         mainData.Type = npc._currentNpcType;
         mainData.NameOverride = npc.znv.m_zdo.GET_NPC_Name();
         mainData.Profile = npc.znv.m_zdo.GET_NPC_Profile();
@@ -175,23 +170,25 @@ public static class MarketplaceHammer
         npc.transform.Find("TMP").gameObject.SetActive(false);
         mainData.IMAGE = PlayerModelPreview.MakeScreenshot(npc.gameObject, 256);
         npc.transform.Find("TMP").gameObject.SetActive(true);
-        
+
         string fName = $"{npc._currentNpcType} {mainData.NameOverride.NoRichText()} {mainData.Profile.NoRichText()}";
         string fPath = Path.Combine(folder, $"{fName}.yml");
-        
+
         if (!File.Exists(fPath)) File.Create(fPath).Dispose();
-        
+
         var wrapper = new Wrapper()
         {
             main = mainData,
             fashion = fashionData,
             isPinned = npc.gameObject.name.Contains(Market_NPC.PinnedNPC.name)
         };
-        
+
         YamlDotNet.Serialization.Serializer serializer = new();
         string yaml = serializer.Serialize(wrapper);
         File.WriteAllText(fPath, yaml);
-        Chat.instance.AddString($"<color=green>NPC Saved to {Path.GetFileName(fPath)}. Write <color=yellow>/reloadnpcs</color> to reload NPC list in hammer</color>"); 
+        Chat.instance.m_hideTimer = 0f;
+        Chat.instance.AddString(
+            $"<color=green>NPC Saved to {Path.GetFileName(fPath)}. Write <color=yellow>/reloadnpcs</color> to reload NPC list in hammer</color>");
     }
 
 
@@ -235,8 +232,8 @@ public static class MarketplaceHammer
             }
         }
     }
-    
-    [HarmonyPatch(typeof(Piece),nameof(Piece.CanBeRemoved))]
+
+    [HarmonyPatch(typeof(Piece), nameof(Piece.CanBeRemoved))]
     private static class Piece_CanBeRemoved_Patch
     {
         [UsedImplicitly]
@@ -248,6 +245,4 @@ public static class MarketplaceHammer
             }
         }
     }
-    
-    
 }
