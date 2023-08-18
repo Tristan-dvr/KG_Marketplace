@@ -1,4 +1,7 @@
 ﻿using System.Reflection.Emit;
+using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
+using YamlDotNet.Serialization;
 
 namespace Marketplace;
 

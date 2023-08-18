@@ -3,22 +3,17 @@ using YamlDotNet.Serialization;
 
 namespace Marketplace.Modules.NPC;
 
-public class NPC_DataTypes
+public static class NPC_DataTypes
 {
     public struct NPC_Main
     {
-        public Market_NPC.NPCType Type = Market_NPC.NPCType.None;
-        public string NameOverride = "";
-        public string Profile = "";
-        public string Prefab = "";
-        public string Dialogue = "";
-        public string IMAGE = "";
-
-        public string[] RandomModelOverrides = Array.Empty<string>();
-
-        public NPC_Main()
-        {
-        }
+        public Market_NPC.NPCType Type;
+        public string NameOverride;
+        public string Profile;
+        public string Prefab;
+        public string Dialogue;
+        public string IMAGE;
+        public string RandomModelOverrides;
 
         public string Description()
         {
@@ -43,7 +38,7 @@ public class NPC_DataTypes
         public string ChestItem;
         public string LegsItem;
         public string CapeItem;
-        public string HairItem;
+        public string HairItem; 
         public string HairColor;
         public string ModelScale;
         public string LeftItemHidden;

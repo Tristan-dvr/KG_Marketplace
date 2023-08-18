@@ -3,6 +3,8 @@ using Marketplace.ExternalLoads;
 using Marketplace.Modules.NPC;
 using Marketplace.Modules.Transmogrification;
 using Marketplace.Paths;
+using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 using Object = UnityEngine.Object;
 using static Marketplace.Modules.NPC.NPC_DataTypes;
@@ -56,8 +58,7 @@ public static class MarketplaceHammer
         if (_npcData.ContainsKey(fileName)) return;
         try
         {
-            YamlDotNet.Serialization.Deserializer deserializer = new();
-            Wrapper KVP = deserializer.Deserialize<Wrapper>(data);
+            Wrapper KVP = new DeserializerBuilder().Build().Deserialize<Wrapper>(data);
             _npcData[fileName] = KVP;
             GameObject copy = Object.Instantiate(CopyFrom, INACTIVE.transform);
             copy.name = "MARKETNPC_HAMMER_BUILDED";
@@ -138,6 +139,7 @@ public static class MarketplaceHammer
         mainData.Profile = npc.znv.m_zdo.GET_NPC_Profile();
         mainData.Prefab = npc.znv.m_zdo.GET_NPC_Model();
         mainData.Dialogue = npc.znv.m_zdo.GET_NPC_Dialogue();
+        mainData.RandomModelOverrides = "";
 
         fashionData.LeftItem = npc.znv.m_zdo.GET_NPC_LeftItem();
         fashionData.RightItem = npc.znv.m_zdo.GET_NPC_RightItem();
@@ -175,15 +177,13 @@ public static class MarketplaceHammer
         string fPath = Path.Combine(folder, $"{fName}.yml");
 
         if (!File.Exists(fPath)) File.Create(fPath).Dispose();
-
-        mainData.RandomModelOverrides = new string[] { "123", "test" };
         Wrapper wrapper = new Wrapper()
         {
             main = mainData,
             fashion = fashionData,
             isPinned = npc.gameObject.name.Contains(Market_NPC.PinnedNPC.name)
         };
-        
+
         string yaml = new SerializerBuilder().Build().Serialize(wrapper);
         File.WriteAllText(fPath, yaml);
         Chat.instance.m_hideTimer = 0f;
@@ -211,15 +211,17 @@ public static class MarketplaceHammer
             comp.ChangeNpcType(0, (int)value.main.Type);
             comp.ChangeProfile(0, value.main.Profile, value.main.Dialogue);
             comp.OverrideName(0, value.main.NameOverride);
-            if (value.main.RandomModelOverrides.Length == 0)
-            { 
+            if (string.IsNullOrWhiteSpace(value.main.RandomModelOverrides))
+            {
                 comp.OverrideModel(0, value.main.Prefab);
             }
             else
             {
-                comp.OverrideModel(0, value.main.RandomModelOverrides[Random.Range(0, value.main.RandomModelOverrides.Length)]);
+                string[] randomModels = value.main.RandomModelOverrides.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (randomModels.Length > 0)
+                    comp.OverrideModel(0, randomModels[Random.Range(0, randomModels.Length)]);
             }
-            
+
             comp.FashionApply(0, value.fashion);
         }
 
