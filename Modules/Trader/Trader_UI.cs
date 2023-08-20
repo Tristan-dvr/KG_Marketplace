@@ -83,8 +83,8 @@ public static class Trader_UI
             UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color =
                 ToBank ? Enabled : Disabled;
             UI.transform.Find("Canvas/Background/ToBank/Text").GetComponent<Text>().text = ToBank
-                ? "Send to Bank\n      <color=green>On</color>"
-                : "Send to Bank\n      <color=red>Off</color>";
+                ? Localization.instance.Localize("$mpasn_trader_sendtobank")
+                : Localization.instance.Localize("$mpasn_trader_sendtobankoff");
         });
 
         Localization.instance.Localize(UI.transform);
@@ -404,8 +404,8 @@ private static void Postfix(ref bool __result)
         UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color = Disabled;
         UI.transform.Find("Canvas/Background/ToBank").gameObject.SetActive(!ZNet.IsSinglePlayer);
         UI.transform.Find("Canvas/Background/ToBank/Text").GetComponent<Text>().text = ToBank
-            ? "Send to Bank\n       <color=green>On</color>"
-            : "Send to Bank\n       <color=red>Off</color>";
+            ? Localization.instance.Localize("$mpasn_trader_sendtobank")
+            : Localization.instance.Localize("$mpasn_trader_sendtobankoff");
         InventoryGui.instance.Show(null);
         UI.SetActive(true);
         _npcName = Utils.RichTextFormatting(_npcName);

@@ -263,3 +263,6 @@ mpasn_CustomValue: Custom Value
 mpasn_SetCustomValue: Set Custom Value
 mpasn_AddCustomValue: Add Custom Value
 mpasn_savenpc: Save NPC
+mpasn_transmog_clear: Clear
+mpasn_trader_sendtobank: "Send to Bank\n<color=green>On</color>"
+mpasn_trader_sendtobankoff: "Send to Bank\n<color=red>Off</color>"

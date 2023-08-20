@@ -81,6 +81,8 @@ public static class Transmogrification_UI
         ClickEffectReverse = AssetStorage.asset.LoadAsset<GameObject>("TransmogReverse");
         UI.transform.Find("Canvas/SelectItemTab/ItemList/DestroyTransmog").GetComponent<Button>().onClick
             .AddListener(TransformReverse);
+
+        Localization.instance.Localize(UI.transform);
     }
 
     private static void UpdateFillers()

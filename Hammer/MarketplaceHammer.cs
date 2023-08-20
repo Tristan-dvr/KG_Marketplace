@@ -41,13 +41,15 @@ public static class MarketplaceHammer
         {
             if (__instance.name != "_HammerPieceTable") return;
             List<Piece> avaliablePieces = __instance.m_availablePieces[(int)_category];
+            Hud_Awake_Patch.UI.SetActive(__instance.m_selectedCategory == _category);
             if (Utils.IsDebug)
             {
                 avaliablePieces.RemoveAt(0);
                 avaliablePieces.Add(Market_NPC.NPC.GetComponent<Piece>());
                 avaliablePieces.Add(Market_NPC.PinnedNPC.GetComponent<Piece>());
 
-                foreach (Piece data in _pieces)
+                int skip = (Hud_Awake_Patch.CurrentPage - 1) * Hud_Awake_Patch.MaxPerPage;
+                foreach (Piece data in _pieces.Skip(skip).Take(Hud_Awake_Patch.MaxPerPage))
                     avaliablePieces.Add(data);
             }
         }
@@ -115,6 +117,7 @@ public static class MarketplaceHammer
             string fContent = File.ReadAllText(file);
             ProcessSavedNPC(fNameNoExt, fContent);
         }
+        Hud_Awake_Patch.SetPage(1);
     }
 
     [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
@@ -217,7 +220,8 @@ public static class MarketplaceHammer
             }
             else
             {
-                string[] randomModels = value.main.RandomModelOverrides.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] randomModels =
+                    value.main.RandomModelOverrides.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (randomModels.Length > 0)
                     comp.OverrideModel(0, randomModels[Random.Range(0, randomModels.Length)]);
             }
@@ -252,6 +256,52 @@ public static class MarketplaceHammer
             {
                 __result = false;
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(Hud), nameof(Hud.Awake))]
+    private static class Hud_Awake_Patch
+    {
+        public static GameObject UI;
+        private static Text _text;
+
+        public static int CurrentPage = 1;
+        public const int MaxPerPage = 88;
+        private static int MaxPages => Mathf.CeilToInt(_pieces.Count / (float)MaxPerPage);
+
+
+        [UsedImplicitly]
+        private static void Postfix(Hud __instance)
+        {
+            CurrentPage = 1;
+            UI = UnityEngine.Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("MarketHammer_Pages"),
+                __instance.m_buildHud.transform.Find("bar/SelectionWindow"));
+            UI.transform.SetAsLastSibling();
+            UI.SetActive(false);
+            _text = UI.transform.Find("Page/Text").GetComponent<Text>();
+            UI.transform.Find("PageLeft").GetComponent<Button>().onClick.AddListener(OnPageLeft);
+            UI.transform.Find("PageRight").GetComponent<Button>().onClick.AddListener(OnPageRight);
+            _text.text = $"{CurrentPage} / {MaxPages}";
+        }
+
+        public static void SetPage(int page)
+        {
+            CurrentPage = Mathf.Clamp(page, 1, MaxPages);
+            Player.m_localPlayer?.UpdateAvailablePiecesList();
+            if (_text)
+                _text.text = $"{CurrentPage} / {MaxPages}";
+        }
+
+        private static void OnPageLeft()
+        {
+            AssetStorage.AUsrc.Play();
+            SetPage(CurrentPage - 1);
+        }
+
+        private static void OnPageRight()
+        {
+            AssetStorage.AUsrc.Play();
+            SetPage(CurrentPage + 1);
         }
     }
 }
