@@ -156,7 +156,7 @@ public static class Market_NPC
         }
     }
 
-    [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
+    [HarmonyPatch(typeof(TextInput), nameof(TextInput.IsVisible))]
     [ClientOnlyPatch]
     private static class IsVisiblePatch
     {
@@ -566,7 +566,7 @@ public static class Market_NPC
 
         public string GetHoverText()
         {
-            if (Menu.IsVisible()) return "";
+            if (TextInput.IsVisible()) return "";
 
             string admintext = Utils.IsDebug
                 ? "\n" + Localization.instance.Localize("[<color=yellow><b>$KEY_AltPlace + $KEY_Use</b></color>]") +

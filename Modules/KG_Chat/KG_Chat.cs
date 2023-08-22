@@ -319,7 +319,7 @@ public static class KG_Chat
         }
     }
 
-    [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
+    [HarmonyPatch(typeof(TextInput), nameof(TextInput.IsVisible))]
     [ClientOnlyPatch]
     private static class Menu_Patch
     {

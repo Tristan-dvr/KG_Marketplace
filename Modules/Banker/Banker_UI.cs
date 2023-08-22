@@ -19,7 +19,7 @@ public static class Banker_UI
         return UI && UI.activeSelf;
     }
 
-    [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
+    [HarmonyPatch(typeof(TextInput), nameof(TextInput.IsVisible))]
     [ClientOnlyPatch]
     private static class BankerUIFix
     {

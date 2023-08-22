@@ -279,7 +279,7 @@ public static class Leaderboard_UI
         Default();
     }
 
-    [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
+    [HarmonyPatch(typeof(TextInput), nameof(TextInput.IsVisible))]
     [ClientOnlyPatch]
     private static class Menu_IsVisible_Patch
     {

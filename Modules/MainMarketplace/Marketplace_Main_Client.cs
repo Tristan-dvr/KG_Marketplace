@@ -36,7 +36,7 @@ public static class Marketplace_Main_Client
         }
     }
 
-    [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
+    [HarmonyPatch(typeof(TextInput), nameof(TextInput.IsVisible))]
     [ClientOnlyPatch]
     private static class MarketplaceUIFix
     {

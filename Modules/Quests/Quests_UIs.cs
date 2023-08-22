@@ -654,7 +654,7 @@ private static void Postfix(InventoryGui __instance)
         }
     }
 
-    [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
+    [HarmonyPatch(typeof(TextInput), nameof(TextInput.IsVisible))]
     [ClientOnlyPatch]
     private static class QuestUIFix
     {

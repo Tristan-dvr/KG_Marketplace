@@ -464,7 +464,7 @@ public static class Transmogrification_UI
     }
 
 
-    [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible))]
+    [HarmonyPatch(typeof(TextInput), nameof(TextInput.IsVisible))]
     [ClientOnlyPatch]
     private static class visiblePatch
     {
