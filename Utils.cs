@@ -48,6 +48,7 @@ public static class Utils
                     if (logListener is DiskLogListener { LogWriter: not null } bepinexlog)
                         bepinexlog.LogWriter.WriteLine($"[{c++}] {item}");
             }
+
             ConsoleManager.SetConsoleColor(ConsoleColor.White);
         }
         else
@@ -198,18 +199,18 @@ public static class Utils
 
         return pinData;
     }
-    
-    public static Texture2D CustomSize(this Texture2D texture2D,int targetX,int targetY)
+
+    public static Texture2D CustomSize(this Texture2D texture2D, int targetX, int targetY)
     {
-        RenderTexture rt=new RenderTexture(targetX, targetY,24);
+        RenderTexture rt = new RenderTexture(targetX, targetY, 24);
         RenderTexture.active = rt;
-        Graphics.Blit(texture2D,rt);
-        Texture2D result=new Texture2D(targetX,targetY);
-        result.ReadPixels(new Rect(0,0,targetX,targetY),0,0);
+        Graphics.Blit(texture2D, rt);
+        Texture2D result = new Texture2D(targetX, targetY);
+        result.ReadPixels(new Rect(0, 0, targetX, targetY), 0, 0);
         result.Apply();
         return result;
     }
-    
+
     public static string AsBase64(this string s) => Convert.ToBase64String(Encoding.UTF8.GetBytes(s));
 
     public static int CustomCountItemsNoLevel(string prefab)
@@ -274,7 +275,7 @@ public static class Utils
         pkg.m_writer.Write(decompress);
         pkg.m_stream.Position = 0L;
     }
-    
+
     public static void WriteFile(this string path, string data)
     {
         File.WriteAllText(path, data);
@@ -366,9 +367,9 @@ public static class Utils
 
         if (ZNetScene.instance.GetPrefab(name) is { } prefab)
         {
-            if(prefab.GetComponent<ItemDrop>() is { } item)
+            if (prefab.GetComponent<ItemDrop>() is { } item)
                 return item.m_itemData.GetIcon();
-            if(prefab.GetComponent<Piece>() is { } piece)
+            if (prefab.GetComponent<Piece>() is { } piece)
                 return piece.m_icon;
         }
 
@@ -404,7 +405,8 @@ public static class Utils
     {
         if (!Enum.TryParse(name, out Skills.SkillType skill))
         {
-            Skills.SkillDef SkillDef = Player.m_localPlayer.m_skills.GetSkillDef((Skills.SkillType)Mathf.Abs(name.GetStableHashCode()));
+            Skills.SkillDef SkillDef =
+                Player.m_localPlayer.m_skills.GetSkillDef((Skills.SkillType)Mathf.Abs(name.GetStableHashCode()));
             return SkillDef == null ? AssetStorage.NullSprite : SkillDef.m_icon;
         }
         else
@@ -413,7 +415,7 @@ public static class Utils
             return SkillDef.m_info.m_icon;
         }
     }
-    
+
     public static void LoadImageFromWEB(string url, Action<Sprite> callback)
     {
         if (string.IsNullOrWhiteSpace(url) || !Uri.TryCreate(url, UriKind.Absolute, out _)) return;
@@ -438,7 +440,8 @@ public static class Utils
             Texture2D newTempTexture = new Texture2D(texture.width, texture.height);
             newTempTexture.SetPixels(texture.GetPixels());
             newTempTexture.Apply();
-            AssetStorage.GlobalCachedSprites[url] = Sprite.Create(newTempTexture, new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
+            AssetStorage.GlobalCachedSprites[url] = Sprite.Create(newTempTexture,
+                new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
             callback?.Invoke(AssetStorage.GlobalCachedSprites[url]);
         }
     }
@@ -479,7 +482,8 @@ public static class Utils
 
     public static void SetGOColors(GameObject go, Color color)
     {
-        foreach (Renderer renderer in go.GetComponentsInChildren<MeshRenderer>().Concat(go.GetComponentsInChildren<SkinnedMeshRenderer>().Cast<Renderer>()))
+        foreach (Renderer renderer in go.GetComponentsInChildren<MeshRenderer>()
+                     .Concat(go.GetComponentsInChildren<SkinnedMeshRenderer>().Cast<Renderer>()))
         {
             foreach (Material mat in renderer.materials)
             {
@@ -489,11 +493,13 @@ public static class Utils
     }
 
     private const string CustomValue_Prefix = "kgMarketplaceValue@";
+
     public static void SetCustomValue(this Player p, string key, int value)
     {
         string toCheck = CustomValue_Prefix + key;
         p.m_customData[toCheck] = value.ToString();
     }
+
     public static void AddCustomValue(this Player p, string key, int value)
     {
         string toCheck = CustomValue_Prefix + key;
@@ -513,6 +519,7 @@ public static class Utils
             p.m_customData[toCheck] = value.ToString();
         }
     }
+
     public static int GetCustomValue(this Player p, string key)
     {
         string toCheck = CustomValue_Prefix + key;
@@ -523,14 +530,16 @@ public static class Utils
                 return valInt;
             }
         }
+
         return 0;
     }
+
     public static void RemoveCustomValue(this Player p, string key)
     {
         string toCheck = CustomValue_Prefix + key;
         p.m_customData.Remove(toCheck);
     }
-    
+
 
     public static bool HasFlagFast(this Quests_DataTypes.SpecialQuestTag value,
         Quests_DataTypes.SpecialQuestTag flag)
@@ -562,6 +571,13 @@ public static class Utils
         return (flag & other) != 0;
     }
 
+    public static string RandomSplitSpace(this string s)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return "";
+        string[] split = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (split.Length == 0) return "";
+        return split[UnityEngine.Random.Range(0, split.Length)];
+    }
 
     public static string ToTime(this int seconds)
     {

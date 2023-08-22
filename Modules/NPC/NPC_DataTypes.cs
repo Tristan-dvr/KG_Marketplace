@@ -13,7 +13,6 @@ public static class NPC_DataTypes
         public string Prefab;
         public string Dialogue;
         public string IMAGE;
-        public string RandomModelOverrides;
 
         public string Description()
         {
@@ -121,5 +120,28 @@ public static class NPC_DataTypes
             PeriodicSound = pkg.ReadString();
             PeriodicSoundTime = pkg.ReadString();
         }
+
+        public void ApplyRandom()
+        {
+            LeftItem = LeftItem.RandomSplitSpace();
+            RightItem = RightItem.RandomSplitSpace();
+            HelmetItem = HelmetItem.RandomSplitSpace();
+            ChestItem = ChestItem.RandomSplitSpace();
+            LegsItem = LegsItem.RandomSplitSpace();
+            CapeItem = CapeItem.RandomSplitSpace();
+            HairItem = HairItem.RandomSplitSpace();
+            HairColor = HairColor.RandomSplitSpace();
+            LeftItemHidden = LeftItemHidden.RandomSplitSpace();
+            RightItemHidden = RightItemHidden.RandomSplitSpace();
+            InteractAnimation = InteractAnimation.RandomSplitSpace();
+            GreetAnimation = GreetAnimation.RandomSplitSpace();
+            ByeAnimation = ByeAnimation.RandomSplitSpace();
+            SkinColor = SkinColor.RandomSplitSpace();
+            CraftingAnimation = CraftingAnimation.RandomSplitSpace();
+            BeardItem = BeardItem.RandomSplitSpace();
+            BeardColor = BeardColor.RandomSplitSpace();
+            PeriodicAnimation = PeriodicAnimation.RandomSplitSpace();
+        }
+        
     }
 }

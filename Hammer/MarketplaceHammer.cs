@@ -117,6 +117,7 @@ public static class MarketplaceHammer
             string fContent = File.ReadAllText(file);
             ProcessSavedNPC(fNameNoExt, fContent);
         }
+
         Hud_Awake_Patch.SetPage(1);
     }
 
@@ -142,7 +143,6 @@ public static class MarketplaceHammer
         mainData.Profile = npc.znv.m_zdo.GET_NPC_Profile();
         mainData.Prefab = npc.znv.m_zdo.GET_NPC_Model();
         mainData.Dialogue = npc.znv.m_zdo.GET_NPC_Dialogue();
-        mainData.RandomModelOverrides = "";
 
         fashionData.LeftItem = npc.znv.m_zdo.GET_NPC_LeftItem();
         fashionData.RightItem = npc.znv.m_zdo.GET_NPC_RightItem();
@@ -214,18 +214,9 @@ public static class MarketplaceHammer
             comp.ChangeNpcType(0, (int)value.main.Type);
             comp.ChangeProfile(0, value.main.Profile, value.main.Dialogue);
             comp.OverrideName(0, value.main.NameOverride);
-            if (string.IsNullOrWhiteSpace(value.main.RandomModelOverrides))
-            {
-                comp.OverrideModel(0, value.main.Prefab);
-            }
-            else
-            {
-                string[] randomModels =
-                    value.main.RandomModelOverrides.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (randomModels.Length > 0)
-                    comp.OverrideModel(0, randomModels[Random.Range(0, randomModels.Length)]);
-            }
-
+            if (!string.IsNullOrWhiteSpace(value.main.Prefab))
+                comp.OverrideModel(0, value.main.Prefab.RandomSplitSpace());
+            value.fashion.ApplyRandom();
             comp.FashionApply(0, value.fashion);
         }
 

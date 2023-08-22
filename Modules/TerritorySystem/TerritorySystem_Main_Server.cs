@@ -148,6 +148,7 @@ public static class TerritorySystem_Main_Server
                     float OverrideHeight = 0;
                     int overrideBiome = 0;
                     int AddMonsterLevel = 0;
+                    float DropMultiplier = 0;
                     float Wind = 0;
                     TerritorySystem_DataTypes.PaintType PaintGround = TerritorySystem_DataTypes.PaintType.Paved;
                     string[] splitFlags = profiles[i + 3].Replace(" ", "").Split(',');
@@ -170,6 +171,9 @@ public static class TerritorySystem_Main_Server
                             {
                                 case TerritorySystem_DataTypes.AdditionalTerritoryFlags.ForceWind:
                                     Wind = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                    break;
+                                case TerritorySystem_DataTypes.AdditionalTerritoryFlags.DropMultiplier:
+                                    DropMultiplier = Convert.ToSingle(customData, new CultureInfo("en-US"));
                                     break;
                             }
                             continue;
@@ -234,6 +238,7 @@ public static class TerritorySystem_Main_Server
                     newTerritory.AddMonsterLevel = AddMonsterLevel;
                     newTerritory.PaintGround = PaintGround;
                     newTerritory.Wind = Wind;
+                    newTerritory.DropMultiplier = DropMultiplier;
                     TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Add(newTerritory);
                 }
                 catch (Exception ex)

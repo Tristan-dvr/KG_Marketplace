@@ -1,4 +1,5 @@
-﻿using Marketplace.ExternalLoads;
+﻿using BepInEx.Bootstrap;
+using Marketplace.ExternalLoads;
 using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.Leaderboard;
 using Marketplace.Modules.NPC;
@@ -74,6 +75,8 @@ public static class Dialogues_DataTypes
         NotHasAchievementScore = 12 | reverseFlag,
         CustomValueMore = 13,
         CustomValueLess = 13 | reverseFlag,
+        ModInstalled = 14,
+        NotModInstalled = 14 | reverseFlag,
     }
 
     public class RawDialogue : ISerializableParameter
@@ -432,6 +435,22 @@ public static class Dialogues_DataTypes
                         if (reverse) optionCondition = optionCondition.Reverse();
                         switch (optionCondition)
                         {
+                            case OptionCondition.ModInstalled:
+                                result += (out string reason) =>
+                                {
+                                    string modGUID = split[1];
+                                    reason =  $"{Localization.instance.Localize("$mpasn_needmodinstalled")}: <color=#00ff00>{split[1]}</color>";
+                                    return Chainloader.PluginInfos.ContainsKey(modGUID);
+                                };
+                                break;
+                            case OptionCondition.NotModInstalled:
+                                result += (out string reason) =>
+                                {
+                                    string modGUID = split[1];
+                                    reason = $"{Localization.instance.Localize("$mpasn_dontneedmodinstalled")}: <color=#00ff00>{split[1]}</color>";
+                                    return !Chainloader.PluginInfos.ContainsKey(modGUID);
+                                };
+                                break;
                             case OptionCondition.CustomValueMore:
                                 result += (out string reason) =>
                                 {

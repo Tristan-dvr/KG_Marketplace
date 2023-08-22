@@ -54,6 +54,7 @@ public static class TerritorySystem_DataTypes
             pkg.Write(HeightBounds.Item1);
             pkg.Write(HeightBounds.Item2);
             pkg.Write(Wind);
+            pkg.Write(DropMultiplier);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -91,6 +92,7 @@ public static class TerritorySystem_DataTypes
             ExponentialValue = pkg.ReadSingle();
             HeightBounds = new Tuple<int, int>(pkg.ReadInt(), pkg.ReadInt());
             Wind = pkg.ReadSingle();
+            DropMultiplier = pkg.ReadSingle();
         }
     }
 
@@ -121,6 +123,7 @@ public static class TerritorySystem_DataTypes
         public int OverridenBiome;
         public int AddMonsterLevel;
         public float Wind;
+        public float DropMultiplier;
         public PaintType PaintGround;
         public GradientType GradientType = GradientType.LeftRight;
         public float ExponentialValue = 1f;
@@ -368,7 +371,7 @@ public static class TerritorySystem_DataTypes
         { AdditionalTerritoryFlags.InfiniteEitr, "\n<color=#00FFFF>$mpasn_infiniteeitr</color>" },
         { AdditionalTerritoryFlags.InfiniteStamina, "\n<color=#00FFFF>$mpasn_infinitestamina</color>" },
         { AdditionalTerritoryFlags.NoMist, "\n<color=#00FFFF>$mpasn_nomistlandsmist</color>" },
-        { AdditionalTerritoryFlags.NoCreatureDrops, "\n<color=#00FFFF>$mpasn_nocreaturedrops</color>" },
+        { AdditionalTerritoryFlags.DropMultiplier, "\n<color=#00FFFF>$mpasn_dropmultiplier</color>" },
     };
 
 
@@ -419,7 +422,7 @@ public static class TerritorySystem_DataTypes
         NoMist = 1 << 2,
         InfiniteEitr = 1 << 3,
         InfiniteStamina = 1 << 4,
-        NoCreatureDrops = 1 << 5,
+        DropMultiplier = 1 << 5,
         ForceWind = 1 << 6,
     }
 }

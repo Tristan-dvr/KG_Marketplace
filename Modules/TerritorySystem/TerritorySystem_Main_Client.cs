@@ -1047,11 +1047,15 @@ public static class TerritorySystem_Main_Client
     [ClientOnlyPatch]
     private static class CharacterDrop_DropItems_Patch
     {
-        private static bool Prefix()
+        private static void Prefix(ref List<KeyValuePair<GameObject, int>> drops)
         {
-            return CurrentTerritory == null ||
-                   !CurrentTerritory.AdditionalFlags.HasFlagFast(TerritorySystem_DataTypes.AdditionalTerritoryFlags
-                       .NoCreatureDrops);
+            if (CurrentTerritory == null ||
+                !CurrentTerritory.AdditionalFlags.HasFlagFast(TerritorySystem_DataTypes.AdditionalTerritoryFlags
+                    .DropMultiplier)) return;
+
+            for (int i = 0; i < drops.Count; ++i)
+                drops[i] = new KeyValuePair<GameObject, int>(drops[i].Key,
+                    Mathf.RoundToInt(drops[i].Value * CurrentTerritory.DropMultiplier));
         }
     }
 
