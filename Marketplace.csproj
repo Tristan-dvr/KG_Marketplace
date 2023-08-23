@@ -433,7 +433,14 @@
     </ItemGroup>
     <ItemGroup>
       <Content Include="GithubReadme\app.js" />
-      <Content Include="GithubReadme\marketplaceHTML.md" />
+      <Content Include="GithubReadme\Banker.md" />
+      <Content Include="GithubReadme\Buffer.md" />
+      <Content Include="GithubReadme\Dialogues.md" />
+      <Content Include="GithubReadme\Gambler.md" />
+      <Content Include="GithubReadme\InstallationAndConfigs.md" />
+      <Content Include="GithubReadme\Localization.md" />
+      <Content Include="GithubReadme\MainInfo.md" />
+      <Content Include="GithubReadme\Marketplace.md" />
       <Content Include="GithubReadme\node use.bat" />
       <Content Include="GithubReadme\node_modules\.bin\markdown-it" />
       <Content Include="GithubReadme\node_modules\.bin\markdown-it.cmd" />
@@ -550,7 +557,15 @@
       <Content Include="GithubReadme\node_modules\uc.micro\package.json" />
       <Content Include="GithubReadme\node_modules\uc.micro\properties\Any\regex.js" />
       <Content Include="GithubReadme\node_modules\uc.micro\README.md" />
+      <Content Include="GithubReadme\Patchnotes.md" />
+      <Content Include="GithubReadme\Quests.md" />
+      <Content Include="GithubReadme\QuestsEvents.md" />
       <Content Include="GithubReadme\README.md" />
+      <Content Include="GithubReadme\ServerInfo.md" />
+      <Content Include="GithubReadme\Teleporter.md" />
+      <Content Include="GithubReadme\TerritorySystem.md" />
+      <Content Include="GithubReadme\Trader.md" />
+      <Content Include="GithubReadme\Transmog.md" />
       <Content Include="ILRepack.targets" />
       <Content Include="ThunderstorePackage\icon.png" />
       <Content Include="ThunderstorePackage\manifest.json" />

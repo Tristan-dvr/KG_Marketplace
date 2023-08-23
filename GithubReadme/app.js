@@ -8,7 +8,6 @@ var md = require('markdown-it')({
 const fs = require('fs');
 var data = fs.readFileSync(argumentFileName+".md", 'utf8');
 var result = md.render(data);
-console.log(result);
 fs.writeFile(argumentNewFileName+".md", result, function(err) {
     if(err) {
         return console.log(err);

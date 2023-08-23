@@ -204,7 +204,7 @@ public static class Marketplace_API
     public static string GET_NPC_LegsItem(this ZDO zdo) => zdo.GetString("KGlegsItem");
     public static string GET_NPC_CapeItem(this ZDO zdo) => zdo.GetString("KGcapeItem");
     public static string GET_NPC_HairItem(this ZDO zdo) => zdo.GetString("KGhairItem");
-    public static string GET_NPC_HairColor(this ZDO zdo) => zdo.GetString("KGhairItemColor");
+    public static string GET_NPC_HairColor(this ZDO zdo) => zdo.GetString("KGhairItemColor"); 
     public static string GET_NPC_LeftItemBack(this ZDO zdo) => zdo.GetString("KGLeftItemBack");
     public static string GET_NPC_RightItemBack(this ZDO zdo) => zdo.GetString("KGRightItemBack");
     public static string GET_NPC_InteractAnimation(this ZDO zdo) => zdo.GetString("KGinteractAnimation");

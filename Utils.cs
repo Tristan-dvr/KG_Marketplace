@@ -5,10 +5,12 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using Marketplace.ExternalLoads;
 using Marketplace.Modules.Buffer;
+using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.TerritorySystem;
 using Marketplace.Modules.Trader;
+using Mono.Cecil.Cil;
 using UnityEngine.Networking;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
@@ -16,7 +18,12 @@ namespace Marketplace;
 
 public static class Utils
 {
-    public static bool IsDebug => Player.m_debugMode;
+
+    private static bool CustomDebug() => Global_Configs.SyncedGlobalOptions.Value._overrideDebug.Count != 0 &&
+                                         Global_Configs.SyncedGlobalOptions.Value._overrideDebug.Contains(Global_Configs
+                                             ._localUserID);
+    
+    public static bool IsDebug => Player.m_debugMode || CustomDebug();
 
     public static void print(object obj, ConsoleColor color = ConsoleColor.DarkGreen)
     {
