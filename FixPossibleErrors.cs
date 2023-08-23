@@ -53,5 +53,28 @@ public static class FixPossibleErrors
             }
         }
     }
+    
+    [HarmonyPatch(typeof(GameCamera),nameof(GameCamera.UpdateCamera))]
+    [ClientOnlyPatch]
+    private static class GameCamera_UpdateCamera_Patch
+    {
+        private static void Nullify(ref float f)
+        {
+            if(TextInput.IsVisible()) f = 0;
+        }
+        
+        [UsedImplicitly]
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> code)
+        {
+            CodeMatcher matcher = new CodeMatcher(code);
+            MethodInfo target = AccessTools.Method(typeof(ZInput), nameof(ZInput.GetAxis), new[]{typeof(string)});
+            matcher.MatchForward(false,new CodeMatch(OpCodes.Ldstr, "Mouse ScrollWheel"), new CodeMatch(OpCodes.Call, target), new CodeMatch(OpCodes.Stloc_2));
+            if (matcher.IsInvalid)
+                return code;
+            matcher.Advance(3);
+            matcher.Insert(new CodeInstruction(OpCodes.Ldloca_S, 2), new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GameCamera_UpdateCamera_Patch), nameof(Nullify))));
+            return matcher.Instructions();
+        }
+    }
         
 }

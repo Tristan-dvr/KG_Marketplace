@@ -10,6 +10,7 @@ public static class PlayerModelPreview
     private static readonly Light Light;
     private static readonly Vector3 SpawnPoint = new(25000f, 25000f, 25000f);
     private static readonly GameObject UI;
+    private static readonly RectTransform CHECK;
     private static float OriginalYPos;
     private static float OriginalCameraZPos;
     private static GameObject CurrentPreviewGO;
@@ -33,6 +34,7 @@ public static class PlayerModelPreview
                 AssetStorage.AUsrc.Play();
                 StopPreview();
             });
+        CHECK = UI.transform.Find("Canvas/Preview/Background").GetComponent<RectTransform>();
         UI.transform.Find("Canvas/Preview/Background/Light").GetComponent<Button>().onClick.AddListener(ChangeLight);
         UI.transform.Find("Canvas/Preview/Background/Wood").GetComponent<Button>().onClick
             .AddListener(() => ResetWall("woodwall"));
@@ -350,9 +352,10 @@ public static class PlayerModelPreview
         public void Update()
         {
             float ScrollWheel = Input.GetAxis("Mouse ScrollWheel");
-            if (ScrollWheel != 0)
+            if (IsVisible && ScrollWheel != 0)
             {
-                if (CurrentPreviewGO)
+                bool isMouseInside = RectTransformUtility.RectangleContainsScreenPoint(CHECK, Input.mousePosition);
+                if (CurrentPreviewGO && isMouseInside)
                 {
                     float currentZ = renderCamera.transform.position.z;
                     float newZ = currentZ - (ScrollWheel * 100f);
