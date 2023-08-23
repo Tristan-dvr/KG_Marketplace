@@ -354,6 +354,10 @@
         <Compile Include="Modules\NPC\NPC_MapController.cs" />
         <Compile Include="Modules\TerritorySystem\ZoneVisualizer.cs" />
         <Compile Include="Modules\Transmogrification\PlayerModelPreview.cs" />
+        <Compile Include="Modules\Transmogrification\Transmogrification_DataTypes.cs" />
+        <Compile Include="Modules\Transmogrification\Transmogrification_Main_Client.cs" />
+        <Compile Include="Modules\Transmogrification\Transmogrification_Main_Server.cs" />
+        <Compile Include="Modules\Transmogrification\Transmogrification_UI.cs" />
         <Compile Include="OtherModsAPIs\Cozyheim_LevelingSystem.cs" />
         <Compile Include="OtherModsAPIs\EpicMMO.cs" />
         <Compile Include="OtherModsAPIs\MagicHeim.cs" />
@@ -417,10 +421,6 @@
         <Compile Include="Modules\Trader\Trader_Main_Client.cs" />
         <Compile Include="Modules\Trader\Trader_Main_Server.cs" />
         <Compile Include="Modules\Trader\Trader_UI.cs" />
-        <Compile Include="Modules\Transmogrification\Transmogrification_Main_Server.cs" />
-        <Compile Include="Modules\Transmogrification\Transmogrification_Main_Client.cs" />
-        <Compile Include="Modules\Transmogrification\Transmogrification_DataTypes.cs" />
-        <Compile Include="Modules\Transmogrification\Transmogrification_UI.cs" />
         <Compile Include="Paths\Paths.cs" />
         <Compile Include="PieceManager.cs" />
         <Compile Include="PrefabPhotoManager.cs" />

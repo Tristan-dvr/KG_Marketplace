@@ -6,14 +6,14 @@ Transmog configs should be created in `Valheim\BepInEx\config\Marketplace\Config
 
 ### Format:
 ```
-[ProfileName]
+[profilename]
 SkinPrefab, Price Prefab, Price Amount, Skip TypeCheck true/false, Special VFX ID (optional)
 ```
 To add more items to profile add them on new line.
 Example:
 
 ```
-[TestProfile]
+[testprofile]
 SwordIron, Coins, 10, false
 SwordIron, Coins, 20, false, 2
 SwordIron, Coins, 50, false, 20
@@ -27,10 +27,13 @@ SwordIronFire, Ruby, 50, false, 20
 Note that if VFX id is 21 then players will be able to chooce vfx manually on item.
 
 1) Assigning profile to NPC:
-   ![](https://i.imgur.com/AZVMocc.png)
+   ![](https://imgur.com/JwHAUpQ.png)
 2) Open UI by interacting with NPC to see result:
-   ![](https://i.imgur.com/tbbWD7j.png)
-   In Left side you can choose item from your inventory you want to transmogrify and then choose an item in right window
+   ![](https://imgur.com/Fq4kjch.png)
+3) On Left side choose the item from your inventory you want to transmogrify, you can use HEX color to change the color of the item and also preview what it looks like by clicking the button in the top right, in this example will transmogrify the Iron Chest to look like Bronze Chest with color changes and vfx.
+   ![](https://imgur.com/RZoeGwD.png)
+4) We made the Iron Chest look like the Bronze Chest but with Red Color and using vfx "1" [mpasn_transmog_eff1: Azure Ashes], click the button in the bottom right to apply the transmog
+   ![](https://imgur.com/uE9erX1.png)
 
 IF YOU SET SKIP TYPECHECK TO TRUE, YOU WILL BE ABLE TO USE ANY ITEM AS SKIN, EVEN IF IT IS NOT EQUIPMENT. THIS WILL CAUSE SOME ISSUES WITH SOME ITEMS, SO USE IT ONLY IF YOU KNOW WHAT YOU ARE DOING.
 

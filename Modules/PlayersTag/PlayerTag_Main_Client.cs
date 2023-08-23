@@ -42,7 +42,7 @@ public static class PlayerTag_Main_Client
         [UsedImplicitly]
         static void Postfix()
         {
-            Player.m_localPlayer.m_nview.m_zdo.Set("Marketplace_PlayerTag",
+            Player.m_localPlayer?.m_nview.m_zdo.Set("Marketplace_PlayerTag", 
                 PlayersTag_DataTypes.SyncedPlayersTagData.Value.TryGetValue(Global_Configs._localUserID, out string tag)
                     ? tag
                     : "");
