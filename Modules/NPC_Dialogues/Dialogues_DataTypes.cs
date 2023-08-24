@@ -793,8 +793,7 @@ public static class Dialogues_DataTypes
             _npc = npc;
             TextInput.instance.RequestText(this, title, 30);
         }
-
-
+        
         public string GetText()
         {
             return "";

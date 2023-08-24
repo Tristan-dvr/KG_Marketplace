@@ -252,6 +252,10 @@ The following commands can be used in the `NpcDialogues.cfg` file:
     - **Usage**: `SetCustomValue, KeyName, Value`
     - **Description**: Sets the specified custom value for the player.
 
+- `EnterPassword`: Opens a password input dialog.
+    - **Usage**: `EnterPassword, Title, Password, DialogueOpen On Success, DialogueOpen On Failure`
+    - **Description**: Opens a password input dialog with the specified title and password. If the player enters the correct password, the specified dialogue will be opened. Otherwise, the specified dialogue will be opened.
+
 Please note that you can use these commands within the player options of your dialogue entries to trigger specific actions or behaviors based on the player's choices.
 
 You can use **multiple** commands and conditions in a single player option by separating them with | (pipe) character.
