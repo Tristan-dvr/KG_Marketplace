@@ -1462,11 +1462,17 @@ public static class PiecePrefabManager
         
         if (Marketplace.Utils.IsDebug && pieceTable.name == "_HammerPieceTable" && !categories.Contains(MarketplaceHammer._category))
             categories.Add(MarketplaceHammer._category);
+        
 
         return categories;
     }
 
     private static void RepositionCategories(PieceTable pieceTable)
+    {
+        Marketplace.Marketplace._thistype.StartCoroutine(RepositionCategories_Routine(pieceTable));
+    }
+    
+    private static IEnumerator RepositionCategories_Routine(PieceTable pieceTable)
     {
         RectTransform firstTab = (RectTransform)Hud.instance.m_pieceCategoryTabs[0].transform;
         RectTransform categoryRoot = (RectTransform)Hud.instance.m_pieceCategoryRoot.transform;
@@ -1474,7 +1480,7 @@ public static class PiecePrefabManager
 
         const int verticalSpacing = 1;
         Vector2 tabSize = firstTab.rect.size;
-
+        yield return null;
         HashSet<Piece.PieceCategory> visibleCategories = CategoriesInPieceTable(pieceTable);
         Dictionary<Piece.PieceCategory, string> categories = GetPieceCategoriesMap();
 
@@ -1624,7 +1630,7 @@ public static class PiecePrefabManager
         Array.Resize(ref __instance.m_lastSelectedPiece, __instance.m_availablePieces.Count);
     }
 
-    [HarmonyPriority(Priority.Low)]
+    [HarmonyPriority(Priority.Last)]
     private static void Hud_AwakeCreateTabs()
     {
         CreateCategoryTabs();

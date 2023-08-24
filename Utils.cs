@@ -51,6 +51,7 @@ public static class Utils
             int c = 0;
             foreach (object item in arr)
             {
+                ConsoleManager.StandardOutStream.WriteLine($"[{c++}] {item}");
                 foreach (ILogListener logListener in BepInEx.Logging.Logger.Listeners)
                     if (logListener is DiskLogListener { LogWriter: not null } bepinexlog)
                         bepinexlog.LogWriter.WriteLine($"[{c++}] {item}");
