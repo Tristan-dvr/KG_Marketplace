@@ -13,7 +13,7 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        public const string PluginVersion = "9.0.5";
+        public const string PluginVersion = "9.0.6";
         internal static Marketplace _thistype = null!;
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW = null!; 
@@ -175,7 +175,13 @@ namespace Marketplace
         {
             if (e.ChangeType is not (WatcherChangeTypes.Changed or WatcherChangeTypes.Deleted)) return;
             string folderPath = Path.GetDirectoryName(e.FullPath);
-            if (!FoldersToFiles.TryGetValue(folderPath, out string fName)) fName = Path.GetFileName(e.Name);
+            string fName = Path.GetFileName(e.Name);
+            foreach (var foldersToFile in FoldersToFiles)
+            {
+                if (!folderPath.Contains(foldersToFile.Key)) continue;
+                fName = foldersToFile.Value;
+                break;
+            }
             if (!FSW_Lookup.TryGetValue(fName, out Action action)) return;
             if (!ZNet.instance || !ZNet.instance.IsServer())
             {
