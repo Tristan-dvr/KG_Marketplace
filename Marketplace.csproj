@@ -557,6 +557,7 @@
       <Content Include="GithubReadme\node_modules\uc.micro\package.json" />
       <Content Include="GithubReadme\node_modules\uc.micro\properties\Any\regex.js" />
       <Content Include="GithubReadme\node_modules\uc.micro\README.md" />
+      <Content Include="GithubReadme\NPC.md" />
       <Content Include="GithubReadme\Patchnotes.md" />
       <Content Include="GithubReadme\Quests.md" />
       <Content Include="GithubReadme\QuestsEvents.md" />

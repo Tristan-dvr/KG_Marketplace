@@ -22,7 +22,7 @@ public static class Quest_ProgressionHook
 
     public static void HookCrafting()
     {
-        if (InventoryGui.instance.m_craftRecipe == null || InventoryGui.instance.m_selectedRecipe.Key == null) return;
+        if (InventoryGui.instance.m_selectedRecipe.Key == null) return;
         KeyValuePair<Recipe, ItemDrop.ItemData> recipe = InventoryGui.instance.m_selectedRecipe;
         string CraftedItemName = recipe.Key.m_item?.gameObject.name!;
         if (string.IsNullOrEmpty(CraftedItemName)) return;
@@ -32,6 +32,7 @@ public static class Quest_ProgressionHook
 
     [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
     [ClientOnlyPatch]
+    [HarmonyEmitIL]
     private static class HOOKCRAFTING
     {
         [UsedImplicitly]
@@ -44,7 +45,7 @@ public static class Quest_ProgressionHook
                 });
             MethodInfo method = AccessTools.DeclaredMethod(typeof(Quest_ProgressionHook), nameof(HookCrafting));
             CodeMatcher matcher = new(instructions);
-            matcher.MatchForward(false, new CodeMatch(OpCodes.Callvirt, target));
+            matcher.MatchForward(false, new CodeMatch(OpCodes.Callvirt, target), new CodeMatch(OpCodes.Brfalse));
             if (matcher.IsInvalid) return instructions;
             return matcher.Advance(2).Insert(new CodeInstruction(OpCodes.Call, method)).Instructions();
         }

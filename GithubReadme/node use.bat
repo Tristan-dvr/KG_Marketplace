@@ -14,3 +14,4 @@ node app.js ServerInfo parsed/ServerInfo
 node app.js Banker parsed/Banker
 node app.js Gambler parsed/Gambler
 node app.js Buffer parsed/Buffer
+node app.js NPC parsed/NPC
