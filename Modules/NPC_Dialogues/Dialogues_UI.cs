@@ -220,7 +220,7 @@ public static class Dialogues_UI
     private static class BankerUIFix
     {
         [UsedImplicitly]
-private static void Postfix(ref bool __result)
+        private static void Postfix(ref bool __result)
         {
             if (IsVisible()) __result = true;
         }

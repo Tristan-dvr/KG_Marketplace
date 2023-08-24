@@ -98,6 +98,11 @@ public static class Quests_DataTypes
         public QuestEventAction action;
         public string args;
 
+        public QuestEvent()
+        {
+            
+        }
+        
         public QuestEvent(QuestEventCondition cond, QuestEventAction action, string args)
         {
             this.cond = cond;

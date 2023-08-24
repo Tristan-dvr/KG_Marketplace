@@ -40,6 +40,7 @@ public static class Dialogues_DataTypes
         PlayAnimation,
         AddCustomValue,
         SetCustomValue,
+        EnterPassword
     }
 
     private const byte reverseFlag = 1 << 7;
@@ -201,6 +202,16 @@ public static class Dialogues_DataTypes
                     {
                         switch (optionCommand)
                         {
+                            case OptionCommand.EnterPassword:
+                                result += (npc) =>
+                                {
+                                    string title = split[1].Replace("_"," ");
+                                    string password = split[2].Replace("_"," ");
+                                    string onSuccess = split[3];
+                                    string onFail = split[4];
+                                    new DialoguePassword(npc, title, password, onSuccess, onFail);
+                                };
+                                break;
                             case OptionCommand.SetCustomValue:
                                 result += (_) =>
                                 {
@@ -439,7 +450,8 @@ public static class Dialogues_DataTypes
                                 result += (out string reason) =>
                                 {
                                     string modGUID = split[1];
-                                    reason =  $"{Localization.instance.Localize("$mpasn_needmodinstalled")}: <color=#00ff00>{split[1]}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needmodinstalled")}: <color=#00ff00>{split[1]}</color>";
                                     return Chainloader.PluginInfos.ContainsKey(modGUID);
                                 };
                                 break;
@@ -447,7 +459,8 @@ public static class Dialogues_DataTypes
                                 result += (out string reason) =>
                                 {
                                     string modGUID = split[1];
-                                    reason = $"{Localization.instance.Localize("$mpasn_dontneedmodinstalled")}: <color=#00ff00>{split[1]}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_dontneedmodinstalled")}: <color=#00ff00>{split[1]}</color>";
                                     return !Chainloader.PluginInfos.ContainsKey(modGUID);
                                 };
                                 break;
@@ -762,6 +775,44 @@ public static class Dialogues_DataTypes
             }
 
             return dialogue;
+        }
+    }
+
+    public class DialoguePassword : TextReceiver
+    {
+        private string _password;
+        private string _onSuccess;
+        private string _onFail;
+        private Market_NPC.NPCcomponent _npc;
+
+        public DialoguePassword(Market_NPC.NPCcomponent npc, string title, string password, string onSuccess, string onFail)
+        {
+            _password = password;
+            _onSuccess = onSuccess;
+            _onFail = onFail;
+            _npc = npc;
+            TextInput.instance.RequestText(this, title, 30);
+        }
+
+
+        public string GetText()
+        {
+            return "";
+        }
+
+        public void SetText(string text)
+        {
+            if (!_npc) return;
+            if (text == _password)
+            {
+                if (!string.IsNullOrEmpty(_onSuccess))
+                    Dialogues_UI.LoadDialogue(_npc, _onSuccess);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(_onFail))
+                    Dialogues_UI.LoadDialogue(_npc, _onFail);
+            }
         }
     }
 }
