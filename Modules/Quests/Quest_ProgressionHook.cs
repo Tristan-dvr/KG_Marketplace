@@ -22,7 +22,9 @@ public static class Quest_ProgressionHook
 
     public static void HookCrafting()
     {
+        if (!HOOKCRAFTING._used) return;
         if (InventoryGui.instance.m_selectedRecipe.Key == null) return;
+        HOOKCRAFTING._used = false;
         KeyValuePair<Recipe, ItemDrop.ItemData> recipe = InventoryGui.instance.m_selectedRecipe;
         string CraftedItemName = recipe.Key.m_item?.gameObject.name!;
         if (string.IsNullOrEmpty(CraftedItemName)) return;
@@ -32,24 +34,21 @@ public static class Quest_ProgressionHook
 
     [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
     [ClientOnlyPatch]
-    [HarmonyEmitIL]
     private static class HOOKCRAFTING
     {
-        [UsedImplicitly]
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            MethodInfo target = AccessTools.Method(typeof(Inventory), nameof(Inventory.AddItem),
-                new[]
-                {
-                    typeof(string), typeof(int), typeof(int), typeof(int), typeof(long), typeof(string), typeof(bool)
-                });
-            MethodInfo method = AccessTools.DeclaredMethod(typeof(Quest_ProgressionHook), nameof(HookCrafting));
-            CodeMatcher matcher = new(instructions);
-            matcher.MatchForward(false, new CodeMatch(OpCodes.Callvirt, target), new CodeMatch(OpCodes.Brfalse));
-            if (matcher.IsInvalid) return instructions;
-            return matcher.Advance(2).Insert(new CodeInstruction(OpCodes.Call, method)).Instructions();
-        }
+        public static bool _used = false;
+        private static void Prefix() => _used = true;
+        private static void Finalizer() => _used = false;
     }
+
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateCraftingPanel))]
+    [ClientOnlyPatch]
+    private static class InventoryGui_UpdateCraftingPanel_Patch
+    {
+        [UsedImplicitly]
+        private static void Prefix(InventoryGui __instance) => HookCrafting();
+    }
+
 
     private static readonly Dictionary<Character, long> CharacterLastDamageList = new();
 
@@ -79,7 +78,7 @@ public static class Quest_ProgressionHook
         }
 
         [UsedImplicitly]
-private static void Postfix(Character __instance)
+        private static void Postfix(Character __instance)
         {
             if (__instance.GetHealth() <= 0f && CharacterLastDamageList.ContainsKey(__instance))
             {
@@ -97,7 +96,7 @@ private static void Postfix(Character __instance)
     private static class Character_ApplyDamage_Patch
     {
         [UsedImplicitly]
-private static void Postfix(Character __instance)
+        private static void Postfix(Character __instance)
         {
             if (__instance.GetHealth() <= 0f && CharacterLastDamageList.ContainsKey(__instance))
             {
@@ -115,7 +114,7 @@ private static void Postfix(Character __instance)
     private static class Character_OnDestroy_Patch
     {
         [UsedImplicitly]
-private static void Postfix(Character __instance)
+        private static void Postfix(Character __instance)
         {
             if (CharacterLastDamageList.ContainsKey(__instance)) CharacterLastDamageList.Remove(__instance);
         }
@@ -127,7 +126,7 @@ private static void Postfix(Character __instance)
     public static class ZNetScene_Awake_Patch_QuestsInit
     {
         [UsedImplicitly]
-private static void Postfix()
+        private static void Postfix()
         {
             ZRoutedRpc.instance.Register("KGmarket QuestKill",
                 new RoutedMethod<string, int, Vector3, bool>.Method(QuestKillEvent));
@@ -207,7 +206,7 @@ private static void Postfix()
     private static class Character_Awake_Quest
     {
         [UsedImplicitly]
-private static void Postfix(Humanoid __instance)
+        private static void Postfix(Humanoid __instance)
         {
             float radius = __instance.m_collider.radius;
             float height = __instance.m_collider.height - 1.7f;
@@ -225,7 +224,7 @@ private static void Postfix(Humanoid __instance)
     private static class Pickable_Awake_Quest
     {
         [UsedImplicitly]
-private static void Postfix(Pickable __instance)
+        private static void Postfix(Pickable __instance)
         {
             __instance.gameObject.AddComponent<Pickable_Hook>();
             GameObject go = UnityEngine.Object.Instantiate(AssetStorage.MarketplaceQuestTargetIcon,
@@ -240,7 +239,7 @@ private static void Postfix(Pickable __instance)
     private static class ItemDrop_Awake_Quest
     {
         [UsedImplicitly]
-private static void Postfix(ItemDrop __instance)
+        private static void Postfix(ItemDrop __instance)
         {
             GameObject go = UnityEngine.Object.Instantiate(AssetStorage.MarketplaceQuestTargetIcon,
                 __instance.transform);
@@ -256,7 +255,8 @@ private static void Postfix(ItemDrop __instance)
         [UsedImplicitly]
         private static void Postfix(ItemDrop __instance)
         {
-            __instance.transform.Find("MPASNquest")?.gameObject.SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
+            __instance.transform.Find("MPASNquest")?.gameObject
+                .SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
         }
     }
 
