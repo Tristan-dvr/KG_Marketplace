@@ -173,7 +173,7 @@ public static class Banker_Main_Server
     public static void MethodBankerDeposit(long sender, string item, int value)
     {
         ZNetPeer peer = ZNet.instance.GetPeer(sender);
-        if (peer is null) return;
+        if (peer == null) return;
         int hash = item.GetStableHashCode();
         string userID = peer.m_socket.GetHostName();
         if (!BankerServerSideData.ContainsKey(userID)) BankerServerSideData[userID] = new Dictionary<int, int>();
@@ -190,7 +190,7 @@ public static class Banker_Main_Server
     private static void MethodBankerWithdraw(long sender, string item, int value)
     {
         ZNetPeer peer = ZNet.instance.GetPeer(sender);
-        if (peer is null) return;
+        if (peer == null) return;
         string userID = peer.m_socket.GetHostName();
         if (!BankerServerSideData.ContainsKey(userID)) return;
         int hash = item.GetStableHashCode();

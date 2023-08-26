@@ -235,21 +235,10 @@ public static class Transmogrification_UI
                             bg.color = Color.white;
                         }
                     });
-
-                Transform vfx21 = transmogElement.transform.Find("Premium");
-                if (data.VFX_ID >= 21)
-                {
-                    vfx21.gameObject.SetActive(true);
-                    vfx21.transform.Find("Left").GetComponent<Button>().onClick
-                        .AddListener(() => ClickRightLeftButton(transmogElement, false));
-                    vfx21.transform.Find("Right").GetComponent<Button>().onClick
-                        .AddListener(() => ClickRightLeftButton(transmogElement, true));
-                    vfx21.transform.GetChild(0).name = "0";
-                    vfx21.transform.Find("Page").GetComponent<Text>().text = "0";
-                }
+                
 
                 transmogElement.transform.Find("Preview").GetComponent<Button>().onClick.AddListener(() =>
-                    MOnRightClick(transmogElement, data.Prefab, category, data.VFX_ID));
+                    StartPreview(transmogElement, data.Prefab, category));
             }
         }
 
@@ -298,52 +287,23 @@ public static class Transmogrification_UI
                             bg.color = Color.white;
                         }
                     });
-
-                Transform vfx21 = transmogElement.transform.Find("Premium");
-                if (data.VFX_ID >= 21)
-                {
-                    vfx21.gameObject.SetActive(true);
-                    vfx21.transform.Find("Left").GetComponent<Button>().onClick
-                        .AddListener(() => ClickRightLeftButton(transmogElement, false));
-                    vfx21.transform.Find("Right").GetComponent<Button>().onClick
-                        .AddListener(() => ClickRightLeftButton(transmogElement, true));
-                    vfx21.transform.GetChild(0).name = "0";
-                    vfx21.transform.Find("Page").GetComponent<Text>().text = "0";
-                }
-
+                
                 transmogElement.transform.Find("Preview").GetComponent<Button>().onClick.AddListener(() =>
-                    MOnRightClick(transmogElement, data.Prefab, category, data.VFX_ID));
+                    StartPreview(transmogElement, data.Prefab, category));
             }
         }
 
         UpdateFillers();
     }
 
-    private static void MOnRightClick(GameObject go, string prefab, ItemDrop.ItemData.ItemType category, int vfxID)
+    private static void StartPreview(GameObject go, string prefab, ItemDrop.ItemData.ItemType category)
     {
         Color c = Color.white;
         if (go.transform.Find("HEX").GetComponent<TMP_InputField>() is { } tmp &&
             ColorUtility.TryParseHtmlString("#" + tmp.text, out Color test)) c = test;
-        if (vfxID >= 21)
-        {
-            int currentCounter = int.Parse(go.transform.Find("Premium").GetChild(0).name);
-            vfxID = currentCounter;
-        }
-        PlayerModelPreview.SetAsCurrent(PlayerModelPreview.CreatePlayerModel(prefab, category, c, vfxID));
+        PlayerModelPreview.SetAsCurrent(PlayerModelPreview.CreatePlayerModel(prefab, category, c));
     }
-
-
-    private static void ClickRightLeftButton(GameObject element, bool right)
-    {
-        AssetStorage.AUsrc.Play();
-        int currentCounter = int.Parse(element.transform.Find("Premium").GetChild(0).name);
-        int newCounter = right ? currentCounter + 1 : currentCounter - 1;
-        if (newCounter < 0) newCounter = 20;
-        if (newCounter > 20) newCounter = 0;
-        newCounter = Mathf.Clamp(newCounter, 0, 20);
-        element.transform.Find("Premium").GetChild(0).name = newCounter.ToString();
-        element.transform.Find("Premium/Page").GetComponent<Text>().text = newCounter.ToString();
-    }
+    
 
 
     private static void ClickTransmog(Transmogrification_DataTypes.TransmogItem_Data data, GameObject element)
@@ -363,9 +323,6 @@ public static class Transmogrification_UI
             CurrentChoosenItem.Data().GetOrCreate<Transmogrification_DataTypes.TransmogItem_Component>();
         newTransmog.ReplacedPrefab = data.Prefab;
         newTransmog.Variant = 0;
-        newTransmog.VFX_ID = data.VFX_ID >= 21
-            ? int.Parse(element.transform.Find("Premium").GetChild(0).name)
-            : data.VFX_ID;
 
         string hex = "#" + element.transform.Find("HEX").GetComponent<TMP_InputField>().text;
         newTransmog.ItemColor = ColorUtility.TryParseHtmlString(hex, out _) ? hex : "";

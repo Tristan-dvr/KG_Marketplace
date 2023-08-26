@@ -140,7 +140,7 @@ public static class Marketplace_Messages
 
         public static void GetMessages(long sender, ZPackage pkg)
         {
-            if (sender == ZNet.instance.GetServerPeer().m_uid)
+            if (sender == ZRoutedRpc.instance.GetServerPeerID())
             {
                 pkg.Decompress();
                 string data = pkg.ReadString();
@@ -153,6 +153,7 @@ public static class Marketplace_Messages
         public static void ClearPlayerMessages(long sender)
         {
             ZNetPeer peer = ZNet.instance.GetPeer(sender);
+            if (peer == null) return;
             string userID = peer.m_socket.GetHostName();
             PlayerMessages[userID] = "";
             SaveMsgAsync();

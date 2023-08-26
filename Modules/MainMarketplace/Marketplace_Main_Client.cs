@@ -71,7 +71,7 @@ public static class Marketplace_Main_Client
 
     private static void InstantiateItemFromServer(long sender, string data)
     {
-        if (sender == ZNet.instance.GetServerPeer().m_uid && data.Length > 0)
+        if (sender == ZRoutedRpc.instance.GetServerPeerID() && data.Length > 0)
         {
             Player p = Player.m_localPlayer;
             Marketplace_DataTypes.ServerMarketSendData shopItem =

@@ -327,7 +327,7 @@ private static void Postfix(ref bool __result)
                 pkg.Write(Player.m_localPlayer.GetPlayerName());
                 pkg.Write(count);
                 pkg.Write(itemDrop.m_itemData.m_shared.m_name);
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks",
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(), "KGmarket CustomWebhooks",
                     pkg);
             }
 

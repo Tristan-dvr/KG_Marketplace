@@ -125,21 +125,6 @@ public static class Market_NPC
 
             __instance.m_namedPrefabs.Add(NPC.name.GetStableHashCode(), NPC);
             __instance.m_namedPrefabs.Add(PinnedNPC.name.GetStableHashCode(), PinnedNPC);
-            GameObject goblin = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_GOBLIN");
-            __instance.m_namedPrefabs.Add(goblin.name.GetStableHashCode(), goblin);
-            GameObject skeleton = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_SKELETON");
-            __instance.m_namedPrefabs.Add(skeleton.name.GetStableHashCode(), skeleton);
-            GameObject questboard = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_QUESTBOARD");
-            __instance.m_namedPrefabs.Add(questboard.name.GetStableHashCode(), questboard);
-            GameObject teleporter = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_TELEPORTER");
-            __instance.m_namedPrefabs.Add(teleporter.name.GetStableHashCode(), teleporter);
-            GameObject defaultnpc = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_DEFAULTNPC");
-            foreach (Material material in defaultnpc.GetComponentInChildren<SkinnedMeshRenderer>().materials)
-            {
-                material.shader = Shader.Find("Custom/Creature");
-            }
-
-            __instance.m_namedPrefabs.Add(defaultnpc.name.GetStableHashCode(), defaultnpc);
         }
     }
 
@@ -615,7 +600,7 @@ public static class Market_NPC
                 case NPCType.Info:
                     ServerInfo_UI.Show(profile, npcName);
                     break;
-                case NPCType.Trader:
+                case NPCType.Trader: 
                     Trader_UI.Show(profile, npcName);
                     break;
                 case NPCType.Banker:
@@ -882,10 +867,7 @@ public static class Market_NPC
         public void OverrideModel(long sender, string newModelName)
         {
             if (znv.IsOwner()) znv.m_zdo.Set("KGnpcModelOverride", newModelName);
-            foreach (string typeName in TypeNames)
-                transform.Find(typeName).gameObject.SetActive(false);
-
-            CheckNameOnIcons(znv.m_zdo.GetString("KGnpcNameOverride"));
+            transform.Find("NPC").gameObject.SetActive(false);
             float KGtextSize = znv.m_zdo.GetFloat("KGtextSize", 3f);
             canvas.transform.localScale = new Vector3(KGtextSize, KGtextSize, KGtextSize);
             Vector3 localPosition = new Vector3(0, 3.4f, 0);
@@ -895,7 +877,7 @@ public static class Market_NPC
 
             if (!TryOverrideModel(ref newModelName, out _))
             {
-                Transform t = transform.Find(_currentNpcType.ToString());
+                Transform t = transform.Find("NPC");
                 t.gameObject.SetActive(true);
                 zanim.m_animator = t.GetComponentInChildren<Animator>(true);
             }
@@ -904,7 +886,6 @@ public static class Market_NPC
         public void OverrideName(long sender, string newName)
         {
             if (znv.IsOwner()) znv.m_zdo.Set("KGnpcNameOverride", newName);
-            CheckNameOnIcons(newName);
             transform.Find("MPASNquest").gameObject.SetActive(Quests_DataTypes.Quest.IsQuestTarget(newName));
         }
 
@@ -1318,52 +1299,6 @@ public static class Market_NPC
             if (znv.IsOwner()) znv.m_zdo.Set("KGmarketNPC", index);
             _currentNpcType = (NPCType)index;
             OverrideModel(0, znv.m_zdo.GetString("KGnpcModelOverride"));
-        }
-
-
-        private void CheckNameOnIcons(string npcName)
-        {
-            SpriteRenderer icon = canvas.transform.Find("Icon").GetComponent<SpriteRenderer>();
-            icon.gameObject.SetActive(false);
-            if (string.IsNullOrWhiteSpace(npcName))
-            {
-                canvas.text = Localization.instance.Localize("$mpasn_" + _currentNpcType);
-            }
-            else
-            {
-                string[] split = npcName.Split(new[] { "<icon>" }, StringSplitOptions.RemoveEmptyEntries);
-                canvas.text = split[0];
-                if (split.Length == 2)
-                {
-                    split[1] = split[1].Replace("</icon>", "");
-                    if (AssetStorage.GlobalCachedSprites.ContainsKey(split[1]))
-                    {
-                        icon.sprite = AssetStorage.GlobalCachedSprites[split[1]];
-                        icon.gameObject.SetActive(true);
-                        return;
-                    }
-
-                    GameObject prefab = ZNetScene.instance.GetPrefab(split[1]);
-                    if (!prefab)
-                    {
-                        return;
-                    }
-
-                    if (prefab.GetComponent<ItemDrop>())
-                    {
-                        icon.sprite = prefab.GetComponent<ItemDrop>().m_itemData.GetIcon();
-                        icon.gameObject.SetActive(true);
-                    }
-
-                    if (prefab.GetComponent<Character>())
-                    {
-                        PhotoManager.__instance.MakeSprite(prefab, 0.6f, 0.25f);
-                        icon.sprite = PhotoManager.__instance.GetSprite(prefab.name,
-                            AssetStorage.PlaceholderMonsterIcon, 1);
-                        icon.gameObject.SetActive(true);
-                    }
-                }
-            }
         }
 
         public void Damage(HitData hit)

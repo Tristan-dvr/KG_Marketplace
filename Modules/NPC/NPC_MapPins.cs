@@ -76,31 +76,6 @@ public static class NPC_MapPins
                         pinData.m_animate = true;
                         pinData.m_doubleSize = true;
                     }
-                    else
-                    {
-                        string[] split = name.Split(new[] { "<icon>" }, StringSplitOptions.RemoveEmptyEntries);
-                        if (split.Length == 2)
-                        {
-                            split[1] = split[1].Replace("</icon>", "");
-                            GameObject prefab = ZNetScene.instance.GetPrefab(split[1]);
-                            if (AssetStorage.GlobalCachedSprites.ContainsKey(split[1]))
-                            {
-                                icon = AssetStorage.GlobalCachedSprites[split[1]];
-                            }
-
-                            if (!prefab) goto GOTOLABEL;
-                            if (prefab.GetComponent<ItemDrop>())
-                            {
-                                icon = prefab.GetComponent<ItemDrop>().m_itemData.GetIcon();
-                            }
-                            else if (prefab.GetComponent<Character>())
-                            {
-                                PhotoManager.__instance.MakeSprite(prefab, 0.6f, 0.25f);
-                                icon = PhotoManager.__instance.GetSprite(prefab.name,
-                                    AssetStorage.PlaceholderMonsterIcon, 1);
-                            }
-                        }
-                    }
 
                     GOTOLABEL:
                     pinData.m_icon = icon;

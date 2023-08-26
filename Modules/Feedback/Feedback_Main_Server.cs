@@ -21,6 +21,7 @@ public static class Feedback_Main_Server
         private static void ReceiveFeedback(long sender, ZPackage pkg)
         {
             ZNetPeer peer = ZNet.instance.GetPeer(sender);
+            if (peer == null) return;
             string PlayerInfo = pkg.ReadString() + " (" + peer.m_socket.GetHostName() + ")";
             Utils.print($"Got feedback from {PlayerInfo}");
             string Subject = pkg.ReadString();

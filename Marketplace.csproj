@@ -68,9 +68,6 @@
         <Reference Include="Jewelcrafting">
           <HintPath>Libs\Jewelcrafting.dll</HintPath>
         </Reference>
-        <Reference Include="MagicHeimUnityCode">
-          <HintPath>Resources\Marketplace_TransmogCode.dll</HintPath>
-        </Reference>
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="Microsoft.VisualStudio.Setup.Configuration.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
           <HintPath>packages\Microsoft.VisualStudio.Setup.Configuration.Interop.3.2.2146\lib\net35\Microsoft.VisualStudio.Setup.Configuration.Interop.dll</HintPath>
@@ -573,7 +570,6 @@
       <Content Include="ThunderstorePackage\README.md" />
       <EmbeddedResource Include="translations\English.yml" />
       <EmbeddedResource Include="Resources\kgmarketplacemod" />
-      <EmbeddedResource Include="Resources\Marketplace_TransmogCode.dll" />
       <EmbeddedResource Include="Resources\Marketplace_UnityCode.dll" />
     </ItemGroup> 
     

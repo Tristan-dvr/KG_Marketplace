@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace", "Marketplace.csproj", "{F2FB0636-63D4-48B6-8B6D-4DB68E177299}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoMoreCrashes", "NoMoreCrashes\NoMoreCrashes.csproj", "{F8DD77A9-3CBA-4065-893E-EA7ED323F990}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstantGame", "InstantGame\InstantGame.csproj", "{F8DD77A9-3CBA-4065-893E-EA7ED323F990}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerControl", "ServerControl\ServerControl.csproj", "{49BF64A4-1330-4E3B-9EF7-2D71D227BC73}"
 EndProject

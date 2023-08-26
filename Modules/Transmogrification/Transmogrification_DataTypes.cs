@@ -14,7 +14,6 @@ public static class Transmogrification_DataTypes
         public string Price_Prefab;
         public int Price_Amount;
         public bool IgnoreCategory;
-        public int VFX_ID;
 
         private string LocalizedName;
         private string LocalizedPrice;
@@ -34,7 +33,6 @@ public static class Transmogrification_DataTypes
             pkg.Write(Price_Prefab ?? "");
             pkg.Write(Price_Amount);
             pkg.Write(IgnoreCategory);
-            pkg.Write(VFX_ID);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -43,7 +41,6 @@ public static class Transmogrification_DataTypes
             Price_Prefab = pkg.ReadString();
             Price_Amount = pkg.ReadInt();
             IgnoreCategory = pkg.ReadBool();
-            VFX_ID = pkg.ReadInt();
         }
     }
     
@@ -51,7 +48,6 @@ public static class Transmogrification_DataTypes
     {
         public string ReplacedPrefab;
         public int Variant;
-        public int VFX_ID;
         public string ItemColor;
 
         public TransmogItem_Component(){}
@@ -61,13 +57,12 @@ public static class Transmogrification_DataTypes
             string[] split = Value.Split('|');
             ReplacedPrefab = split[0];
             Variant = int.Parse(split[1]);
-            VFX_ID = int.Parse(split[2]);
             ItemColor = split.Length > 3 ? split[3] : "";
         }
 
         public override void Save()
         {
-            Value = $"{ReplacedPrefab}|{Variant}|{VFX_ID}|{ItemColor}";
+            Value = $"{ReplacedPrefab}|{Variant}|0|{ItemColor}";
         }
         
     }

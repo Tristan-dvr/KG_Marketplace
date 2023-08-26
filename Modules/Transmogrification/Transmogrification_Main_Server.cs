@@ -40,7 +40,6 @@ public static class Transmogrification_Main_Server
                     string pricePrefab = split[1];
                     int price = int.Parse(split[2]);
                     bool isSkip = bool.Parse(split[3]);
-                    int vfxID = split.Length > 4 ? int.Parse(split[4]) : 0;
                     Transmogrification_DataTypes.SyncedTransmogData.Value[splitProfile].Add(
                         new Transmogrification_DataTypes.TransmogItem_Data()
                         {
@@ -48,7 +47,6 @@ public static class Transmogrification_Main_Server
                             Price_Prefab = pricePrefab,
                             Price_Amount = price,
                             IgnoreCategory = isSkip,
-                            VFX_ID = Mathf.Clamp(vfxID, 0, 21)
                         });
                 }
                 catch (Exception ex)

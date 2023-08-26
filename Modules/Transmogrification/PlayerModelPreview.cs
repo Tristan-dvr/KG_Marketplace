@@ -67,7 +67,7 @@ public static class PlayerModelPreview
         Marketplace.Global_Updator += Update;
     }
 
-    public static GameObject CreatePlayerModel(string item, ItemDrop.ItemData.ItemType itemType, Color c, int vfxId = 0)
+    public static GameObject CreatePlayerModel(string item, ItemDrop.ItemData.ItemType itemType, Color c)
     {
         if (ObjectDB.instance.GetItemPrefab(item.GetStableHashCode()) is not { } itemObj) return null;
         ItemDrop itemDrop = itemObj.GetComponent<ItemDrop>();
@@ -136,15 +136,6 @@ public static class PlayerModelPreview
             {
                 Utils.SetGOColors(weapon, c);
             }
-
-            if (vfxId > 0)
-            {
-                GameObject vfx = UnityEngine.Object.Instantiate(Transmogrification_Main_Client.MEL_GetEffect(vfxId),
-                    weapon.transform);
-                PSMeshRendererUpdater update = vfx.GetComponent<PSMeshRendererUpdater>();
-                update.MeshObject = vfx.transform.parent.gameObject;
-                update.UpdateMeshEffect();
-            }
         }
         else if (itemObj.transform.Find("attach_skin") is { } attach_skin)
         {
@@ -194,20 +185,6 @@ public static class PlayerModelPreview
                 body.material.SetTexture(LegsBumpMap,
                     itemDrop.m_itemData.m_shared.m_armorMaterial.GetTexture(LegsBumpMap));
                 body.material.SetTexture(LegsMetal, itemDrop.m_itemData.m_shared.m_armorMaterial.GetTexture(LegsMetal));
-            }
-
-            if (vfxId > 0)
-            {
-                GameObject vfx = UnityEngine.Object.Instantiate(Transmogrification_Main_Client.MEL_GetEffect(vfxId),
-                    armor.transform);
-                PSMeshRendererUpdater update = vfx.GetComponent<PSMeshRendererUpdater>();
-                foreach (ParticleSystem eff in vfx.GetComponentsInChildren<ParticleSystem>())
-                {
-                    eff.gameObject.SetActive(false);
-                }
-
-                update.MeshObject = vfx.transform.parent.gameObject;
-                update.UpdateMeshEffect();
             }
         }
 

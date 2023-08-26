@@ -7,7 +7,6 @@ public static class AsmLoad_UnityCode
     [UsedImplicitly]
     private static void OnInit()
     {
-        LoadAsm("Marketplace_TransmogCode");
         LoadAsm("Marketplace_UnityCode");
     }
     private static void LoadAsm(string name)

@@ -95,7 +95,7 @@ public static class Trader_UI
     private static class InventoryGui_Awake_Patch
     {
         [UsedImplicitly]
-private static void Postfix(InventoryGui __instance)
+        private static void Postfix(InventoryGui __instance)
         {
             foreach (UITooltip uiTooltip in BuyElement.GetComponentsInChildren<UITooltip>(true))
             {

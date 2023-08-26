@@ -13,17 +13,19 @@ public static class Marketplace_Main_Server
     [UsedImplicitly]
     private static void OnInit()
     {
-        if(!File.Exists(Market_Paths.ServerMarketDataJSON)) File.Create(Market_Paths.ServerMarketDataJSON).Dispose();
+        if (!File.Exists(Market_Paths.ServerMarketDataJSON)) File.Create(Market_Paths.ServerMarketDataJSON).Dispose();
         string data = Market_Paths.ServerMarketDataJSON.ReadFile();
         if (!string.IsNullOrWhiteSpace(data))
             Marketplace_DataTypes.SyncedMarketplaceData.Value =
                 JSON.ToObject<List<Marketplace_DataTypes.ServerMarketSendData>>(data);
 
-        if (!File.Exists(Market_Paths.MarketPlayersIncomeJSON)) File.Create(Market_Paths.MarketPlayersIncomeJSON).Dispose();
+        if (!File.Exists(Market_Paths.MarketPlayersIncomeJSON))
+            File.Create(Market_Paths.MarketPlayersIncomeJSON).Dispose();
         string goldData = Market_Paths.MarketPlayersIncomeJSON.ReadFile();
         if (!string.IsNullOrWhiteSpace(goldData)) PlayersIncome = JSON.ToObject<Dictionary<string, int>>(goldData);
-        
-        if (!File.Exists(Market_Paths.MarketPlayerMessagesJSON)) File.Create(Market_Paths.MarketPlayerMessagesJSON).Dispose();
+
+        if (!File.Exists(Market_Paths.MarketPlayerMessagesJSON))
+            File.Create(Market_Paths.MarketPlayerMessagesJSON).Dispose();
         string messagesData = Market_Paths.MarketPlayerMessagesJSON.ReadFile();
         if (!string.IsNullOrWhiteSpace(messagesData))
             Marketplace_Messages.Messenger.PlayerMessages = JSON.ToObject<Dictionary<string, string>>(messagesData);
@@ -69,6 +71,7 @@ public static class Marketplace_Main_Server
     private static void RequestWithdrawIncome(long sender, bool toBank)
     {
         ZNetPeer peer = ZNet.instance.GetPeer(sender);
+        if (peer == null) return;
         string userID = peer.m_socket.GetHostName();
         int value = 0;
         if (PlayersIncome.TryGetValue(userID, out int gold)) value = gold;
@@ -79,7 +82,8 @@ public static class Marketplace_Main_Server
             $"Player User ID: {userID} requested Withdraw Marketplace with quantity: {value}");
         if (toBank)
         {
-            Banker_Main_Server.MethodBankerDeposit(sender, Global_Configs.SyncedGlobalOptions.Value._serverCurrency, value);
+            Banker_Main_Server.MethodBankerDeposit(sender, Global_Configs.SyncedGlobalOptions.Value._serverCurrency,
+                value);
             return;
         }
 
@@ -96,6 +100,7 @@ public static class Marketplace_Main_Server
             JSON.ToObject<Marketplace_DataTypes.ClientMarketSendData>(data);
         if (toConvert.Count <= 0) return;
         ZNetPeer peer = ZNet.instance.GetPeer(sender);
+        if (peer == null) return;
         string userID = peer.m_socket.GetHostName();
         Marketplace_DataTypes.ServerMarketSendData newData =
             new Marketplace_DataTypes.ServerMarketSendData(toConvert, userID);
@@ -116,6 +121,7 @@ public static class Marketplace_Main_Server
     private static void RemoveItemAdminStatus(long sender, int id)
     {
         ZNetPeer peer = ZNet.instance.GetPeer(sender);
+        if (peer == null) return;
         string userID = peer.m_socket.GetHostName();
         if (ZNet.instance.m_adminList == null ||
             !ZNet.instance.ListContainsId(ZNet.instance.m_adminList, userID)) return;
@@ -143,7 +149,8 @@ public static class Marketplace_Main_Server
                 {
                     Marketplace_DataTypes.ServerMarketSendData mockData = new Marketplace_DataTypes.ServerMarketSendData
                     {
-                        Count = leftOver * findData.Price, ItemPrefab = Global_Configs.SyncedGlobalOptions.Value._serverCurrency,
+                        Count = leftOver * findData.Price,
+                        ItemPrefab = Global_Configs.SyncedGlobalOptions.Value._serverCurrency,
                         Quality = 1
                     };
                     string jsonLeftOver = JSON.ToJSON(mockData);
@@ -162,6 +169,7 @@ public static class Marketplace_Main_Server
             SaveMarketAndSendToClients();
             ///////////income mechanics
             ZNetPeer peer = ZNet.instance.GetPeer(sender);
+            if (peer == null) return;
             string buyerUserID = peer.m_socket.GetHostName();
             string sellerUserID = findData.SellerUserID!;
 
@@ -176,7 +184,8 @@ public static class Marketplace_Main_Server
             applyTaxes = Mathf.Max(0, applyTaxes);
             float endValue = goldValue - goldValue * (applyTaxes / 100f);
             if (PlayersIncome.ContainsKey(sellerUserID))
-                PlayersIncome[sellerUserID] = (int)Math.Min(int.MaxValue, (long)PlayersIncome[sellerUserID] + (int)endValue);
+                PlayersIncome[sellerUserID] =
+                    (int)Math.Min(int.MaxValue, (long)PlayersIncome[sellerUserID] + (int)endValue);
             else
                 PlayersIncome[sellerUserID] = (int)Math.Min(int.MaxValue, (long)endValue);
 
@@ -191,7 +200,9 @@ public static class Marketplace_Main_Server
         else
         {
             Marketplace_DataTypes.ServerMarketSendData mockData = new Marketplace_DataTypes.ServerMarketSendData
-                { Count = goldValue, ItemPrefab = Global_Configs.SyncedGlobalOptions.Value._serverCurrency, Quality = 1 };
+            {
+                Count = goldValue, ItemPrefab = Global_Configs.SyncedGlobalOptions.Value._serverCurrency, Quality = 1
+            };
             string json = JSON.ToJSON(mockData);
             ZRoutedRpc.instance.InvokeRoutedRPC(sender, "KGmarket BuyItemAnswer", json);
         }

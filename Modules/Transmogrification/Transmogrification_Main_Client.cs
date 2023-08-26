@@ -53,9 +53,6 @@ public static class Transmogrification_Main_Client
                 ItemDrop.ItemData item = prefab.GetComponent<ItemDrop>().m_itemData;
                 data.SetIcon(item.m_shared.m_icons[0]);
                 string localizedName = Localization.instance.Localize(item.m_shared.m_name);
-                if (data.VFX_ID > 0)
-                    localizedName +=
-                        $" <color=#00FFFF>({Localization.instance.Localize("$mpasn_transmog_eff" + data.VFX_ID)})</color>";
                 data.SetLocalizedName(localizedName);
                 data.SetLocalizedPrice(Localization.instance.Localize("$mpasn_transmog_price: <color=#00ff00>") +
                                        Localization.instance.Localize(priceItem.GetComponent<ItemDrop>().m_itemData
@@ -101,9 +98,6 @@ public static class Transmogrification_Main_Client
         string result =
             Localization.instance.Localize(
                 $"\n<color=#FF00FF>$mpasn_transmog_transmogrifiedinfo: <color=#00FFFF>{go}</color></color>");
-        if (transmog.VFX_ID > 0)
-            result +=
-                $"\n<color=#FF00FF>VFX: <color=#00FFFF>{Localization.instance.Localize("$mpasn_transmog_eff" + transmog.VFX_ID)}</color></color>";
         
         if(ColorUtility.TryParseHtmlString(transmog.ItemColor, out Color color))
             result += $"\n<color=#FF00FF>Color: <color=#{ColorUtility.ToHtmlStringRGB(color)}>{transmog.ItemColor}</color></color>";
@@ -119,19 +113,18 @@ public static class Transmogrification_Main_Client
     {
         public string ReplacedPrefab;
         public int Variant;
-        public int VFX_ID;
         public string ItemColor;
     }
     
     
     private static TempItem T_Data(this ItemDrop.ItemData item)
     {
-        if (item == null) return new TempItem { ReplacedPrefab = "", Variant = 0, VFX_ID = 0, ItemColor = ""};
+        if (item == null) return new TempItem { ReplacedPrefab = "", Variant = 0,ItemColor = ""};
 
         if (item.Data().Get<Transmogrification_DataTypes.TransmogItem_Component>() is { } t)
-            return new TempItem { ReplacedPrefab = t.ReplacedPrefab, Variant = 0, VFX_ID = t.VFX_ID, ItemColor = t.ItemColor};
+            return new TempItem { ReplacedPrefab = t.ReplacedPrefab, Variant = 0, ItemColor = t.ItemColor};
         
-        return new TempItem { ReplacedPrefab = item.m_dropPrefab.name, Variant = item.m_variant, VFX_ID = 0, ItemColor = ""};
+        return new TempItem { ReplacedPrefab = item.m_dropPrefab.name, Variant = item.m_variant, ItemColor = ""};
     }
 
 
@@ -162,10 +155,6 @@ public static class Transmogrification_Main_Client
 
                     if (ZNetScene.instance)
                     {
-                        p.m_nview.m_zdo.Set("MPASN_TMGrightitem", RightItem.VFX_ID);
-                        p.m_nview.m_zdo.Set("MPASN_TMGleftitem", LeftItem.VFX_ID);
-                        p.m_nview.m_zdo.Set("MPASN_TMGleftbackitem", LeftBackItem.VFX_ID);
-                        p.m_nview.m_zdo.Set("MPASN_TMGrightbackitem", RightBackItem.VFX_ID);
                         p.m_nview.m_zdo.Set("MPASN_TMGrightitemColor", RightItem.ItemColor);
                         p.m_nview.m_zdo.Set("MPASN_TMGleftitemColor", LeftItem.ItemColor);
                         p.m_nview.m_zdo.Set("MPASN_TMGleftbackitemColor", LeftBackItem.ItemColor);
@@ -188,10 +177,6 @@ public static class Transmogrification_Main_Client
 
                 if (ZNetScene.instance)
                 {
-                    p.m_nview.m_zdo.Set("MPASN_TMGchestitem", ChestItem.VFX_ID);
-                    p.m_nview.m_zdo.Set("MPASN_TMGlegitem", LegItem.VFX_ID);
-                    p.m_nview.m_zdo.Set("MPASN_TMGhelmetitem", HelmetItem.VFX_ID);
-                    p.m_nview.m_zdo.Set("MPASN_TMGshoulderitem", ShoulderItem.VFX_ID);
                     p.m_nview.m_zdo.Set("MPASN_TMGchestitemColor", ChestItem.ItemColor);
                     p.m_nview.m_zdo.Set("MPASN_TMGlegitemColor", LegItem.ItemColor);
                     p.m_nview.m_zdo.Set("MPASN_TMGhelmetitemColor", HelmetItem.ItemColor);
@@ -328,8 +313,7 @@ public static class Transmogrification_Main_Client
                 Transfer = true;
             }
         }
-
-
+        
         private static void Postfix(VisEquipment __instance)
         {
             if (!Transfer || !__instance.m_nview || __instance.m_nview.m_zdo == null) return;
@@ -340,16 +324,6 @@ public static class Transmogrification_Main_Client
                 if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
                 {
                     Utils.SetGOColors(__instance.m_rightItemInstance, c);
-                }
-                
-                int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGrightitem");
-                if (test > 0)
-                {
-                    GameObject go = UnityEngine.Object.Instantiate(MEL_GetEffect(test),
-                        __instance.m_rightItemInstance.transform);
-                    PSMeshRendererUpdater update = go.GetComponent<PSMeshRendererUpdater>();
-                    update.MeshObject = go.transform.parent.gameObject;
-                    update.UpdateMeshEffect();
                 }
             }
         }
@@ -382,15 +356,6 @@ public static class Transmogrification_Main_Client
                 {
                     Utils.SetGOColors(__instance.m_leftItemInstance, c);
                 }
-
-                int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGleftitem");
-                if (test > 0)
-                {
-                    GameObject go = UnityEngine.Object.Instantiate(MEL_GetEffect(test), __instance.m_leftItemInstance.transform);
-                    PSMeshRendererUpdater update = go.GetComponent<PSMeshRendererUpdater>();
-                    update.MeshObject = go.transform.parent.gameObject;
-                    update.UpdateMeshEffect();
-                }
             }
         }
     }
@@ -420,22 +385,6 @@ public static class Transmogrification_Main_Client
                 if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
                 {
                     Utils.SetGOColors(__instance.m_helmetItemInstance, c);
-                }
-                
-                
-                int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGhelmetitem");
-                if (test > 0)
-                {
-                    GameObject go = UnityEngine.Object.Instantiate(MEL_GetEffect(test),
-                        __instance.m_helmetItemInstance.transform);
-                    PSMeshRendererUpdater update = go.GetComponent<PSMeshRendererUpdater>();
-                    foreach (ParticleSystem eff in go.GetComponentsInChildren<ParticleSystem>())
-                    {
-                        eff.gameObject.SetActive(false);
-                    }
-
-                    update.MeshObject = go.transform.parent.gameObject;
-                    update.UpdateMeshEffect();
                 }
             }
         }
@@ -468,23 +417,6 @@ public static class Transmogrification_Main_Client
                     foreach (GameObject VARIABLE in __instance.m_shoulderItemInstances)
                     {
                         Utils.SetGOColors(VARIABLE, c);
-                    }
-                }
-                
-                int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGshoulderitem");
-                if (test > 0)
-                {
-                    foreach (GameObject VARIABLE in __instance.m_shoulderItemInstances)
-                    {
-                        GameObject go = UnityEngine.Object.Instantiate(MEL_GetEffect(test), VARIABLE.transform);
-                        PSMeshRendererUpdater update = go.GetComponent<PSMeshRendererUpdater>();
-                        foreach (ParticleSystem eff in go.GetComponentsInChildren<ParticleSystem>())
-                        {
-                            eff.gameObject.SetActive(false);
-                        }
-
-                        update.MeshObject = go.transform.parent.gameObject;
-                        update.UpdateMeshEffect();
                     }
                 }
             }
@@ -520,23 +452,6 @@ public static class Transmogrification_Main_Client
                         Utils.SetGOColors(VARIABLE, c);
                     }
                 }
-                
-                int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGlegitem");
-                if (test > 0)
-                {
-                    foreach (GameObject VARIABLE in __instance.m_legItemInstances)
-                    {
-                        GameObject go = UnityEngine.Object.Instantiate(MEL_GetEffect(test), VARIABLE.transform);
-                        PSMeshRendererUpdater update = go.GetComponent<PSMeshRendererUpdater>();
-                        foreach (ParticleSystem eff in go.GetComponentsInChildren<ParticleSystem>())
-                        {
-                            eff.gameObject.SetActive(false);
-                        }
-
-                        update.MeshObject = go.transform.parent.gameObject;
-                        update.UpdateMeshEffect();
-                    }
-                }
             }
         }
     }
@@ -569,16 +484,6 @@ public static class Transmogrification_Main_Client
                 {
                     Utils.SetGOColors(__instance.m_leftBackItemInstance, c);
                 }
-                
-                int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGleftbackitem");
-                if (test > 0)
-                {
-                    GameObject go = UnityEngine.Object.Instantiate(MEL_GetEffect(test),
-                        __instance.m_leftBackItemInstance.transform);
-                    PSMeshRendererUpdater update = go.GetComponent<PSMeshRendererUpdater>();
-                    update.MeshObject = go.transform.parent.gameObject;
-                    update.UpdateMeshEffect();
-                }
             }
 
             if (__instance.m_rightBackItemInstance)
@@ -587,16 +492,6 @@ public static class Transmogrification_Main_Client
                 if (!string.IsNullOrEmpty(colorString) && ColorUtility.TryParseHtmlString(colorString, out Color c) && c != Color.white)
                 {
                     Utils.SetGOColors(__instance.m_rightBackItemInstance, c);
-                }
-
-                int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGrightbackitem");
-                if (test > 0)
-                {
-                    GameObject go = UnityEngine.Object.Instantiate(MEL_GetEffect(test),
-                        __instance.m_rightBackItemInstance.transform);
-                    PSMeshRendererUpdater update = go.GetComponent<PSMeshRendererUpdater>();
-                    update.MeshObject = go.transform.parent.gameObject;
-                    update.UpdateMeshEffect();
                 }
             }
         }
@@ -629,23 +524,6 @@ public static class Transmogrification_Main_Client
                     foreach (GameObject VARIABLE in __instance.m_chestItemInstances)
                     {
                         Utils.SetGOColors(VARIABLE, c);
-                    }
-                }
-                
-                int test = __instance.m_nview.m_zdo.GetInt("MPASN_TMGchestitem");
-                if (test > 0)
-                {
-                    foreach (GameObject VARIABLE in __instance.m_chestItemInstances)
-                    {
-                        GameObject go = UnityEngine.Object.Instantiate(MEL_GetEffect(test), VARIABLE.transform);
-                        PSMeshRendererUpdater update = go.GetComponent<PSMeshRendererUpdater>();
-                        foreach (ParticleSystem eff in go.GetComponentsInChildren<ParticleSystem>())
-                        {
-                            eff.gameObject.SetActive(false);
-                        }
-
-                        update.MeshObject = go.transform.parent.gameObject;
-                        update.UpdateMeshEffect();
                     }
                 }
             }

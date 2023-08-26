@@ -12,6 +12,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using JetBrains.Annotations;
+using Marketplace;
 using Marketplace.Hammer;
 using UnityEngine;
 using UnityEngine.UI;
@@ -1056,7 +1057,6 @@ public class AdminSyncing
                     }
                 }
             }
-            // ReSharper disable once IteratorNeverReturns
         }
 
         if (isServer)

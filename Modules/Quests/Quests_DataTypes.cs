@@ -759,7 +759,7 @@ public static class Quests_DataTypes
                 pkg.Write((int)DiscordStuff.DiscordStuff.Webhooks.Quest);
                 pkg.Write(Player.m_localPlayer?.GetPlayerName() ?? "LocalPlayer");
                 pkg.Write(AllQuests[UID].Name);
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "KGmarket CustomWebhooks",
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(), "KGmarket CustomWebhooks",
                     pkg);
             }
 
