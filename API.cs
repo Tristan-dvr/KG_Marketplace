@@ -4,7 +4,7 @@ using Marketplace.Modules.TerritorySystem;
 using Marketplace.Modules.Trader;
 using Marketplace.Modules.Transmogrification;
 
-namespace Marketplace;
+namespace API;
 
 [PublicAPI]
 //if you want to use marketplace api just copy-paste this whole class into your code and use its methods

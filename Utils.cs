@@ -365,7 +365,7 @@ public static class Utils
         return result;
     }
 
-    public static Sprite TryFindIcon(string name)
+    public static Sprite TryFindIcon(string name, Sprite defaultSprite = null)
     {
         if (string.IsNullOrEmpty(name)) return null;
         if (AssetStorage.GlobalCachedSprites.TryGetValue(name, out Sprite img))
@@ -381,7 +381,7 @@ public static class Utils
                 return piece.m_icon;
         }
 
-        return null;
+        return defaultSprite;
     }
 
     public static float GetPlayerSkillLevelCustom(string skillName)

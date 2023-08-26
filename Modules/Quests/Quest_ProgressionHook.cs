@@ -144,8 +144,8 @@ public static class Quest_ProgressionHook
         {
             if (!Player.m_localPlayer) return;
             GameEvents.OnCreatureKilled?.Invoke(prefab, level);
-            if (Global_Configs.SyncedGlobalOptions.Value._allowKillQuestsInParty && ownerRPC && API.IsLoaded() &&
-                API.GroupPlayers() is { Count: > 1 } group)
+            if (Global_Configs.SyncedGlobalOptions.Value._allowKillQuestsInParty && ownerRPC && Groups.API.IsLoaded() &&
+                Groups.API.GroupPlayers() is { Count: > 1 } group)
                 foreach (PlayerReference member in group)
                     if (member.peerId != ZDOMan.instance.m_sessionID)
                         ZRoutedRpc.instance.InvokeRoutedRPC(member.peerId, "KGmarket QuestKill", prefab, level, pos,

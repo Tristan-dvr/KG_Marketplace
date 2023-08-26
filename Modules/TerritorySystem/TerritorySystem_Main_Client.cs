@@ -136,7 +136,7 @@ public static class TerritorySystem_Main_Client
 
     private static void OnTerritoryUpdate()
     {
-        ClientSide.FillingTerritoryData = true;
+        API.ClientSide.FillingTerritoryData = true;
         foreach (KeyValuePair<TerritorySystem_DataTypes.TerritoryFlags, List<TerritorySystem_DataTypes.Territory>>
                      territoriesByFlag in TerritoriesByFlags)
         {
@@ -152,7 +152,7 @@ public static class TerritorySystem_Main_Client
 
         if (TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Count == 0)
         {
-            ClientSide.FillingTerritoryData = false;
+            API.ClientSide.FillingTerritoryData = false;
             DoMapMagic();
             return;
         }
@@ -183,7 +183,7 @@ public static class TerritorySystem_Main_Client
             .Sort((a, b) => a.Priority.CompareTo(b.Priority));
         TerritoriesByFlags[TerritorySystem_DataTypes.TerritoryFlags.LimitZoneHeight]
             .Sort((a, b) => a.Priority.CompareTo(b.Priority));
-        ClientSide.FillingTerritoryData = false;
+        API.ClientSide.FillingTerritoryData = false;
         DoMapMagic();
         ZoneVisualizer.OnMapChange();
         if (Global_Configs.SyncedGlobalOptions.Value._rebuildHeightmap &&

@@ -12,9 +12,9 @@ public static class ChatCommands
     {
         private static void Postfix()
         {
-            new Terminal.ConsoleCommand("npc remove", "Remove NPCs in range of 5 meters", (args) =>
+            new Terminal.ConsoleCommand("npcremove", "Remove NPCs in range of 5 meters", (args) =>
             {
-                if (!Utils.IsDebug) return;
+                if (!Utils.IsDebug) return; 
                 IEnumerable<Market_NPC.NPCcomponent> FindNPCsInRange = Market_NPC.NPCcomponent.ALL.Where(x =>
                     global::Utils.DistanceXZ(Player.m_localPlayer.transform.position, x.transform.position) <= 5f);
                 int c = 0;

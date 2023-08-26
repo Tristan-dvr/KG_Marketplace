@@ -32,14 +32,7 @@ public static class Teleporter_Main_Client
             {
                 pinData.m_NamePinData = new Minimap.PinNameData(pinData);
             }
-            Sprite icon;
-            GameObject item = ZNetScene.instance.GetPrefab(data.sprite);
-            if (item)
-                icon = item.GetComponent<ItemDrop>().m_itemData.m_shared.m_icons[0];
-            else
-                icon = AssetStorage.GlobalCachedSprites.TryGetValue(data.sprite, out Sprite sprite)
-                    ?  sprite
-                    :  AssetStorage.PortalIconDefault;
+            Sprite icon = Utils.TryFindIcon(data.sprite, AssetStorage.PortalIconDefault);
             pinData.m_icon = icon;
             pinData.m_save = false;
             pinData.m_checked = false;
@@ -51,8 +44,6 @@ public static class Teleporter_Main_Client
             Minimap.instance.CenterMap(Vector3.zero);
         }
     }
-    
-    
     
     [HarmonyPatch(typeof(Minimap), nameof(Minimap.OnMapLeftClick))]
     [ClientOnlyPatch]

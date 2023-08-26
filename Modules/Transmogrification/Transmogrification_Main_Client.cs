@@ -8,17 +8,12 @@ namespace Marketplace.Modules.Transmogrification;
 public static class Transmogrification_Main_Client
 {
     private static GameObject Transmog_UI_Icon_Part;
-    private static readonly List<GameObject> MEL_Effects = new(20);
     public static readonly Dictionary<string, Dictionary<ItemDrop.ItemData.ItemType, List<Transmogrification_DataTypes.TransmogItem_Data>>> FilteredTransmogData = new();
 
     private static void OnInit()
     {
         Transmogrification_UI.Init();
         Transmog_UI_Icon_Part = AssetStorage.asset.LoadAsset<GameObject>("TransmogUI_Part");
-        for (int i = 0; i < 20; i++)
-        {
-            MEL_Effects.Add(AssetStorage.asset.LoadAsset<GameObject>("TransmogME" + (i + 1)));
-        }
         Transmogrification_DataTypes.SyncedTransmogData.ValueChanged += InitTransmogData;
         Marketplace.Global_Updator += Update;
     }
@@ -291,13 +286,6 @@ public static class Transmogrification_Main_Client
                 __result += AddTooltipTransmog(item);
             }
         }
-    }
-
-    public static GameObject MEL_GetEffect(int index)
-    {
-        index--;
-        if (index < 0 || index >= MEL_Effects.Count) return null;
-        return MEL_Effects[index];
     }
     
     [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquipped))]
