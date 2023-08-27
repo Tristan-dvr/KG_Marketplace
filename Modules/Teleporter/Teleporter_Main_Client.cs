@@ -2,7 +2,7 @@
 using Marketplace.Modules.Global_Options;
 
 namespace Marketplace.Modules.Teleporter;
-
+[Market_Autoload(Market_Autoload.Type.Client)]
 public static class Teleporter_Main_Client
 {
     private static readonly List<Minimap.PinData> CurrentTeleporterObjects = new();
@@ -11,6 +11,11 @@ public static class Teleporter_Main_Client
     private static bool TeleporterJump;
     public static bool DEBUG_TELEPORTTO_TERRITORY;
 
+    private static void OnInit()
+    {
+        Teleporter_DataTypes.SyncedTeleporterData.Value.Count();
+    }
+    
     internal static void ShowTeleporterUI(string profile)
     {
         InventoryGui.instance.Hide();

@@ -12,6 +12,8 @@ public static class LeaderBoard_Main_Client
     [UsedImplicitly]
     private static void OnInit()
     {
+        Leaderboard_DataTypes.SyncedClientLeaderboard.Value.Count();
+        Leaderboard_DataTypes.SyncedClientAchievements.Value.Count();
         GameEvents.OnPlayerDeath += () => SendToServer(Leaderboard_DataTypes.TriggerType.Died);
         GameEvents.OnCreatureKilled += (prefab, _) => SendToServer(Leaderboard_DataTypes.TriggerType.MonstersKilled, prefab);
         GameEvents.OnStructureBuilt += prefab => SendToServer(Leaderboard_DataTypes.TriggerType.StructuresBuilt, prefab);
