@@ -4,22 +4,6 @@ public static class Teleporter_DataTypes
 {
     internal static readonly CustomSyncedValue<Dictionary<string, List<TeleporterData>>> SyncedTeleporterData = 
         new(Marketplace.configSync, "teleporterData", new Dictionary<string, List<TeleporterData>>());
-
-    public class TransferBytes : ISerializableParameter
-    {
-        public byte[] array;
-        
-        public void Serialize(ref ZPackage pkg)
-        {
-            pkg.Write(array);
-        }
-        public void Deserialize(ref ZPackage pkg)
-        {
-            array = pkg.ReadByteArray();
-        }
-         
-    }
-    
     
     public class TeleporterData : ISerializableParameter
     {

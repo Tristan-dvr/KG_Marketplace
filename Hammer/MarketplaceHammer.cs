@@ -239,6 +239,7 @@ public static class MarketplaceHammer
     }
 
     [HarmonyPatch(typeof(Piece), nameof(Piece.CanBeRemoved))]
+    [ClientOnlyPatch]
     private static class Piece_CanBeRemoved_Patch
     {
         [UsedImplicitly]
@@ -250,8 +251,21 @@ public static class MarketplaceHammer
             }
         }
     }
+    
+    [HarmonyPatch(typeof(Player),nameof(Player.Awake))]
+    [ClientOnlyPatch]
+    private static class Player_Awake_Patch
+    {
+        [UsedImplicitly]
+        private static void Postfix(Player __instance)
+        {
+            var addToMask = LayerMask.GetMask(new string[] { "character" });
+            __instance.m_removeRayMask |= addToMask;
+        }
+    }
 
     [HarmonyPatch(typeof(Hud), nameof(Hud.Awake))]
+    [ClientOnlyPatch]
     private static class Hud_Awake_Patch
     {
         public static GameObject UI;

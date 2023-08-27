@@ -864,11 +864,23 @@ public static class Market_NPC
             canvas.transform.localPosition = localPosition;
         }
 
+        private void ApplyName(string npcName)
+        {
+            if (string.IsNullOrWhiteSpace(npcName))
+            {
+                canvas.text = Localization.instance.Localize("$mpasn_" + _currentNpcType);
+            }
+            else
+            {
+                canvas.text = npcName;
+            }
+        }
 
         public void OverrideModel(long sender, string newModelName)
         {
             if (znv.IsOwner()) znv.m_zdo.Set("KGnpcModelOverride", newModelName);
             transform.Find("NPC").gameObject.SetActive(false);
+            ApplyName(znv.m_zdo.GetString("KGnpcNameOverride"));
             float KGtextSize = znv.m_zdo.GetFloat("KGtextSize", 3f);
             canvas.transform.localScale = new Vector3(KGtextSize, KGtextSize, KGtextSize);
             Vector3 localPosition = new Vector3(0, 3.4f, 0);
@@ -887,6 +899,7 @@ public static class Market_NPC
         public void OverrideName(long sender, string newName)
         {
             if (znv.IsOwner()) znv.m_zdo.Set("KGnpcNameOverride", newName);
+            ApplyName(newName);
             transform.Find("MPASNquest").gameObject.SetActive(Quests_DataTypes.Quest.IsQuestTarget(newName));
         }
 
@@ -1117,7 +1130,7 @@ public static class Market_NPC
                 if (col == null) return false;
                 pastOverrideModel = new GameObject("OverrideModel")
                 {
-                    layer = LayerMask.NameToLayer("piece"),
+                    layer = LayerMask.NameToLayer("character"),
                     transform =
                     {
                         parent = transform,
@@ -1136,7 +1149,7 @@ public static class Market_NPC
 
                 foreach (Collider inChild in pastOverrideModel.GetComponentsInChildren<Collider>())
                 {
-                    inChild.gameObject.layer = LayerMask.NameToLayer("piece");
+                    inChild.gameObject.layer = LayerMask.NameToLayer("character");
                 }
 
                 if (!pastOverrideModel.GetComponentInChildren<Collider>())
@@ -1166,7 +1179,7 @@ public static class Market_NPC
                     em.enabled = false;
                 }
 
-                pastOverrideModel.layer = LayerMask.NameToLayer("piece");
+                pastOverrideModel.layer = LayerMask.NameToLayer("character");
                 Utils.CopyComponent(col, pastOverrideModel);
                 pastOverrideModel.transform.localPosition = Vector3.zero;
                 pastOverrideModel.transform.rotation = transform.rotation;
