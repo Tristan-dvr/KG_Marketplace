@@ -513,6 +513,7 @@ public static class Market_NPC
             ALL.Add((this));
             zanim = GetComponent<ZSyncAnimation>();
             if (znv.m_zdo == null) return;
+            transform.Find("NPC").GetComponentInChildren<Collider>().gameObject.layer = LayerMask.NameToLayer("character");
             canvas = transform.Find("TMP").GetComponent<TMP_Text>();
             int npcType = znv.m_zdo.GetInt("KGmarketNPC");
             if (npcType >= TypeNames.Length) npcType = 0;

@@ -13,7 +13,7 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        public const string PluginVersion = "9.0.9";
+        public const string PluginVersion = "9.0.11";
         internal static Marketplace _thistype = null!;
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW = null!; 
@@ -156,7 +156,7 @@ namespace Marketplace
             FoldersToFiles.Add(Market_Paths.QuestsEventsFolder, "QE");
             FoldersToFiles.Add(Market_Paths.QuestsProfilesFolder, "QP");
             FoldersToFiles.Add(Market_Paths.DialoguesFolder, "DI");
-            FoldersToFiles.Add(Market_Paths.TerritoriesFolder, "TR");
+            FoldersToFiles.Add(Market_Paths.TerritoriesFolder, "TD");
             FoldersToFiles.Add(Market_Paths.BankerProfilesFolder, "BA");
             FoldersToFiles.Add(Market_Paths.TeleportHubProfilesFolder,"TE");
             FoldersToFiles.Add(Market_Paths.TraderProfilesFolder, "TR");

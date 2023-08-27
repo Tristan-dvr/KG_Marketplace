@@ -1,13 +1,37 @@
-﻿using Marketplace.ExternalLoads;
+﻿using BepInEx.Configuration;
+using Marketplace.ExternalLoads;
 
 namespace Marketplace.Modules.NPC;
 
+[Market_Autoload(Market_Autoload.Type.Client)]
 public static class NPC_MapController
 {
     private static readonly Dictionary<Minimap.PinData, ZDO> _pins = new();
     private const string npcToSearchPrefabName = "MarketPlaceNPC";
     private const string npcToSearchPrefabName_Pinned = "MarketPlaceNPCpinned";
     private const Minimap.PinType PINTYPENPC = (Minimap.PinType)72;
+    public static ConfigEntry<bool> EnableMapControl;
+
+    private static void OnInit()
+    {
+        EnableMapControl = Marketplace._thistype.Config.Bind("General", "DisableMapNPCControl", true);
+    }
+    
+    [HarmonyPatch(typeof(Terminal),nameof(Terminal.InitTerminal))]
+    [ClientOnlyPatch]
+    private static class Terminal_InitTerminal_Patch
+    {
+        [UsedImplicitly]
+        private static void Postfix(Terminal __instance)
+        {
+            new Terminal.ConsoleCommand("mmapcontrol", "Enable / Disable map control", (args) =>
+            {
+                EnableMapControl.Value = !EnableMapControl.Value;
+                Marketplace._thistype.Config.Save();
+                args.Context.AddString($"Map control is now {(EnableMapControl.Value ? "<color=green>enabled</color>" : "<color=red>disabled</color>")}");
+            });
+        }
+    }
     
     [HarmonyPatch(typeof(Minimap), nameof(Minimap.GetSprite))]
     [ClientOnlyPatch]
@@ -78,8 +102,7 @@ public static class NPC_MapController
             }
 
             if (mode != Minimap.MapMode.Large) return;
-            if (!Utils.IsDebug) return;
-            ReapplyPins();
+            if (Utils.IsDebug && EnableMapControl.Value) ReapplyPins();
         }
     }
     

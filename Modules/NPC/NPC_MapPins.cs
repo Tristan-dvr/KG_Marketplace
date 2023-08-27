@@ -31,7 +31,7 @@ public static class NPC_MapPins
             {
                 foreach (Minimap.PinData obj in TempNPCpins) Minimap.instance.RemovePin(obj);
                 TempNPCpins.Clear();
-                if (Minimap.instance.m_mode == Minimap.MapMode.Large && Utils.IsDebug)
+                if (Minimap.instance.m_mode == Minimap.MapMode.Large && Utils.IsDebug && NPC_MapController.EnableMapControl.Value)
                 {
                     yield return new WaitForSecondsRealtime(1f);
                     continue;
@@ -100,7 +100,7 @@ public static class NPC_MapPins
     private static class Minimap_GetSprite_Patch
     {
         [UsedImplicitly]
-private static void Postfix(Minimap.PinType type, ref Sprite __result)
+        private static void Postfix(Minimap.PinType type, ref Sprite __result)
         {
             if (type is PINTYPENPC) __result = AssetStorage.PlaceholderGamblerIcon;
         }
@@ -114,7 +114,7 @@ private static void Postfix(Minimap.PinType type, ref Sprite __result)
         private static void Prefix(Minimap __instance, Minimap.MapMode mode)
         {
             if (mode != Minimap.MapMode.Large) return;
-            if (Utils.IsDebug)
+            if (Utils.IsDebug && NPC_MapController.EnableMapControl.Value)
             {
                 foreach (Minimap.PinData obj in TempNPCpins) __instance.RemovePin(obj);
                 TempNPCpins.Clear();

@@ -11,6 +11,7 @@ public static class Teleporter_Main_Client
     private static bool TeleporterJump;
     public static bool DEBUG_TELEPORTTO_TERRITORY;
 
+    [UsedImplicitly]
     private static void OnInit()
     {
         Teleporter_DataTypes.SyncedTeleporterData.Value.Count();
