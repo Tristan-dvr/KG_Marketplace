@@ -49,10 +49,20 @@ public static class Trader_Main_Client
                 {
                     GameObject neededItemPrefab = ZNetScene.instance.GetPrefab(NI.ItemPrefab);
                     if (!neededItemPrefab || !neededItemPrefab.GetComponent<ItemDrop>())
+                    {
+                        if (NI.ItemPrefab.Contains("CUSTOMVALUE@"))
+                        {
+                             NI.Type = Trader_DataTypes.TraderItem.TraderItemType.CustomValue;
+                             NI.SetIcon(AssetStorage.CustomValue_Icon);
+                             NI.DisplayStars = false;
+                             NI.ItemName = NI.ItemPrefab.Replace("CUSTOMVALUE@", "").Replace("_", " ");
+                             _NeededItems.Add(NI);
+                        }
+                        
                         continue;
+                    }
                     ItemDrop.ItemData neededItem = neededItemPrefab.GetComponent<ItemDrop>().m_itemData;
-                    NI.IsMonster = false;
-                    NI.IsSkill = false;
+                    NI.Type = Trader_DataTypes.TraderItem.TraderItemType.Item;
                     NI.DisplayStars = neededItem.m_shared.m_maxQuality > 1;
                     NI.SetIcon(neededItem.m_shared.m_icons[0]);
                     NI.OriginalItemName = neededItem.m_shared.m_name;
@@ -62,13 +72,22 @@ public static class Trader_Main_Client
 
                 foreach (Trader_DataTypes.TraderItem RI in value.ResultItems)
                 {
+                    if(RI.ItemPrefab.Contains("CUSTOMVALUE@"))
+                    {
+                        RI.Type = Trader_DataTypes.TraderItem.TraderItemType.CustomValue;
+                        RI.SetIcon(AssetStorage.CustomValue_Icon);
+                        RI.DisplayStars = false;
+                        RI.ItemName = RI.ItemPrefab.Replace("CUSTOMVALUE@", "").Replace("_", " ");
+                        _ResultItems.Add(RI);
+                        continue;
+                    }
+                    
                     GameObject resultItemPrefab = ZNetScene.instance.GetPrefab(RI.ItemPrefab);
                     if (!resultItemPrefab)
                     {
                         RI.SetIcon(AssetStorage.NullSprite);
                         RI.ItemName = Utils.LocalizeSkill(RI.ItemPrefab) + " EXP";
-                        RI.IsMonster = false;
-                        RI.IsSkill = true;
+                        RI.Type = Trader_DataTypes.TraderItem.TraderItemType.Skill;
                         RI.DisplayStars = false;
                         _ResultItems.Add(RI);
                         continue;
@@ -81,8 +100,7 @@ public static class Trader_Main_Client
                         RI.SetIcon(resultItem.m_shared.m_icons[0]);
                         RI.OriginalItemName = resultItem.m_shared.m_name;
                         RI.ItemName = Localization.instance.Localize(RI.OriginalItemName);
-                        RI.IsMonster = false;
-                        RI.IsSkill = false;
+                        RI.Type = Trader_DataTypes.TraderItem.TraderItemType.Item;
                     }
                     else if (resultItemPrefab.GetComponent<Character>())
                     {
@@ -91,9 +109,8 @@ public static class Trader_Main_Client
                         RI.SetIcon(PhotoManager.__instance.GetSprite(resultItemPrefab.name,
                             AssetStorage.PlaceholderMonsterIcon, RI.Level));
                         RI.ItemName = Localization.instance.Localize(c.m_name ?? "Default");
-                        RI.IsMonster = true;
+                        RI.Type = Trader_DataTypes.TraderItem.TraderItemType.Monster;
                         RI.DisplayStars = true;
-                        RI.IsSkill = false;
                     }
 
                     _ResultItems.Add(RI);

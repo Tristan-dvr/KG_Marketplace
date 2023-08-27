@@ -110,7 +110,7 @@ public static class Trader_UI
     private static class TraderUIFix
     {
         [UsedImplicitly]
-private static void Postfix(ref bool __result)
+        private static void Postfix(ref bool __result)
         {
             if (IsPanelVisible()) __result = true;
         }
@@ -164,8 +164,8 @@ private static void Postfix(ref bool __result)
                 bool breakLoop =
                     data.NeededItems.Any(item =>
                         !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName)) ||
-                    data.ResultItems.Any(item => !item.IsSkill &&
-                                                 !item.IsMonster &&
+                    data.ResultItems.Any(item => item.Type != Trader_DataTypes.TraderItem.TraderItemType.Skill &&
+                                                 item.Type != Trader_DataTypes.TraderItem.TraderItemType.Monster &&
                                                  !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName));
                 if (breakLoop) continue;
             }
@@ -190,13 +190,20 @@ private static void Postfix(ref bool __result)
                     $"{data.NeededItems[i].ItemName}{stars}\n<color=yellow>x{data.NeededItems[i].Count * ModifierValues[CurrentModifier]}</color>";
                 transform.transform.Find("Icon").GetComponent<Image>().sprite = data.NeededItems[i].GetIcon();
                 transform.GetComponent<UITooltip>().m_topic = data.NeededItems[i].ItemName;
-                transform.GetComponent<UITooltip>().m_text = ItemDrop.ItemData.GetTooltip(
-                    ZNetScene.instance.GetPrefab(data.NeededItems[i].ItemPrefab).GetComponent<ItemDrop>()
-                        .m_itemData, data.NeededItems[i].Level, false, Game.m_worldLevel);
-                bool hasEnough =
-                    Utils.CustomCountItems(data.NeededItems[i].ItemPrefab,
-                        data.NeededItems[i].Level) >=
-                    data.NeededItems[i].Count * ModifierValues[CurrentModifier];
+
+                transform.GetComponent<UITooltip>().m_text =
+                    data.NeededItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Item
+                        ? ItemDrop.ItemData.GetTooltip(
+                            ZNetScene.instance.GetPrefab(data.NeededItems[i].ItemPrefab).GetComponent<ItemDrop>()
+                                .m_itemData, data.NeededItems[i].Level, false, Game.m_worldLevel)
+                        : "$mpasn_CustomValue".Localize();
+
+                bool hasEnough = data.NeededItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Item
+                    ? Utils.CustomCountItems(data.NeededItems[i].ItemPrefab,
+                        data.NeededItems[i].Level) >= data.NeededItems[i].Count * ModifierValues[CurrentModifier]
+                    : Player.m_localPlayer.GetCustomValue(data.NeededItems[i].ItemPrefab) >=
+                      data.NeededItems[i].Count * ModifierValues[CurrentModifier];
+
                 transform.GetComponent<Outline>().effectColor = hasEnough ? Color.green : Color.red;
             }
 
@@ -212,22 +219,25 @@ private static void Postfix(ref bool __result)
                         go.transform.Find("Background/ResultItems"));
                 transform.GetComponent<RectTransform>().anchoredPosition -= new Vector2(0, internalOffset);
                 internalOffset += 69;
-                int starCount = data.ResultItems[i].IsMonster
+                int starCount = data.ResultItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Monster
                     ? data.ResultItems[i].Level - 1
                     : data.ResultItems[i].Level;
                 string stars = data.ResultItems[i].DisplayStars ? $" <color=#00ff00>({starCount}★)</color>" : "";
                 transform.transform.Find("Text").GetComponent<Text>().text =
                     $"{data.ResultItems[i].ItemName}{stars}\n<color=yellow>x{data.ResultItems[i].Count * ModifierValues[CurrentModifier]}</color>";
-                transform.transform.Find("Icon").GetComponent<Image>().sprite = data.ResultItems[i].IsSkill
-                    ? Utils.GetSkillIcon(data.ResultItems[i].ItemPrefab)
-                    : data.ResultItems[i].GetIcon();
+                transform.transform.Find("Icon").GetComponent<Image>().sprite =
+                    data.ResultItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Skill
+                        ? Utils.GetSkillIcon(data.ResultItems[i].ItemPrefab)
+                        : data.ResultItems[i].GetIcon();
+                
                 transform.GetComponent<UITooltip>().m_topic = data.ResultItems[i].ItemName;
-                if (data.ResultItems[i].IsMonster)
-                    transform.GetComponent<UITooltip>().m_text =
-                        Localization.instance.Localize("$mpasn_tooltip_pet");
-                else if (data.ResultItems[i].IsSkill)
-                    transform.GetComponent<UITooltip>().m_text =
-                        Localization.instance.Localize("$mpasn_Skill_EXP");
+                
+                if (data.ResultItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Monster)
+                    transform.GetComponent<UITooltip>().m_text = Localization.instance.Localize("$mpasn_tooltip_pet");
+                else if (data.ResultItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Skill)
+                    transform.GetComponent<UITooltip>().m_text = Localization.instance.Localize("$mpasn_Skill_EXP");
+                else if (data.ResultItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue)
+                    transform.GetComponent<UITooltip>().m_text = Localization.instance.Localize("$mpasn_CustomValue");
                 else
                     transform.GetComponent<UITooltip>().m_text = ItemDrop.ItemData.GetTooltip(
                         ZNetScene.instance.GetPrefab(data.ResultItems[i].ItemPrefab).GetComponent<ItemDrop>()
@@ -258,15 +268,20 @@ private static void Postfix(ref bool __result)
     private static bool CanBuy(Trader_DataTypes.TraderData data)
     {
         foreach (Trader_DataTypes.TraderItem r in data.NeededItems)
-            if (Utils.CustomCountItems(r.ItemPrefab, r.Level) <
-                r.Count * ModifierValues[CurrentModifier])
+        {
+            if (r.Type is Trader_DataTypes.TraderItem.TraderItemType.Item &&
+                Utils.CustomCountItems(r.ItemPrefab, r.Level) < r.Count * ModifierValues[CurrentModifier]) return false;
+            else if (r.Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue &&
+                     Player.m_localPlayer.GetCustomValue(r.ItemPrefab) < r.Count * ModifierValues[CurrentModifier])
                 return false;
+        }
 
         return true;
     }
 
     private static bool CanAddToBanker(Trader_DataTypes.TraderItem item)
     {
+        if (item.Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue) return false;
         if (item.Level > 1) return false;
         int hash = item.ItemPrefab.GetStableHashCode();
         return Banker_DataTypes.SyncedBankerProfiles.Value.Values.Any(x => x.Contains(hash));
@@ -282,91 +297,65 @@ private static void Postfix(ref bool __result)
 
         foreach (Trader_DataTypes.TraderItem neededItem in data.NeededItems)
         {
-            int amount = neededItem.Count * ModifierValues[CurrentModifier];
-            Utils.CustomRemoveItems(neededItem.ItemPrefab, amount, neededItem.Level);
-            logMessage += $"x{amount} {neededItem.ItemName}, ";
+            if (neededItem.Type is Trader_DataTypes.TraderItem.TraderItemType.Item)
+            {
+                int amount = neededItem.Count * ModifierValues[CurrentModifier];
+                Utils.CustomRemoveItems(neededItem.ItemPrefab, amount, neededItem.Level);
+                logMessage += $"x{amount} {neededItem.ItemName}, ";
+            }
+            else if (neededItem.Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue)
+            {
+                int amount = neededItem.Count * ModifierValues[CurrentModifier];
+                p.AddCustomValue(neededItem.ItemPrefab, -amount);
+                logMessage += $"x{amount} {neededItem.ItemName}, ";
+            }
         }
 
         logMessage += "for => ";
         foreach (Trader_DataTypes.TraderItem resultItem in data.ResultItems)
         {
-            if (resultItem.IsSkill)
-            {
-                Utils.IncreaseSkillEXP(resultItem.ItemPrefab, resultItem.Count * ModifierValues[CurrentModifier]);
-                logMessage += $"x{resultItem.Count * ModifierValues[CurrentModifier]} {resultItem.ItemName}, ";
-                continue;
-            }
-
             GameObject prefab = ZNetScene.instance.GetPrefab(resultItem.ItemPrefab);
-            if (!resultItem.IsMonster)
+            switch (resultItem.Type)
             {
-                if (ToBank && CanAddToBanker(resultItem))
-                {
-                    ZRoutedRpc.instance.InvokeRoutedRPC("KGmarket BankerDeposit", resultItem.ItemPrefab,
-                        resultItem.Count * ModifierValues[CurrentModifier]);
-                    string text = Localization.instance.Localize("$mpasn_addedtobank",
-                        (resultItem.Count * ModifierValues[CurrentModifier]).ToString(),
-                        Localization.instance.Localize(resultItem.ItemName));
-                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, text);
-                }
-                else
-                {
-                    string text = Localization.instance.Localize("$mpasn_added",
-                        (resultItem.Count * ModifierValues[CurrentModifier]).ToString(),
-                        Localization.instance.Localize(resultItem.ItemName));
-                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, text);
-                    if (prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_maxStackSize > 1)
+                case Trader_DataTypes.TraderItem.TraderItemType.Skill:
+                    Utils.IncreaseSkillEXP(resultItem.ItemPrefab, resultItem.Count * ModifierValues[CurrentModifier]);
+                    logMessage += $"x{resultItem.Count * ModifierValues[CurrentModifier]} {resultItem.ItemName}, ";
+                    break;
+                case Trader_DataTypes.TraderItem.TraderItemType.Item:
+                    if (ToBank && CanAddToBanker(resultItem))
                     {
-                        GameObject go = Object.Instantiate(prefab,
-                            p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
-                        ItemDrop itemDrop = go.GetComponent<ItemDrop>();
-                        itemDrop.m_itemData.m_quality = resultItem.Level;
-                        itemDrop.m_itemData.m_stack = resultItem.Count * ModifierValues[CurrentModifier];
-                        itemDrop.Save();
-                        if (p.m_inventory.CanAddItem(go))
-                        {
-                            p.m_inventory.AddItem(itemDrop.m_itemData);
-                            ZNetScene.instance.Destroy(go);
-                        }
+                        ZRoutedRpc.instance.InvokeRoutedRPC("KGmarket BankerDeposit", resultItem.ItemPrefab,
+                            resultItem.Count * ModifierValues[CurrentModifier]);
+                        MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, Localization.instance.Localize(
+                            "$mpasn_addedtobank",
+                            (resultItem.Count * ModifierValues[CurrentModifier]).ToString(),
+                            Localization.instance.Localize(resultItem.ItemName)));
                     }
                     else
                     {
-                        for (int i = 0; i < resultItem.Count * ModifierValues[CurrentModifier]; i++)
-                        {
-                            GameObject go = Object.Instantiate(prefab,
-                                p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f,
-                                Quaternion.identity);
-                            ItemDrop itemDrop = go.GetComponent<ItemDrop>();
-                            itemDrop.m_itemData.m_quality = resultItem.Level;
-                            itemDrop.Save();
-                            if (p.m_inventory.CanAddItem(go))
-                            {
-                                p.m_inventory.AddItem(itemDrop.m_itemData);
-                                ZNetScene.instance.Destroy(go);
-                            }
-                        }
+                        MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, Localization.instance.Localize(
+                            "$mpasn_added",
+                            (resultItem.Count * ModifierValues[CurrentModifier]).ToString(),
+                            Localization.instance.Localize(resultItem.ItemName)));
+                        Utils.InstantiateItem(prefab, resultItem.Count * ModifierValues[CurrentModifier],
+                            resultItem.Level);
                     }
-                }
-            }
-            else
-            {
-                string text = Localization.instance.Localize("$mpasn_spawned",
-                    (resultItem.Count * ModifierValues[CurrentModifier]).ToString(),
-                    Localization.instance.Localize(resultItem.ItemName));
-                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, text);
-                for (int i = 0; i < resultItem.Count * ModifierValues[CurrentModifier]; i++)
-                {
-                    GameObject go = Object.Instantiate(prefab,
-                        Player.m_localPlayer.transform.position - Player.m_localPlayer.transform.forward * 3f +
-                        Vector3.up * 1f,
-                        Quaternion.identity);
-                    go.GetComponent<Character>().SetLevel(resultItem.Level);
-                    Tameable tame = go.GetComponent<Tameable>();
-                    if (tame) tame.Tame();
-                }
-            }
 
-            logMessage += $"x{resultItem.Count * ModifierValues[CurrentModifier]} {resultItem.ItemName}, ";
+                    logMessage += $"x{resultItem.Count * ModifierValues[CurrentModifier]} {resultItem.ItemName}, ";
+                    break;
+                case Trader_DataTypes.TraderItem.TraderItemType.Monster:
+                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, Localization.instance.Localize(
+                        "$mpasn_spawned",
+                        (resultItem.Count * ModifierValues[CurrentModifier]).ToString(),
+                        Localization.instance.Localize(resultItem.ItemName)));
+                    Utils.InstantiateItem(prefab, resultItem.Count * ModifierValues[CurrentModifier], resultItem.Level);
+                    logMessage += $"x{resultItem.Count * ModifierValues[CurrentModifier]} {resultItem.ItemName}, ";
+                    break;
+                case Trader_DataTypes.TraderItem.TraderItemType.CustomValue:
+                    p.AddCustomValue(resultItem.ItemPrefab, resultItem.Count * ModifierValues[CurrentModifier]);
+                    logMessage += $"x{resultItem.Count * ModifierValues[CurrentModifier]} {resultItem.ItemName}, ";
+                    break;
+            }
         }
 
         logMessage = logMessage.Substring(0, logMessage.Length - 2);

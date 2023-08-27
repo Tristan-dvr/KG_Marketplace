@@ -73,10 +73,17 @@ public static class Trader_DataTypes
         public string ItemName;
         public string OriginalItemName;
         public string ItemPrefab;
-        public bool IsMonster;
-        public bool IsSkill;
         public int Level = 1;
         public bool DisplayStars;
+        public TraderItemType Type = TraderItemType.Item;
+        
+        public enum TraderItemType
+        {
+            Item,
+            Skill,
+            Monster,
+            CustomValue
+        }
 
         private Sprite Icon;
         public Sprite GetIcon() => Icon;

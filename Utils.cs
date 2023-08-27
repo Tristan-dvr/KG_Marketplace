@@ -310,37 +310,52 @@ public static class Utils
         }
     }
 
-    public static void InstantiateItem(GameObject main, int count, int rewardLevel)
+    public static void InstantiateItem(GameObject prefab, int count, int level)
     {
         Player p = Player.m_localPlayer;
-        if (!p || main == null) return;
+        if (!p || !prefab) return;
 
-        if (main.GetComponent<ItemDrop>())
+        if (prefab.GetComponent<ItemDrop>() is {} item)
         {
-            GameObject go = UnityEngine.Object.Instantiate(main,
-                p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f,
-                Quaternion.identity);
-            ItemDrop itemDrop = go.GetComponent<ItemDrop>();
-            itemDrop.m_itemData.m_stack = count;
-            itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
-            itemDrop.m_itemData.m_quality = rewardLevel;
-            itemDrop.Save();
-            if (p.m_inventory.CanAddItem(go))
+            if (item.m_itemData.m_shared.m_maxStackSize > 1)
             {
-                p.m_inventory.AddItem(itemDrop.m_itemData);
-                ZNetScene.instance.Destroy(go);
+                GameObject go = UnityEngine.Object.Instantiate(prefab,
+                    p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
+                ItemDrop itemDrop = go.GetComponent<ItemDrop>();
+                itemDrop.m_itemData.m_quality = level;
+                itemDrop.m_itemData.m_stack = count;
+                itemDrop.Save();
+                if (p.m_inventory.CanAddItem(go))
+                {
+                    p.m_inventory.AddItem(itemDrop.m_itemData);
+                    ZNetScene.instance.Destroy(go);
+                }
             }
-
+            else
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    GameObject go = UnityEngine.Object.Instantiate(prefab, p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
+                    ItemDrop itemDrop = go.GetComponent<ItemDrop>();
+                    itemDrop.m_itemData.m_quality = level;
+                    itemDrop.Save();
+                    if (p.m_inventory.CanAddItem(go))
+                    {
+                        p.m_inventory.AddItem(itemDrop.m_itemData);
+                        ZNetScene.instance.Destroy(go);
+                    }
+                }
+            }
             return;
         }
 
-        if (main.GetComponent<Character>())
+        if (prefab.GetComponent<Character>())
         {
             for (int i = 0; i < count; i++)
             {
-                GameObject monster = UnityEngine.Object.Instantiate(main,
+                GameObject monster = UnityEngine.Object.Instantiate(prefab,
                     p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
-                monster.GetComponent<Character>().SetLevel(rewardLevel);
+                monster.GetComponent<Character>().SetLevel(level);
                 if (monster.GetComponent<Tameable>())
                 {
                     monster.GetComponent<Tameable>().Tame();
@@ -504,12 +519,14 @@ public static class Utils
 
     public static void SetCustomValue(this Player p, string key, int value)
     {
+        key = key.Replace("CUSTOMVALUE@", "");
         string toCheck = CustomValue_Prefix + key;
         p.m_customData[toCheck] = value.ToString();
     }
 
     public static void AddCustomValue(this Player p, string key, int value)
     {
+        key = key.Replace("CUSTOMVALUE@", "");
         string toCheck = CustomValue_Prefix + key;
         if (p.m_customData.TryGetValue(toCheck, out string val))
         {
@@ -530,6 +547,7 @@ public static class Utils
 
     public static int GetCustomValue(this Player p, string key)
     {
+        key = key.Replace("CUSTOMVALUE@", "");
         string toCheck = CustomValue_Prefix + key;
         if (p.m_customData.TryGetValue(toCheck, out string val))
         {
@@ -544,6 +562,7 @@ public static class Utils
 
     public static void RemoveCustomValue(this Player p, string key)
     {
+        key = key.Replace("CUSTOMVALUE@", "");
         string toCheck = CustomValue_Prefix + key;
         p.m_customData.Remove(toCheck);
     }
