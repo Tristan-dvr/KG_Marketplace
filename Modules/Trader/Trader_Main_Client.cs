@@ -31,7 +31,7 @@ public static class Trader_Main_Client
     private static class ZNetScene_Awake_Patch
     {
         [UsedImplicitly]
-private static void Postfix() => InitTraderItems();
+        private static void Postfix() => InitTraderItems();
     }
 
     public static void InitTraderItems()

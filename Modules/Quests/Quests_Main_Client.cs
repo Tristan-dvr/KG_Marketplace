@@ -17,7 +17,6 @@ public static class Quests_Main_Client
         Quests_UIs.AcceptedQuestsUI.Init();
         Quests_DataTypes.SyncedQuestData.ValueChanged += OnQuestDataUpdate;
         Quests_DataTypes.SyncedQuestProfiles.ValueChanged += OnQuestProfilesUpdate;
-        Quests_DataTypes.SyncedQuestsEvents.Value.Count();
         Marketplace.Global_Updator += Update;
     }
 
