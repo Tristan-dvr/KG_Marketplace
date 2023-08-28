@@ -152,6 +152,21 @@ public static class Trader_UI
 
     private static float CalculateOffset(int amount) => Mathf.Max(0, (amount - 1) * 34.5f);
 
+    private static void FillUITooltip(Transform transform, Trader_DataTypes.TraderItem data)
+    {
+        transform.GetComponent<UITooltip>().m_topic = data.ItemName;
+        if (data.Type is Trader_DataTypes.TraderItem.TraderItemType.Monster)
+            transform.GetComponent<UITooltip>().m_text = Localization.instance.Localize("$mpasn_tooltip_pet");
+        else if (data.Type is Trader_DataTypes.TraderItem.TraderItemType.Skill)
+            transform.GetComponent<UITooltip>().m_text = Localization.instance.Localize("$mpasn_Skill_EXP");
+        else if (data.Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue)
+            transform.GetComponent<UITooltip>().m_text = Localization.instance.Localize("$mpasn_CustomValue");
+        else
+            transform.GetComponent<UITooltip>().m_text = ItemDrop.ItemData.GetTooltip(
+                ZNetScene.instance.GetPrefab(data.ItemPrefab).GetComponent<ItemDrop>()
+                    .m_itemData, data.Level, false, Game.m_worldLevel);
+    }
+    
     private static void CreateElementsNew()
     {
         CurrentObjects.ForEach(Object.Destroy);
@@ -189,21 +204,14 @@ public static class Trader_UI
                 transform.transform.Find("Text").GetComponent<Text>().text =
                     $"{data.NeededItems[i].ItemName}{stars}\n<color=yellow>x{data.NeededItems[i].Count * ModifierValues[CurrentModifier]}</color>";
                 transform.transform.Find("Icon").GetComponent<Image>().sprite = data.NeededItems[i].GetIcon();
-                transform.GetComponent<UITooltip>().m_topic = data.NeededItems[i].ItemName;
-
-                transform.GetComponent<UITooltip>().m_text =
-                    data.NeededItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Item
-                        ? ItemDrop.ItemData.GetTooltip(
-                            ZNetScene.instance.GetPrefab(data.NeededItems[i].ItemPrefab).GetComponent<ItemDrop>()
-                                .m_itemData, data.NeededItems[i].Level, false, Game.m_worldLevel)
-                        : "$mpasn_CustomValue".Localize();
-
+                
+                FillUITooltip(transform, data.NeededItems[i]);
+                
                 bool hasEnough = data.NeededItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Item
                     ? Utils.CustomCountItems(data.NeededItems[i].ItemPrefab,
                         data.NeededItems[i].Level) >= data.NeededItems[i].Count * ModifierValues[CurrentModifier]
                     : Player.m_localPlayer.GetCustomValue(data.NeededItems[i].ItemPrefab) >=
                       data.NeededItems[i].Count * ModifierValues[CurrentModifier];
-
                 transform.GetComponent<Outline>().effectColor = hasEnough ? Color.green : Color.red;
             }
 
@@ -229,19 +237,7 @@ public static class Trader_UI
                     data.ResultItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Skill
                         ? Utils.GetSkillIcon(data.ResultItems[i].ItemPrefab)
                         : data.ResultItems[i].GetIcon();
-                
-                transform.GetComponent<UITooltip>().m_topic = data.ResultItems[i].ItemName;
-                
-                if (data.ResultItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Monster)
-                    transform.GetComponent<UITooltip>().m_text = Localization.instance.Localize("$mpasn_tooltip_pet");
-                else if (data.ResultItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Skill)
-                    transform.GetComponent<UITooltip>().m_text = Localization.instance.Localize("$mpasn_Skill_EXP");
-                else if (data.ResultItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue)
-                    transform.GetComponent<UITooltip>().m_text = Localization.instance.Localize("$mpasn_CustomValue");
-                else
-                    transform.GetComponent<UITooltip>().m_text = ItemDrop.ItemData.GetTooltip(
-                        ZNetScene.instance.GetPrefab(data.ResultItems[i].ItemPrefab).GetComponent<ItemDrop>()
-                            .m_itemData, data.ResultItems[i].Level, false, Game.m_worldLevel);
+                FillUITooltip(transform, data.ResultItems[i]);
             }
 
             go.transform.Find("Background/ResultItems").GetComponent<RectTransform>().anchoredPosition +=
