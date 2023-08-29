@@ -65,7 +65,9 @@ public static class Quests_DataTypes
         Time,
         HasAchievement,
         CustomValueMore,
-        CustomValueLess
+        CustomValueLess,
+        IronGateStatMore,
+        IronGateStatLess
     }
 
     public enum QuestType
@@ -563,6 +565,38 @@ public static class Quests_DataTypes
                 {
                     message = $"{Localization.instance.Localize("$mpasn_dontneedcustomvalue")}: <color=#00ff00>{CheckQuest.QuestRequirementPrefab[i].Replace("_", " ")} <color=yellow>{CheckQuest.QuestRequirementLevel[i]}</color></color>";
                     bool result = Player.m_localPlayer.GetCustomValue(CheckQuest.QuestRequirementPrefab[i]) < CheckQuest.QuestRequirementLevel[i];
+                    if (result)
+                    {
+                        continue;
+                    }
+                    
+                    return false;
+                }
+
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.IronGateStatMore)
+                {
+                    message = "";
+                    if (!PlayerStatType.TryParse(CheckQuest.QuestRequirementPrefab[i], true, out PlayerStatType stat)) return false;
+                    int amount = CheckQuest.QuestRequirementLevel[i];
+                    float current = Game.instance.m_playerProfile.m_playerStats[stat];
+                    message = $"{Localization.instance.Localize("$mpasn_needIronGateStatMore")}: <color=#00ff00>{stat}</color>";
+                    bool result = current >= amount;
+                    if (result)
+                    {
+                        continue;
+                    }
+                    
+                    return false;
+                }
+                
+                if (CheckQuest.RequirementType[i] is QuestRequirementType.IronGateStatLess)
+                {
+                    message = "";
+                    if (!PlayerStatType.TryParse(CheckQuest.QuestRequirementPrefab[i], true, out PlayerStatType stat)) return false;
+                    int amount = CheckQuest.QuestRequirementLevel[i];
+                    float current = Game.instance.m_playerProfile.m_playerStats[stat];
+                    message = $"{Localization.instance.Localize("$mpasn_needIronGateStatLess")}: <color=#00ff00>{stat}</color>";
+                    bool result = current < amount;
                     if (result)
                     {
                         continue;

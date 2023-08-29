@@ -78,6 +78,8 @@ public static class Dialogues_DataTypes
         CustomValueLess = 13 | reverseFlag,
         ModInstalled = 14,
         NotModInstalled = 14 | reverseFlag,
+        IronGateStatMore = 15,
+        IronGateStatLess = 15 | reverseFlag,
     }
 
     public class RawDialogue : ISerializableParameter
@@ -205,8 +207,8 @@ public static class Dialogues_DataTypes
                             case OptionCommand.EnterPassword:
                                 result += (npc) =>
                                 {
-                                    string title = split[1].Replace("_"," ");
-                                    string password = split[2].Replace("_"," ");
+                                    string title = split[1].Replace("_", " ");
+                                    string password = split[2].Replace("_", " ");
                                     string onSuccess = split[3];
                                     string onFail = split[4];
                                     new DialoguePassword(npc, title, password, onSuccess, onFail);
@@ -446,6 +448,28 @@ public static class Dialogues_DataTypes
                         if (reverse) optionCondition = optionCondition.Reverse();
                         switch (optionCondition)
                         {
+                            case OptionCondition.IronGateStatMore:
+                                result += (out string reason) =>
+                                {
+                                    reason = "";
+                                    if (!PlayerStatType.TryParse(split[1], true, out PlayerStatType stat)) return false;
+                                    int amount = int.Parse(split[2]);
+                                    float current = Game.instance.m_playerProfile.m_playerStats[stat];
+                                    reason = $"{Localization.instance.Localize("$mpasn_needIronGateStatMore")}: <color=#00ff00>{stat}</color>";
+                                    return current >= amount;
+                                };
+                                break;
+                            case OptionCondition.IronGateStatLess:
+                                result += (out string reason) =>
+                                {
+                                    reason = "";
+                                    if (!PlayerStatType.TryParse(split[1], true, out PlayerStatType stat)) return false;
+                                    int amount = int.Parse(split[2]);
+                                    float current = Game.instance.m_playerProfile.m_playerStats[stat];
+                                    reason = $"{Localization.instance.Localize("$mpasn_needIronGateStatLess")}: <color=#00ff00>{stat}</color>";
+                                    return current < amount;
+                                };
+                                break;
                             case OptionCondition.ModInstalled:
                                 result += (out string reason) =>
                                 {
@@ -785,7 +809,8 @@ public static class Dialogues_DataTypes
         private string _onFail;
         private Market_NPC.NPCcomponent _npc;
 
-        public DialoguePassword(Market_NPC.NPCcomponent npc, string title, string password, string onSuccess, string onFail)
+        public DialoguePassword(Market_NPC.NPCcomponent npc, string title, string password, string onSuccess,
+            string onFail)
         {
             _password = password;
             _onSuccess = onSuccess;
@@ -793,7 +818,7 @@ public static class Dialogues_DataTypes
             _npc = npc;
             TextInput.instance.RequestText(this, title, 30);
         }
-        
+
         public string GetText()
         {
             return "";

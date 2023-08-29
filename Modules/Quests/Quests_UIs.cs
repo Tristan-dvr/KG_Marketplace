@@ -261,7 +261,7 @@ private static void Postfix(InventoryGui __instance)
                         tooltip.m_text = Localization.instance.Localize("$mpasn_tooltip_cozyheim ") + "x" + quest.RewardCount[i];
                         break;
                     case Quests_DataTypes.QuestRewardType.SetCustomValue or Quests_DataTypes.QuestRewardType.AddCustomValue:
-                        rewardImage.sprite = AssetStorage.CustomValue_Icon;
+                        rewardImage.sprite = Utils.TryFindIcon(quest.RewardPrefab[i], AssetStorage.CustomValue_Icon);
                         tooltip.m_topic = Localization.instance.Localize("$mpasn_CustomValue");
                         tooltip.m_text = $"{Localization.instance.Localize("$mpasn_CustomValue")} {quest.GetLocalizedReward(i)} {(quest.RewardCount[i] > 0 ? "+" : "-")}{quest.RewardCount[i]}";
                         break;

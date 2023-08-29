@@ -134,7 +134,7 @@ public static class NPC_MapPins
                 {
                     yield return null;
                 }
-
+                index = 0;
                 while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName_Pinned, TempNPCList,
                            ref index))
                 {

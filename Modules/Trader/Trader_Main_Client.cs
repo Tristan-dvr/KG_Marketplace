@@ -53,7 +53,7 @@ public static class Trader_Main_Client
                         if (NI.ItemPrefab.Contains("CUSTOMVALUE@"))
                         {
                              NI.Type = Trader_DataTypes.TraderItem.TraderItemType.CustomValue;
-                             NI.SetIcon(AssetStorage.CustomValue_Icon);
+                             NI.SetIcon(Utils.TryFindIcon(NI.ItemPrefab.Replace("CUSTOMVALUE@", ""), AssetStorage.CustomValue_Icon));
                              NI.DisplayStars = false;
                              NI.ItemName = NI.ItemPrefab.Replace("CUSTOMVALUE@", "").Replace("_", " ");
                              _NeededItems.Add(NI);
@@ -75,7 +75,7 @@ public static class Trader_Main_Client
                     if(RI.ItemPrefab.Contains("CUSTOMVALUE@"))
                     {
                         RI.Type = Trader_DataTypes.TraderItem.TraderItemType.CustomValue;
-                        RI.SetIcon(AssetStorage.CustomValue_Icon);
+                        RI.SetIcon(Utils.TryFindIcon(RI.ItemPrefab.Replace("CUSTOMVALUE@", ""), AssetStorage.CustomValue_Icon));
                         RI.DisplayStars = false;
                         RI.ItemName = RI.ItemPrefab.Replace("CUSTOMVALUE@", "").Replace("_", " ");
                         _ResultItems.Add(RI);

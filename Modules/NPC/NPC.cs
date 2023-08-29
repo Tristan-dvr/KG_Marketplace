@@ -50,7 +50,8 @@ public static class Market_NPC
         {
             if (done) return;
             done = true;
-            if (__instance.transform.Find("StartGame/Panel/JoinPanel/serverCount")?.GetComponent<TextMeshProUGUI>() is not { } tmp) return;
+            if (__instance.transform.Find("StartGame/Panel/JoinPanel/serverCount")
+                    ?.GetComponent<TextMeshProUGUI>() is not { } tmp) return;
             NPC.transform.Find("TMP").GetComponent<TMP_Text>().font = tmp.font;
             NPC.transform.Find("TMP").GetComponent<TMP_Text>().outlineWidth = 0.075f;
             Utils.print("Replaced TMP for NPC");
@@ -153,7 +154,6 @@ public static class Market_NPC
         }
     }
 
-   
 
     private class TextComponent : MonoBehaviour
     {
@@ -364,7 +364,8 @@ public static class Market_NPC
             int currentPatrolPoint = znv.m_zdo.GetInt(LatestPatrolPoint);
             Vector3 position = transform.position;
             Vector2 currentPos = new Vector2(position.x, position.z);
-            Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint], Time.deltaTime * ForwardSpeed);
+            Vector2 move = Vector2.MoveTowards(currentPos, PatrolArray[currentPatrolPoint],
+                Time.deltaTime * ForwardSpeed);
             Vector3 targetPoint = new Vector3(move.x, position.y, move.y);
             Utils.CustomFindFloor(targetPoint, out float height);
             height = Mathf.Max(30, height, ZoneSystem.instance.GetGroundHeight(targetPoint));
@@ -513,7 +514,8 @@ public static class Market_NPC
             ALL.Add((this));
             zanim = GetComponent<ZSyncAnimation>();
             if (znv.m_zdo == null) return;
-            transform.Find("NPC").GetComponentInChildren<Collider>().gameObject.layer = LayerMask.NameToLayer("character");
+            transform.Find("NPC").GetComponentInChildren<Collider>().gameObject.layer =
+                LayerMask.NameToLayer("character");
             canvas = transform.Find("TMP").GetComponent<TMP_Text>();
             int npcType = znv.m_zdo.GetInt("KGmarketNPC");
             if (npcType >= TypeNames.Length) npcType = 0;
@@ -561,7 +563,7 @@ public static class Market_NPC
                   "\n" + Localization.instance.Localize("[<color=yellow><b>ALT + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_fashionmenu") +
                   "\n" + Localization.instance.Localize("[<color=yellow><b>C + $KEY_Use</b></color>]") +
-                    " " + Localization.instance.Localize("$mpasn_savenpc") 
+                  " " + Localization.instance.Localize("$mpasn_savenpc")
                 : "";
             string text = Localization.instance.Localize("[<color=yellow><b>$KEY_Use</b></color>] ") +
                           Localization.instance.Localize("$mpasn_interact");
@@ -584,7 +586,8 @@ public static class Market_NPC
             return Regex.Replace(GetNPCName(), @"</?(?!color\b)\w+[^>]*>", "");
         }
 
-        public void OpenUIForType(string type, string profile) => OpenUIForType(type == null ? null : (NPCType)Enum.Parse(typeof(NPCType), type, true), profile);
+        public void OpenUIForType(string type, string profile) =>
+            OpenUIForType(type == null ? null : (NPCType)Enum.Parse(typeof(NPCType), type, true), profile);
 
         public void OpenUIForType(NPCType? type = null, string profile = null)
         {
@@ -602,7 +605,7 @@ public static class Market_NPC
                 case NPCType.Info:
                     ServerInfo_UI.Show(profile, npcName);
                     break;
-                case NPCType.Trader: 
+                case NPCType.Trader:
                     Trader_UI.Show(profile, npcName);
                     break;
                 case NPCType.Banker:
@@ -962,7 +965,8 @@ public static class Market_NPC
                     {
                         Transform transform1 = m_bodyModel.transform;
                         Transform parent;
-                        gameObjectLocal = Instantiate(child.gameObject, transform1.position, (parent = transform1.parent).rotation, parent);
+                        gameObjectLocal = Instantiate(child.gameObject, transform1.position,
+                            (parent = transform1.parent).rotation, parent);
                         gameObjectLocal.SetActive(true);
                         foreach (SkinnedMeshRenderer skinnedMeshRenderer in
                                  gameObjectLocal.GetComponentsInChildren<SkinnedMeshRenderer>())
@@ -1353,7 +1357,7 @@ public static class Market_NPC
             LeftItemHiddenFashion = null!,
             HairItemFashion = null!,
             SkinColorFashion = null!,
-            HairItemFashionColor  = null!,
+            HairItemFashionColor = null!,
             ModelScaleFashion = null!,
             CapeItemFashion = null!,
             NPCinteractAnimation = null!,
@@ -1534,6 +1538,7 @@ public static class Market_NPC
 
         private static void Snap()
         {
+            if (_currentNPC == null) return;
             AssetStorage.AUsrc.Play();
             ZPackage pkg = new ZPackage();
             Quaternion rot = Quaternion.LookRotation(GameCamera.instance.transform.forward);
