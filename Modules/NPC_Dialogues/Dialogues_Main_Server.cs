@@ -25,7 +25,7 @@ public class Dialogues_Main_Server
         Color
     }
 
-    private static void ProcessDialogueProfiles(IReadOnlyList<string> profiles)
+    private static void ProcessDialogueProfiles(string fPath, IReadOnlyList<string> profiles)
     {
         Dialogues_DataTypes.RawDialogue dialogue = null;
         List<Dialogues_DataTypes.RawDialogue.RawPlayerOption> options = null;
@@ -107,7 +107,7 @@ public class Dialogues_Main_Server
             }
             catch (Exception ex)
             {
-                Utils.print($"Error reading NpcDialogues.cfg (line {i + 1}):\n" + ex);
+                Utils.print($"Error reading {fPath} (line {i + 1}):\n" + ex);
                 break;
             }
         }
@@ -127,7 +127,7 @@ public class Dialogues_Main_Server
         foreach (string file in files)
         {
             IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
-            ProcessDialogueProfiles(profiles);
+            ProcessDialogueProfiles(file, profiles);
         }
 
         Dialogues_DataTypes.SyncedDialoguesData.Update();

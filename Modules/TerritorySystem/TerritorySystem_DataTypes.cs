@@ -109,24 +109,26 @@ public static class TerritorySystem_DataTypes
         public int Ylength;
         public string Name = "";
         public List<Color32> Colors = new();
+        public string Owners = "";
         public int Radius;
         public bool ShowExternalWater = true;
         public int Priority;
+        public GradientType GradientType = GradientType.LeftRight;
+        public float ExponentialValue = 1f;
+        
         public float PeriodicHealValue;
         public float PeriodicDamageValue;
         public float IncreasedPlayerDamageValue;
         public float IncreasedMonsterDamageValue;
         public string CustomEnvironment = "";
         public float MoveSpeedMultiplier;
-        public string Owners = "";
         public float OverridenHeight;
         public int OverridenBiome;
         public int AddMonsterLevel;
         public float Wind;
         public float DropMultiplier;
         public PaintType PaintGround;
-        public GradientType GradientType = GradientType.LeftRight;
-        public float ExponentialValue = 1f;
+        
         public Tuple<int, int> HeightBounds = new Tuple<int, int>(-100000, 100000);
 
         public bool DrawOnMap => Colors.Count > 0;
@@ -424,5 +426,6 @@ public static class TerritorySystem_DataTypes
         InfiniteStamina = 1 << 4,
         DropMultiplier = 1 << 5,
         ForceWind = 1 << 6,
+        GodMode = 1 << 7,
     }
 }

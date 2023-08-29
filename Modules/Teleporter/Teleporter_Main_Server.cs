@@ -13,7 +13,7 @@ public static class Teleporter_Main_Server
         ReadServerTeleporterProfiles();
     }
 
-    private static void ProcessTeleporterProfiles(IReadOnlyList<string> profiles)
+    private static void ProcessTeleporterProfiles(string fPath, IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
         for (int i = 0; i < profiles.Count; i++)
@@ -68,7 +68,7 @@ public static class Teleporter_Main_Server
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"{ex}\nERROR: Can't add pins in TeleportHubProfiles.cfg, line: {i}", ConsoleColor.Red);
+                    Utils.print($"{ex}\nERROR: Can't add pins in {fPath}, line: {i}", ConsoleColor.Red);
                     return;
                 }
             }
@@ -83,7 +83,7 @@ public static class Teleporter_Main_Server
         foreach (string file in files)
         {
             IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
-            ProcessTeleporterProfiles(profiles);
+            ProcessTeleporterProfiles(file, profiles);
         }
         Teleporter_DataTypes.SyncedTeleporterData.Update();
     }

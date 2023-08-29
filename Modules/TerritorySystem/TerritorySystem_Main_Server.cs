@@ -19,7 +19,7 @@ public static class TerritorySystem_Main_Server
         Utils.print("Territory Changed. Sending new info to all clients");
     }
 
-    private static void ProcessTerritoryConfig(IReadOnlyList<string> profiles)
+    private static void ProcessTerritoryConfig(string fPath, IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
         int Priority = 1;
@@ -243,7 +243,7 @@ public static class TerritorySystem_Main_Server
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Error loading zone profile {splitProfile} : {ex}", ConsoleColor.Red);
+                    Utils.print($"Error loading zone profile {splitProfile} in {fPath}:\n{ex}", ConsoleColor.Red);
                 }
             }
         }
@@ -257,7 +257,7 @@ public static class TerritorySystem_Main_Server
         foreach (string file in files)
         {
             IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
-            ProcessTerritoryConfig(profiles);
+            ProcessTerritoryConfig(file, profiles);
         }
 
         TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Sort((x, y) => y.Priority.CompareTo(x.Priority));

@@ -27,7 +27,7 @@ public static class Gambler_Main_Server
         foreach (string file in files)
         {
             IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
-            ReadGamblerProfiles(profiles);
+            ReadGamblerProfiles(file, profiles);
         }
         ClientClearData();
         Gambler_DataTypes.SyncedGamblerData.Update();
@@ -44,7 +44,7 @@ public static class Gambler_Main_Server
         }
     }
 
-    private static void ReadGamblerProfiles(IReadOnlyList<string> profiles)
+    private static void ReadGamblerProfiles(string fPath, IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
         int MAXSROLL = 1;
@@ -71,7 +71,7 @@ public static class Gambler_Main_Server
                 string[] split = profiles[i].Replace(" ", "").Split(',');
                 if (split.Length % 2 != 0)
                 {
-                    Utils.print($"Line {i + 1} has error, number of data is wrong", ConsoleColor.Red);
+                    Utils.print($"Gambler {fPath} line {i + 1} has error, number of data is wrong", ConsoleColor.Red);
                     continue;
                 }
 

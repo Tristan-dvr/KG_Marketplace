@@ -166,7 +166,7 @@ public static class Trader_UI
                 ZNetScene.instance.GetPrefab(data.ItemPrefab).GetComponent<ItemDrop>()
                     .m_itemData, data.Level, false, Game.m_worldLevel);
     }
-    
+
     private static void CreateElementsNew()
     {
         CurrentObjects.ForEach(Object.Destroy);
@@ -177,10 +177,10 @@ public static class Trader_UI
             if (data.NeedToKnow)
             {
                 bool breakLoop =
-                    data.NeededItems.Any(item =>
-                        !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName)) ||
-                    data.ResultItems.Any(item => item.Type != Trader_DataTypes.TraderItem.TraderItemType.Skill &&
-                                                 item.Type != Trader_DataTypes.TraderItem.TraderItemType.Monster &&
+                    data.NeededItems.Any(item => item.Type == Trader_DataTypes.TraderItem.TraderItemType.Item &&
+                                                 !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName)) 
+                    ||
+                    data.ResultItems.Any(item => item.Type == Trader_DataTypes.TraderItem.TraderItemType.Item &&
                                                  !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName));
                 if (breakLoop) continue;
             }
@@ -204,9 +204,9 @@ public static class Trader_UI
                 transform.transform.Find("Text").GetComponent<Text>().text =
                     $"{data.NeededItems[i].ItemName}{stars}\n<color=yellow>x{data.NeededItems[i].Count * ModifierValues[CurrentModifier]}</color>";
                 transform.transform.Find("Icon").GetComponent<Image>().sprite = data.NeededItems[i].GetIcon();
-                
+
                 FillUITooltip(transform, data.NeededItems[i]);
-                
+
                 bool hasEnough = data.NeededItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Item
                     ? Utils.CustomCountItems(data.NeededItems[i].ItemPrefab,
                         data.NeededItems[i].Level) >= data.NeededItems[i].Count * ModifierValues[CurrentModifier]
@@ -277,7 +277,7 @@ public static class Trader_UI
 
     private static bool CanAddToBanker(Trader_DataTypes.TraderItem item)
     {
-        if (item.Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue) return false;
+        if (item.Type is not Trader_DataTypes.TraderItem.TraderItemType.Item) return false;
         if (item.Level > 1) return false;
         int hash = item.ItemPrefab.GetStableHashCode();
         return Banker_DataTypes.SyncedBankerProfiles.Value.Values.Any(x => x.Contains(hash));

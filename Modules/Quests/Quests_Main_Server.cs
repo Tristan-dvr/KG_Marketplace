@@ -80,7 +80,7 @@ public static class Quests_Main_Server
     }
 
 
-    private static void ProcessQuestDatabaseProfiles(IReadOnlyList<string> profiles)
+    private static void ProcessQuestDatabaseProfiles(string fPath, IReadOnlyList<string> profiles)
     {
         if (profiles.Count == 0) return;
         string dbProfile = null;
@@ -148,7 +148,7 @@ public static class Quests_Main_Server
                         if (!(Enum.TryParse(rwdTypeCheck[0], true,
                                 out rewardTypes[r])))
                         {
-                            Utils.print($"Failed to parse reward type {rewardsArray[r]} in quest {name}. Skipping quest");
+                            Utils.print($"Failed to parse reward type {rewardsArray[r]} in quest {name} (File: {fPath}). Skipping quest");
                             continue;
                         }
 
@@ -284,7 +284,7 @@ public static class Quests_Main_Server
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Error in Quests {dbProfile} DB file\n{ex}", ConsoleColor.Red);
+                    Utils.print($"Error in Quests {fPath} {dbProfile}\n{ex}", ConsoleColor.Red);
                 }
                 dbProfile = null;
             }
@@ -301,7 +301,7 @@ public static class Quests_Main_Server
         foreach (string file in files)
         {
             IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
-            ProcessQuestDatabaseProfiles(profiles);
+            ProcessQuestDatabaseProfiles(file, profiles);
         }
 
         Quests_DataTypes.SyncedQuestData.Update();

@@ -795,6 +795,20 @@ public static class TerritorySystem_Main_Client
         }
     }
 
+    [HarmonyPatch(typeof(Character), nameof(Character.RPC_Damage))]
+    [ClientOnlyPatch]
+    private static class Character_RPC_Damage_Patch
+    {
+        [UsedImplicitly]
+        private static bool Prefix(Character __instance)
+        {
+            if (__instance == Player.m_localPlayer && CurrentTerritory != null)
+                if (CurrentTerritory.AdditionalFlags.HasFlagFast(TerritorySystem_DataTypes.AdditionalTerritoryFlags
+                        .GodMode)) return false;
+            
+            return true;
+        }
+    }
 
     [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
     [ClientOnlyPatch]
@@ -1110,6 +1124,7 @@ public static class TerritorySystem_Main_Client
     }
 
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.SetTargetWind))]
+    [ClientOnlyPatch]
     private static class EnvMan_SetTargetWind_Patch
     {
         private static void ToCall()

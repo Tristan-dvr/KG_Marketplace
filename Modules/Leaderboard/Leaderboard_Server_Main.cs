@@ -133,7 +133,7 @@ public static class Leaderboard_Server_Main
         Leaderboard_DataTypes.SyncedClientLeaderboard.Update();
     }
 
-    private static void ProcessAchievementsProfile(IReadOnlyList<string> profiles)
+    private static void ProcessAchievementsProfile(string fPath, IReadOnlyList<string> profiles)
     {
         Leaderboard_DataTypes.Achievement currentAchievement = null;
         for (int i = 0; i < profiles.Count; i++)
@@ -189,7 +189,7 @@ public static class Leaderboard_Server_Main
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Failed to parse achievement {currentAchievement!.Name}: {ex.Message}",
+                    Utils.print($"Failed to parse achievement {fPath} {currentAchievement?.Name}: {ex.Message}",
                         ConsoleColor.Red);
                     i += 5;
                 }
@@ -220,7 +220,7 @@ public static class Leaderboard_Server_Main
         foreach (string file in files)
         {
             IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
-            ProcessAchievementsProfile(profiles);
+            ProcessAchievementsProfile(file, profiles);
         }
         Leaderboard_DataTypes.SyncedClientAchievements.Update();
     }

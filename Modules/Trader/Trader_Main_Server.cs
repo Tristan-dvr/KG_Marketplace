@@ -18,7 +18,7 @@ public static class Trader_Main_Server
         Utils.print("Trader Changed. Sending new info to all clients");
     }
 
-    private static void ProcessTraderProfiles(IReadOnlyList<string> profiles)
+    private static void ProcessTraderProfiles(string fPath, IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
         bool _NeedToKnow = false;
@@ -159,7 +159,7 @@ public static class Trader_Main_Server
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"{ex}\nERROR: Can't add items in TraderProfiles.cfg, line: {i + 1}", ConsoleColor.Red);
+                    Utils.print($"{ex}\nERROR: Can't add items in {fPath}, line: {i + 1}", ConsoleColor.Red);
                     return;
                 }
             }
@@ -174,7 +174,7 @@ public static class Trader_Main_Server
         foreach (string file in files)
         {
             IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
-            ProcessTraderProfiles(profiles);
+            ProcessTraderProfiles(file, profiles);
         }
         Trader_DataTypes.SyncedTraderItemList.Update();
     }
