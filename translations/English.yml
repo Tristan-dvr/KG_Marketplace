@@ -249,5 +249,5 @@ mpasn_trader_sendtobankoff: "Send to Bank\n<color=red>Off</color>"
 mpasn_dropmultiplier: Custom Loot Drop Rates
 mpasn_needmodinstalled: Need Mod Installed
 mpasn_dontneedmodinstalled: Mod Installed
-mpasn_needIronGateStatMore: Iron Gate stat less than
-mpasn_needIronGateStatLess: Iron Gate Stat more than
+mpasn_needIronGateStatMore: Need Iron Gate Stat more
+mpasn_needIronGateStatLess: Need Iron Gate Stat less

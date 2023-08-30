@@ -2,6 +2,7 @@
 using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.Leaderboard;
 using Marketplace.Modules.NPC;
+using Marketplace.Modules.NPC_Dialogues;
 using Marketplace.OtherModsAPIs;
 
 namespace Marketplace.Modules.Quests;
@@ -48,26 +49,6 @@ public static class Quests_DataTypes
         Heal,
         PlaySound,
         NpcText,
-    }
-
-    public enum QuestRequirementType
-    {
-        None,
-        Skill,
-        OtherQuest,
-        NotFinished,
-        GlobalKey,
-        EpicMMO_Level,
-        MH_Level,
-        Cozyheim_Level,
-        HasItem,
-        IsVIP,
-        Time,
-        HasAchievement,
-        CustomValueMore,
-        CustomValueLess,
-        IronGateStatMore,
-        IronGateStatLess
     }
 
     public enum QuestType
@@ -153,12 +134,10 @@ public static class Quests_DataTypes
                 pkg.Write(RewardLevel[i]);
             }
 
-            pkg.Write(RequirementsAmount);
-            for (int i = 0; i < RequirementsAmount; i++)
+            pkg.Write(Conditions.Length);
+            for (int i = 0; i < Conditions.Length; i++)
             {
-                pkg.Write((int)RequirementType[i]);
-                pkg.Write(QuestRequirementPrefab[i] ?? "");
-                pkg.Write(QuestRequirementLevel[i]);
+                pkg.Write(Conditions[i] ?? "");
             }
 
             pkg.Write(PreviewImage ?? "");
@@ -197,15 +176,11 @@ public static class Quests_DataTypes
                 RewardLevel[i] = pkg.ReadInt();
             }
 
-            RequirementsAmount = pkg.ReadInt();
-            RequirementType = new QuestRequirementType[RequirementsAmount];
-            QuestRequirementPrefab = new string[RequirementsAmount];
-            QuestRequirementLevel = new int[RequirementsAmount];
-            for (int i = 0; i < RequirementsAmount; i++)
+            int conditionsAmount = pkg.ReadInt();
+            Conditions = new string[conditionsAmount];
+            for (int i = 0; i < conditionsAmount; i++)
             {
-                RequirementType[i] = (QuestRequirementType)pkg.ReadInt();
-                QuestRequirementPrefab[i] = pkg.ReadString();
-                QuestRequirementLevel[i] = pkg.ReadInt();
+                Conditions[i] = pkg.ReadString();
             }
 
             PreviewImage = pkg.ReadString();
@@ -230,10 +205,10 @@ public static class Quests_DataTypes
         public string[] RewardPrefab;
         public int[] RewardCount;
         public int[] RewardLevel;
-        public int RequirementsAmount;
-        public QuestRequirementType[] RequirementType;
-        public string[] QuestRequirementPrefab;
-        public int[] QuestRequirementLevel;
+
+        public string[] Conditions;
+        public Dialogues_DataTypes.Dialogue_Condition Condition;
+        
         public string PreviewImage;
         public int Cooldown;
         public int TimeLimit;
@@ -263,13 +238,6 @@ public static class Quests_DataTypes
             {
                 result.AppendLine(
                     $"{i + 1}) Quest Reward Type: {RewardType[i]} | Quest Reward Prefab: {RewardPrefab[i]} | Quest Reward Amount: {RewardCount[i]} | Quest Reward Level: {RewardLevel[i]}");
-            }
-
-            result.AppendLine($"Quest Requirements:");
-            for (int i = 0; i < RequirementsAmount; i++)
-            {
-                result.AppendLine(
-                    $"{i + 1}) Quest Requirement Type: {RequirementType[i]} | Quest Requirement Prefab: {QuestRequirementPrefab[i]} | Quest Requirement Level: {QuestRequirementLevel[i]}");
             }
 
             return result.ToString();
@@ -314,9 +282,9 @@ public static class Quests_DataTypes
                     }
                 }
             }
-
-
+            
             if (STOP) return false;
+            Condition = Dialogues_DataTypes.Dialogue.ParseConditions(Conditions);
             LocalizedReward = new string[RewardsAmount];
             LocalizedTarget = new string[TargetAmount];
             for (int i = 0; i < RewardsAmount; ++i)
@@ -417,229 +385,17 @@ public static class Quests_DataTypes
         public string GetLocalizedTarget(int index) => LocalizedTarget[index];
 
 
-        public static bool CanTake(int UID, out string message, out QuestRequirementType type)
+        public static bool CanTake(int UID, out string message, out Dialogues_DataTypes.OptionCondition type)
         {
             message = "";
-            type = QuestRequirementType.None;
+            type = Dialogues_DataTypes.OptionCondition.None;
             if (!AllQuests.ContainsKey(UID) || !Player.m_localPlayer) return false;
             Quest CheckQuest = AllQuests[UID];
-            if (CheckQuest.RequirementsAmount <= 0) return true;
-            for (int i = 0; i < CheckQuest.RequirementsAmount; i++)
+            if (CheckQuest.Condition == null) return true;
+            foreach (Dialogues_DataTypes.Dialogue_Condition cast in CheckQuest.Condition.GetInvocationList().Cast<Dialogues_DataTypes.Dialogue_Condition>())
             {
-                if (string.IsNullOrEmpty(CheckQuest.QuestRequirementPrefab[i]) ||
-                    CheckQuest.RequirementType[i] is QuestRequirementType.None) continue;
-                type = CheckQuest.RequirementType[i];
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.Skill)
-                {
-                    string localizedSkill = Enum.TryParse(CheckQuest.QuestRequirementPrefab[i], out Skills.SkillType _)
-                        ? Localization.instance.Localize("$skill_" + CheckQuest.QuestRequirementPrefab[i].ToLower())
-                        : Localization.instance.Localize($"$skill_" +
-                                                         Mathf.Abs(CheckQuest.QuestRequirementPrefab[i]
-                                                             .GetStableHashCode()));
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{localizedSkill} {CheckQuest.QuestRequirementLevel[i]}</color>";
-                    float skillLevel = Utils.GetPlayerSkillLevelCustom(CheckQuest.QuestRequirementPrefab[i]);
-                    bool result = skillLevel >= CheckQuest.QuestRequirementLevel[i];
-                    if (result)
-                    {
-                        continue;
-                    }
-
-                    return false;
-                }
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.NotFinished)
-                {
-                    int reqID = CheckQuest.QuestRequirementPrefab[i].ToLower().GetStableHashCode();
-                    if (AcceptedQuests.TryGetValue(reqID, out Quest quest))
-                    {
-                        message = $"$mpasn_questtaken: <color=#00ff00>{quest.Name}</color>".Localize();
-                        return false;
-                    }
-
-                    if (AllQuests.TryGetValue(reqID, out Quest _) && IsOnCooldown(reqID, out _))
-                    {
-                        message = $"$mpasn_needtofinishquest: <color=#00ff00>{AllQuests[reqID].Name}</color>"
-                            .Localize();
-                        return false;
-                    }
-
-                    continue;
-                }
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.OtherQuest)
-                {
-                    int reqID = CheckQuest.QuestRequirementPrefab[i].ToLower().GetStableHashCode();
-                    if (!AllQuests.ContainsKey(reqID)) return true;
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_needtofinishquest")}: <color=#00ff00>{AllQuests[reqID].Name}</color>";
-                    bool result = IsOnCooldown(reqID, out _);
-
-                    if (result)
-                    {
-                        continue;
-                    }
-
-                    return false;
-                }
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.GlobalKey)
-                {
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_needglobalkey")}: <color=#00ff00>{CheckQuest.QuestRequirementPrefab[i]}</color>";
-                    bool result = ZoneSystem.instance.GetGlobalKey(CheckQuest.QuestRequirementPrefab[i]);
-                    if (result)
-                    {
-                        continue;
-                    }
-
-                    return false;
-                }
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.IsVIP)
-                {
-                    message = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
-                    bool result = Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Configs._localUserID);
-                    if (result)
-                    {
-                        continue;
-                    }
-
-                    return false;
-                }
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.HasAchievement)
-                {
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(CheckQuest.QuestRequirementPrefab[i])}</color>";
-                    bool result = LeaderBoard_Main_Client.HasAchievement(CheckQuest.QuestRequirementPrefab[i]);
-                    if (result)
-                    {
-                        continue;
-                    }
-
-                    return false;
-                }
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.EpicMMO_Level)
-                {
-                    if (!int.TryParse(CheckQuest.QuestRequirementPrefab[i], out int requiredLevel_EpicMMO)) continue;
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_needepicmmolevel")}: <color=#00ff00>{requiredLevel_EpicMMO}</color>";
-                    bool result = EpicMMOSystem_API.GetLevel() >= requiredLevel_EpicMMO;
-                    if (result)
-                    {
-                        continue;
-                    }
-
-                    return false;
-                }
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.Cozyheim_Level)
-                {
-                    if (!int.TryParse(CheckQuest.QuestRequirementPrefab[i], out int requiredLevel_Cozyheim)) continue;
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_needcozyheimlevel")}: <color=#00ff00>{requiredLevel_Cozyheim}</color>";
-                    bool result = Cozyheim_LevelingSystem.GetLevel() >= requiredLevel_Cozyheim;
-                    if (result)
-                    {
-                        continue;
-                    }
-
-                    return false;
-                }
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.CustomValueMore)
-                {
-                    message = $"{Localization.instance.Localize("$mpasn_needcustomvalue")}: <color=#00ff00>{CheckQuest.QuestRequirementPrefab[i].Replace("_", " ")} <color=yellow>{CheckQuest.QuestRequirementLevel[i]}</color></color>";
-                    bool result = Player.m_localPlayer.GetCustomValue(CheckQuest.QuestRequirementPrefab[i]) >= CheckQuest.QuestRequirementLevel[i];
-                    if (result)
-                    {
-                        continue;
-                    }
-                    
-                    return false;
-                }
-                
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.CustomValueLess)
-                {
-                    message = $"{Localization.instance.Localize("$mpasn_dontneedcustomvalue")}: <color=#00ff00>{CheckQuest.QuestRequirementPrefab[i].Replace("_", " ")} <color=yellow>{CheckQuest.QuestRequirementLevel[i]}</color></color>";
-                    bool result = Player.m_localPlayer.GetCustomValue(CheckQuest.QuestRequirementPrefab[i]) < CheckQuest.QuestRequirementLevel[i];
-                    if (result)
-                    {
-                        continue;
-                    }
-                    
-                    return false;
-                }
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.IronGateStatMore)
-                {
-                    message = "";
-                    if (!PlayerStatType.TryParse(CheckQuest.QuestRequirementPrefab[i], true, out PlayerStatType stat)) return false;
-                    int amount = CheckQuest.QuestRequirementLevel[i];
-                    float current = Game.instance.m_playerProfile.m_playerStats[stat];
-                    message = $"{Localization.instance.Localize("$mpasn_needIronGateStatMore")}: <color=#00ff00>{stat}</color>";
-                    bool result = current >= amount;
-                    if (result)
-                    {
-                        continue;
-                    }
-                    
-                    return false;
-                }
-                
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.IronGateStatLess)
-                {
-                    message = "";
-                    if (!PlayerStatType.TryParse(CheckQuest.QuestRequirementPrefab[i], true, out PlayerStatType stat)) return false;
-                    int amount = CheckQuest.QuestRequirementLevel[i];
-                    float current = Game.instance.m_playerProfile.m_playerStats[stat];
-                    message = $"{Localization.instance.Localize("$mpasn_needIronGateStatLess")}: <color=#00ff00>{stat}</color>";
-                    bool result = current < amount;
-                    if (result)
-                    {
-                        continue;
-                    }
-                    
-                    return false;
-                }
-                
-                
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.MH_Level)
-                {
-                    if (!int.TryParse(CheckQuest.QuestRequirementPrefab[i], out int requiredLevel_MH)) continue;
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_needmhlevel")}: <color=#00ff00>{requiredLevel_MH}</color>";
-                    bool result = MH_API.GetLevel() >= requiredLevel_MH;
-                    if (result)
-                    {
-                        continue;
-                    }
-
-                    return false;
-                }
-
-
-                if (CheckQuest.RequirementType[i] is QuestRequirementType.HasItem)
-                {
-                    GameObject prefab = ZNetScene.instance.GetPrefab(CheckQuest.QuestRequirementPrefab[i]);
-                    if (!prefab || !prefab.GetComponent<ItemDrop>()) continue;
-
-                    message =
-                        $"{Localization.instance.Localize("$mpasn_needhasitem")}: <color=#00ff00>{Localization.instance.Localize(prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_name)} x{CheckQuest.QuestRequirementLevel[i]}</color>";
-                    bool result = Utils.CustomCountItems(CheckQuest.QuestRequirementPrefab[i], 1) >=
-                                  CheckQuest.QuestRequirementLevel[i];
-                    if (result)
-                    {
-                        continue;
-                    }
-
-                    return false;
-                }
+                if (!cast(out message, out type)) return false;
             }
-
             return true;
         }
 

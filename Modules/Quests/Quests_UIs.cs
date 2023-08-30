@@ -1,5 +1,6 @@
 ﻿using Marketplace.ExternalLoads;
 using Marketplace.Modules.Global_Options;
+using Marketplace.Modules.NPC_Dialogues;
 using UnityEngine.EventSystems;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
@@ -375,12 +376,12 @@ private static void Postfix(InventoryGui __instance)
                 if (Quests_DataTypes.AllQuests.TryGetValue(profileID, out Quests_DataTypes.Quest data))
                 {
                     bool canTake = Quests_DataTypes.Quest.CanTake(profileID, out _,
-                        out Quests_DataTypes.QuestRequirementType type);
+                        out Dialogues_DataTypes.OptionCondition type);
 
                     if (!canTake && Global_Configs.SyncedGlobalOptions.Value._hideOtherQuestRequirementQuests &&
-                        type is Quests_DataTypes.QuestRequirementType.OtherQuest) continue;
+                        type is Dialogues_DataTypes.OptionCondition.QuestFinished) continue;
 
-                    if (!canTake && type is Quests_DataTypes.QuestRequirementType.IsVIP) continue;
+                    if (!canTake && type is Dialogues_DataTypes.OptionCondition.IsVIP) continue;
 
                     if (Quests_DataTypes.Quest.IsOnCooldown(profileID, out int cd) && cd > 5000) continue;
                     GameObject newGo = UnityEngine.Object.Instantiate(QuestGO, MainTransform);

@@ -22,7 +22,7 @@ public static class Utils
     private static bool CustomDebug() => Global_Configs.SyncedGlobalOptions.Value._overrideDebug.Count != 0 &&
                                          Global_Configs.SyncedGlobalOptions.Value._overrideDebug.Contains(Global_Configs
                                              ._localUserID);
-    
+
     public static bool IsDebug => Player.m_debugMode || CustomDebug();
 
     public static void print(object obj, ConsoleColor color = ConsoleColor.DarkGreen)
@@ -315,7 +315,7 @@ public static class Utils
         Player p = Player.m_localPlayer;
         if (!p || !prefab) return;
 
-        if (prefab.GetComponent<ItemDrop>() is {} item)
+        if (prefab.GetComponent<ItemDrop>() is { } item)
         {
             if (item.m_itemData.m_shared.m_maxStackSize > 1)
             {
@@ -335,7 +335,8 @@ public static class Utils
             {
                 for (int i = 0; i < count; i++)
                 {
-                    GameObject go = UnityEngine.Object.Instantiate(prefab, p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
+                    GameObject go = UnityEngine.Object.Instantiate(prefab,
+                        p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
                     ItemDrop itemDrop = go.GetComponent<ItemDrop>();
                     itemDrop.m_itemData.m_quality = level;
                     itemDrop.Save();
@@ -346,6 +347,7 @@ public static class Utils
                     }
                 }
             }
+
             return;
         }
 
@@ -469,7 +471,21 @@ public static class Utils
         }
     }
 
-    public static void IncreaseSkillEXP(string name, float expToAdd)
+    public static string BigLettersToSpaces(this string str)
+    {
+        string result = "";
+        foreach (char c in str)
+        {
+            if (char.IsUpper(c))
+            {
+                result += " ";
+            }
+            result += c;
+        }
+        return result;
+    }
+
+public static void IncreaseSkillEXP(string name, float expToAdd)
     {
         Skills.Skill skill;
         if (!Enum.TryParse(name, out Skills.SkillType found))

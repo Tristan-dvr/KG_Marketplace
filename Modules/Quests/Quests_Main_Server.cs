@@ -126,7 +126,10 @@ public static class Quests_Main_Server
                     string description = profiles[i + 2];
                     string target = profiles[i + 3];
                     string reward = profiles[i + 4];
-                    string cooldown = profiles[i + 5];
+                    
+                    string[] cooldownsString = profiles[i + 5].Replace(" ","").Split(',');
+                    string cooldown = cooldownsString[0];
+                    string timeLimit = cooldownsString.Length > 1 ? cooldownsString[1] : "0";
                     string restrictions = profiles[i + 6];
                     if (!(Enum.TryParse(typeString, true, out Quests_DataTypes.QuestType type) &&
                           Enum.IsDefined(typeof(Quests_DataTypes.QuestType), type)))
@@ -134,7 +137,6 @@ public static class Quests_Main_Server
                         dbProfile = null;
                         continue;
                     }
-
                     string[] rewardsArray = reward.Replace(" ", "").Split('|');
                     int _RewardsAMOUNT = Mathf.Max(1, rewardsArray.Length);
                     Quests_DataTypes.QuestRewardType[] rewardTypes =
@@ -211,50 +213,7 @@ public static class Quests_Main_Server
                             TargetCounts[t] = Mathf.Max(1, int.Parse(TargetSplit[1]));
                         }
                     }
-
-                    int _TimeLimit = 0;
-                    string[] restrictionArray = restrictions.Replace(" ", "").Split('|');
-                    int _RestrictionsAMOUNT = Mathf.Max(1, restrictionArray.Length);
-                    Quests_DataTypes.QuestRequirementType[] reqs =
-                        new Quests_DataTypes.QuestRequirementType[_RestrictionsAMOUNT];
-                    string[] QuestRestriction = new string[_RestrictionsAMOUNT];
-                    int[] QuestRestrictionLevel = new int[_RestrictionsAMOUNT];
-
-                    for (int r = 0; r < _RestrictionsAMOUNT; ++r)
-                    {
-                        string[] RestrictionSplit = restrictionArray[r].Split(':');
-                        if (Enum.TryParse(RestrictionSplit[0], true,  out Quests_DataTypes.QuestRequirementType restrType) &&
-                            Enum.IsDefined(typeof(Quests_DataTypes.QuestRequirementType), restrType) &&
-                            restrType is not Quests_DataTypes.QuestRequirementType.None)
-                        {
-                            reqs[r] = restrType;
-
-                            if (RestrictionSplit.Length == 1)
-                            {
-                                QuestRestriction[r] = "NONE";
-                                QuestRestrictionLevel[r] = 0;
-                                continue;
-                            }
-
-                            string[] RestrData = RestrictionSplit[1].Split(',');
-                            QuestRestriction[r] = RestrData[0];
-                            if (RestrData.Length == 2)
-                            {
-                                QuestRestrictionLevel[r] = int.Parse(RestrData[1]);
-                            }
-
-                            if (restrType == Quests_DataTypes.QuestRequirementType.Time)
-                            {
-                                _TimeLimit = Convert.ToInt32(QuestRestriction[r]);
-                            }
-                        }
-                        else
-                        {
-                            reqs[r] = Quests_DataTypes.QuestRequirementType.None;
-                            QuestRestriction[r] = "NONE";
-                            QuestRestrictionLevel[r] = 0;
-                        }
-                    }
+                    string[] Conditions = restrictions.Replace(" ", "").Split('|');
 
                     Quests_DataTypes.Quest quest = new()
                     {
@@ -271,13 +230,10 @@ public static class Quests_Main_Server
                         RewardCount = RewardCounts,
                         Cooldown = int.Parse(cooldown),
                         RewardLevel = RewardLevels,
-                        RequirementsAmount = _RestrictionsAMOUNT,
-                        RequirementType = reqs,
-                        QuestRequirementPrefab = QuestRestriction,
-                        QuestRequirementLevel = QuestRestrictionLevel,
                         SpecialTag = specialQuestTag,
                         PreviewImage = image,
-                        TimeLimit = _TimeLimit
+                        TimeLimit = int.Parse(timeLimit),
+                        Conditions = Conditions
                     };
                     if (!Quests_DataTypes.SyncedQuestData.Value.ContainsKey(UID))
                         Quests_DataTypes.SyncedQuestData.Value.Add(UID, quest);

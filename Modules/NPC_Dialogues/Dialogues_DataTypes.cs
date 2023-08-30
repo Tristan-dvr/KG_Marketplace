@@ -16,7 +16,7 @@ public static class Dialogues_DataTypes
 
     internal static readonly Dictionary<string, Dialogue> ClientReadyDialogues = new();
 
-    public delegate bool Dialogue_Condition(out string reason);
+    public delegate bool Dialogue_Condition(out string reason, out OptionCondition typeCondition);
 
     private enum OptionCommand
     {
@@ -48,8 +48,9 @@ public static class Dialogues_DataTypes
     private static OptionCondition Reverse(this OptionCondition condition) =>
         (OptionCondition)((byte)condition ^ reverseFlag);
 
-    private enum OptionCondition : byte
+    public enum OptionCondition : byte
     {
+        None = 0,
         HasItem = 1,
         NotHasItem = 1 | reverseFlag,
         HasBuff = 2,
@@ -185,7 +186,7 @@ public static class Dialogues_DataTypes
                 if (Condition == null) return true;
                 foreach (Dialogue_Condition cast in Condition.GetInvocationList().Cast<Dialogue_Condition>())
                 {
-                    if (!cast(out reason)) return false;
+                    if (!cast(out reason, out _)) return false;
                 }
 
                 return true;
@@ -428,14 +429,15 @@ public static class Dialogues_DataTypes
         }
 
 
-        private static Dialogue_Condition ParseConditions(IEnumerable<string> conditions)
+        public static Dialogue_Condition ParseConditions(IEnumerable<string> conditions)
         {
             Dialogue_Condition result = null;
+            if (conditions == null) return null;
             foreach (string condition in conditions)
             {
                 try
                 {
-                    string[] split = condition.Split(',');
+                    string[] split = condition.Replace(":", ",").Split(',');
                     bool reverse = false;
                     if (split[0][0] == '!')
                     {
@@ -448,31 +450,44 @@ public static class Dialogues_DataTypes
                         if (reverse) optionCondition = optionCondition.Reverse();
                         switch (optionCondition)
                         {
-                            case OptionCondition.IronGateStatMore:
-                                result += (out string reason) =>
+                            case OptionCondition.None:
+                                result += (out string reason, out OptionCondition type) =>
                                 {
                                     reason = "";
+                                    type = OptionCondition.None;
+                                    return true;
+                                };
+                                break;
+                            case OptionCondition.IronGateStatMore:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    reason = "";
+                                    type = OptionCondition.IronGateStatMore;
                                     if (!PlayerStatType.TryParse(split[1], true, out PlayerStatType stat)) return false;
                                     int amount = int.Parse(split[2]);
                                     float current = Game.instance.m_playerProfile.m_playerStats[stat];
-                                    reason = $"{Localization.instance.Localize("$mpasn_needIronGateStatMore")}: <color=#00ff00>{stat}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needIronGateStatMore")}: <color=#00ff00>{stat.ToString().BigLettersToSpaces()} x{amount}. Current: {(int)current}</color>";
                                     return current >= amount;
                                 };
                                 break;
                             case OptionCondition.IronGateStatLess:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
                                     reason = "";
+                                    type = OptionCondition.IronGateStatLess;
                                     if (!PlayerStatType.TryParse(split[1], true, out PlayerStatType stat)) return false;
                                     int amount = int.Parse(split[2]);
                                     float current = Game.instance.m_playerProfile.m_playerStats[stat];
-                                    reason = $"{Localization.instance.Localize("$mpasn_needIronGateStatLess")}: <color=#00ff00>{stat}</color>";
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needIronGateStatLess")}: <color=#00ff00>{stat.ToString().BigLettersToSpaces()} x{amount}. Current: {(int)current}</color>";
                                     return current < amount;
                                 };
                                 break;
                             case OptionCondition.ModInstalled:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.ModInstalled;
                                     string modGUID = split[1];
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needmodinstalled")}: <color=#00ff00>{split[1]}</color>";
@@ -480,8 +495,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.NotModInstalled:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.NotModInstalled;
                                     string modGUID = split[1];
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_dontneedmodinstalled")}: <color=#00ff00>{split[1]}</color>";
@@ -489,8 +505,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.CustomValueMore:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.CustomValueMore;
                                     string key = split[1];
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needcustomvalue")}: <color=#00ff00>{split[1].Replace("_", " ")}</color>";
@@ -498,8 +515,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.CustomValueLess:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.CustomValueLess;
                                     string key = split[1];
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_dontneedcustomvalue")}: <color=#00ff00>{split[1].Replace("_", " ")}</color>";
@@ -507,24 +525,27 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.HasAchievement:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.HasAchievement;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";
                                     return LeaderBoard_Main_Client.HasAchievement(split[1]);
                                 };
                                 break;
                             case OptionCondition.NotHasAchievement:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.NotHasAchievement;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_dontneedtitle")}: <color=#00ff00>{LeaderBoard_Main_Client.GetAchievementName(split[1])}</color>";
                                     return !LeaderBoard_Main_Client.HasAchievement(split[1]);
                                 };
                                 break;
                             case OptionCondition.HasAchievementScore:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.HasAchievementScore;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needtitlescore")}: <color=#00ff00>{split[1]}</color>";
                                     return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
@@ -536,8 +557,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.NotHasAchievementScore:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.NotHasAchievementScore;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_dontneedtitlescore")}: <color=#00ff00>{split[1]}</color>";
                                     return Leaderboard_DataTypes.SyncedClientLeaderboard.Value.TryGetValue(
@@ -549,24 +571,27 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.SkillMore:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.SkillMore;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_notenoughskilllevel")}: <color=#00ff00>{Utils.LocalizeSkill(split[1])} {split[2]}</color>";
                                     return Utils.GetPlayerSkillLevelCustom(split[1]) >= int.Parse(split[2]);
                                 };
                                 break;
                             case OptionCondition.SkillLess:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.SkillLess;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_toomuchskilllevel")}: <color=#00ff00>{Utils.LocalizeSkill(split[1])} {split[2]}</color>";
                                     return Utils.GetPlayerSkillLevelCustom(split[1]) < int.Parse(split[2]);
                                 };
                                 break;
                             case OptionCondition.QuestFinished:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.QuestFinished;
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
                                     if (!Quests_DataTypes.AllQuests.ContainsKey(reqID)) return true;
@@ -576,8 +601,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.QuestNotFinished:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.QuestNotFinished;
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
 
@@ -596,8 +622,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.HasItem:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.HasItem;
                                     reason = "";
                                     GameObject prefab = ZNetScene.instance.GetPrefab(split[1]);
                                     if (!prefab || !prefab.GetComponent<ItemDrop>()) return true;
@@ -607,8 +634,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.NotHasItem:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.NotHasItem;
                                     reason = "";
                                     GameObject prefab = ZNetScene.instance.GetPrefab(split[1]);
                                     if (!prefab || !prefab.GetComponent<ItemDrop>()) return true;
@@ -618,8 +646,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.IsVIP:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.IsVIP;
                                     reason = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
                                     return Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(
                                         Global_Configs
@@ -627,8 +656,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.NotIsVIP:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.NotIsVIP;
                                     reason = $"{Localization.instance.Localize("$mpasn_notforvip")}";
                                     return !Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(
                                         Global_Configs
@@ -636,24 +666,27 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.GlobalKey:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.GlobalKey;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needglobalkey")}: <color=#00ff00>{split[1]}</color>";
                                     return ZoneSystem.instance.GetGlobalKey(split[1]);
                                 };
                                 break;
                             case OptionCondition.NotGlobalKey:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.NotGlobalKey;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_notneedglobalkey")}: <color=#00ff00>{split[1]}</color>";
                                     return !ZoneSystem.instance.GetGlobalKey(split[1]);
                                 };
                                 break;
                             case OptionCondition.HasBuff:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.HasBuff;
                                     StatusEffect findSe =
                                         ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1])!;
                                     string seName = findSe == null
@@ -665,8 +698,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.NotHasBuff:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.NotHasBuff;
                                     StatusEffect findSe =
                                         ObjectDB.instance.m_StatusEffects.FirstOrDefault(s => s.name == split[1])!;
                                     string seName = findSe == null
@@ -678,8 +712,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.QuestProgressDone:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.QuestProgressDone;
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
                                     if (!Quests_DataTypes.AllQuests.TryGetValue(reqID,
@@ -692,8 +727,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.QuestProgressNotDone:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.QuestProgressNotDone;
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
                                     if (!Quests_DataTypes.AllQuests.TryGetValue(reqID,
@@ -706,8 +742,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.HasQuest:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.HasQuest;
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
                                     if (!Quests_DataTypes.AllQuests.TryGetValue(reqID,
@@ -719,8 +756,9 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.NotHasQuest:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.NotHasQuest;
                                     reason = "";
                                     int reqID = split[1].ToLower().GetStableHashCode();
                                     if (!Quests_DataTypes.AllQuests.TryGetValue(reqID,
@@ -732,32 +770,36 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCondition.EpicMMOLevelMore:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.EpicMMOLevelMore;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needepicmmolevel")}: <color=#00ff00>{split[1]}</color>";
                                     return EpicMMOSystem_API.GetLevel() >= int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.EpicMMOLevelLess:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.EpicMMOLevelLess;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_toomuchepicmmolevel")}: <color=#00ff00>{split[1]}</color>";
                                     return EpicMMOSystem_API.GetLevel() < int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.CozyheimLevelMore:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.CozyheimLevelMore;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_needcozyheimlevel")}: <color=#00ff00>{split[1]}</color>";
                                     return Cozyheim_LevelingSystem.GetLevel() >= int.Parse(split[1]);
                                 };
                                 break;
                             case OptionCondition.CozyheimLevelLess:
-                                result += (out string reason) =>
+                                result += (out string reason, out OptionCondition type) =>
                                 {
+                                    type = OptionCondition.CozyheimLevelLess;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_toomuchcozyheimlevel")}: <color=#00ff00>{split[1]}</color>";
                                     return Cozyheim_LevelingSystem.GetLevel() < int.Parse(split[1]);
