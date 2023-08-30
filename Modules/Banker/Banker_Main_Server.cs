@@ -167,6 +167,8 @@ public static class Banker_Main_Server
                 new Action<long, string, int>(MethodBankerDeposit));
             ZRoutedRpc.instance.Register("KGmarket BankerWithdraw",
                 new Action<long, string, int>(MethodBankerWithdraw));
+            ZRoutedRpc.instance.Register("KGmarket BankerRemove",
+                new Action<long, string, int>(MethodBankerRemove));
         }
     }
 
@@ -206,5 +208,21 @@ public static class Banker_Main_Server
         SaveBankerData();
         Market_Logger.Log(Market_Logger.LogType.Banker,
             $"Player User ID: {userID} Withdraw an item {item} with quantity: {value}");
+    }
+
+    private static void MethodBankerRemove(long sender, string item, int value)
+    {
+        ZNetPeer peer = ZNet.instance.GetPeer(sender);
+        if (peer == null) return;
+        string userID = peer.m_socket.GetHostName();
+        if (!BankerServerSideData.ContainsKey(userID)) return;
+        int hash = item.GetStableHashCode();
+        if (!BankerServerSideData[userID].ContainsKey(hash) || BankerServerSideData[userID][hash] <= 0) return;
+        int fixedValue = Mathf.Min(BankerServerSideData[userID][hash], value);
+        BankerServerSideData[userID][hash] -= fixedValue;
+        SendBankerDataToClient(peer);
+        SaveBankerData();
+        Market_Logger.Log(Market_Logger.LogType.Banker,
+            $"Player User ID: {userID} Removed (Paid with) an item {item} with quantity: {value}");
     }
 }

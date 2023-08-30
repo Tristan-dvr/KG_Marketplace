@@ -39,8 +39,7 @@ public static class Banker_Main_Client
     private static void GetBankerClientData(long sender, ZPackage pkg)
     {
         pkg.Decompress();
-        Banker_DataTypes.BankerClientData.Clear();
-        Banker_DataTypes.BankerClientData.AddRange(JSON.ToObject<Dictionary<int, int>>(pkg.ReadString()));
+        Banker_DataTypes.BankerClientData = JSON.ToObject<Dictionary<int, int>>(pkg.ReadString());
         Banker_UI.Reload();
     }
     

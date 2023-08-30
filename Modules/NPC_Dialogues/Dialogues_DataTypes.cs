@@ -79,8 +79,15 @@ public static class Dialogues_DataTypes
         CustomValueLess = 13 | reverseFlag,
         ModInstalled = 14,
         NotModInstalled = 14 | reverseFlag,
-        IronGateStatMore = 15,
+        IronGateStatMore = 15, 
         IronGateStatLess = 15 | reverseFlag,
+        
+        
+        /* Old quest aliases (backwards compat) */
+        OtherQuest = 100,
+        NotFinished = 101,
+        Skill = 102
+        /* ____________________________________ */
     }
 
     public class RawDialogue : ISerializableParameter
@@ -570,7 +577,7 @@ public static class Dialogues_DataTypes
                                            int.Parse(split[1]);
                                 };
                                 break;
-                            case OptionCondition.SkillMore:
+                            case OptionCondition.SkillMore or OptionCondition.Skill:
                                 result += (out string reason, out OptionCondition type) =>
                                 {
                                     type = OptionCondition.SkillMore;
@@ -588,7 +595,7 @@ public static class Dialogues_DataTypes
                                     return Utils.GetPlayerSkillLevelCustom(split[1]) < int.Parse(split[2]);
                                 };
                                 break;
-                            case OptionCondition.QuestFinished:
+                            case OptionCondition.QuestFinished or OptionCondition.OtherQuest:
                                 result += (out string reason, out OptionCondition type) =>
                                 {
                                     type = OptionCondition.QuestFinished;
@@ -600,7 +607,7 @@ public static class Dialogues_DataTypes
                                     return Quests_DataTypes.Quest.IsOnCooldown(reqID, out _);
                                 };
                                 break;
-                            case OptionCondition.QuestNotFinished:
+                            case OptionCondition.QuestNotFinished or OptionCondition.NotFinished:
                                 result += (out string reason, out OptionCondition type) =>
                                 {
                                     type = OptionCondition.QuestNotFinished;

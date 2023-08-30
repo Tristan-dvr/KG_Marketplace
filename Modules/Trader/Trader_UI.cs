@@ -1,5 +1,6 @@
 ﻿using Marketplace.ExternalLoads;
 using Marketplace.Modules.Banker;
+using Marketplace.Modules.Gambler;
 using Marketplace.Modules.Global_Options;
 using Marketplace.UI_OptimizationHandler;
 using Object = UnityEngine.Object;
@@ -23,6 +24,8 @@ public static class Trader_UI
     private static Modifier CurrentModifier;
     private static readonly Transform[] ModifierButtons = new Transform[Enum.GetValues(typeof(Modifier)).Length];
     private static bool ToBank;
+    private static bool FromBank;
+    private static Text FromBankText;
 
 
     public static bool IsPanelVisible()
@@ -59,6 +62,7 @@ public static class Trader_UI
         NPCname = UI.transform.Find("Canvas/Header/Text").GetComponent<Text>();
         SearchInput = UI.GetComponentInChildren<InputField>();
         SearchInput.onValueChanged.AddListener(OnSearchInput);
+        FromBankText = UI.transform.Find("Canvas/Background/ToFromText").GetComponent<Text>();
 
         ModifierButtons[0] = UI.transform.Find("Canvas/Background/x1");
         ModifierButtons[1] = UI.transform.Find("Canvas/Background/x5");
@@ -82,9 +86,16 @@ public static class Trader_UI
             ToBank = !ToBank;
             UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color =
                 ToBank ? Enabled : Disabled;
-            UI.transform.Find("Canvas/Background/ToBank/Text").GetComponent<Text>().text = ToBank
-                ? Localization.instance.Localize("$mpasn_trader_sendtobank")
-                : Localization.instance.Localize("$mpasn_trader_sendtobankoff");
+            ResetBankText();
+        });
+        UI.transform.Find("Canvas/Background/FromBank").GetComponent<Button>().onClick.AddListener(() =>
+        {
+            AssetStorage.AUsrc.Play();
+            FromBank = !FromBank;
+            UI.transform.Find("Canvas/Background/FromBank/Image/img").GetComponent<Image>().color =
+                FromBank ? Enabled : Disabled;
+            ResetBankText();
+            Reload();
         });
 
         Localization.instance.Localize(UI.transform);
@@ -178,12 +189,15 @@ public static class Trader_UI
             {
                 bool breakLoop =
                     data.NeededItems.Any(item => item.Type == Trader_DataTypes.TraderItem.TraderItemType.Item &&
-                                                 !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName)) 
+                                                 !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName))
                     ||
                     data.ResultItems.Any(item => item.Type == Trader_DataTypes.TraderItem.TraderItemType.Item &&
                                                  !Player.m_localPlayer.m_knownMaterial.Contains(item.OriginalItemName));
+
                 if (breakLoop) continue;
             }
+
+            if (FromBank && data.NeededItems.Any(x => !CanAddToBanker(x))) continue;
 
             GameObject go = Object.Instantiate(BuyElement, ContentTransform);
 
@@ -202,17 +216,13 @@ public static class Trader_UI
                 int starCount = data.NeededItems[i].Level;
                 string stars = data.NeededItems[i].DisplayStars ? $" <color=#00ff00>({starCount}★)</color>" : "";
                 transform.transform.Find("Text").GetComponent<Text>().text =
+                    $"{(FromBank ? "<color=cyan>[BANK]</color> " : "")}" +
                     $"{data.NeededItems[i].ItemName}{stars}\n<color=yellow>x{data.NeededItems[i].Count * ModifierValues[CurrentModifier]}</color>";
                 transform.transform.Find("Icon").GetComponent<Image>().sprite = data.NeededItems[i].GetIcon();
 
                 FillUITooltip(transform, data.NeededItems[i]);
-
-                bool hasEnough = data.NeededItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Item
-                    ? Utils.CustomCountItems(data.NeededItems[i].ItemPrefab,
-                        data.NeededItems[i].Level) >= data.NeededItems[i].Count * ModifierValues[CurrentModifier]
-                    : Player.m_localPlayer.GetCustomValue(data.NeededItems[i].ItemPrefab) >=
-                      data.NeededItems[i].Count * ModifierValues[CurrentModifier];
-                transform.GetComponent<Outline>().effectColor = hasEnough ? Color.green : Color.red;
+                transform.GetComponent<Outline>().effectColor =
+                    HasEnough(data.NeededItems[i]) ? Color.green : Color.red;
             }
 
             go.transform.Find("Background/NeededItems").GetComponent<RectTransform>().anchoredPosition +=
@@ -249,7 +259,6 @@ public static class Trader_UI
             go.transform.Find("Background/Conversion/Conversion").GetComponent<Image>().color =
                 CanBuy(data) ? Color.green : Color.red;
 
-
             go.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 72.5f * (biggest - 1));
             y += 72.5f * (biggest - 1) + 79f;
         }
@@ -264,15 +273,36 @@ public static class Trader_UI
     private static bool CanBuy(Trader_DataTypes.TraderData data)
     {
         foreach (Trader_DataTypes.TraderItem r in data.NeededItems)
-        {
-            if (r.Type is Trader_DataTypes.TraderItem.TraderItemType.Item &&
-                Utils.CustomCountItems(r.ItemPrefab, r.Level) < r.Count * ModifierValues[CurrentModifier]) return false;
-            else if (r.Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue &&
-                     Player.m_localPlayer.GetCustomValue(r.ItemPrefab) < r.Count * ModifierValues[CurrentModifier])
+            if (!HasEnough(r))
                 return false;
+        return true;
+    }
+
+    private static bool HasEnough(Trader_DataTypes.TraderItem r)
+    {
+        if (r.Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue)
+        {
+            return Player.m_localPlayer.GetCustomValue(r.ItemPrefab) >= r.Count * ModifierValues[CurrentModifier];
         }
 
-        return true;
+        if (r.Type is Trader_DataTypes.TraderItem.TraderItemType.Item)
+        {
+            if (!FromBank)
+            {
+                return Utils.CustomCountItems(r.ItemPrefab, r.Level) >= r.Count * ModifierValues[CurrentModifier];
+            }
+            else
+            {
+                if (r.Type is Trader_DataTypes.TraderItem.TraderItemType.Item)
+                {
+                    int hash = r.ItemPrefab.GetStableHashCode();
+                    int amount = Banker_DataTypes.BankerClientData.TryGetValue(hash, out int value) ? value : 0;
+                    return amount >= r.Count * ModifierValues[CurrentModifier];
+                }
+            }
+        }
+
+        return false;
     }
 
     private static bool CanAddToBanker(Trader_DataTypes.TraderItem item)
@@ -283,6 +313,8 @@ public static class Trader_UI
         return Banker_DataTypes.SyncedBankerProfiles.Value.Values.Any(x => x.Contains(hash));
     }
 
+    private static int LastPaidBankHashcode = 0;
+
     private static void TradeItemByGo(Trader_DataTypes.TraderData data)
     {
         Player p = Player.m_localPlayer;
@@ -291,18 +323,37 @@ public static class Trader_UI
         AssetStorage.AUsrc.Play();
         if (!CanBuy(data)) return;
 
+        if (FromBank)
+        {
+            int bankHash = Banker_DataTypes.BankerClientData.GetHashCode();
+            if (LastPaidBankHashcode == bankHash)
+                return;
+            LastPaidBankHashcode = bankHash;
+        }
+
         foreach (Trader_DataTypes.TraderItem neededItem in data.NeededItems)
         {
-            if (neededItem.Type is Trader_DataTypes.TraderItem.TraderItemType.Item)
-            {
-                int amount = neededItem.Count * ModifierValues[CurrentModifier];
-                Utils.CustomRemoveItems(neededItem.ItemPrefab, amount, neededItem.Level);
-                logMessage += $"x{amount} {neededItem.ItemName}, ";
-            }
-            else if (neededItem.Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue)
+            if (neededItem.Type is Trader_DataTypes.TraderItem.TraderItemType.CustomValue)
             {
                 int amount = neededItem.Count * ModifierValues[CurrentModifier];
                 p.AddCustomValue(neededItem.ItemPrefab, -amount);
+                logMessage += $"x{amount} {neededItem.ItemName}, ";
+                continue;
+            }
+
+            if (neededItem.Type is Trader_DataTypes.TraderItem.TraderItemType.Item)
+            {
+                int amount = neededItem.Count * ModifierValues[CurrentModifier];
+                if (!FromBank)
+                    Utils.CustomRemoveItems(neededItem.ItemPrefab, amount, neededItem.Level);
+                else
+                {
+                    int hash = neededItem.ItemPrefab.GetStableHashCode();
+                    if (Banker_DataTypes.BankerClientData.ContainsKey(hash))
+                        Banker_DataTypes.BankerClientData[neededItem.ItemPrefab.GetStableHashCode()] -= amount;
+                    ZRoutedRpc.instance.InvokeRoutedRPC("KGmarket BankerRemove", neededItem.ItemPrefab, amount);
+                }
+
                 logMessage += $"x{amount} {neededItem.ItemName}, ";
             }
         }
@@ -376,21 +427,28 @@ public static class Trader_UI
         }
     }
 
+    private static void ResetBankText()
+    {
+        FromBankText.text =
+            $"Send to Bank: {(ToBank ? "<color=green>ON</color>" : "<color=red>OFF</color>")}\nPay from Bank: {(FromBank ? "<color=green>ON</color>" : "<color=red>OFF</color>")}";
+    }
 
     public static void Show(string profile, string _npcName)
     {
         if (!Trader_DataTypes.ClientSideItemList.ContainsKey(profile)) return;
         CurrentProfile = profile;
+        ToBank = false;
+        FromBank = false;
+        ResetBankText();
         SearchInput.text = "";
         SortList();
         SetModifier(Modifier.x1);
         CreateElementsNew();
-        ToBank = false;
         UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color = Disabled;
+        UI.transform.Find("Canvas/Background/FromBank/Image/img").GetComponent<Image>().color = Disabled;
         UI.transform.Find("Canvas/Background/ToBank").gameObject.SetActive(!ZNet.IsSinglePlayer);
-        UI.transform.Find("Canvas/Background/ToBank/Text").GetComponent<Text>().text = ToBank
-            ? Localization.instance.Localize("$mpasn_trader_sendtobank")
-            : Localization.instance.Localize("$mpasn_trader_sendtobankoff");
+        UI.transform.Find("Canvas/Background/FromBank").gameObject.SetActive(!ZNet.IsSinglePlayer);
+        FromBankText.gameObject.SetActive(!ZNet.IsSinglePlayer);
         InventoryGui.instance.Show(null);
         UI.SetActive(true);
         _npcName = Utils.RichTextFormatting(_npcName);
