@@ -48,12 +48,10 @@ public static class Global_Configs
     {
         public string _blockedPrefabsServer = "";
         public string _blockedPlayerList = "";
-        public string _vipPlayerList = "";
         public string _serverCurrency = "Coins";
         public int _itemMarketLimit;
         public int _marketTaxes;
         public bool _canTeleportWithOre;
-        public int _vipmarketTaxes;
         public bool _gamblerEnableNotifications;
         public bool _allowMultipleQuestScore;
         public int _maxAcceptedQuests;
@@ -76,8 +74,6 @@ public static class Global_Configs
             pkg.Write(_itemMarketLimit);
             pkg.Write(_marketTaxes);
             pkg.Write(_canTeleportWithOre);
-            pkg.Write(_vipmarketTaxes);
-            pkg.Write(_vipPlayerList);
             pkg.Write(_serverCurrency);
             pkg.Write(_gamblerEnableNotifications);
             pkg.Write(_allowMultipleQuestScore);
@@ -102,8 +98,6 @@ public static class Global_Configs
             _itemMarketLimit = pkg.ReadInt();
             _marketTaxes = pkg.ReadInt();
             _canTeleportWithOre = pkg.ReadBool();
-            _vipmarketTaxes = pkg.ReadInt();
-            _vipPlayerList = pkg.ReadString();
             _serverCurrency = pkg.ReadString();
             _gamblerEnableNotifications = pkg.ReadBool();
             _allowMultipleQuestScore = pkg.ReadBool();
@@ -128,7 +122,6 @@ public static class Global_Configs
     public static string WebHookLink = "webhook link";
     public static int BankerIncomeTime;
     public static float BankerIncomeMultiplier;
-    public static float BankerVIPIncomeMultiplier;
     public static bool EnableTraderLog;
     public static bool EnableTransmogLog;
     public static string BankerInterestItems = "All";
@@ -162,18 +155,14 @@ public static class Global_Configs
         EnableTraderLog = SearchOption("EnableTraderLog", false, "Enable/Disable Trader Log");
         BankerIncomeTime = SearchOption("BankerIncomeTime", 1, "Banker Income Time (hours)");
         BankerIncomeMultiplier = SearchOption("BankerIncomeMultiplier", 0f, "Banker Income Multiplier (per time)");
-        BankerVIPIncomeMultiplier = SearchOption("BankerVIPIncomeMultiplier", 0f, "VIP Banker Income Multiplier");
         WebHookLink = SearchOption("FeedbackWebhookLink", "webhook link", "Feedback Webhook Link");
         BankerInterestItems = SearchOption("BankerInterestItems", "All", "Banker Interest Items").Replace(" ","");
 
         SyncedGlobalOptions.Value._itemMarketLimit =
             SearchOption("ItemMarketLimit", 15, "Limit amount of slots player can sell in marketpalce");
         SyncedGlobalOptions.Value._blockedPlayerList = SearchOption("BlockedPlayers", "User IDs", "Marketplace Blocked Players");
-        SyncedGlobalOptions.Value._vipPlayerList = SearchOption("VIPplayersList", "User IDs", "Marketplace VIP Players List ");
         SyncedGlobalOptions.Value._marketTaxes = SearchOption("MarketTaxes", 0, "Market Taxes From Each Sell");
-        SyncedGlobalOptions.Value._vipmarketTaxes = SearchOption("VIPplayersTaxes", 0, "VIP Player Market Taxes");
         SyncedGlobalOptions.Value._marketTaxes = Mathf.Clamp(SyncedGlobalOptions.Value._marketTaxes, 0, 100);
-        SyncedGlobalOptions.Value._vipmarketTaxes = Mathf.Clamp(SyncedGlobalOptions.Value._vipmarketTaxes, 0, 100);
         SyncedGlobalOptions.Value._canTeleportWithOre =
             SearchOption("CanTeleportWithOre", true, "Enable/Disable players teleporter with ore");
         SyncedGlobalOptions.Value._blockedPrefabsServer = SearchOption("MarketSellBlockedPrefabs", "Coins, SwordCheat",

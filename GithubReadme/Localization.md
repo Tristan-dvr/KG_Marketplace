@@ -136,7 +136,6 @@ mpasn_interactsound: Interact Sound
 mpasn_textfont: Text Font
 mpasn_textsize: Text Size
 mpasn_textheight: Text Height
-mpasn_nopremiumaccess: No premium access
 mpasn_noitems: No Items
 mpasn_enabledebugmode: Enable <color=#00FFFF>Debug Mode</color> first
 mpasn_teleportwithore: CAN'T TELEPORT WITH ORE
@@ -225,7 +224,6 @@ kg_banker_putall: Put All
 mpasn_periodicanimation: Periodic Animation
 mpasn_periodicanimationtime: Periodic Animation Time
 mpasn_currency: Currency
-mpasn_onlyforvip: Only for <color=#32CD32>VIP</color> users
 mpasn_messages: Messages
 mpasn_periodicsound: Periodic Sound
 mpasn_periodicsoundtime: Periodic Sound Time
@@ -240,7 +238,6 @@ mpasn_questnottaken: Quest not taken
 mpasn_toomuchskilllevel: Too much skill level
 mpasn_notneedglobalkey: Global Key is active
 mpasn_notneedhasbuff: Buff is active
-mpasn_notforvip: Not for <color=#32CD32>VIP</color> users
 mpasn_neednothasitem: You have item
 mpasn_zoneloading: Zone Loading...
 mpasn_JC_Item: Jewelcrafting Item

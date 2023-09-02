@@ -58,12 +58,11 @@ Quest Requirements Types:
 4) EpicMMO_Level - example: EpicMMO_Level: 20. Will make so that quest is only acceptable if player has at least 20 EpicMMO levels (other mod API)
 5) HasItem - example: HasItem: SwordIron. Will make so that quest is only acceptable if player has at least 1 SwordIron in inventory
 6) NotFinished - example: NotFinished: MyQuestID123. Will make so that quest is only acceptable if player has NOT finished quest with ID MyQuestID123
-7) IsVIP - example: IsVIP . Will make so that quest is only acceptable if player is VIP
-8) MH_Level - example: MH_Level: 20. Will make so that quest is only acceptable if player has at least 20 MagicHeim levels (other mod API)
-9) Time - example: Time: 60. Will time limit quest completion to 60 seconds. If player won't complete quest in 60 seconds it will fail
-10) HasAchievement - example: HasAchievement: MyAchievementID123. Will make so that quest is only acceptable if player has achievement with ID MyAchievementID123
-11) CustomValueMore - example: CustomValueMore: MyCustomValue, 100. Will make so that quest is only acceptable if CustomValue with name MyCustomValue is more or equal to 100
-12) CustomValueLess - example: CustomValueLess: MyCustomValue, 100. Will make so that quest is only acceptable if CustomValue with name MyCustomValue is less than 100
+7) MH_Level - example: MH_Level: 20. Will make so that quest is only acceptable if player has at least 20 MagicHeim levels (other mod API)
+8) Time - example: Time: 60. Will time limit quest completion to 60 seconds. If player won't complete quest in 60 seconds it will fail
+9) HasAchievement - example: HasAchievement: MyAchievementID123. Will make so that quest is only acceptable if player has achievement with ID MyAchievementID123
+10) CustomValueMore - example: CustomValueMore: MyCustomValue, 100. Will make so that quest is only acceptable if CustomValue with name MyCustomValue is more or equal to 100
+11) CustomValueLess - example: CustomValueLess: MyCustomValue, 100. Will make so that quest is only acceptable if CustomValue with name MyCustomValue is less than 100
 ```
 
 Please note that Quest Targets, Quest Rewards and Quest Requirements may be multiple in one quest. You can add them as much as you want with | symbol. Example:

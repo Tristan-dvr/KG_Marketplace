@@ -128,19 +128,19 @@ public static class DistancedUI_UI
 
         private static bool HasAny(NPCtype_Internal type)
         {
-            List<string> premiumSource = type switch
+            List<string> distancedSource = type switch
             {
-                NPCtype_Internal.Trader => DistancedUI_DataType.SyncedPremiumSystemData.Value.TraderProfiles,
-                NPCtype_Internal.Banker => DistancedUI_DataType.SyncedPremiumSystemData.Value.BankerProfiles,
-                NPCtype_Internal.Teleporter => DistancedUI_DataType.SyncedPremiumSystemData.Value.TeleporterProfiles,
-                NPCtype_Internal.Gambler => DistancedUI_DataType.SyncedPremiumSystemData.Value.GamblerProfiles,
-                NPCtype_Internal.Buffer => DistancedUI_DataType.SyncedPremiumSystemData.Value.BufferProfiles,
-                NPCtype_Internal.Quests => DistancedUI_DataType.SyncedPremiumSystemData.Value.QuestProfiles,
-                NPCtype_Internal.Info => DistancedUI_DataType.SyncedPremiumSystemData.Value.InfoProfiles,
-                NPCtype_Internal.Transmogrification => DistancedUI_DataType.SyncedPremiumSystemData.Value.TransmogrificationProfiles,
+                NPCtype_Internal.Trader => DistancedUI_DataType.SyncedDistancedUIData.Value.TraderProfiles,
+                NPCtype_Internal.Banker => DistancedUI_DataType.SyncedDistancedUIData.Value.BankerProfiles,
+                NPCtype_Internal.Teleporter => DistancedUI_DataType.SyncedDistancedUIData.Value.TeleporterProfiles,
+                NPCtype_Internal.Gambler => DistancedUI_DataType.SyncedDistancedUIData.Value.GamblerProfiles,
+                NPCtype_Internal.Buffer => DistancedUI_DataType.SyncedDistancedUIData.Value.BufferProfiles,
+                NPCtype_Internal.Quests => DistancedUI_DataType.SyncedDistancedUIData.Value.QuestProfiles,
+                NPCtype_Internal.Info => DistancedUI_DataType.SyncedDistancedUIData.Value.InfoProfiles,
+                NPCtype_Internal.Transmogrification => DistancedUI_DataType.SyncedDistancedUIData.Value.TransmogrificationProfiles,
                 _ => new()
             };
-            List<string> source = type switch
+            List<string> syncedSource = type switch
             {
                 NPCtype_Internal.Trader => Trader_DataTypes.ClientSideItemList.Keys.ToList(),
                 NPCtype_Internal.Banker => Banker_DataTypes.SyncedBankerProfiles.Value.Keys.ToList(),
@@ -153,12 +153,12 @@ public static class DistancedUI_UI
                 _ => new()
             };
             
-            return premiumSource.Any(source.Contains);
+            return distancedSource.Any(syncedSource.Contains);
         }
 
         private static void ClickOpen(NPCtype_Internal type)
         {
-            if (!DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
+            if (!DistancedUI_DataType.SyncedDistancedUIData.Value.Enabled || !Player.m_localPlayer) return;
             HideViewProfiles();
             if (type is not NPCtype_Internal.Marketplace)
             {
@@ -172,7 +172,7 @@ public static class DistancedUI_UI
             Profiles_Text.text = Localization.instance.Localize(Texts[type]);
             if (type is NPCtype_Internal.Marketplace)
             {
-                if (DistancedUI_DataType.SyncedPremiumSystemData.Value.MarketplaceEnabled)
+                if (DistancedUI_DataType.SyncedDistancedUIData.Value.MarketplaceEnabled)
                 {
                     if (Marketplace_UI.IsPanelVisible())
                     {
@@ -188,19 +188,19 @@ public static class DistancedUI_UI
 
             View_Profiles.SetActive(true);
 
-            List<string> premiumSource = type switch
+            List<string> distancedSource = type switch
             {
-                NPCtype_Internal.Trader => DistancedUI_DataType.SyncedPremiumSystemData.Value.TraderProfiles,
-                NPCtype_Internal.Banker => DistancedUI_DataType.SyncedPremiumSystemData.Value.BankerProfiles,
-                NPCtype_Internal.Teleporter => DistancedUI_DataType.SyncedPremiumSystemData.Value.TeleporterProfiles,
-                NPCtype_Internal.Gambler => DistancedUI_DataType.SyncedPremiumSystemData.Value.GamblerProfiles,
-                NPCtype_Internal.Buffer => DistancedUI_DataType.SyncedPremiumSystemData.Value.BufferProfiles,
-                NPCtype_Internal.Quests => DistancedUI_DataType.SyncedPremiumSystemData.Value.QuestProfiles,
-                NPCtype_Internal.Info => DistancedUI_DataType.SyncedPremiumSystemData.Value.InfoProfiles,
-                NPCtype_Internal.Transmogrification => DistancedUI_DataType.SyncedPremiumSystemData.Value.TransmogrificationProfiles,
+                NPCtype_Internal.Trader => DistancedUI_DataType.SyncedDistancedUIData.Value.TraderProfiles,
+                NPCtype_Internal.Banker => DistancedUI_DataType.SyncedDistancedUIData.Value.BankerProfiles,
+                NPCtype_Internal.Teleporter => DistancedUI_DataType.SyncedDistancedUIData.Value.TeleporterProfiles,
+                NPCtype_Internal.Gambler => DistancedUI_DataType.SyncedDistancedUIData.Value.GamblerProfiles,
+                NPCtype_Internal.Buffer => DistancedUI_DataType.SyncedDistancedUIData.Value.BufferProfiles,
+                NPCtype_Internal.Quests => DistancedUI_DataType.SyncedDistancedUIData.Value.QuestProfiles,
+                NPCtype_Internal.Info => DistancedUI_DataType.SyncedDistancedUIData.Value.InfoProfiles,
+                NPCtype_Internal.Transmogrification => DistancedUI_DataType.SyncedDistancedUIData.Value.TransmogrificationProfiles,
                 _ => new()
             };
-            List<string> source = type switch
+            List<string> syncedSource = type switch
             {
                 NPCtype_Internal.Trader => Trader_DataTypes.ClientSideItemList.Keys.ToList(),
                 NPCtype_Internal.Banker => Banker_DataTypes.SyncedBankerProfiles.Value.Keys.ToList(),
@@ -213,9 +213,9 @@ public static class DistancedUI_UI
                 _ => new()
             };
 
-            foreach (string item in premiumSource)
+            foreach (string item in distancedSource)
             {
-                if (!source.Contains(item)) continue;
+                if (!syncedSource.Contains(item)) continue;
                 GameObject element = UnityEngine.Object.Instantiate(Content_Element, Viewport_Content);
                 element.AddComponent<HoverOnButton>();
                 string toUppper = "";
@@ -240,7 +240,7 @@ public static class DistancedUI_UI
 
         private static void ClickElement(string profile, NPCtype_Internal type, string _NPCname)
         {
-            if (!DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
+            if (!DistancedUI_DataType.SyncedDistancedUIData.Value.Enabled || !Player.m_localPlayer) return;
             Menu.instance.OnClose();
             AssetStorage.AUsrc.Play();
             HideViewProfiles();
@@ -295,7 +295,7 @@ public static class DistancedUI_UI
         public static void ClickView()
         {
             ResetColors();
-            if (!DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed || !Player.m_localPlayer) return;
+            if (!DistancedUI_DataType.SyncedDistancedUIData.Value.Enabled || !Player.m_localPlayer) return;
             Menu.instance.OnClose();
             AssetStorage.AUsrc.Play();
             View_Profiles.SetActive(false);

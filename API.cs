@@ -64,7 +64,9 @@ public static class Marketplace_API
         NoMist = 1 << 2,
         InfiniteEitr = 1 << 3,
         InfiniteStamina = 1 << 4,
-        NoCreatureDrops = 1 << 5,
+        DropMultiplier = 1 << 5,
+        ForceWind = 1 << 6,
+        GodMode = 1 << 7,
     }
 
     //uncomment that if you want to use HasFlagFast

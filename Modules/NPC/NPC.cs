@@ -15,6 +15,7 @@ using Marketplace.Modules.Teleporter;
 using Marketplace.Modules.Trader;
 using Marketplace.Modules.Transmogrification;
 using UnityEngine.EventSystems;
+using GameObject = UnityEngine.GameObject;
 using Image = UnityEngine.UI.Image;
 using Object = UnityEngine.Object;
 
@@ -1155,6 +1156,7 @@ public static class Market_NPC
                 foreach (Collider inChild in pastOverrideModel.GetComponentsInChildren<Collider>())
                 {
                     inChild.gameObject.layer = LayerMask.NameToLayer("character");
+                    if(inChild.isTrigger) inChild.enabled = false;
                 }
 
                 if (!pastOverrideModel.GetComponentInChildren<Collider>())
@@ -1186,6 +1188,7 @@ public static class Market_NPC
 
                 pastOverrideModel.layer = LayerMask.NameToLayer("character");
                 Utils.CopyComponent(col, pastOverrideModel);
+                
                 pastOverrideModel.transform.localPosition = Vector3.zero;
                 pastOverrideModel.transform.rotation = transform.rotation;
                 if (overrideHumanoid)

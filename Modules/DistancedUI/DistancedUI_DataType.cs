@@ -2,15 +2,13 @@
 
 public static class DistancedUI_DataType
 {
-    internal static readonly CustomSyncedValue<PremiumSystemData> SyncedPremiumSystemData =
-        new(Marketplace.configSync, "premiumSystemData", new PremiumSystemData());
+    internal static readonly CustomSyncedValue<DistancedUIData> SyncedDistancedUIData =
+        new(Marketplace.configSync, "distancedUIData", new DistancedUIData());
 
-    public class PremiumSystemData : ISerializableParameter
+    public class DistancedUIData : ISerializableParameter
     {
-        public bool isAllowed;
-        public bool EveryoneIsVIP;
+        public bool Enabled;
         public bool MarketplaceEnabled;
-        public List<string> Users = new();
         public List<string> TraderProfiles = new();
         public List<string> TeleporterProfiles = new();
         public List<string> GamblerProfiles = new();
@@ -22,14 +20,9 @@ public static class DistancedUI_DataType
 
         public void Serialize(ref ZPackage pkg)
         {
-            pkg.Write(EveryoneIsVIP);
+            pkg.Write(Enabled);
             pkg.Write(MarketplaceEnabled);
-            pkg.Write(Users.Count);
-            foreach (string user in Users)
-            {
-                pkg.Write(user ?? "");
-            }
-
+            
             pkg.Write(TraderProfiles.Count);
             foreach (string profile in TraderProfiles)
             {
@@ -81,15 +74,10 @@ public static class DistancedUI_DataType
 
         public void Deserialize(ref ZPackage pkg)
         {
-            EveryoneIsVIP = pkg.ReadBool();
+            Enabled = pkg.ReadBool();
             MarketplaceEnabled = pkg.ReadBool();
-            int count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
-            {
-                Users.Add(pkg.ReadString());
-            }
 
-            count = pkg.ReadInt();
+            int count = pkg.ReadInt();
             for (int i = 0; i < count; i++)
             {
                 TraderProfiles.Add(pkg.ReadString());

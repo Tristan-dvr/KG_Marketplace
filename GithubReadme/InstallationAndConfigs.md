@@ -144,11 +144,6 @@ BankerIncomeTime = 1
 # Default value: 0
 BankerIncomeMultiplier = 0
 
-## VIP Banker Income Multiplier
-# Setting type: Single
-# Default value: 0
-BankerVIPIncomeMultiplier = 0
-
 ## Feedback Webhook Link
 # Setting type: String
 # Default value: webhook link
@@ -169,20 +164,10 @@ ItemMarketLimit = 15
 # Default value: User IDs
 BlockedPlayers = User IDs
 
-## Marketplace VIP Players List 
-# Setting type: String
-# Default value: User IDs
-VIPplayersList = User IDs
-
 ## Market Taxes From Each Sell
 # Setting type: Int32
 # Default value: 0
 MarketTaxes = 0
-
-## VIP Player Market Taxes
-# Setting type: Int32
-# Default value: 0
-VIPplayersTaxes = 0
 
 ## Enable/Disable players teleporter with ore
 # Setting type: Boolean

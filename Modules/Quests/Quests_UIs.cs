@@ -381,8 +381,6 @@ private static void Postfix(InventoryGui __instance)
                     if (!canTake && Global_Configs.SyncedGlobalOptions.Value._hideOtherQuestRequirementQuests &&
                         type is Dialogues_DataTypes.OptionCondition.QuestFinished) continue;
 
-                    if (!canTake && type is Dialogues_DataTypes.OptionCondition.IsVIP) continue;
-
                     if (Quests_DataTypes.Quest.IsOnCooldown(profileID, out int cd) && cd > 5000) continue;
                     GameObject newGo = UnityEngine.Object.Instantiate(QuestGO, MainTransform);
                     newGo.transform.Find("Text").GetComponent<Text>().text = data.Name.Localize();

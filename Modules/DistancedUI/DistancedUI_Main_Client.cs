@@ -10,7 +10,7 @@ public static class DistancedUI_Main_Client
     private static void OnInit()
     {
         DistancedUI_UI.Init();
-        DistancedUI_DataType.SyncedPremiumSystemData.ValueChanged += OnPremiumSystemUpdator;
+        DistancedUI_DataType.SyncedDistancedUIData.ValueChanged += OnDistancedUIUpdate;
         Marketplace.Global_Updator += Update;
     }
 
@@ -19,16 +19,14 @@ public static class DistancedUI_Main_Client
     private static class ZNetScene_Awake_Patch
     {
         [UsedImplicitly]
-        private static void Postfix() => OnPremiumSystemUpdator();
+        private static void Postfix() => OnDistancedUIUpdate();
     }
     
-    private static void OnPremiumSystemUpdator()
+    private static void OnDistancedUIUpdate()
     {
-        DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed = DistancedUI_DataType.SyncedPremiumSystemData.Value.Users.Contains(Global_Configs._localUserID) ||
-                                                                        DistancedUI_DataType.SyncedPremiumSystemData.Value.EveryoneIsVIP;
-        if (DistancedUI_DataType.SyncedPremiumSystemData.Value.isAllowed)
+        if (DistancedUI_DataType.SyncedDistancedUIData.Value.Enabled)
         {
-            DistancedUI_UI.Show(DistancedUI_DataType.SyncedPremiumSystemData.Value.MarketplaceEnabled);
+            DistancedUI_UI.Show(DistancedUI_DataType.SyncedDistancedUIData.Value.MarketplaceEnabled);
         }
         else
         {

@@ -54,6 +54,7 @@ public static class Marketplace_UI
     }
 
     private static Image IncomeImage = null!;
+
     private static void ERRORBLOCKED()
     {
         Hide();
@@ -171,23 +172,28 @@ public static class Marketplace_UI
         _marketSize = Marketplace._thistype.Config.Bind("Marketplace", "Market Size", MarketSize.Large, "Market size");
         ChangeSize(false);
     }
-    
+
     private static Marketplace_DataTypes.ItemData_ItemCategory ChooseBestCategory(ItemDrop.ItemData item)
     {
         if (item.m_shared.m_itemType is ItemDrop.ItemData.ItemType.OneHandedWeapon
             or ItemDrop.ItemData.ItemType.TwoHandedWeapon or ItemDrop.ItemData.ItemType.Bow
             or ItemDrop.ItemData.ItemType.Torch or ItemDrop.ItemData.ItemType.Ammo
-            or ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft) return Marketplace_DataTypes.ItemData_ItemCategory.WEAPONS;
+            or ItemDrop.ItemData.ItemType.TwoHandedWeaponLeft)
+            return Marketplace_DataTypes.ItemData_ItemCategory.WEAPONS;
 
-        if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Consumable) return Marketplace_DataTypes.ItemData_ItemCategory.CONSUMABLE;
+        if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Consumable)
+            return Marketplace_DataTypes.ItemData_ItemCategory.CONSUMABLE;
 
         if (item.m_shared.m_itemType is ItemDrop.ItemData.ItemType.Chest or ItemDrop.ItemData.ItemType.Helmet
             or ItemDrop.ItemData.ItemType.Legs or ItemDrop.ItemData.ItemType.Shield
-            or ItemDrop.ItemData.ItemType.Shoulder or ItemDrop.ItemData.ItemType.Utility) return Marketplace_DataTypes.ItemData_ItemCategory.ARMOR;
+            or ItemDrop.ItemData.ItemType.Shoulder
+            or ItemDrop.ItemData.ItemType.Utility) return Marketplace_DataTypes.ItemData_ItemCategory.ARMOR;
 
-        if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Tool) return Marketplace_DataTypes.ItemData_ItemCategory.TOOLS;
+        if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Tool)
+            return Marketplace_DataTypes.ItemData_ItemCategory.TOOLS;
 
-        if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material) return Marketplace_DataTypes.ItemData_ItemCategory.RESOURCES;
+        if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material)
+            return Marketplace_DataTypes.ItemData_ItemCategory.RESOURCES;
 
         return Marketplace_DataTypes.ItemData_ItemCategory.ALL;
     }
@@ -199,7 +205,8 @@ public static class Marketplace_UI
         List<ItemDrop.ItemData> list = player?.m_inventory?.GetAllItems()!;
         if (list == null || list.Count == 0) return data;
         foreach (ItemDrop.ItemData item in list)
-            if (!Global_Configs.SyncedGlobalOptions.Value._blockedPrefabsServer.Replace(" ","").Split(',').Contains(item.m_dropPrefab.name))
+            if (!Global_Configs.SyncedGlobalOptions.Value._blockedPrefabsServer.Replace(" ", "").Split(',')
+                    .Contains(item.m_dropPrefab.name))
             {
                 Marketplace_DataTypes.ItemData_ItemCategory best = ChooseBestCategory(item);
                 string displayName = item.m_shared.m_name;
@@ -275,9 +282,10 @@ public static class Marketplace_UI
 
     private static void ResetCurrency()
     {
-        if(!ZNetScene.instance) return;
+        if (!ZNetScene.instance) return;
         UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Gold/Image").GetComponent<Image>().sprite =
-            ZNetScene.instance.GetPrefab(Global_Configs.SyncedGlobalOptions.Value._serverCurrency).GetComponent<ItemDrop>().m_itemData.m_shared
+            ZNetScene.instance.GetPrefab(Global_Configs.SyncedGlobalOptions.Value._serverCurrency)
+                .GetComponent<ItemDrop>().m_itemData.m_shared
                 .m_icons[0];
     }
 
@@ -337,7 +345,8 @@ public static class Marketplace_UI
     {
         GoldCount.text =
             $"{Localization.instance.Localize("$mpasn_currency")}: {Player.m_localPlayer?.m_inventory.CountItems(Global_Configs.CurrencyName)}";
-        IncomeCount.text = $"{Localization.instance.Localize("$mpasn_income")} (<color=#00ff00>{Marketplace_Main_Client.IncomeValue}</color>)";
+        IncomeCount.text =
+            $"{Localization.instance.Localize("$mpasn_income")} (<color=#00ff00>{Marketplace_Main_Client.IncomeValue}</color>)";
         IncomeCount.color = Marketplace_Main_Client.IncomeValue > 0 ? Color.yellow : Color.red;
         IncomeImage.color = Marketplace_Main_Client.IncomeValue > 0 ? Color.green : Color.red;
     }
@@ -387,7 +396,8 @@ public static class Marketplace_UI
             return;
         }
 
-        if (Marketplace_DataTypes.SyncedMarketplaceData.Value.Count(data => data.SellerUserID == Global_Configs._localUserID) >=
+        if (Marketplace_DataTypes.SyncedMarketplaceData.Value.Count(data =>
+                data.SellerUserID == Global_Configs._localUserID) >=
             Global_Configs.SyncedGlobalOptions.Value._itemMarketLimit)
         {
             ERRORLIMIT();
@@ -764,7 +774,8 @@ public static class Marketplace_UI
         BUYTAB.transform.Find("AFTERPRESS/SetQuantity").GetComponent<InputField>().text = "-999";
         SkipQuantityCheck = false;
         SkipNextSound = true;
-        BUYTAB.transform.Find("AFTERPRESS/SetQuantity").GetComponent<InputField>().text = CurrentBuyData.Count.ToString();
+        BUYTAB.transform.Find("AFTERPRESS/SetQuantity").GetComponent<InputField>().text =
+            CurrentBuyData.Count.ToString();
         foreach (GameObject obj in CurrentGameObjects)
             obj.GetComponent<Image>().color = new Color(0.3f, 0.3f, 0.3f, 0.7803922f);
 
@@ -830,7 +841,8 @@ public static class Marketplace_UI
              i < Mathf.Min(ServerMarketSendDataSORTED.Count, MAXITEMSPERPAGE + start);
              i++)
         {
-            ItemDrop item = ZNetScene.instance.GetPrefab(ServerMarketSendDataSORTED[i].ItemPrefab)?.GetComponent<ItemDrop>()!;
+            ItemDrop item = ZNetScene.instance.GetPrefab(ServerMarketSendDataSORTED[i].ItemPrefab)
+                ?.GetComponent<ItemDrop>()!;
             GameObject go = Object.Instantiate(ElementBUY, parent);
             CurrentGameObjects.Add(go);
 
@@ -1034,7 +1046,7 @@ public static class Marketplace_UI
                             Localization.instance.Localize(data.ItemName).ToLower()
                                 .Contains(SEARCHVALUE.ToLower()))
                         .OrderBy(data => data.Count).ToList(),
-                     _ => InventorySellData
+                    _ => InventorySellData
                 };
 
             if (currentSortType == Marketplace_DataTypes.SortType.DOWN)
@@ -1200,21 +1212,11 @@ public static class Marketplace_UI
         OnSort();
         if (!Global_Configs.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Configs._localUserID))
         {
-            if (Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Configs._localUserID))
-            {
-                UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
-                    Global_Configs._localUserID + "\n\t    <size=35>(VIP)</size>";
-                UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().color =
-                    new Color(0, 1, 0);
-            }
-            else
-            {
-                UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
-                    Global_Configs._localUserID +
-                    $"\n\t    <size=35>({Localization.instance.Localize("$mpasn_allowed")})</size>";
-                UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().color =
-                    new Color(0.8352942f, 0.8196079f, 0.7254902f);
-            }
+            UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
+                Global_Configs._localUserID +
+                $"\n\t    <size=35>({Localization.instance.Localize("$mpasn_allowed")})</size>";
+            UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().color =
+                new Color(0.8352942f, 0.8196079f, 0.7254902f);
         }
         else
         {
@@ -1226,9 +1228,7 @@ public static class Marketplace_UI
         }
 
         UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/MarketLimit/Text").GetComponent<Text>().text =
-            Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Configs._localUserID)
-                ? $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Configs.SyncedGlobalOptions.Value._itemMarketLimit}\n<color=#00ff00>{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Configs.SyncedGlobalOptions.Value._vipmarketTaxes}%</color>"
-                : $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Configs.SyncedGlobalOptions.Value._itemMarketLimit}\n{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Configs.SyncedGlobalOptions.Value._marketTaxes}%";
+            $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Configs.SyncedGlobalOptions.Value._itemMarketLimit}\n{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Configs.SyncedGlobalOptions.Value._marketTaxes}%";
 
 
         UpdateAnnonIcon();

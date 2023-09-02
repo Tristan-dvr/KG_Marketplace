@@ -8,72 +8,67 @@ namespace Marketplace.Modules.DistancedUI;
     new[] { "OnConfigChange" })]
 public static class DistanceUI_Main_Server
 {
-    private static ConfigFile PremiumSystem_Config = null!;
-    private static ConfigEntry<bool> CanUseMarketplace_PremiumSystem = null!;
-    private static ConfigEntry<bool> EveryoneIsVIP_PremiumSystem = null!;
-    private static ConfigEntry<string> Users_PremiumSystem = null!;
-    private static ConfigEntry<string> TraderProfiles_PremiumSystem = null!;
-    private static ConfigEntry<string> BankerProfiles_PremiumSystem = null!;
-    private static ConfigEntry<string> TeleporterProfiles_PremiumSystem = null!;
-    private static ConfigEntry<string> GamblerProfiles_PremiumSystem = null!;
-    private static ConfigEntry<string> BufferProfiles_PremiumSystem = null!;
-    private static ConfigEntry<string> QuestProfiles_PremiumSystem = null!;
-    private static ConfigEntry<string> InfoProfiles_PremiumSystem = null!;
-    private static ConfigEntry<string> TransmogrificationProfiles_PremiumSystem = null!;
+    private static ConfigFile DistancedUI_Config = null!;
+    private static ConfigEntry<bool> CanUseMarketplace_DistancedUI = null!;
+    private static ConfigEntry<bool> Enabled = null!;
+    private static ConfigEntry<string> TraderProfiles_DistancedUI = null!;
+    private static ConfigEntry<string> BankerProfiles_DistancedUI = null!;
+    private static ConfigEntry<string> TeleporterProfiles_DistancedUI = null!;
+    private static ConfigEntry<string> GamblerProfiles_DistancedUI = null!;
+    private static ConfigEntry<string> BufferProfiles_DistancedUI = null!;
+    private static ConfigEntry<string> QuestProfiles_DistancedUI = null!;
+    private static ConfigEntry<string> InfoProfiles_DistancedUI = null!;
+    private static ConfigEntry<string> TransmogrificationProfiles_DistancedUI = null!;
 
     [UsedImplicitly]
     private static void OnInit()
     {
-        PremiumSystem_Config = new ConfigFile(Market_Paths.DistancedUIConfig, true);
-        EveryoneIsVIP_PremiumSystem = PremiumSystem_Config.Bind("PremiumSystem", "EveryoneIsPremium", false,
-            "Turn on if you want everyone to be able to use Premium System features.");
-        Users_PremiumSystem = PremiumSystem_Config.Bind("PremiumSystem", "Users", "User IDs here with ,",
-            "List of users that can use Premium System features. Separate each user with a comma.");
-        CanUseMarketplace_PremiumSystem =
-            PremiumSystem_Config.Bind("PremiumSystem", "CanUseMarketplace", true, "Can use the marketplace?");
-        TraderProfiles_PremiumSystem = PremiumSystem_Config.Bind("PremiumSystem", "TraderProfiles",
+        DistancedUI_Config = new ConfigFile(Market_Paths.DistancedUIConfig, true);
+        Enabled = DistancedUI_Config.Bind("DistancedUI", "Enabled", false,
+            "Enable or disable dystem");
+        CanUseMarketplace_DistancedUI =
+            DistancedUI_Config.Bind("DistancedUI", "CanUseMarketplace", true, "Can use the marketplace?");
+        TraderProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "TraderProfiles",
             "Profiles here with ,", "Trader profiles");
-        TeleporterProfiles_PremiumSystem = PremiumSystem_Config.Bind("PremiumSystem", "TeleporterProfiles",
+        TeleporterProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "TeleporterProfiles",
             "Profiles here with ,", "Teleporter profiles");
-        GamblerProfiles_PremiumSystem = PremiumSystem_Config.Bind("PremiumSystem", "GamblerProfiles",
+        GamblerProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "GamblerProfiles",
             "Profiles here with ,", "Gambler profiles");
-        BufferProfiles_PremiumSystem = PremiumSystem_Config.Bind("PremiumSystem", "BufferProfiles",
+        BufferProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "BufferProfiles",
             "Profiles here with ,", "Buffer profiles");
-        BankerProfiles_PremiumSystem = PremiumSystem_Config.Bind("PremiumSystem", "BankerProfiles",
+        BankerProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "BankerProfiles",
             "Profiles here with ,", "Banker profiles");
-        QuestProfiles_PremiumSystem =
-            PremiumSystem_Config.Bind("PremiumSystem", "QuestProfiles", "Profiles here with ,", "Quest profiles");
-        InfoProfiles_PremiumSystem =
-            PremiumSystem_Config.Bind("PremiumSystem", "InfoProfiles", "Profiles here with ,", "Info profiles");
-        TransmogrificationProfiles_PremiumSystem = 
-            PremiumSystem_Config.Bind("PremiumSystem", "TransmogrificationProfiles", "Profiles here with ,", "Transmogrification profiles");
+        QuestProfiles_DistancedUI =
+            DistancedUI_Config.Bind("DistancedUI", "QuestProfiles", "Profiles here with ,", "Quest profiles");
+        InfoProfiles_DistancedUI =
+            DistancedUI_Config.Bind("DistancedUI", "InfoProfiles", "Profiles here with ,", "Info profiles");
+        TransmogrificationProfiles_DistancedUI = 
+            DistancedUI_Config.Bind("DistancedUI", "TransmogrificationProfiles", "Profiles here with ,", "Transmogrification profiles");
 
-        ReadPremiumSystemData();
+        ReadDistancedUIData();
     }
 
-    private static void ReadPremiumSystemData()
+    private static void ReadDistancedUIData()
     {
-        DistancedUI_DataType.SyncedPremiumSystemData.Value = new DistancedUI_DataType.PremiumSystemData
+        DistancedUI_DataType.SyncedDistancedUIData.Value = new DistancedUI_DataType.DistancedUIData()
         {
-            isAllowed = false,
-            MarketplaceEnabled = CanUseMarketplace_PremiumSystem.Value,
-            EveryoneIsVIP = EveryoneIsVIP_PremiumSystem.Value,
-            Users = Users_PremiumSystem.Value.Replace(" ", "").Split(',').Select(d => d.ToLower().Trim()).ToList(),
-            TraderProfiles = TraderProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
-            BankerProfiles = BankerProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
-            TeleporterProfiles = TeleporterProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim())
+            Enabled = Enabled.Value,
+            MarketplaceEnabled = CanUseMarketplace_DistancedUI.Value,
+            TraderProfiles = TraderProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
+            BankerProfiles = BankerProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
+            TeleporterProfiles = TeleporterProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim())
                 .ToList(),
-            GamblerProfiles = GamblerProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
-            BufferProfiles = BufferProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
-            QuestProfiles = QuestProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
-            InfoProfiles = InfoProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
-            TransmogrificationProfiles = TransmogrificationProfiles_PremiumSystem.Value.Split(',').Select(d => d.ToLower().Trim()).ToList()
+            GamblerProfiles = GamblerProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
+            BufferProfiles = BufferProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
+            QuestProfiles = QuestProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
+            InfoProfiles = InfoProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
+            TransmogrificationProfiles = TransmogrificationProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList()
         };
     }
 
     [UsedImplicitly]
     private static void OnConfigChange()
     {
-        Utils.DelayReloadConfig(PremiumSystem_Config, ReadPremiumSystemData);
+        Utils.DelayReloadConfig(DistancedUI_Config, ReadDistancedUIData);
     }
 }

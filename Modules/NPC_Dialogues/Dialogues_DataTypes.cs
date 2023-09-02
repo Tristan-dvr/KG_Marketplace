@@ -59,28 +59,26 @@ public static class Dialogues_DataTypes
         SkillLess = 3 | reverseFlag,
         GlobalKey = 4,
         NotGlobalKey = 4 | reverseFlag,
-        IsVIP = 5,
-        NotIsVIP = 5 | reverseFlag,
-        HasQuest = 6,
-        NotHasQuest = 6 | reverseFlag,
-        QuestProgressDone = 7,
-        QuestProgressNotDone = 7 | reverseFlag,
-        QuestFinished = 8,
-        QuestNotFinished = 8 | reverseFlag,
-        EpicMMOLevelMore = 9,
-        EpicMMOLevelLess = 9 | reverseFlag,
-        CozyheimLevelMore = 10,
-        CozyheimLevelLess = 10 | reverseFlag,
-        HasAchievement = 11,
-        NotHasAchievement = 11 | reverseFlag,
-        HasAchievementScore = 12,
-        NotHasAchievementScore = 12 | reverseFlag,
-        CustomValueMore = 13,
-        CustomValueLess = 13 | reverseFlag,
-        ModInstalled = 14,
-        NotModInstalled = 14 | reverseFlag,
-        IronGateStatMore = 15, 
-        IronGateStatLess = 15 | reverseFlag,
+        HasQuest = 5,
+        NotHasQuest = 5 | reverseFlag,
+        QuestProgressDone = 6,
+        QuestProgressNotDone = 6 | reverseFlag,
+        QuestFinished = 7,
+        QuestNotFinished = 7 | reverseFlag,
+        EpicMMOLevelMore = 8,
+        EpicMMOLevelLess = 8 | reverseFlag,
+        CozyheimLevelMore = 9,
+        CozyheimLevelLess = 9 | reverseFlag,
+        HasAchievement = 10,
+        NotHasAchievement = 10 | reverseFlag,
+        HasAchievementScore = 11,
+        NotHasAchievementScore = 11 | reverseFlag,
+        CustomValueMore = 12,
+        CustomValueLess = 12 | reverseFlag,
+        ModInstalled = 13,
+        NotModInstalled = 13 | reverseFlag,
+        IronGateStatMore = 14, 
+        IronGateStatLess = 14 | reverseFlag,
         
         
         /* Old quest aliases (backwards compat) */
@@ -650,26 +648,6 @@ public static class Dialogues_DataTypes
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_neednothasitem")}: <color=#00ff00>{Localization.instance.Localize(prefab.GetComponent<ItemDrop>().m_itemData.m_shared.m_name)} x{split[2]}</color>";
                                     return Utils.CustomCountItemsNoLevel(split[1]) < int.Parse(split[2]);
-                                };
-                                break;
-                            case OptionCondition.IsVIP:
-                                result += (out string reason, out OptionCondition type) =>
-                                {
-                                    type = OptionCondition.IsVIP;
-                                    reason = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
-                                    return Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(
-                                        Global_Configs
-                                            ._localUserID);
-                                };
-                                break;
-                            case OptionCondition.NotIsVIP:
-                                result += (out string reason, out OptionCondition type) =>
-                                {
-                                    type = OptionCondition.NotIsVIP;
-                                    reason = $"{Localization.instance.Localize("$mpasn_notforvip")}";
-                                    return !Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(
-                                        Global_Configs
-                                            ._localUserID);
                                 };
                                 break;
                             case OptionCondition.GlobalKey:

@@ -78,14 +78,6 @@ The following conditions can be used in the `NpcDialogues.cfg` file:
     - **Usage**: `NotGlobalKey, KeyName`
     - **Description**: Checks if the specified global key is not active.
 
-- `IsVIP`
-    - **Usage**: `IsVIP`
-    - **Description**: Checks if the player is a VIP.
-
-- `NotIsVIP`
-    - **Usage**: `NotIsVIP`
-    - **Description**: Checks if the player is not a VIP.
-
 - `HasQuest`
     - **Usage**: `HasQuest, QuestID`
     - **Description**: Checks if the player has the specified quest.

@@ -178,9 +178,7 @@ public static class Marketplace_Main_Server
 
             string buyerName = peer.m_playerName;
 
-            int applyTaxes = Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(sellerUserID)
-                ? Global_Configs.SyncedGlobalOptions.Value._vipmarketTaxes
-                : Global_Configs.SyncedGlobalOptions.Value._marketTaxes;
+            int applyTaxes = Global_Configs.SyncedGlobalOptions.Value._marketTaxes;
             applyTaxes = Mathf.Max(0, applyTaxes);
             float endValue = goldValue - goldValue * (applyTaxes / 100f);
             if (PlayersIncome.ContainsKey(sellerUserID))
