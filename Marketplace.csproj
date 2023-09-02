@@ -558,7 +558,6 @@
       <Content Include="GithubReadme\Patchnotes.md" />
       <Content Include="GithubReadme\Quests.md" />
       <Content Include="GithubReadme\QuestsEvents.md" />
-      <Content Include="GithubReadme\README.md" />
       <Content Include="GithubReadme\ServerInfo.md" />
       <Content Include="GithubReadme\Teleporter.md" />
       <Content Include="GithubReadme\TerritorySystem.md" />
