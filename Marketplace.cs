@@ -135,7 +135,7 @@ namespace Marketplace
             {
                 FSW = new FileSystemWatcher(folderPath)
                 {
-                    Filter = "*.*",
+                    Filter = "*.cfg",
                     EnableRaisingEvents = true,
                     IncludeSubdirectories = true,
                     SynchronizingObject = ThreadingHelper.SynchronizingObject,
