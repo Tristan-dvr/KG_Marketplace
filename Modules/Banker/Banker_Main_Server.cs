@@ -109,7 +109,7 @@ public static class Banker_Main_Server
                 }
             });
             yield return new WaitUntil(() => task.IsCompleted);
-            SaveBankerData();
+            SaveBankerData(); 
             foreach (ZNetPeer peer in BankerServerSideData.Keys.Select(userID => ZNet.instance.GetPeerByHostName(userID)).Where(peer => peer != null))
             {
                 SendBankerDataToClient(peer);

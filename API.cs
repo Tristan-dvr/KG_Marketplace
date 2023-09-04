@@ -229,7 +229,6 @@ public static class Marketplace_API
     
     
         
-        
     static Marketplace_API()
     {
         if (Type.GetType("API.ClientSide, kg.Marketplace") is not { } marketplaceAPI)

@@ -1460,7 +1460,7 @@ public static class PiecePrefabManager
             categories.Add(piece.GetComponent<Piece>().m_category);
         }
         
-        if (Marketplace.Utils.IsDebug && pieceTable.name == "_HammerPieceTable" && !categories.Contains(MarketplaceHammer._category))
+        if (Marketplace.Utils.IsDebug_Marketplace && pieceTable.name == "_HammerPieceTable" && !categories.Contains(MarketplaceHammer._category))
             categories.Add(MarketplaceHammer._category);
         
 

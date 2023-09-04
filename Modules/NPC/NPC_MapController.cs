@@ -102,7 +102,7 @@ public static class NPC_MapController
             }
 
             if (mode != Minimap.MapMode.Large) return;
-            if (Utils.IsDebug && EnableMapControl.Value) ReapplyPins();
+            if (Utils.IsDebug_Strict && EnableMapControl.Value) ReapplyPins();
         }
     }
     

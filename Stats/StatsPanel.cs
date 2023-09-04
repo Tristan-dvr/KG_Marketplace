@@ -213,7 +213,7 @@ public static class StatsPanel
     {
         private static void Switch()
         {
-            if (!Utils.IsDebug) return;
+            if (!Utils.IsDebug_Strict) return;
             Show = ConnectPanel.IsVisible();
             if (Show)
             {

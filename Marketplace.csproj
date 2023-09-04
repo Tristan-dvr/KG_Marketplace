@@ -11,7 +11,7 @@
         <AssemblyName>kg.Marketplace</AssemblyName>
         <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
-        <LangVersion>10</LangVersion>
+        <LangVersion>preview</LangVersion>
         <Nullable>disable</Nullable>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -341,7 +341,6 @@
         <Compile Include="ExternalLoads\AsmLoad_UnityCode.cs" />
         <Compile Include="ExternalLoads\AssetStorage.cs" />
         <Compile Include="ExternalLoads\ResourcesBase64.cs" />
-        <Compile Include="GameEvents.cs" />
         <Compile Include="Hammer\MarketplaceHammer.cs" />
         <Compile Include="ManagerLibs\ItemDataManager_Modified.cs" />
         <Compile Include="ManagerLibs\LocalizationManager.cs" />
@@ -362,7 +361,6 @@
         <Compile Include="OtherModsAPIs\Cozyheim_LevelingSystem.cs" />
         <Compile Include="OtherModsAPIs\EpicMMO.cs" />
         <Compile Include="OtherModsAPIs\MagicHeim.cs" />
-        <Compile Include="FixPossibleErrors.cs" />
         <Compile Include="GlobalUsings.cs" />
         <Compile Include="Logger.cs" />
         <Compile Include="Marketplace.cs" />
@@ -422,11 +420,13 @@
         <Compile Include="Modules\Trader\Trader_Main_Server.cs" />
         <Compile Include="Modules\Trader\Trader_UI.cs" />
         <Compile Include="Paths\Paths.cs" />
-        <Compile Include="PrefabPhotoManager.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Stats\StatsPanel.cs" />
         <Compile Include="UI_OptimizationHandler\UI_Optimization.cs" />
-        <Compile Include="Utils.cs" />
+        <Compile Include="Utils\FixPossibleErrors.cs" />
+        <Compile Include="Utils\GameEvents.cs" />
+        <Compile Include="Utils\PrefabPhotoManager.cs" />
+        <Compile Include="Utils\Utils.cs" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="GithubReadme\app.js" />

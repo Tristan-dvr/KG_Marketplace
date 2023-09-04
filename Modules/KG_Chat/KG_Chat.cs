@@ -241,6 +241,7 @@ public static class KG_Chat
         if (Groups.API.IsLoaded())
             Chat.instance.AddString("<color=green>/group | /party to switch to groups chat mode</color>");
 
+        Chat.instance.m_input.characterLimit = 128;
         Marketplace.Global_FixedUpdator += KGChat_Update;
     }
 
@@ -658,6 +659,6 @@ public static class KG_Chat
     private static class Chat_isAllowedCommand_Patch
     {
         [UsedImplicitly]
-        private static void Postfix(ref bool __result) => __result |= (kgChat && Utils.IsDebug);
+        private static void Postfix(ref bool __result) => __result |= (kgChat && Utils.IsDebug_Marketplace);
     }
 }

@@ -111,40 +111,7 @@ public static class Buffer_Main_Server
                             CultureInfo.InvariantCulture);
                         if (!Enum.TryParse(workingFlag, true, out Buffer_DataTypes.WhatToModify testFlag)) continue;
                         _flags |= testFlag;
-                        switch (testFlag)
-                        {
-                            case Buffer_DataTypes.WhatToModify.ModifyAttack:
-                                data.ModifyAttack = customData;
-                                break;
-                            case Buffer_DataTypes.WhatToModify.ModifyHealthRegen:
-                                data.ModifyHealthRegen = customData;
-                                break;
-                            case Buffer_DataTypes.WhatToModify.ModifyStaminaRegen:
-                                data.ModifyStaminaRegen = customData;
-                                break;
-                            case Buffer_DataTypes.WhatToModify.ModifyRaiseSkills:
-                                data.ModifyRaiseSkills = customData;
-                                break;
-                            case Buffer_DataTypes.WhatToModify.ModifySpeed:
-                                data.MofidySpeed = customData;
-                                break;
-                            case Buffer_DataTypes.WhatToModify.ModifyNoise:
-                                data.ModifyNoise = customData;
-                                break;
-                            case Buffer_DataTypes.WhatToModify.ModifyMaxCarryWeight:
-                                data.ModifyMaxCarryWeight = customData;
-                                break;
-                            case Buffer_DataTypes.WhatToModify.ModifyStealth:
-                                data.MofidyStealth = customData;
-                                break;
-                            case Buffer_DataTypes.WhatToModify.RunStaminaDrain:
-                                data.RunStaminaDrain = customData;
-                                data.ModifyJumpStaminaUsage = customData;
-                                break;
-                            case Buffer_DataTypes.WhatToModify.DamageReduction:
-                                data.DamageReduction = customData;
-                                break;
-                        }
+                        data.ModifyList[testFlag] = customData;
                     }
 
                     data.Flags = _flags;

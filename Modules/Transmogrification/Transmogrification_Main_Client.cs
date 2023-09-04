@@ -88,20 +88,29 @@ public static class Transmogrification_Main_Client
     private static string AddTooltipTransmog(ItemDrop.ItemData item)
     {
         TempItem transmog = item.T_Data();
-        string go = ZNetScene.instance.GetPrefab(transmog.ReplacedPrefab)?.GetComponent<ItemDrop>()?.m_itemData
-            .m_shared.m_name ?? "";
+        string go = "";
+        if (!string.IsNullOrEmpty(transmog.ReplacedPrefab))
+        {
+            go = ZNetScene.instance.GetPrefab(transmog.ReplacedPrefab)?.GetComponent<ItemDrop>()?.m_itemData
+                .m_shared.m_name ?? "";
+        }
+       
         string result =
             Localization.instance.Localize(
                 $"\n<color=#FF00FF>$mpasn_transmog_transmogrifiedinfo: <color=#00FFFF>{go}</color></color>");
-        
-        if(ColorUtility.TryParseHtmlString(transmog.ItemColor, out Color color))
-            result += $"\n<color=#FF00FF>Color: <color=#{ColorUtility.ToHtmlStringRGB(color)}>{transmog.ItemColor}</color></color>";
+
+        if (!string.IsNullOrEmpty(transmog.ItemColor))
+        {
+            if(ColorUtility.TryParseHtmlString(transmog.ItemColor, out Color color))
+                result += $"\n<color=#FF00FF>Color: <color=#{ColorUtility.ToHtmlStringRGB(color)}>{transmog.ItemColor}</color></color>";
+        }
+      
         return result;
     }
 
     public static bool HasTransmog(this ItemDrop.ItemData item)
     {
-        return item?.Data().Get<Transmogrification_DataTypes.TransmogItem_Component>() != null;
+        return item?.Data().Get<Transmogrification_DataTypes.TransmogItem_Component_New>() != null;
     }
 
     private struct TempItem
@@ -116,8 +125,8 @@ public static class Transmogrification_Main_Client
     {
         if (item == null) return new TempItem { ReplacedPrefab = "", Variant = 0,ItemColor = ""};
 
-        if (item.Data().Get<Transmogrification_DataTypes.TransmogItem_Component>() is { } t)
-            return new TempItem { ReplacedPrefab = t.ReplacedPrefab, Variant = 0, ItemColor = t.ItemColor};
+        if (item.Data().Get<Transmogrification_DataTypes.TransmogItem_Component_New>() is { } t)
+            return new TempItem { ReplacedPrefab = t.ReplacedPrefab ?? "", Variant = 0, ItemColor = t.ItemColor ?? ""};
         
         return new TempItem { ReplacedPrefab = item.m_dropPrefab.name, Variant = item.m_variant, ItemColor = ""};
     }

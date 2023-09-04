@@ -49,43 +49,43 @@ public static class Buffer_UI
                         break;
                     case Buffer_DataTypes.WhatToModify.ModifyAttack:
                         result +=
-                            $"{Localization.instance.Localize("$mpasn_modifyattack")}: <color=#00FFFF>x{data.ModifyAttack}</color>\n";
+                            $"{Localization.instance.Localize("$mpasn_modifyattack")}: <color=#00FFFF>x{data.ModifyList[mod]}</color>\n";
                         break;
                     case Buffer_DataTypes.WhatToModify.ModifyHealthRegen:
                         result +=
-                            $"{Localization.instance.Localize("$mpasn_healthregenmodifier")}: <color=#00FFFF>x{data.ModifyHealthRegen}</color>\n";
+                            $"{Localization.instance.Localize("$mpasn_healthregenmodifier")}: <color=#00FFFF>x{data.ModifyList[mod]}</color>\n";
                         break;
                     case Buffer_DataTypes.WhatToModify.ModifyStaminaRegen:
                         result +=
-                            $"{Localization.instance.Localize("$mpasn_staminaregenmodifier")}: <color=#00FFFF>x{data.ModifyStaminaRegen}</color>\n";
+                            $"{Localization.instance.Localize("$mpasn_staminaregenmodifier")}: <color=#00FFFF>x{data.ModifyList[mod]}</color>\n";
                         break;
                     case Buffer_DataTypes.WhatToModify.ModifyRaiseSkills:
                         result +=
-                            $"{Localization.instance.Localize("$mpasn_modifyraisingskills")}: <color=#00FFFF>x{data.ModifyRaiseSkills}</color>\n";
+                            $"{Localization.instance.Localize("$mpasn_modifyraisingskills")}: <color=#00FFFF>x{data.ModifyList[mod]}</color>\n";
                         break;
                     case Buffer_DataTypes.WhatToModify.ModifySpeed:
                         result +=
-                            $"{Localization.instance.Localize("$mpasn_movementspeedmodifier")}: <color=#00FFFF>x{data.MofidySpeed}</color>\n";
+                            $"{Localization.instance.Localize("$mpasn_movementspeedmodifier")}: <color=#00FFFF>x{data.ModifyList[mod]}</color>\n";
                         break;
                     case Buffer_DataTypes.WhatToModify.ModifyNoise:
                         result +=
-                            $"{Localization.instance.Localize("$mpasn_noisemodifier")}: <color=#00FFFF>x{data.ModifyNoise}</color>\n";
+                            $"{Localization.instance.Localize("$mpasn_noisemodifier")}: <color=#00FFFF>x{data.ModifyList[mod]}</color>\n";
                         break;
                     case Buffer_DataTypes.WhatToModify.ModifyMaxCarryWeight:
                         result +=
-                            $"{Localization.instance.Localize("$mpasn_maxcarryweight")}: <color=#00FFFF>+{data.ModifyMaxCarryWeight}</color>\n";
+                            $"{Localization.instance.Localize("$mpasn_maxcarryweight")}: <color=#00FFFF>+{data.ModifyList[mod]}</color>\n";
                         break;
                     case Buffer_DataTypes.WhatToModify.ModifyStealth:
                         result +=
-                            $"{Localization.instance.Localize("$mpasn_stealthbonus")}: <color=#00FFFF>x{data.MofidyStealth}</color>\n";
+                            $"{Localization.instance.Localize("$mpasn_stealthbonus")}: <color=#00FFFF>x{data.ModifyList[mod]}</color>\n";
                         break;
                     case Buffer_DataTypes.WhatToModify.RunStaminaDrain:
                         result +=
-                            $"{Localization.instance.Localize("$mpasn_runstaminadrain")}: <color=#00FFFF>x{data.RunStaminaDrain}</color>\n";
+                            $"{Localization.instance.Localize("$mpasn_runstaminadrain")}: <color=#00FFFF>x{data.ModifyList[mod]}</color>\n";
                         break;
                     case Buffer_DataTypes.WhatToModify.DamageReduction:
                         result +=
-                            $"{Localization.instance.Localize("$mpasn_damagereduction")}: <color=#00FFFF>-{(int)(data.DamageReduction * 100)}%</color>\n";
+                            $"{Localization.instance.Localize("$mpasn_damagereduction")}: <color=#00FFFF>-{(int)(data.ModifyList[mod] * 100)}%</color>\n";
                         break;
                 }
             }

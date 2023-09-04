@@ -846,7 +846,7 @@ public static class Marketplace_UI
             GameObject go = Object.Instantiate(ElementBUY, parent);
             CurrentGameObjects.Add(go);
 
-            if (Utils.IsDebug)
+            if (Utils.IsDebug_Marketplace)
             {
                 go.transform.Find("AdminRemove").gameObject.SetActive(true);
                 int id = ServerMarketSendDataSORTED[i].UID;

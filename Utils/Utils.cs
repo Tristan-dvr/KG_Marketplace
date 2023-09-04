@@ -23,7 +23,9 @@ public static class Utils
                                          Global_Configs.SyncedGlobalOptions.Value._overrideDebug.Contains(Global_Configs
                                              ._localUserID);
 
-    public static bool IsDebug => Player.m_debugMode || CustomDebug();
+    public static bool IsDebug_Marketplace => Player.m_debugMode || ZNet.IsSinglePlayer || CustomDebug();
+
+    public static bool IsDebug_Strict => Player.m_debugMode;
 
     public static void print(object obj, ConsoleColor color = ConsoleColor.DarkGreen)
     {
@@ -485,7 +487,7 @@ public static class Utils
         return result;
     }
 
-public static void IncreaseSkillEXP(string name, float expToAdd)
+    public static void IncreaseSkillEXP(string name, float expToAdd)
     {
         Skills.Skill skill;
         if (!Enum.TryParse(name, out Skills.SkillType found))

@@ -43,7 +43,7 @@ public static class MarketplaceHammer
             if (__instance.name != "_HammerPieceTable") return;
             List<Piece> avaliablePieces = __instance.m_availablePieces[(int)_category];
             Hud_Awake_Patch.UI.SetActive(__instance.m_selectedCategory == _category);
-            if (Utils.IsDebug)
+            if (Utils.IsDebug_Marketplace)
             {
                 avaliablePieces.RemoveAt(0);
                 avaliablePieces.Add(Market_NPC.NPC.GetComponent<Piece>());
@@ -245,7 +245,7 @@ public static class MarketplaceHammer
         [UsedImplicitly]
         private static void Postfix(Piece __instance, ref bool __result)
         {
-            if (__instance.GetComponent<Market_NPC.NPCcomponent>() && !Utils.IsDebug)
+            if (__instance.GetComponent<Market_NPC.NPCcomponent>() && !Utils.IsDebug_Marketplace)
             {
                 __result = false;
             }

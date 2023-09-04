@@ -44,26 +44,9 @@ public static class Transmogrification_DataTypes
         }
     }
     
-    public class TransmogItem_Component : ItemData
+    public class TransmogItem_Component_New : ItemData
     {
-        public string ReplacedPrefab;
-        public int Variant;
-        public string ItemColor;
-
-        public TransmogItem_Component(){}
-
-        public override void Load()
-        {
-            string[] split = Value.Split('|');
-            ReplacedPrefab = split[0];
-            Variant = int.Parse(split[1]);
-            ItemColor = split.Length > 3 ? split[3] : "";
-        }
-
-        public override void Save()
-        {
-            Value = $"{ReplacedPrefab}|{Variant}|0|{ItemColor}";
-        }
-        
+        [SerializeField] public string ReplacedPrefab;
+        [SerializeField] public string ItemColor;
     }
 }

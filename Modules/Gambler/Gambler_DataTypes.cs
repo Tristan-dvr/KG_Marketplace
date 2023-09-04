@@ -52,6 +52,7 @@ public static class Gambler_DataTypes
     {
         public string Prefab;
         public int Min, Max;
+        
         private Sprite icon = null!;
         private string LocalizedName;
         private string rawName;

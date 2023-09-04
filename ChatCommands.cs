@@ -14,7 +14,7 @@ public static class ChatCommands
         {
             new Terminal.ConsoleCommand("npcremove", "Remove NPCs in range of 5 meters", (args) =>
             {
-                if (!Utils.IsDebug) return; 
+                if (!Utils.IsDebug_Marketplace) return; 
                 IEnumerable<Market_NPC.NPCcomponent> FindNPCsInRange = Market_NPC.NPCcomponent.ALL.Where(x =>
                     global::Utils.DistanceXZ(Player.m_localPlayer.transform.position, x.transform.position) <= 5f);
                 int c = 0;
@@ -38,7 +38,7 @@ public static class ChatCommands
 
             new Terminal.ConsoleCommand("idm", "Get Current Left/Right ItemDataManager values", (args) =>
             {
-                if (!Utils.IsDebug) return;
+                if (!Utils.IsDebug_Marketplace) return;
                 ItemDrop.ItemData weapon = Player.m_localPlayer.GetRightItem() != null
                     ? Player.m_localPlayer.GetRightItem()
                     : Player.m_localPlayer.GetLeftItem();
@@ -60,7 +60,7 @@ public static class ChatCommands
 
             new Terminal.ConsoleCommand("mfpslimit", "Set Fixed Update FPS", (args) =>
             {
-                if (!Utils.IsDebug || args.Args.Length < 2) return;
+                if (!Utils.IsDebug_Marketplace || args.Args.Length < 2) return;
                 int fps = int.Parse(args.Args[1]);
                 fps = Mathf.Clamp(fps, 50, 144);
                 float time = 1f / fps;
@@ -70,7 +70,7 @@ public static class ChatCommands
 
             new Terminal.ConsoleCommand("zonevisualizer", "Toggle zone visualizer", (_) =>
             {
-                if (!Utils.IsDebug) return;
+                if (!Utils.IsDebug_Marketplace) return;
                 if (ZoneVisualizer.Visualizers.Count == 0)
                     ZoneVisualizer.On();
                 else
@@ -114,7 +114,7 @@ public static class ChatCommands
             new Terminal.ConsoleCommand("mclearallquests", "Clears all quests for player",
                 (args) =>
                 {
-                    if (!Utils.IsDebug) return;
+                    if (!Utils.IsDebug_Marketplace) return;
                     string playerName = "";
                     for (int i = 1; i < args.Args.Length; i++)
                     {
@@ -146,7 +146,7 @@ public static class ChatCommands
             new Terminal.ConsoleCommand("mclearquest", "Clear quest for player", 
                 (args) =>
                 {
-                    if (!Utils.IsDebug) return;
+                    if (!Utils.IsDebug_Marketplace) return;
                     string playerName = "";
                     for (int i = 1; i < args.Args.Length - 1; i++)
                     {

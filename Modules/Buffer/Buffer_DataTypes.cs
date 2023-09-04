@@ -9,7 +9,7 @@ public static class Buffer_DataTypes
 
     internal static readonly CustomSyncedValue<List<BufferBuffData>> SyncedBufferBuffs =
         new(Marketplace.configSync, "bufferBuffs", new List<BufferBuffData>());
-    
+
     public static readonly Dictionary<string, List<BufferBuffData>> ClientSideBufferProfiles = new();
 
     public static readonly WhatToModify[] BufferModifyList = (WhatToModify[])Enum.GetValues(typeof(WhatToModify));
@@ -35,17 +35,20 @@ public static class Buffer_DataTypes
         public string UniqueName;
         public string Name;
         public int Duration;
-        public float ModifyAttack = 1f;
-        public float ModifyHealthRegen = 1f;
-        public float ModifyStaminaRegen = 1f;
-        public float ModifyRaiseSkills = 1f;
-        public float MofidySpeed = 1f;
-        public float ModifyNoise = 1f;
-        public float ModifyMaxCarryWeight;
-        public float MofidyStealth = 1f;
-        public float RunStaminaDrain = 1f;
-        public float ModifyJumpStaminaUsage = 1f;
-        public float DamageReduction;
+
+        public Dictionary<WhatToModify, float> ModifyList = new()
+        {
+            { WhatToModify.ModifyAttack, 1f },
+            { WhatToModify.ModifyHealthRegen, 1f },
+            { WhatToModify.ModifyStaminaRegen, 1f },
+            { WhatToModify.ModifyRaiseSkills, 1f },
+            { WhatToModify.ModifySpeed, 1f },
+            { WhatToModify.ModifyNoise, 1f },
+            { WhatToModify.ModifyMaxCarryWeight, 0f },
+            { WhatToModify.ModifyStealth, 1f },
+            { WhatToModify.RunStaminaDrain, 1f },
+            { WhatToModify.DamageReduction, 0f }
+        };
 
         public string NeededPrefab;
         public int NeededPrefabCount;
@@ -59,17 +62,16 @@ public static class Buffer_DataTypes
             pkg.Write(UniqueName ?? "");
             pkg.Write(Name ?? "");
             pkg.Write(Duration);
-            pkg.Write(ModifyAttack);
-            pkg.Write(ModifyHealthRegen);
-            pkg.Write(ModifyStaminaRegen);
-            pkg.Write(ModifyRaiseSkills);
-            pkg.Write(MofidySpeed);
-            pkg.Write(ModifyNoise);
-            pkg.Write(ModifyMaxCarryWeight);
-            pkg.Write(MofidyStealth);
-            pkg.Write(RunStaminaDrain);
-            pkg.Write(ModifyJumpStaminaUsage);
-            pkg.Write(DamageReduction);
+            pkg.Write(ModifyList[WhatToModify.ModifyAttack]);
+            pkg.Write(ModifyList[WhatToModify.ModifyHealthRegen]);
+            pkg.Write(ModifyList[WhatToModify.ModifyStaminaRegen]);
+            pkg.Write(ModifyList[WhatToModify.ModifyRaiseSkills]);
+            pkg.Write(ModifyList[WhatToModify.ModifySpeed]);
+            pkg.Write(ModifyList[WhatToModify.ModifyNoise]);
+            pkg.Write(ModifyList[WhatToModify.ModifyMaxCarryWeight]);
+            pkg.Write(ModifyList[WhatToModify.ModifyStealth]);
+            pkg.Write(ModifyList[WhatToModify.RunStaminaDrain]);
+            pkg.Write(ModifyList[WhatToModify.DamageReduction]);
             pkg.Write(NeededPrefab ?? "");
             pkg.Write(NeededPrefabCount);
             pkg.Write((int)Flags);
@@ -83,17 +85,16 @@ public static class Buffer_DataTypes
             UniqueName = pkg.ReadString();
             Name = pkg.ReadString();
             Duration = pkg.ReadInt();
-            ModifyAttack = pkg.ReadSingle();
-            ModifyHealthRegen = pkg.ReadSingle();
-            ModifyStaminaRegen = pkg.ReadSingle();
-            ModifyRaiseSkills = pkg.ReadSingle();
-            MofidySpeed = pkg.ReadSingle();
-            ModifyNoise = pkg.ReadSingle();
-            ModifyMaxCarryWeight = pkg.ReadSingle();
-            MofidyStealth = pkg.ReadSingle();
-            RunStaminaDrain = pkg.ReadSingle();
-            ModifyJumpStaminaUsage = pkg.ReadSingle();
-            DamageReduction = pkg.ReadSingle();
+            ModifyList[WhatToModify.ModifyAttack] = pkg.ReadSingle();
+            ModifyList[WhatToModify.ModifyHealthRegen] = pkg.ReadSingle();
+            ModifyList[WhatToModify.ModifyStaminaRegen] = pkg.ReadSingle();
+            ModifyList[WhatToModify.ModifyRaiseSkills] = pkg.ReadSingle();
+            ModifyList[WhatToModify.ModifySpeed] = pkg.ReadSingle();
+            ModifyList[WhatToModify.ModifyNoise] = pkg.ReadSingle();
+            ModifyList[WhatToModify.ModifyMaxCarryWeight] = pkg.ReadSingle();
+            ModifyList[WhatToModify.ModifyStealth] = pkg.ReadSingle();
+            ModifyList[WhatToModify.RunStaminaDrain] = pkg.ReadSingle();
+            ModifyList[WhatToModify.DamageReduction] = pkg.ReadSingle();
             NeededPrefab = pkg.ReadString();
             NeededPrefabCount = pkg.ReadInt();
             Flags = (WhatToModify)pkg.ReadInt();
@@ -201,57 +202,57 @@ public static class Buffer_DataTypes
 
         public override void ModifyAttack(Skills.SkillType skill, ref HitData hitData)
         {
-            hitData.ApplyModifier(Data.ModifyAttack);
+            hitData.ApplyModifier(Data.ModifyList[WhatToModify.ModifyAttack]);
         }
 
         public override void ModifyHealthRegen(ref float regenMultiplier)
         {
-            regenMultiplier *= Data.ModifyHealthRegen;
+            regenMultiplier *= Data.ModifyList[WhatToModify.ModifyHealthRegen];
         }
 
         public override void ModifyStaminaRegen(ref float staminaRegen)
         {
-            staminaRegen *= Data.ModifyStaminaRegen;
+            staminaRegen *= Data.ModifyList[WhatToModify.ModifyStaminaRegen];
         }
 
         public override void ModifyRaiseSkill(Skills.SkillType skill, ref float value)
         {
-            value *= Data.ModifyRaiseSkills;
+            value *= Data.ModifyList[WhatToModify.ModifyRaiseSkills];
         }
 
         public override void ModifySpeed(float baseSpeed, ref float speed)
         {
-            speed *= Data.MofidySpeed;
+            speed *= Data.ModifyList[WhatToModify.ModifySpeed];
         }
 
         public override void ModifyNoise(float baseNoise, ref float noise)
         {
-            noise *= Data.ModifyNoise;
+            noise *= Data.ModifyList[WhatToModify.ModifyNoise];
         }
 
         public override void ModifyStealth(float baseStealth, ref float stealth)
         {
-            stealth *= Data.MofidyStealth;
+            stealth *= Data.ModifyList[WhatToModify.ModifyStealth];
         }
 
         public override void ModifyMaxCarryWeight(float baseLimit, ref float limit)
         {
-            limit += Data.ModifyMaxCarryWeight;
+            limit += Data.ModifyList[WhatToModify.ModifyMaxCarryWeight];
         }
 
         public override void ModifyRunStaminaDrain(float baseDrain, ref float drain)
         {
-            drain *= Data.RunStaminaDrain;
+            drain *= Data.ModifyList[WhatToModify.RunStaminaDrain];
         }
 
         public override void ModifyJumpStaminaUsage(float baseStaminaUse, ref float staminaUse)
         {
-            staminaUse *= Data.ModifyJumpStaminaUsage;
+            staminaUse *= Data.ModifyList[WhatToModify.RunStaminaDrain];
         }
 
         public override void OnDamaged(HitData hit, Character attacker)
         {
-            float mod = Mathf.Clamp01(1f - Data.DamageReduction);
+            float mod = Mathf.Clamp01(1f - Data.ModifyList[WhatToModify.DamageReduction]);
             hit.ApplyModifier(mod);
         }
     }

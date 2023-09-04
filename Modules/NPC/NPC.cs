@@ -558,7 +558,7 @@ public static class Market_NPC
         {
             if (TextInput.IsVisible()) return "";
 
-            string admintext = Utils.IsDebug
+            string admintext = Utils.IsDebug_Marketplace
                 ? "\n" + Localization.instance.Localize("[<color=yellow><b>$KEY_AltPlace + $KEY_Use</b></color>]") +
                   " " + Localization.instance.Localize("$mpasn_opennnpcui") +
                   "\n" + Localization.instance.Localize("[<color=yellow><b>ALT + $KEY_Use</b></color>]") +
@@ -649,19 +649,19 @@ public static class Market_NPC
                 NPC_SoundSource.Play();
             }
 
-            if (Input.GetKey(KeyCode.C) && Utils.IsDebug)
+            if (Input.GetKey(KeyCode.C) && Utils.IsDebug_Marketplace)
             {
                 MarketplaceHammer.SaveNPC(this);
                 return true;
             }
 
-            if (Input.GetKey(KeyCode.LeftAlt) && Utils.IsDebug)
+            if (Input.GetKey(KeyCode.LeftAlt) && Utils.IsDebug_Marketplace)
             {
                 NPCUI.ShowFashion(znv.m_zdo);
                 return true;
             }
 
-            if (alt && Utils.IsDebug)
+            if (alt && Utils.IsDebug_Marketplace)
             {
                 NPCUI.ShowMain(znv.m_zdo);
                 return true;
@@ -1672,7 +1672,7 @@ public static class Market_NPC
         [UsedImplicitly]
         private static bool Prefix(Piece piece)
         {
-            if (piece.GetComponent<NPCcomponent>() && !Utils.IsDebug)
+            if (piece.GetComponent<NPCcomponent>() && !Utils.IsDebug_Marketplace)
             {
                 MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
                     $"<color=#00ff00>{Localization.instance.Localize("$mpasn_enabledebugmode")}</color>");

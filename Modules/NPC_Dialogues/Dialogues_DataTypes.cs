@@ -816,7 +816,7 @@ public static class Dialogues_DataTypes
                 dialogue.Options[i] = new PlayerOption
                 {
                     Text = raw.Options[i].Text,
-                    Icon = Utils.TryFindIcon(raw.Options[i].Icon!),
+                    Icon = Utils.TryFindIcon(raw.Options[i].Icon),
                     NextUID = raw.Options[i].NextUID,
                     Command = ParseCommands(raw.Options[i].Commands),
                     Condition = ParseConditions(raw.Options[i].Conditions),

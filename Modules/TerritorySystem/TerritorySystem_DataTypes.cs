@@ -243,7 +243,7 @@ public static class TerritorySystem_DataTypes
 
         public bool IsOwner()
         {
-            if (Player.m_debugMode) return true;
+            if (Utils.IsDebug_Strict) return true;
             IsOwnerCached ??= Owners.Contains(Global_Configs._localUserID) || Owners.Contains("ALL");
             return IsOwnerCached.Value;
         }
