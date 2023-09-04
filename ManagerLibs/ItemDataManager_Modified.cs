@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Text;
 using BepInEx;
 using BepInEx.Bootstrap;
 using HarmonyLib;
@@ -21,13 +22,12 @@ public abstract class ItemData
 
 	protected virtual bool AllowStackingIdenticalValues { get; set; } = false;
 
-	private string Value
+	// Value is the raw data stored on the Item. An ItemData implementing class may either use it directly, or attach a [SerializeField] attribute to at least one field, in which case Value will be maintained by the default Load() and Save() implementations.
+	public string Value
 	{
 		get => Item.m_customData.TryGetValue(CustomDataKey, out string data) ? data : "";
 		set => Item.m_customData[CustomDataKey] = value;
 	}
-	
-	public void Flush() => Value = "";
 
 	private string key = null!;
 
@@ -46,78 +46,87 @@ public abstract class ItemData
 
 	public ItemDrop.ItemData Item => Info.ItemData;
 	internal static WeakReference<ItemInfo> constructingInfo = null!;
-	internal static Dictionary<Type, FieldInfo[]> serializedContainers = new();
 	internal WeakReference<ItemInfo>? info;
 	public ItemInfo Info => (info ?? constructingInfo).TryGetTarget(out ItemInfo itemInfo) ? itemInfo : new ItemInfo(new ItemDrop.ItemData());
 
 	public virtual void FirstLoad() { }
-	public virtual void Unload() { }
-	public virtual void Upgraded() { }
-	
-	public void Save()
-	{
-		Type t = GetType();
-		string toSave = "";
-		if (!serializedContainers.ContainsKey(t))
-		{
-			serializedContainers[t] = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).
-				Where(f => f.GetCustomAttributes(typeof(SerializeField), true).Length > 0).ToArray();
-		}
-		
-		foreach (FieldInfo field in serializedContainers[t])
-		{
-			object value = field.GetValue(this);
-			ZPackage pkg = new();
-			ZRpc.Serialize(new[]{value}, ref pkg);
-			toSave += $"{field.Name}:{pkg.GetBase64()}|";
-		}
-		
-		if (toSave != "") 
-			toSave = toSave.Substring(0, toSave.Length - 1);
-		
-		Value = toSave;
-	}
 
-	private static readonly FieldInfo cachedClassImpl = AccessTools.DeclaredField(typeof(ParameterInfo), "ClassImpl");
-	
-	internal void Load()
+	public virtual void Load()
 	{
-		if(string.IsNullOrWhiteSpace(Value)) return;
-		Type t = GetType();
-		if (!serializedContainers.ContainsKey(t))
+		if (fetchSerializedFields() is not { Count: > 0 } fields || Value == "")
 		{
-			serializedContainers[t] = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).
-				Where(f => f.GetCustomAttributes(typeof(SerializeField), true).Length > 0).ToArray();
+			return;
 		}
-		
-		string[] parts = Value.Split('|');
-		foreach (string part in parts)
+
+		List<object> obj = new();
+		foreach (string part in Value.Split('|'))
 		{
 			string[] keyVal = part.Split(':');
-			if (keyVal.Length != 2 || string.IsNullOrEmpty(keyVal[0]) || string.IsNullOrEmpty(keyVal[1])) continue;
-			FieldInfo field = serializedContainers[t].FirstOrDefault(f => f.Name == keyVal[0]);
-			if (field is null) continue;
+			if (keyVal.Length != 2 || !fields.TryGetValue(keyVal[0], out FieldInfo field))
+			{
+				continue;
+			}
+
 			ZPackage pkg = new(keyVal[1]);
 			ParameterInfo param = (ParameterInfo)FormatterServices.GetUninitializedObject(typeof(ParameterInfo));
-			cachedClassImpl.SetValue(param, field.FieldType);
-			List<object> obj = new();
-			ZRpc.Deserialize(new[]{null, param}, pkg, ref obj);
-			field.SetValue(this, obj[0]);
+			parameterInfoClassImpl.SetValue(param, field.FieldType);
+			obj.Clear();
+			ZRpc.Deserialize(new[] { null, param }, pkg, ref obj);
+			if (obj.Count > 0)
+			{
+				field.SetValue(this, obj[0]);
+			}
 		}
 	}
-	
-	
+
+	public virtual void Save()
+	{
+		if (fetchSerializedFields() is not { Count: > 0 } fields)
+		{
+			return;
+		}
+
+		StringBuilder toSave = new();
+
+		foreach (FieldInfo field in fields.Values)
+		{
+			ZPackage pkg = new();
+			ZRpc.Serialize(new[] { field.GetValue(this) }, ref pkg);
+			toSave.Append(field.Name);
+			toSave.Append(':');
+			toSave.Append(pkg.GetBase64());
+			toSave.Append('|');
+		}
+
+		--toSave.Length;
+		Value = toSave.ToString();
+	}
+
+	public virtual void Unload() { }
+	public virtual void Upgraded() { }
+
 	// data arg is ItemData this ItemData is stacked with (identical Key) - if the other item has no such ItemData, null is passed
 	// If null, stacking disallowed.
 	// If non-null, the new item will have ItemData with this new string-value
 	// By default stacking is disallowed. Set AllowStackingIdenticalValues property to true for trivial by Value comparisons.
-	public string? TryStack(ItemData? data) => AllowStackingIdenticalValues && data?.Value == Value ? Value : null;
+	public virtual string? TryStack(ItemData? data) => AllowStackingIdenticalValues && data?.Value == Value ? Value : null;
+
+	private static readonly FieldInfo parameterInfoClassImpl = AccessTools.DeclaredField(typeof(ParameterInfo), "ClassImpl");
+	private static Dictionary<Type, Dictionary<string, FieldInfo>> serializedFields = new();
+
+	private Dictionary<string, FieldInfo> fetchSerializedFields()
+	{
+		Type t = GetType();
+		if (serializedFields.TryGetValue(t, out Dictionary<string, FieldInfo> fields))
+		{
+			return fields;
+		}
+
+		return serializedFields[t] = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(f => f.GetCustomAttributes(typeof(SerializeField), true).Length > 0).ToDictionary(f => f.Name, f => f);
+	}
 }
 
-public sealed class StringItemData : ItemData
-{
-	[SerializeField] public string Value;
-}
+public sealed class StringItemData : ItemData;
 
 [PublicAPI]
 public class ItemInfo : IEnumerable<ItemData>
@@ -151,7 +160,7 @@ public class ItemInfo : IEnumerable<ItemData>
 	private WeakReference<ItemInfo>? selfReference = null;
 
 	internal HashSet<string> isCloned = new();
-	private static ItemDrop.ItemData? awakeningItem = null; 
+	private static ItemDrop.ItemData? awakeningItem = null;
 
 	internal static void addTypeToInheritorsCache(Type type, string typeKey)
 	{
@@ -193,12 +202,7 @@ public class ItemInfo : IEnumerable<ItemData>
 	public string? this[string key]
 	{
 		get => Get<StringItemData>(key)?.Value;
-		set
-		{
-			StringItemData sid = GetOrCreate<StringItemData>(key);
-			sid.Value = value ?? "";
-			sid.Save();
-		}
+		set => GetOrCreate<StringItemData>(key).Value = value ?? "";
 	}
 
 	internal ItemInfo(ItemDrop.ItemData itemData)
@@ -233,10 +237,10 @@ public class ItemInfo : IEnumerable<ItemData>
 		}
 
 		ItemData.m_customData[fullKey] = "";
-		ItemDataManager.ItemData.constructingInfo = selfReference ??= new WeakReference<ItemInfo>(this); 
+		ItemDataManager.ItemData.constructingInfo = selfReference ??= new WeakReference<ItemInfo>(this);
 		T obj = new() { info = selfReference, Key = key };
 		data[compoundKey] = obj;
-		obj.Flush(); // initial Store
+		obj.Value = ""; // initial Store
 		obj.FirstLoad();
 		return obj;
 	}
@@ -308,7 +312,7 @@ public class ItemInfo : IEnumerable<ItemData>
 			return null;
 		}
 
-		ItemDataManager.ItemData.constructingInfo = selfReference ??= new WeakReference<ItemInfo>(this); 
+		ItemDataManager.ItemData.constructingInfo = selfReference ??= new WeakReference<ItemInfo>(this);
 		ItemData obj = (ItemData)Activator.CreateInstance(type);
 		data[key] = obj;
 		obj.info = selfReference;
@@ -332,7 +336,7 @@ public class ItemInfo : IEnumerable<ItemData>
 		{
 			return;
 		}
-		
+
 		string prefix = dataKey("");
 		List<string> keys = ItemData.m_customData.Keys.ToList();
 		foreach (string key in keys)
