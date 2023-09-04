@@ -319,8 +319,8 @@ public static class Transmogrification_UI
         Player.m_localPlayer.m_inventory.RemoveItem(priceItem.GetComponent<ItemDrop>().m_itemData.m_shared.m_name,
             data.Price_Amount);
 
-        Transmogrification_DataTypes.TransmogItem_Component newTransmog =
-            CurrentChoosenItem.Data().GetOrCreate<Transmogrification_DataTypes.TransmogItem_Component>();
+        Transmogrification_DataTypes.TransmogItem_ComponentV2 newTransmog =
+            CurrentChoosenItem.Data().GetOrCreate<Transmogrification_DataTypes.TransmogItem_ComponentV2>();
         newTransmog.ReplacedPrefab = data.Prefab;
         string hex = "#" + element.transform.Find("HEX").GetComponent<TMP_InputField>().text;
         newTransmog.ItemColor = ColorUtility.TryParseHtmlString(hex, out _) ? hex : "";
@@ -343,8 +343,8 @@ public static class Transmogrification_UI
     private static void TransformReverse()
     {
         AssetStorage.AUsrc.Play();
-        if(CurrentChoosenItem?.Data().Get<Transmogrification_DataTypes.TransmogItem_Component>() == null) return;
-        CurrentChoosenItem.Data().Remove<Transmogrification_DataTypes.TransmogItem_Component>();
+        if(CurrentChoosenItem?.Data().Get<Transmogrification_DataTypes.TransmogItem_ComponentV2>() == null) return;
+        CurrentChoosenItem.Data().Remove<Transmogrification_DataTypes.TransmogItem_ComponentV2>();
         GameObject eff = UnityEngine.Object.Instantiate(ClickEffectReverse, ChoosenItem_Transform);
         eff.transform.SetAsLastSibling();
         AssetStorage.AUsrc.PlayOneShot(Gambler_UI.SOUNDEFFECT3, 0.6f);

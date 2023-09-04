@@ -110,7 +110,7 @@ public static class Transmogrification_Main_Client
 
     public static bool HasTransmog(this ItemDrop.ItemData item)
     {
-        return item?.Data().Get<Transmogrification_DataTypes.TransmogItem_Component>() != null;
+        return item?.Data().Get<Transmogrification_DataTypes.TransmogItem_ComponentV2>() != null;
     }
 
     private struct TempItem
@@ -125,7 +125,7 @@ public static class Transmogrification_Main_Client
     {
         if (item == null) return new TempItem { ReplacedPrefab = "", Variant = 0,ItemColor = ""};
 
-        if (item.Data().Get<Transmogrification_DataTypes.TransmogItem_Component>() is { } t)
+        if (item.Data().Get<Transmogrification_DataTypes.TransmogItem_ComponentV2>() is { } t)
             return new TempItem { ReplacedPrefab = t.ReplacedPrefab ?? "", Variant = 0, ItemColor = t.ItemColor ?? ""};
         
         return new TempItem { ReplacedPrefab = item.m_dropPrefab.name, Variant = item.m_variant, ItemColor = ""};
