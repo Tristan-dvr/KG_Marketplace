@@ -22,5 +22,6 @@ Global
 		{FB9EF952-D30A-4D2E-B86D-90BAD3DE0269}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FB9EF952-D30A-4D2E-B86D-90BAD3DE0269}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB9EF952-D30A-4D2E-B86D-90BAD3DE0269}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB9EF952-D30A-4D2E-B86D-90BAD3DE0269}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

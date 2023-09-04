@@ -69,6 +69,10 @@
     <ItemGroup>
       <EmbeddedResource Include="npcmodels" />
     </ItemGroup>
+
+    <Target Name="Copy" AfterTargets="Build">
+        <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;D:\SteamLibrary\steamapps\common\Valheim\BepInEx\plugins\$(AssemblyName).dll&quot;" />
+    </Target>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
