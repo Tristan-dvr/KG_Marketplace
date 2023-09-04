@@ -326,6 +326,12 @@
     <ItemGroup>
       <Folder Include="Resources\" />
     </ItemGroup>
+    <ItemGroup>
+      <Content Include="ThunderstorePackage\icon.png" />
+      <Content Include="ThunderstorePackage\manifest.json" />
+      <Content Include="ThunderstorePackage\README.md" />
+      <Content Include="ThunderstorePackage\ThunderstorePackage.zip" />
+    </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

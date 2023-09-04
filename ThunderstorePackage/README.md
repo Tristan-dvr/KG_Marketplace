@@ -40,7 +40,6 @@ Paypal: war3spells@gmail.com
 
 # You can find all guides here: https://kg-dev.xyz/
 
-For Questions or Comments, find KG#7777 ![https://i.imgur.com/CPYNjXV.png](https://i.imgur.com/CPYNjXV.png)in the Odin
-Plus
-Team Discord:
+For Questions or Comments, find KG in the Odin
+Plus Discord:
 [![https://i.imgur.com/XXP6HCU.png](https://i.imgur.com/XXP6HCU.png)](https://discord.gg/5gXNxNkUBt)

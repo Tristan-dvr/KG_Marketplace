@@ -659,6 +659,6 @@ public static class KG_Chat
     private static class Chat_isAllowedCommand_Patch
     {
         [UsedImplicitly]
-        private static void Postfix(ref bool __result) => __result |= (kgChat && Utils.IsDebug_Marketplace);
+        private static void Postfix(ref bool __result) => __result |= (kgChat && Utils.IsDebug_Strict);
     }
 }
