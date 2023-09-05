@@ -22,10 +22,11 @@ public static class AssetStorage
     public static Sprite MH_Exp_Icon = null!;
     public static Sprite NullSprite = null!;
     public static Sprite CustomValue_Icon = null!;
+    public static Sprite QuestCompleteIcon = null!;
+    public static Sprite PortalIconDefault = null!;
     public static Texture WoodTex = null!;
     public static AudioClip TypeClip = null!;
     public static GameObject Teleporter_VFX1 = null!;
-    public static Sprite PortalIconDefault = null!;
     public static GameObject Teleporter_VFX2 = null!;
 
     public static AudioSource AUsrc = null!;
@@ -42,25 +43,18 @@ public static class AssetStorage
         Teleporter_VFX2 = asset.LoadAsset<GameObject>("MarketplaceTP_2");
         MarketplaceQuestTargetIcon = asset.LoadAsset<GameObject>("MarketplaceQuestTargetIcon");
         MarketplaceQuestQuestionIcon = asset.LoadAsset<GameObject>("MarketplaceQuestionMark");
+        QuestCompleteIcon = asset.LoadAsset<Sprite>("questcomplete");
         EpicMMO_Exp = asset.LoadAsset<Sprite>("EpicMMOIcon");
         CustomValue_Icon = asset.LoadAsset<Sprite>("CustomValueIcon");
-        Texture2D mh_texture = new Texture2D(1, 1);
-        mh_texture.LoadImage(Convert.FromBase64String(ResourcesBase64.MagicHeim_Icon));
-        MH_Exp_Icon = Sprite.Create(mh_texture, new Rect(0, 0, mh_texture.width, mh_texture.height), Vector2.zero);
-        Texture2D gamblerTex = new Texture2D(1, 1);
-        gamblerTex.LoadImage(Convert.FromBase64String(ResourcesBase64.PlacholderGambler));
-        Texture2D cozyheimTex = new Texture2D(1, 1);
-        cozyheimTex.LoadImage(Convert.FromBase64String(ResourcesBase64.Cozyheim_LevelingSystem_Icon));
-        Cozyheim_Exp = Sprite.Create(cozyheimTex, new Rect(0, 0, cozyheimTex.width, cozyheimTex.height), Vector2.zero);
-        PlaceholderGamblerIcon = Sprite.Create(gamblerTex, new Rect(0, 0, gamblerTex.width, gamblerTex.height), Vector2.zero);
-        Texture2D monsterTex = new Texture2D(1, 1);
-        monsterTex.LoadImage(Convert.FromBase64String(ResourcesBase64.PlaceholderMonster));
-        PlaceholderMonsterIcon = Sprite.Create(monsterTex, new Rect(0, 0, monsterTex.width, monsterTex.height),
-            Vector2.zero);
-        Texture2D def = new Texture2D(1, 1);
-        def.LoadImage(Convert.FromBase64String(ResourcesBase64.defaultPortal));
-        PortalIconDefault = Sprite.Create(def, new Rect(0, 0, def.width, def.height), new Vector2(0, 0));
+        MH_Exp_Icon = asset.LoadAsset<Sprite>("magicheim_icon");
+        Cozyheim_Exp =  asset.LoadAsset<Sprite>("cozyheim_icon");
+        PlaceholderGamblerIcon = asset.LoadAsset<Sprite>("placeholdergambler_icon");
+        PlaceholderMonsterIcon =  asset.LoadAsset<Sprite>("placeholdermonster_icon");
+        PortalIconDefault = asset.LoadAsset<Sprite>("default_portal_icon");
         NPC_MapControl = asset.LoadAsset<Sprite>("NPC_MapControl");
+        
+        GlobalCachedSprites["teleporter_default"] = PortalIconDefault;
+        
         foreach (string file in Directory.GetFiles(Market_Paths.CachedImagesFolder, "*.png", SearchOption.AllDirectories))
         {
             string fileName = Path.GetFileNameWithoutExtension(file);
@@ -70,7 +64,8 @@ public static class AssetStorage
             Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0));
             GlobalCachedSprites[fileName] = sprite;
         }
-        GlobalCachedSprites.Add("teleporter_default", PortalIconDefault);
+        
+       
         Marketplace._thistype.StartCoroutine(LoadSoundsCoroutine(Market_Paths.NPC_SoundsPath));
     }
 

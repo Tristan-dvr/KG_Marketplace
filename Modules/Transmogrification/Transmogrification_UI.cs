@@ -124,176 +124,81 @@ public static class Transmogrification_UI
     {
         foreach (Transform child in Category_Content)
             UnityEngine.Object.Destroy(child.gameObject);
-
-
         if (item == null)
         {
-            if (Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile]
-                    .TryGetValue((ItemDrop.ItemData.ItemType)999,
-                        out List<Transmogrification_DataTypes.TransmogItem_Data> anyCategoryNoItem) &&
-                anyCategoryNoItem.Count > 0)
-            {
-                GameObject element = UnityEngine.Object.Instantiate(Category_Element, Category_Content);
-                element.GetComponent<GridLayoutGroup>().cellSize -= new Vector2(0, 40f);
-                element.GetComponent<Image>().color = TypeColors[(ItemDrop.ItemData.ItemType)999];
-                element.transform.Find("Text").GetComponent<Text>().text =
-                    Localization.instance.Localize("$mpasn_transmog_any");
-                foreach (Transmogrification_DataTypes.TransmogItem_Data data in anyCategoryNoItem)
-                {
-                    GameObject prefab = ZNetScene.instance.GetPrefab(data.Prefab); 
-                    if (!prefab) continue;
-                    GameObject transmogElement = UnityEngine.Object.Instantiate(Transmog_Element, element.transform);
-                    transmogElement.transform.Find("ItemName").GetComponent<Text>().text = data.GetLocalizedName();
-                    transmogElement.transform.Find("Icon/IconItem").GetComponent<Image>().sprite = data.GetIcon();
-                    transmogElement.transform.Find("Price").GetComponent<Text>().text = data.GetLocalizedPrice();
-                    transmogElement.transform.Find("Price/X").GetComponent<Text>().text = $"X {data.Price_Amount}";
-                    transmogElement.transform.Find("Price/PriceIcon/IconItem").GetComponent<Image>().sprite =
-                        data.GetPriceIcon();
-                    transmogElement.transform.Find("Add").gameObject.SetActive(false);
-                    transmogElement.transform.Find("HEX").gameObject.SetActive(false);
-                    transmogElement.transform.Find("ColorText").gameObject.SetActive(false);
-                    transmogElement.transform.Find("Preview").gameObject.SetActive(false);
-                }
-            }
-
-            foreach (ItemDrop.ItemData.ItemType type in AvaliableTypes)
-            {
-                if (!Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile]
-                        .TryGetValue(type, out List<Transmogrification_DataTypes.TransmogItem_Data> categoryData) ||
-                    categoryData.Count <= 0) continue;
-                GameObject element = UnityEngine.Object.Instantiate(Category_Element, Category_Content);
-                element.GetComponent<GridLayoutGroup>().cellSize -= new Vector2(0, 40f);
-                element.GetComponent<Image>().color = TypeColors[type];
-                element.transform.Find("Text").GetComponent<Text>().text =
-                    Localization.instance.Localize("$mpasn_transmog_" + type.ToString().ToLower());
-
-                foreach (Transmogrification_DataTypes.TransmogItem_Data data in categoryData)
-                {
-                    GameObject prefab = ZNetScene.instance.GetPrefab(data.Prefab);
-                    if (!prefab) continue;
-                    GameObject transmogElement = UnityEngine.Object.Instantiate(Transmog_Element, element.transform);
-                    transmogElement.transform.Find("ItemName").GetComponent<Text>().text = data.GetLocalizedName();
-                    transmogElement.transform.Find("Icon/IconItem").GetComponent<Image>().sprite = data.GetIcon();
-                    transmogElement.transform.Find("Price").GetComponent<Text>().text = data.GetLocalizedPrice();
-                    transmogElement.transform.Find("Price/X").GetComponent<Text>().text = $"X {data.Price_Amount}";
-                    transmogElement.transform.Find("Price/PriceIcon/IconItem").GetComponent<Image>().sprite =
-                        data.GetPriceIcon();
-                    transmogElement.transform.Find("Add").gameObject.SetActive(false);
-                    transmogElement.transform.Find("HEX").gameObject.SetActive(false);
-                    transmogElement.transform.Find("ColorText").gameObject.SetActive(false);
-                    transmogElement.transform.Find("Preview").gameObject.SetActive(false);
-                }
-            }
-
+            LoadOneCategory((ItemDrop.ItemData.ItemType)999, false);
+               foreach (ItemDrop.ItemData.ItemType c in AvaliableTypes)
+                    LoadOneCategory(c, false);
             return;
         }
-
         ItemDrop.ItemData.ItemType category = item.m_shared.m_itemType;
-
+        LoadOneCategory((ItemDrop.ItemData.ItemType)999, true);
+        LoadOneCategory(category, true);
+        UpdateFillers();
+    }
+    
+    private static void LoadOneCategory(ItemDrop.ItemData.ItemType category, bool active)
+    {
         if (Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile]
-                .TryGetValue((ItemDrop.ItemData.ItemType)999,
-                    out List<Transmogrification_DataTypes.TransmogItem_Data> anyCategory) &&
-            anyCategory.Count > 0)
-        {
-            GameObject element = UnityEngine.Object.Instantiate(Category_Element, Category_Content);
-            element.GetComponent<Image>().color = TypeColors[(ItemDrop.ItemData.ItemType)999];
-            element.transform.Find("Text").GetComponent<Text>().text =
-                Localization.instance.Localize("$mpasn_transmog_any");
-            foreach (Transmogrification_DataTypes.TransmogItem_Data data in anyCategory)
-            {
-                GameObject prefab = ZNetScene.instance.GetPrefab(data.Prefab);
-                if (!prefab) continue;
-                GameObject transmogElement = UnityEngine.Object.Instantiate(Transmog_Element, element.transform);
-                transmogElement.transform.Find("ItemName").GetComponent<Text>().text = data.GetLocalizedName();
-                transmogElement.transform.Find("Icon/IconItem").GetComponent<Image>().sprite = data.GetIcon();
-                transmogElement.transform.Find("Price").GetComponent<Text>().text = data.GetLocalizedPrice();
-                string name = ZNetScene.instance.GetPrefab(data.Price_Prefab).GetComponent<ItemDrop>().m_itemData
-                    .m_shared.m_name;
-                int amountInInventory = Player.m_localPlayer.m_inventory.CountItems(name);
-                bool enough = amountInInventory >= data.Price_Amount;
-                transmogElement.transform.Find("Price/X").GetComponent<Text>().text = $"X {data.Price_Amount}";
-                transmogElement.transform.Find("Price/X").GetComponent<Text>().color =
-                    enough ? Color.yellow : new Color(1f, 0.31f, 0.31f);
-                transmogElement.GetComponent<Image>().color = enough ? Color.white : new Color(0.78f, 0.49f, 0.51f);
-
-                transmogElement.transform.Find("Price/PriceIcon/IconItem").GetComponent<Image>().sprite =
-                    data.GetPriceIcon();
-                transmogElement.transform.Find("Add").gameObject.SetActive(enough);
-                transmogElement.transform.Find("Add").GetComponent<Button>().onClick
-                    .AddListener(() => ClickTransmog(data, transmogElement));
-
-                transmogElement.transform.Find("HEX").GetComponent<TMP_InputField>().onValueChanged.AddListener(
-                    (str) =>
-                    {
-                        Image bg = transmogElement.transform.Find("HEX").GetComponent<Image>();
-                        if (ColorUtility.TryParseHtmlString("#" + str, out Color c))
-                        {
-                            bg.color = c;
-                        }
-                        else
-                        {
-                            bg.color = Color.white;
-                        }
-                    });
-                
-
-                transmogElement.transform.Find("Preview").GetComponent<Button>().onClick.AddListener(() =>
-                    StartPreview(transmogElement, data.Prefab, category));
-            }
-        }
-
-        if (Transmogrification_Main_Client.FilteredTransmogData[CurrentProfile].TryGetValue(category,
-                out List<Transmogrification_DataTypes.TransmogItem_Data> itemCategory) &&
-            itemCategory.Count > 0)
+                .TryGetValue(category, out List<Transmogrification_DataTypes.TransmogItem_Data> cat) &&
+            cat.Count > 0)
         {
             GameObject element = UnityEngine.Object.Instantiate(Category_Element, Category_Content);
             element.GetComponent<Image>().color = TypeColors[category];
             element.transform.Find("Text").GetComponent<Text>().text =
                 Localization.instance.Localize("$mpasn_transmog_" + category.ToString().ToLower());
-            foreach (Transmogrification_DataTypes.TransmogItem_Data data in itemCategory)
+            foreach (Transmogrification_DataTypes.TransmogItem_Data data in cat)
             {
                 GameObject prefab = ZNetScene.instance.GetPrefab(data.Prefab);
                 if (!prefab) continue;
+                
                 GameObject transmogElement = UnityEngine.Object.Instantiate(Transmog_Element, element.transform);
                 transmogElement.transform.Find("ItemName").GetComponent<Text>().text = data.GetLocalizedName();
                 transmogElement.transform.Find("Icon/IconItem").GetComponent<Image>().sprite = data.GetIcon();
                 transmogElement.transform.Find("Price").GetComponent<Text>().text = data.GetLocalizedPrice();
-
-                string name = ZNetScene.instance.GetPrefab(data.Price_Prefab).GetComponent<ItemDrop>().m_itemData
-                    .m_shared.m_name;
-                int amountInInventory = Player.m_localPlayer.m_inventory.CountItems(name);
-                bool enough = amountInInventory >= data.Price_Amount;
                 transmogElement.transform.Find("Price/X").GetComponent<Text>().text = $"X {data.Price_Amount}";
-                transmogElement.transform.Find("Price/X").GetComponent<Text>().color =
-                    enough ? Color.yellow : new Color(1f, 0.31f, 0.31f);
-                transmogElement.GetComponent<Image>().color = enough ? Color.white : new Color(0.78f, 0.49f, 0.51f);
-
                 transmogElement.transform.Find("Price/PriceIcon/IconItem").GetComponent<Image>().sprite =
                     data.GetPriceIcon();
-                transmogElement.transform.Find("Add").gameObject.SetActive(enough);
-                transmogElement.transform.Find("Add").GetComponent<Button>().onClick
-                    .AddListener(() => ClickTransmog(data, transmogElement));
-
-                transmogElement.transform.Find("HEX").GetComponent<TMP_InputField>().onValueChanged.AddListener(
-                    (str) =>
-                    {
-                        Image bg = transmogElement.transform.Find("HEX").GetComponent<Image>();
-                        if (ColorUtility.TryParseHtmlString("#" + str, out Color c))
-                        {
-                            bg.color = c;
-                        }
-                        else
-                        {
-                            bg.color = Color.white;
-                        }
-                    });
                 
-                transmogElement.transform.Find("Preview").GetComponent<Button>().onClick.AddListener(() =>
-                    StartPreview(transmogElement, data.Prefab, category));
+
+                if (!active)
+                {
+                    transmogElement.transform.Find("Add").gameObject.SetActive(false);
+                    transmogElement.transform.Find("HEX").gameObject.SetActive(false);
+                    transmogElement.transform.Find("ColorText").gameObject.SetActive(false);
+                    transmogElement.transform.Find("Preview").gameObject.SetActive(false);
+                }
+                else
+                {
+                    string name = ZNetScene.instance.GetPrefab(data.Price_Prefab).GetComponent<ItemDrop>().m_itemData
+                        .m_shared.m_name;
+                    int amountInInventory = Player.m_localPlayer.m_inventory.CountItems(name);
+                    bool enough = amountInInventory >= data.Price_Amount;
+                    transmogElement.transform.Find("Price/X").GetComponent<Text>().color =
+                        enough ? Color.yellow : new Color(1f, 0.31f, 0.31f);
+                    transmogElement.GetComponent<Image>().color = enough ? Color.white : new Color(0.78f, 0.49f, 0.51f);
+                    transmogElement.transform.Find("Add").gameObject.SetActive(enough);
+                    transmogElement.transform.Find("Add").GetComponent<Button>().onClick
+                        .AddListener(() => ClickTransmog(data, transmogElement));
+                    transmogElement.transform.Find("HEX").GetComponent<TMP_InputField>().onValueChanged.AddListener(
+                        (str) =>
+                        {
+                            Image bg = transmogElement.transform.Find("HEX").GetComponent<Image>();
+                            if (ColorUtility.TryParseHtmlString("#" + str, out Color c))
+                            {
+                                bg.color = c;
+                            }
+                            else
+                            {
+                                bg.color = Color.white;
+                            }
+                        });
+
+                    transmogElement.transform.Find("Preview").GetComponent<Button>().onClick.AddListener(() =>
+                        StartPreview(transmogElement, data.Prefab, category));
+                }
             }
         }
-
-        UpdateFillers();
     }
 
     private static void StartPreview(GameObject go, string prefab, ItemDrop.ItemData.ItemType category)

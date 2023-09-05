@@ -14,7 +14,6 @@ public static class NPC_MapPins
     private static readonly List<ZDO> TempNPCList = new();
     private static readonly List<Minimap.PinData> TempNPCpins = new();
     public const Minimap.PinType PINTYPENPC = (Minimap.PinType)175;
-    private static Sprite QuestCompleteIcon = null!;
 
     [UsedImplicitly]
     private static void OnInit()
@@ -70,9 +69,7 @@ public static class NPC_MapPins
 
                     if (questTarget)
                     {
-                        if (!QuestCompleteIcon)
-                            QuestCompleteIcon = AssetStorage.asset.LoadAsset<Sprite>("questcomplete");
-                        icon = QuestCompleteIcon;
+                        icon = AssetStorage.QuestCompleteIcon;
                         pinData.m_animate = true;
                         pinData.m_doubleSize = true;
                     }

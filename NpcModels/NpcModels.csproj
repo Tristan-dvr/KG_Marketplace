@@ -69,6 +69,10 @@
     <ItemGroup>
       <EmbeddedResource Include="npcmodels" />
     </ItemGroup>
+    <ItemGroup>
+      <Content Include="ThunderstorePackage\manifest.json" />
+      <Content Include="ThunderstorePackage\README.md" />
+    </ItemGroup>
 
     <Target Name="Copy" AfterTargets="Build">
         <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;D:\SteamLibrary\steamapps\common\Valheim\BepInEx\plugins\$(AssemblyName).dll&quot;" />

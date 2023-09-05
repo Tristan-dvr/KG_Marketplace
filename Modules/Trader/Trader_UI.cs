@@ -198,6 +198,8 @@ public static class Trader_UI
             }
 
             if (FromBank && data.NeededItems.Any(x => !CanAddToBanker(x))) continue;
+            if (ToBank   && data.ResultItems.Any(x => !CanAddToBanker(x))) continue;
+            
 
             GameObject go = Object.Instantiate(BuyElement, ContentTransform);
 
@@ -242,7 +244,9 @@ public static class Trader_UI
                     : data.ResultItems[i].Level;
                 string stars = data.ResultItems[i].DisplayStars ? $" <color=#00ff00>({starCount}★)</color>" : "";
                 transform.transform.Find("Text").GetComponent<Text>().text =
+                    $"{(ToBank ? "<color=cyan>[BANK]</color> " : "")}" +
                     $"{data.ResultItems[i].ItemName}{stars}\n<color=yellow>x{data.ResultItems[i].Count * ModifierValues[CurrentModifier]}</color>";
+                
                 transform.transform.Find("Icon").GetComponent<Image>().sprite =
                     data.ResultItems[i].Type is Trader_DataTypes.TraderItem.TraderItemType.Skill
                         ? Utils.GetSkillIcon(data.ResultItems[i].ItemPrefab)

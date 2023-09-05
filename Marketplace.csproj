@@ -340,7 +340,6 @@
         <Compile Include="DiscordStuff\DiscordConnetor.cs" />
         <Compile Include="ExternalLoads\AsmLoad_UnityCode.cs" />
         <Compile Include="ExternalLoads\AssetStorage.cs" />
-        <Compile Include="ExternalLoads\ResourcesBase64.cs" />
         <Compile Include="Hammer\MarketplaceHammer.cs" />
         <Compile Include="ManagerLibs\ItemDataManager_Modified.cs" />
         <Compile Include="ManagerLibs\LocalizationManager.cs" />
