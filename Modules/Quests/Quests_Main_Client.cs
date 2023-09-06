@@ -9,10 +9,12 @@ public static class Quests_Main_Client
 {
     private static ConfigEntry<KeyCode> QuestJournalOpenKey;
     private static int LatestRevision;
+    public static ConfigEntry<bool> ShowQuestMark;
 
     private static void OnInit()
     {
         QuestJournalOpenKey = Marketplace._thistype.Config.Bind("General", "Quest Journal Keycode", KeyCode.J);
+        ShowQuestMark = Marketplace._thistype.Config.Bind("General", "Show Quest Mark", true);
         Quests_UIs.QuestUI.Init();
         Quests_UIs.AcceptedQuestsUI.Init();
         Quests_DataTypes.SyncedQuestData.ValueChanged += OnQuestDataUpdate;
@@ -137,7 +139,8 @@ public static class Quests_Main_Client
             foreach (KeyValuePair<Quests_DataTypes.Quest, string> url in Quests_DataTypes.AllQuests.Select(x =>
                          new KeyValuePair<Quests_DataTypes.Quest, string>(x.Value, x.Value.PreviewImage)))
             {
-                Utils.LoadImageFromWEB(url.Value, (sprite) => url.Key.SetPreviewSprite(sprite));
+                if (!string.IsNullOrWhiteSpace(url.Value))
+                    Utils.LoadImageFromWEB(url.Value, (sprite) => url.Key.SetPreviewSprite(sprite));
             }
         }
 

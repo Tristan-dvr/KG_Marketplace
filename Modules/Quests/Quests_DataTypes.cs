@@ -716,7 +716,7 @@ public static class Quests_DataTypes
         {
             foreach (ItemDrop c in ItemDrop.s_instances)
             {
-                c.transform.Find("MPASNquest").gameObject.SetActive(IsQuestTarget(c));
+                c.transform.Find("MPASNquest")?.gameObject.SetActive(IsQuestTarget(c));
             }
         }
 
@@ -724,7 +724,7 @@ public static class Quests_DataTypes
         {
             foreach (Market_NPC.NPCcomponent c in Market_NPC.NPCcomponent.ALL)
             {
-                c.transform.Find("MPASNquest").gameObject.SetActive(IsQuestTarget(c.GetNPCName()));
+                c.transform.Find("MPASNquest")?.gameObject.SetActive(IsQuestTarget(c.GetNPCName()));
             }
         }
 
@@ -732,12 +732,8 @@ public static class Quests_DataTypes
         {
             foreach (Pickable c in Quest_ProgressionHook.Pickable_Hook.GetPickables())
             {
-                if (!c)
-                {
-                    continue;
-                }
-
-                c.transform.Find("MPASNquest").gameObject.SetActive(IsQuestTarget(c));
+                if (!c) continue;
+                c.transform.Find("MPASNquest")?.gameObject.SetActive(IsQuestTarget(c));
             }
         }
 

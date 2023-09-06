@@ -905,7 +905,7 @@ public static class Market_NPC
         {
             if (znv.IsOwner()) znv.m_zdo.Set("KGnpcNameOverride", newName);
             ApplyName(newName);
-            transform.Find("MPASNquest").gameObject.SetActive(Quests_DataTypes.Quest.IsQuestTarget(newName));
+            transform.Find("MPASNquest")?.gameObject.SetActive(Quests_DataTypes.Quest.IsQuestTarget(newName));
         }
 
         public void ChangeProfile(long sender, string profile, string dialogue)

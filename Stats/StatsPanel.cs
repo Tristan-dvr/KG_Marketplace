@@ -3,7 +3,7 @@ using Marketplace.Modules.Teleporter;
 
 namespace Marketplace.Stats;
 
-[Market_Autoload(Market_Autoload.Type.Both)]
+[Market_Autoload(Market_Autoload.Type.Client)]
 public static class StatsPanel
 {
     private static bool Show;

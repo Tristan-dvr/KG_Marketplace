@@ -1,6 +1,7 @@
 ﻿using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.TerritorySystem;
+using Marketplace.Stats;
 
 namespace Marketplace;
 
@@ -109,6 +110,8 @@ public static class ChatCommands
                 }
 
                 args.Context.AddString(values);
+
+                CustomValuesShowup.Show = true;
             });
 
             new Terminal.ConsoleCommand("mclearallquests", "Clears all quests for player",
@@ -175,6 +178,15 @@ public static class ChatCommands
 
                     return players;
                 });
+
+            new Terminal.ConsoleCommand("mquestmarker", "Enable / Disable quest mark", (args) =>
+            {
+                Quests_Main_Client.ShowQuestMark.Value = !Quests_Main_Client.ShowQuestMark.Value;
+                string state = Quests_Main_Client.ShowQuestMark.Value ? "<color=green>Enabled</color>" : "<color=red>Disabled</color>";
+                args.Context.AddString($"Quest Mark is now {state}");
+                Quests_Main_Client.ShowQuestMark.ConfigFile.Save();
+            });
+
         }
     }
 

@@ -57,7 +57,7 @@ public static class ServerInfo_UI
                 image.gameObject.SetActive(true);
                 Sprite sprite = q.GetSprite();
                 image.GetComponent<Image>().sprite = sprite;
-                if (sprite != null)
+                if (sprite != null && sprite.texture != null)
                     image.GetComponent<RectTransform>().sizeDelta = new Vector2(Mathf.Min(maxX, sprite.texture.width),
                         sprite.texture.height);
             }

@@ -210,8 +210,8 @@ public static class Quest_ProgressionHook
         {
             float radius = __instance.m_collider.radius;
             float height = __instance.m_collider.height - 1.7f;
-            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.MarketplaceQuestTargetIcon,
-                __instance.transform);
+            if (!Quests_Main_Client.ShowQuestMark.Value) return;
+            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.MarketplaceQuestTargetIcon, __instance.transform);
             go.name = "MPASNquest";
             go.transform.localPosition += Vector3.up * height;
             go.transform.localScale += new Vector3(radius, radius, radius);
@@ -227,8 +227,8 @@ public static class Quest_ProgressionHook
         private static void Postfix(Pickable __instance)
         {
             __instance.gameObject.AddComponent<Pickable_Hook>();
-            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.MarketplaceQuestTargetIcon,
-                __instance.transform);
+            if (!Quests_Main_Client.ShowQuestMark.Value) return;
+            GameObject go = UnityEngine.Object.Instantiate(AssetStorage.MarketplaceQuestTargetIcon, __instance.transform);
             go.name = "MPASNquest";
             go.SetActive(Quests_DataTypes.Quest.IsQuestTarget(__instance));
         }
@@ -241,6 +241,7 @@ public static class Quest_ProgressionHook
         [UsedImplicitly]
         private static void Postfix(ItemDrop __instance)
         {
+            if (!Quests_Main_Client.ShowQuestMark.Value) return;
             GameObject go = UnityEngine.Object.Instantiate(AssetStorage.MarketplaceQuestTargetIcon,
                 __instance.transform);
             go.name = "MPASNquest";

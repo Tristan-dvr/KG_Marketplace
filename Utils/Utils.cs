@@ -1,4 +1,7 @@
 ﻿using System.IO.Compression;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
@@ -443,7 +446,7 @@ public static class Utils
         }
     }
 
-    public static void LoadImageFromWEB(string url, Action<Sprite> callback)
+    public static void LoadImageFromWEB(string url, Action<Sprite> callback, [CallerMemberName] string name = "Caller")
     {
         if (string.IsNullOrWhiteSpace(url) || !Uri.TryCreate(url, UriKind.Absolute, out _)) return;
         if (!AssetStorage.GlobalCachedSprites.TryGetValue(url, out Sprite sprite))
@@ -462,13 +465,12 @@ public static class Utils
         yield return request.SendWebRequest();
         if (request.result is UnityWebRequest.Result.Success)
         {
-            Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-            if (texture == null || texture.width == 0 || texture.height == 0) yield break;
-            Texture2D newTempTexture = new Texture2D(texture.width, texture.height);
-            newTempTexture.SetPixels(texture.GetPixels());
-            newTempTexture.Apply();
-            AssetStorage.GlobalCachedSprites[url] = Sprite.Create(newTempTexture,
-                new Rect(0, 0, newTempTexture.width, newTempTexture.height), Vector2.zero);
+            Texture2D texture = DownloadHandlerTexture.GetContent(request);
+            if (texture.width == 0 || texture.height == 0) yield break;
+            Texture2D temp = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
+            temp.SetPixels(texture.GetPixels());
+            temp.Apply();
+            AssetStorage.GlobalCachedSprites[url] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             callback?.Invoke(AssetStorage.GlobalCachedSprites[url]);
         }
     }
@@ -578,6 +580,19 @@ public static class Utils
         return 0;
     }
 
+    public static List<KeyValuePair<string, int>> GetAllCustomValues(this Player p)
+    {
+        List<KeyValuePair<string, int>> result = new();
+        foreach (KeyValuePair<string, string> keyValuePair in p.m_customData)
+        {
+            if (keyValuePair.Key.Contains(CustomValue_Prefix))
+            {
+                result.Add(new KeyValuePair<string, int>(keyValuePair.Key.Replace(CustomValue_Prefix, ""), int.Parse(keyValuePair.Value)));
+            }
+        }
+        return result;
+    }
+
     public static void RemoveCustomValue(this Player p, string key)
     {
         key = key.Replace("CUSTOMVALUE@", "");
@@ -660,4 +675,6 @@ public static class Utils
     {
         return string.IsNullOrEmpty(text) ? string.Empty : Localization.instance.Localize(text);
     }
+
+    public static bool StlocIndex(this object obj, int index) => obj is LocalBuilder builder && builder.LocalIndex == index;
 }

@@ -420,6 +420,7 @@
         <Compile Include="Modules\Trader\Trader_UI.cs" />
         <Compile Include="Paths\Paths.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Stats\CustomValuesShowup.cs" />
         <Compile Include="Stats\StatsPanel.cs" />
         <Compile Include="UI_OptimizationHandler\UI_Optimization.cs" />
         <Compile Include="Utils\FixPossibleErrors.cs" />
