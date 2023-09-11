@@ -857,12 +857,12 @@ public static class Dialogues_DataTypes
             if (text == _password)
             {
                 if (!string.IsNullOrEmpty(_onSuccess))
-                    Dialogues_UI.LoadDialogue(_npc, _onSuccess);
+                    Dialogues_UI.LoadDialogue(_npc, _onSuccess.ToLower());
             }
             else
             {
                 if (!string.IsNullOrEmpty(_onFail))
-                    Dialogues_UI.LoadDialogue(_npc, _onFail);
+                    Dialogues_UI.LoadDialogue(_npc, _onFail.ToLower());
             }
         }
     }

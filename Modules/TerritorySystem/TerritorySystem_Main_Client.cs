@@ -255,11 +255,11 @@ public static class TerritorySystem_Main_Client
                     ? Input.mousePosition
                     : new Vector3(Screen.width / 2, Screen.height / 2));
                 bool found = false;
-                foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes
+                foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes 
                              .SyncedTerritoriesData
                              .Value)
                 {
-                    if (territory.IsInside2D(new Vector2(vector.x, vector.z)))
+                    if (__instance.IsExplored(vector) && territory.IsInside2D(new Vector2(vector.x, vector.z)))
                     {
                         string newText = search + "\n" + territory.GetName() + territory.GetTerritoryFlags() + search;
                         TryReplaceTerritoryString(__instance.m_biomeNameLarge, newText);

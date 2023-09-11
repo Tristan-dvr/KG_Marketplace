@@ -26,7 +26,6 @@ namespace Marketplace.Modules.NPC;
 public static class Market_NPC
 {
     public static GameObject NPC = null!;
-    public static GameObject PinnedNPC = null!;
     private static readonly string[] TypeNames = Enum.GetNames(typeof(NPCType));
     private static readonly int SkinColor = Shader.PropertyToID("_SkinColor");
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
@@ -110,24 +109,11 @@ public static class Market_NPC
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     private static class NPCZnet
     {
-        private static bool firstInit;
-
         [UsedImplicitly]
         private static void Postfix(ZNetScene __instance)
         {
-            if (!firstInit)
-            {
-                firstInit = true;
-                GameObject inactive = new GameObject("InactiveMPASN");
-                Object.DontDestroyOnLoad(inactive);
-                inactive.SetActive(false);
-                PinnedNPC = Object.Instantiate(NPC, inactive.transform);
-                PinnedNPC.name = "MarketPlaceNPCpinned";
-                PinnedNPC.GetComponent<Piece>().m_description = "<color=#00FFFF>(Map Pin Visible)</color>";
-            }
-
             __instance.m_namedPrefabs.Add(NPC.name.GetStableHashCode(), NPC);
-            __instance.m_namedPrefabs.Add(PinnedNPC.name.GetStableHashCode(), PinnedNPC);
+            __instance.m_namedPrefabs.Add("MarketPlaceNPCpinned".GetStableHashCode(), NPC);
         }
     }
 
@@ -425,28 +411,28 @@ public static class Market_NPC
             float enemyVec = transform.rotation.eulerAngles.y;
             float num = Mathf.Abs(Mathf.DeltaAngle(playerVec, enemyVec));
 
-            if (znv.IsOwner() && znv.m_zdo.GetFloat("KGperiodicAnimationTime") > 0)
+            if (znv.IsOwner() && znv.m_zdo.GET_NPC_PeriodicAnimationTime() > 0)
             {
                 periodicAnimationTimer += Time.fixedDeltaTime;
-                if (periodicAnimationTimer >= znv.m_zdo.GetFloat("KGperiodicAnimationTime"))
+                if (periodicAnimationTimer >= znv.m_zdo.GET_NPC_PeriodicAnimationTime())
                 {
                     periodicAnimationTimer = 0;
-                    if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGperiodicAnimation")))
+                    if (!string.IsNullOrWhiteSpace(znv.m_zdo.GET_NPC_PeriodicAnimation()))
                     {
-                        zanim.SetTrigger(znv.m_zdo.GetString("KGperiodicAnimation"));
+                        zanim.SetTrigger(znv.m_zdo.GET_NPC_PeriodicAnimation());
                     }
                 }
             }
 
-            if (znv.m_zdo.GetFloat("KGperiodicSoundTime") > 0)
+            if (znv.m_zdo.GET_NPC_PeriodicSoundTime() > 0)
             {
                 periodicSoundTimer += Time.fixedDeltaTime;
-                if (periodicSoundTimer >= znv.m_zdo.GetFloat("KGperiodicSoundTime"))
+                if (periodicSoundTimer >= znv.m_zdo.GET_NPC_PeriodicSoundTime())
                 {
                     periodicSoundTimer = 0;
-                    if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGperiodicSound")))
+                    if (!string.IsNullOrWhiteSpace(znv.m_zdo.GET_NPC_PeriodicSound()))
                     {
-                        if (AssetStorage.NPC_AudioClips.TryGetValue(znv.m_zdo.GetString("KGperiodicSound"),
+                        if (AssetStorage.NPC_AudioClips.TryGetValue(znv.m_zdo.GET_NPC_PeriodicSound(),
                                 out AudioClip sound))
                         {
                             if (!NPC_SoundSource.isPlaying)
@@ -467,15 +453,15 @@ public static class Market_NPC
                     WasClose = true;
                     if (num > 80f)
                     {
-                        if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGgreetingText")))
+                        if (!string.IsNullOrWhiteSpace(znv.m_zdo.GET_NPC_GreetingText()))
                         {
                             Chat.instance.SetNpcText(gameObject, Vector3.up * 4f, 20f, 3f, "",
-                                znv.m_zdo.GetString("KGgreetingText"), false);
+                                znv.m_zdo.GET_NPC_GreetingText(), false);
                         }
 
-                        if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGgreetingAnimation")))
+                        if (!string.IsNullOrWhiteSpace(znv.m_zdo.GET_NPC_GreetingAnimation()))
                         {
-                            zanim.SetTrigger(znv.m_zdo.GetString("KGgreetingAnimation"));
+                            zanim.SetTrigger(znv.m_zdo.GET_NPC_GreetingAnimation());
                         }
                     }
                 }
@@ -487,15 +473,15 @@ public static class Market_NPC
                     WasClose = false;
                     if (num > 80f)
                     {
-                        if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGbyeText")))
+                        if (!string.IsNullOrWhiteSpace(znv.m_zdo.GET_NPC_ByeText()))
                         {
                             Chat.instance.SetNpcText(gameObject, Vector3.up * 4f, 20f, 3f, "",
-                                znv.m_zdo.GetString("KGbyeText"), false);
+                                znv.m_zdo.GET_NPC_ByeText(), false);
                         }
 
-                        if (!string.IsNullOrWhiteSpace(znv.m_zdo.GetString("KGbyeAnimation")))
+                        if (!string.IsNullOrWhiteSpace(znv.m_zdo.GET_NPC_ByeAnimation()))
                         {
-                            zanim.SetTrigger(znv.m_zdo.GetString("KGbyeAnimation"));
+                            zanim.SetTrigger(znv.m_zdo.GET_NPC_ByeAnimation());
                         }
                     }
                 }
@@ -523,7 +509,7 @@ public static class Market_NPC
             _currentNpcType = (NPCType)npcType;
             if (!znv.m_functions.ContainsKey("KGMarket changeNpcType".GetStableHashCode()))
             {
-                znv.Register("KGMarket changeNpcType", new Action<long, int>(ChangeNpcType));
+                znv.Register("KGMarket changeNpcType", new Action<long, int, bool>(ChangeNpcType));
                 znv.Register("KGmarket snapandrotate", new Action<long, ZPackage>(SnapAndRotate));
                 znv.Register("KGmarket changeprofile", new Action<long, string, string>(ChangeProfile));
                 znv.Register("KGmarket overridename", new Action<long, string>(OverrideName));
@@ -1306,7 +1292,7 @@ public static class Market_NPC
                         }
                     }
 
-                    float val = znv.m_zdo.GetFloat("KGnpcScale", 1f);
+                    float val = znv.m_zdo.GET_NPC_NPCScale();
                     if (val < 0.1f) val = 0.1f;
                     pastOverrideModel.transform.localScale *= val;
                 }
@@ -1315,12 +1301,14 @@ public static class Market_NPC
             return true;
         }
 
-        public void ChangeNpcType(long sende, int index)
+        public void ChangeNpcType(long sender, int index, bool isPinned)
         {
-            if (_currentNpcType == (NPCType)index) return;
-            if (znv.IsOwner()) znv.m_zdo.Set("KGmarketNPC", index);
+            if (znv.IsOwner())
+            {
+                znv.m_zdo.SET_NPC_Type((Marketplace_API.API_NPCType)index);
+                znv.m_zdo.SET_NPC_IsPinned(isPinned);
+            }
             _currentNpcType = (NPCType)index;
-            OverrideModel(0, znv.m_zdo.GetString("KGnpcModelOverride"));
         }
 
         public void Damage(HitData hit)
@@ -1350,6 +1338,7 @@ public static class Market_NPC
         private static InputField _npcmodel = null!;
         private static InputField _patroldata = null!;
         private static InputField _npcDialogue = null!;
+        private static Toggle _npcPinned = null!;
 
         private static InputField LeftItemFashion = null!,
             RightItemFashion = null!,
@@ -1392,6 +1381,8 @@ public static class Market_NPC
             _npcmodel = UI.transform.Find("Canvas/MAIN/Pergament/NPCMODEL").GetComponent<InputField>();
             _patroldata = UI.transform.Find("Canvas/MAIN/Pergament/PATROLDATA").GetComponent<InputField>();
             _npcDialogue = UI.transform.Find("Canvas/MAIN/Pergament/NPCDIALOGUE").GetComponent<InputField>();
+            _npcPinned = UI.transform.Find("Canvas/MAIN/Pergament/ISPINNED").GetComponent<Toggle>();
+            _npcPinned.onValueChanged.AddListener((_) => AssetStorage.AUsrc.Play());
             MAIN.SetActive(false);
             FASHION.SetActive(false);
             Localization.instance.Localize(UI.transform);
@@ -1564,7 +1555,7 @@ public static class Market_NPC
             if (_currentNPC.HasOwner())
             {
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, _currentNPC.m_uid, "KGMarket changeNpcType",
-                    (int)_currentType);
+                    (int)_currentType, _npcPinned.isOn);
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, _currentNPC.m_uid, "KGmarket overridename",
                     _npcname.text);
                 ZRoutedRpc.instance.InvokeRoutedRPC(_currentNPC.GetOwner(), _currentNPC.m_uid, "KGmarket changeprofile",
@@ -1577,6 +1568,7 @@ public static class Market_NPC
             else
             {
                 _currentNPC.SET_NPC_Type((Marketplace_API.API_NPCType)_currentType);
+                _currentNPC.SET_NPC_IsPinned(_npcPinned.isOn);
                 _currentNPC.SET_NPC_Name(_npcname.text);
                 _currentNPC.SET_NPC_Profile(_npcprofile.text);
                 _currentNPC.SET_NPC_Dialogue(_npcDialogue.text);
@@ -1658,6 +1650,7 @@ public static class Market_NPC
             _npcmodel.text = _npc.GetString("KGnpcModelOverride");
             _patroldata.text = _npc.GetString("KGmarket PatrolData");
             _npcDialogue.text = _npc.GetString("KGnpcDialogue");
+            _npcPinned.isOn = _npc.GET_NPC_IsPinned();
             _currentNPC = _npc;
             CheckColors();
             UI.SetActive(true);

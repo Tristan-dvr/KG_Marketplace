@@ -190,7 +190,7 @@ public static class Marketplace_API
     public static void SET_NPC_PeriodicSound(this ZDO zdo, string sound) => zdo.Set("KGperiodicSound", sound);
     public static void SET_NPC_PeriodicSoundTime(this ZDO zdo, string time) => zdo.Set("KGperiodicSoundTime", float.TryParse(time, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float timeFloat) ? timeFloat : 0f);
     public static void SET_NPC_NPCScale(this ZDO zdo, string scale) => zdo.Set("KGnpcScale", float.TryParse(scale, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float scaleFloat) ? scaleFloat : 1f);
-
+    public static void SET_NPC_IsPinned(this ZDO zdo, bool pinned) => zdo.Set("KGmarketPinned", pinned);
     
     public static API_NPCType GET_NPC_Type(this ZDO zdo) => (API_NPCType)zdo.GetInt("KGmarketNPC"); 
     public static string GET_NPC_Profile(this ZDO zdo) => zdo.GetString("KGnpcProfile");
@@ -198,6 +198,7 @@ public static class Marketplace_API
     public static string GET_NPC_Name(this ZDO zdo) => zdo.GetString("KGnpcNameOverride");
     public static string GET_NPC_Dialogue(this ZDO zdo) => zdo.GetString("KGnpcDialogue");
     public static string GET_NPC_PatrolData(this ZDO zdo) => zdo.GetString("KGmarket PatrolData");
+    public static bool GET_NPC_IsPinned(this ZDO zdo) => zdo.GetBool("KGmarketPinned");
     
     public static string GET_NPC_LeftItem(this ZDO zdo) => zdo.GetString("KGleftItem");
     public static string GET_NPC_RightItem(this ZDO zdo) => zdo.GetString("KGrightItem");

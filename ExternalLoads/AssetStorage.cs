@@ -55,18 +55,8 @@ public static class AssetStorage
         
         GlobalCachedSprites["teleporter_default"] = PortalIconDefault;
         
-        foreach (string file in Directory.GetFiles(Market_Paths.CachedImagesFolder, "*.png", SearchOption.AllDirectories))
-        {
-            string fileName = Path.GetFileNameWithoutExtension(file);
-            byte[] data = File.ReadAllBytes(file);
-            Texture2D tex = new Texture2D(1, 1);
-            tex.LoadImage(data);
-            Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0));
-            GlobalCachedSprites[fileName] = sprite;
-        }
-        
-       
-        Marketplace._thistype.StartCoroutine(LoadSoundsCoroutine(Market_Paths.NPC_SoundsPath));
+        ReloadImages();
+        ReloadSounds();
     }
 
 
@@ -89,6 +79,20 @@ public static class AssetStorage
             }
         }
     }
+    
+    public static void ReloadSounds() => Marketplace._thistype.StartCoroutine(LoadSoundsCoroutine(Market_Paths.NPC_SoundsPath));
+    public static void ReloadImages()
+     {
+         foreach (string file in Directory.GetFiles(Market_Paths.CachedImagesFolder, "*.png", SearchOption.AllDirectories))
+         {
+             string fileName = Path.GetFileNameWithoutExtension(file);
+             byte[] data = File.ReadAllBytes(file);
+             Texture2D tex = new Texture2D(1, 1);
+             tex.LoadImage(data);
+             Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0));
+             GlobalCachedSprites[fileName] = sprite;
+         }
+     }
 
     private static AssetBundle GetAssetBundle(string filename)
     {

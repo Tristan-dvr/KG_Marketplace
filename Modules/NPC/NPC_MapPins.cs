@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using API;
 using Marketplace.ExternalLoads;
 using Marketplace.Modules.Quests;
 
@@ -10,7 +11,6 @@ namespace Marketplace.Modules.NPC;
 public static class NPC_MapPins
 {
     private const string npcToSearchPrefabName = "MarketPlaceNPC";
-    private const string npcToSearchPrefabName_Pinned = "MarketPlaceNPCpinned";
     private static readonly List<ZDO> TempNPCList = new();
     private static readonly List<Minimap.PinData> TempNPCpins = new();
     public const Minimap.PinType PINTYPENPC = (Minimap.PinType)175;
@@ -37,12 +37,12 @@ public static class NPC_MapPins
                 }
                 List<ZDO> AllNPCs = new();
                 int index = 0;
-                while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName_Pinned, AllNPCs, ref index))
+                while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName, AllNPCs, ref index))
                 {
                     if (!Player.m_localPlayer || !Minimap.instance) break;
                     yield return null;
                 }
-
+                AllNPCs.RemoveAll(zdo => !zdo.GET_NPC_IsPinned());
                 foreach (ZDO zdo in AllNPCs)
                 {
                     if (!zdo.IsValid()) continue;
@@ -128,12 +128,6 @@ public static class NPC_MapPins
                 TempNPCList.Clear();
                 int index = 0;
                 while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName, TempNPCList, ref index))
-                {
-                    yield return null;
-                }
-                index = 0;
-                while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName_Pinned, TempNPCList,
-                           ref index))
                 {
                     yield return null;
                 }

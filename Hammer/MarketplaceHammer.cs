@@ -47,7 +47,6 @@ public static class MarketplaceHammer
             {
                 avaliablePieces.RemoveAt(0);
                 avaliablePieces.Add(Market_NPC.NPC.GetComponent<Piece>());
-                avaliablePieces.Add(Market_NPC.PinnedNPC.GetComponent<Piece>());
 
                 int skip = (Hud_Awake_Patch.CurrentPage - 1) * Hud_Awake_Patch.MaxPerPage;
                 foreach (Piece data in _pieces.Skip(skip).Take(Hud_Awake_Patch.MaxPerPage))
@@ -129,7 +128,7 @@ public static class MarketplaceHammer
         [UsedImplicitly]
         private static void Postfix(Terminal __instance)
         {
-            new Terminal.ConsoleCommand("reloadnpcs", "Reloads all saved NPCs", (_) => { Reload(); });
+            new Terminal.ConsoleCommand("mreloadnpcs", "Reloads all saved NPCs", (_) => { Reload(); });
         }
     }
 
@@ -139,6 +138,7 @@ public static class MarketplaceHammer
         NPC_Main mainData = new();
         NPC_Fashion fashionData = new();
 
+        bool pinned = npc.znv.m_zdo.GET_NPC_IsPinned();
         mainData.Type = npc._currentNpcType;
         mainData.NameOverride = npc.znv.m_zdo.GET_NPC_Name();
         mainData.Profile = npc.znv.m_zdo.GET_NPC_Profile();
@@ -185,7 +185,7 @@ public static class MarketplaceHammer
         {
             main = mainData,
             fashion = fashionData,
-            isPinned = npc.gameObject.name.Contains(Market_NPC.PinnedNPC.name)
+            isPinned = pinned
         };
 
         string yaml = new SerializerBuilder().Build().Serialize(wrapper);
@@ -210,9 +210,9 @@ public static class MarketplaceHammer
             Quaternion rot = piece.transform.rotation;
             UnityEngine.Object.Destroy(obj);
             if (!hasValue) return;
-            GameObject newNPC = Object.Instantiate(value.isPinned ? Market_NPC.PinnedNPC : Market_NPC.NPC, pos, rot);
+            GameObject newNPC = Object.Instantiate(Market_NPC.NPC, pos, rot);
             Market_NPC.NPCcomponent comp = newNPC.GetComponent<Market_NPC.NPCcomponent>();
-            comp.ChangeNpcType(0, (int)value.main.Type);
+            comp.ChangeNpcType(0, (int)value.main.Type, value.isPinned);
             comp.ChangeProfile(0, value.main.Profile, value.main.Dialogue);
             comp.OverrideName(0, value.main.NameOverride);
             if (!string.IsNullOrWhiteSpace(value.main.Prefab))
@@ -272,7 +272,7 @@ public static class MarketplaceHammer
         private static Text _text;
 
         public static int CurrentPage = 1;
-        public const int MaxPerPage = 88;
+        public const int MaxPerPage = 89;
         private static int MaxPages => Mathf.CeilToInt(_pieces.Count / (float)MaxPerPage);
 
 

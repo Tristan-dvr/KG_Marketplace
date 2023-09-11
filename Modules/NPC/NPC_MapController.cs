@@ -8,7 +8,6 @@ public static class NPC_MapController
 {
     private static readonly Dictionary<Minimap.PinData, ZDO> _pins = new();
     private const string npcToSearchPrefabName = "MarketPlaceNPC";
-    private const string npcToSearchPrefabName_Pinned = "MarketPlaceNPCpinned";
     private const Minimap.PinType PINTYPENPC = (Minimap.PinType)72;
     public static ConfigEntry<bool> EnableMapControl;
 
@@ -55,9 +54,6 @@ public static class NPC_MapController
             List<ZDO> AllNPCs = new();
             int index = 0;
             while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName, AllNPCs, ref index)) { }
-            index = 0;
-            while (!ZDOMan.instance.GetAllZDOsWithPrefabIterative(npcToSearchPrefabName_Pinned, AllNPCs, ref index)) { }
-
             foreach (ZDO zdo in AllNPCs)
             {
                 if (!zdo.IsValid()) continue;

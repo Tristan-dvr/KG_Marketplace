@@ -1,6 +1,10 @@
-﻿using Marketplace.Modules.NPC;
+﻿using Marketplace.ExternalLoads;
+using Marketplace.Modules.Global_Options;
+using Marketplace.Modules.Leaderboard;
+using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.TerritorySystem;
+using Marketplace.Paths;
 using Marketplace.Stats;
 
 namespace Marketplace;
@@ -13,7 +17,19 @@ public static class ChatCommands
     {
         private static void Postfix()
         {
-            new Terminal.ConsoleCommand("npcremove", "Remove NPCs in range of 5 meters", (args) =>
+            new Terminal.ConsoleCommand("mreloadsounds", "Reloads all sounds", (args) =>
+            {
+                AssetStorage.ReloadSounds();
+                args.Context.AddString("Reloading sounds...");
+            });
+            
+            new Terminal.ConsoleCommand("mreloadimages", "Reloads all sounds", (args) =>
+            {
+                AssetStorage.ReloadImages();
+                args.Context.AddString("Reloading images...");
+            });
+            
+            new Terminal.ConsoleCommand("mnpcremove", "Remove NPCs in range of 5 meters", (args) =>
             {
                 if (!Utils.IsDebug_Marketplace) return; 
                 IEnumerable<Market_NPC.NPCcomponent> FindNPCsInRange = Market_NPC.NPCcomponent.ALL.Where(x =>
