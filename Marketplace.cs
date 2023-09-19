@@ -1,4 +1,5 @@
-﻿using LocalizationManager;
+﻿using BepInEx.Configuration;
+using LocalizationManager;
 using Marketplace.Paths;
 using UnityEngine.Rendering;
 
@@ -194,5 +195,6 @@ namespace Marketplace
             LastConfigChangeTime[fName] = DateTime.Now;
             Utils.DelayedAction(action);
         }
+        
     }
 }

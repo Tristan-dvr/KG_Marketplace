@@ -18,7 +18,7 @@ namespace kg.ServerControl
     public class ServerControl : BaseUnityPlugin
     {
         private const string GUID = "kg.ServerControl_WEB";
-        private const string VERSION = "1.0.0";
+        private const string VERSION = "1.1.0";
         private const string POST_REQUEST = "https://kg-dev.xyz/API/RCON.php";
         private readonly ConcurrentQueue<ToInvoke> _queue = new ConcurrentQueue<ToInvoke>();
         private ConfigEntry<string> IDENTIFIER;

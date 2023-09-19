@@ -224,8 +224,8 @@ public static class CommandExecution
         
         _commands.Add(Command.Spawn, (string[] args, out string result) =>
         {
-            Vector3 vec = new Vector3(int.Parse(args[0]), int.Parse(args[1]), int.Parse(args[2]));
-            string prefab = args[3];
+            string prefab = args[0];
+            Vector3 vec = new Vector3(int.Parse(args[1]), int.Parse(args[2]), int.Parse(args[3]));
             int count = int.Parse(args[4]);
             GameObject go = ZNetScene.instance.GetPrefab(prefab);
             int level = int.Parse(args[5]);

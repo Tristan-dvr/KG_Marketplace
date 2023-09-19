@@ -1368,6 +1368,7 @@ public static class Market_NPC
             PeriodicSound = null!,
             PeriodicSoundTime = null!;
 
+        private static bool playSound = true;
         public static void Init()
         {
             UI = Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("MarketplaceNPCUI"));
@@ -1382,7 +1383,10 @@ public static class Market_NPC
             _patroldata = UI.transform.Find("Canvas/MAIN/Pergament/PATROLDATA").GetComponent<InputField>();
             _npcDialogue = UI.transform.Find("Canvas/MAIN/Pergament/NPCDIALOGUE").GetComponent<InputField>();
             _npcPinned = UI.transform.Find("Canvas/MAIN/Pergament/ISPINNED").GetComponent<Toggle>();
-            _npcPinned.onValueChanged.AddListener((_) => AssetStorage.AUsrc.Play());
+            _npcPinned.onValueChanged.AddListener((_) =>
+            {
+                if(playSound) AssetStorage.AUsrc.Play();
+            });
             MAIN.SetActive(false);
             FASHION.SetActive(false);
             Localization.instance.Localize(UI.transform);
@@ -1650,7 +1654,9 @@ public static class Market_NPC
             _npcmodel.text = _npc.GetString("KGnpcModelOverride");
             _patroldata.text = _npc.GetString("KGmarket PatrolData");
             _npcDialogue.text = _npc.GetString("KGnpcDialogue");
+            playSound = false;
             _npcPinned.isOn = _npc.GET_NPC_IsPinned();
+            playSound = true;
             _currentNPC = _npc;
             CheckColors();
             UI.SetActive(true);
