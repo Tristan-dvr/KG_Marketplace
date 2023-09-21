@@ -64,7 +64,8 @@ public static class Global_Configs
         public string _pieceSaverRecipe = "";
         public bool _useLeaderboard;
         public bool _rebuildHeightmap;
-        public List<string> _overrideDebug = new();
+        public HashSet<string> _overrideDebug = new();
+        public HashSet<string> _blockedChatUsers = new();
 
 
         public void Serialize(ref ZPackage pkg)
@@ -89,6 +90,8 @@ public static class Global_Configs
             pkg.Write(_rebuildHeightmap);
             pkg.Write(_overrideDebug.Count);
             foreach (string s in _overrideDebug) pkg.Write(s);
+            pkg.Write(_blockedChatUsers.Count);
+            foreach (string s in _blockedChatUsers) pkg.Write(s);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -114,6 +117,9 @@ public static class Global_Configs
             int count = pkg.ReadInt();
             _overrideDebug.Clear();
             for (int i = 0; i < count; i++) _overrideDebug.Add(pkg.ReadString());
+            _blockedChatUsers.Clear();
+            count = pkg.ReadInt();
+            for (int i = 0; i < count; i++) _blockedChatUsers.Add(pkg.ReadString());
         }
     }
 
@@ -185,8 +191,10 @@ public static class Global_Configs
         SyncedGlobalOptions.Value._pieceSaverRecipe = SearchOption("PieceSaverRecipe", "SwordCheat,1", "Recipe for Piece Saver Crystal creation");
         SyncedGlobalOptions.Value._useLeaderboard = SearchOption("UseLeaderboard", false, "Use Leaderboard");
         SyncedGlobalOptions.Value._rebuildHeightmap = SearchOption("RebuildHeightmap", false, "Rebuild Heightmap On Territory Change");
-        SyncedGlobalOptions.Value._overrideDebug = SearchOption("OverrideDebug", "Steam IDs here", "Admin Steam IDs")
-            .Split(new []{','}, StringSplitOptions.RemoveEmptyEntries).Where(s => long.TryParse(s, out _)).Select(s => s.Trim()).ToList();
+        SyncedGlobalOptions.Value._overrideDebug = new(SearchOption("OverrideDebug", "Steam IDs here", "Admin Steam IDs")
+            .Split(new []{','}, StringSplitOptions.RemoveEmptyEntries).Where(s => long.TryParse(s, out _)).Select(s => s.Trim()).ToList());
+        SyncedGlobalOptions.Value._blockedChatUsers = new(SearchOption("BlockedChatUsers", "Steam IDs here", "Blocked Chat Users")
+            .Split(new []{','}, StringSplitOptions.RemoveEmptyEntries).Where(s => long.TryParse(s, out _)).Select(s => s.Trim()).ToList());
         SyncedGlobalOptions.Update();
     }
 

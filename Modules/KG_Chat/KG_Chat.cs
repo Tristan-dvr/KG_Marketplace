@@ -579,8 +579,8 @@ public static class KG_Chat
             };
         }
 
-        [UsedImplicitly]
-        private static void Postfix() => ResetScroll();
+        [UsedImplicitly] private static void Postfix() => ResetScroll();
+        [UsedImplicitly] private static bool Prefix() => !Global_Configs.SyncedGlobalOptions.Value._blockedChatUsers.Contains(Global_Configs._localUserID);
 
         [HarmonyTranspiler]
         [UsedImplicitly]

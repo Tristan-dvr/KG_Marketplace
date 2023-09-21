@@ -1,6 +1,6 @@
 {
     "name": "Server_Control",
-    "version_number": "1.0.0",
+    "version_number": "1.1.0",
     "website_url": "https://kg-dev.xyz/servercontrol/",
     "description": "RCON-alike mod that allows you to control your server from Web without need of opening port",
     "dependencies": [
