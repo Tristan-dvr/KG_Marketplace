@@ -349,6 +349,10 @@
         <Compile Include="Modules\Leaderboard\LeaderBoard_Main_Client.cs" />
         <Compile Include="Modules\Leaderboard\Leaderboard_Server_Main.cs" />
         <Compile Include="Modules\Leaderboard\Leaderboard_UI.cs" />
+        <Compile Include="Modules\Lootboxes\Lootboxes_DataTypes.cs" />
+        <Compile Include="Modules\Lootboxes\Lootboxes_Logic.cs" />
+        <Compile Include="Modules\Lootboxes\Lootboxes_Main_Client.cs" />
+        <Compile Include="Modules\Lootboxes\Lootboxes_Main_Server.cs" />
         <Compile Include="Modules\NPC\NPC_DataTypes.cs" />
         <Compile Include="Modules\NPC\NPC_MapController.cs" />
         <Compile Include="Modules\TerritorySystem\ZoneVisualizer.cs" />

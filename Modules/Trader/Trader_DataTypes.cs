@@ -13,8 +13,7 @@ public static class Trader_DataTypes
         public bool NeedToKnow;
         public List<TraderItem> NeededItems;
         public List<TraderItem> ResultItems;
-
-
+        
         public void Serialize(ref ZPackage pkg)
         {
             pkg.Write(NeedToKnow);

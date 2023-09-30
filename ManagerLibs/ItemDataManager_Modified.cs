@@ -66,7 +66,6 @@ public abstract class ItemData
 			{
 				continue;
 			}
-
 			ZPackage pkg = new(keyVal[1]);
 			ParameterInfo param = (ParameterInfo)FormatterServices.GetUninitializedObject(typeof(ParameterInfo));
 			parameterInfoClassImpl.SetValue(param, field.FieldType);

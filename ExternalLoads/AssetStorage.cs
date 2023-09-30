@@ -30,7 +30,7 @@ public static class AssetStorage
     public static GameObject Teleporter_VFX2 = null!;
 
     public static AudioSource AUsrc = null!;
-    
+
     [UsedImplicitly]
     private static void OnInit()
     {
@@ -47,14 +47,14 @@ public static class AssetStorage
         EpicMMO_Exp = asset.LoadAsset<Sprite>("EpicMMOIcon");
         CustomValue_Icon = asset.LoadAsset<Sprite>("CustomValueIcon");
         MH_Exp_Icon = asset.LoadAsset<Sprite>("magicheim_icon");
-        Cozyheim_Exp =  asset.LoadAsset<Sprite>("cozyheim_icon");
+        Cozyheim_Exp = asset.LoadAsset<Sprite>("cozyheim_icon");
         PlaceholderGamblerIcon = asset.LoadAsset<Sprite>("placeholdergambler_icon");
-        PlaceholderMonsterIcon =  asset.LoadAsset<Sprite>("placeholdermonster_icon");
+        PlaceholderMonsterIcon = asset.LoadAsset<Sprite>("placeholdermonster_icon");
         PortalIconDefault = asset.LoadAsset<Sprite>("default_portal_icon");
         NPC_MapControl = asset.LoadAsset<Sprite>("NPC_MapControl");
-        
+
         GlobalCachedSprites["teleporter_default"] = PortalIconDefault;
-        
+
         ReloadImages();
         ReloadSounds();
     }
@@ -79,20 +79,23 @@ public static class AssetStorage
             }
         }
     }
-    
-    public static void ReloadSounds() => Marketplace._thistype.StartCoroutine(LoadSoundsCoroutine(Market_Paths.NPC_SoundsPath));
+
+    public static void ReloadSounds() =>
+        Marketplace._thistype.StartCoroutine(LoadSoundsCoroutine(Market_Paths.NPC_SoundsPath));
+
     public static void ReloadImages()
-     {
-         foreach (string file in Directory.GetFiles(Market_Paths.CachedImagesFolder, "*.png", SearchOption.AllDirectories))
-         {
-             string fileName = Path.GetFileNameWithoutExtension(file);
-             byte[] data = File.ReadAllBytes(file);
-             Texture2D tex = new Texture2D(1, 1);
-             tex.LoadImage(data);
-             Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0));
-             GlobalCachedSprites[fileName] = sprite;
-         }
-     }
+    {
+        foreach (string file in Directory.GetFiles(Market_Paths.CachedImagesFolder, "*.png",
+                     SearchOption.AllDirectories))
+        {
+            string fileName = Path.GetFileNameWithoutExtension(file);
+            byte[] data = File.ReadAllBytes(file);
+            Texture2D tex = new Texture2D(1, 1);
+            tex.LoadImage(data);
+            Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0));
+            GlobalCachedSprites[fileName] = sprite;
+        }
+    }
 
     private static AssetBundle GetAssetBundle(string filename)
     {
@@ -109,6 +112,7 @@ public static class AssetStorage
         [UsedImplicitly]
         private static void Postfix(AudioMan __instance)
         {
+            var SFXgroup = __instance.m_masterMixer.FindMatchingGroups("SFX")[0];
             AUsrc = Chainloader.ManagerObject.AddComponent<AudioSource>();
             AUsrc.clip = asset.LoadAsset<AudioClip>("MarketClick");
             AUsrc.reverbZoneMix = 0;
@@ -116,14 +120,10 @@ public static class AssetStorage
             AUsrc.bypassListenerEffects = true;
             AUsrc.bypassEffects = true;
             AUsrc.volume = 0.8f;
-            AUsrc.outputAudioMixerGroup = __instance.m_masterMixer.outputAudioMixerGroup;
-            foreach (GameObject allAsset in asset.LoadAllAssets<GameObject>())
-            {
-                foreach (AudioSource audioSource in allAsset.GetComponentsInChildren<AudioSource>(true))
-                {
-                    audioSource.outputAudioMixerGroup = __instance.m_masterMixer.outputAudioMixerGroup;
-                }
-            }
+            AUsrc.outputAudioMixerGroup = AudioMan.instance.m_masterMixer.outputAudioMixerGroup;
+            foreach (GameObject go in asset.LoadAllAssets<GameObject>())
+                foreach (AudioSource audioSource in go.GetComponentsInChildren<AudioSource>(true))
+                    audioSource.outputAudioMixerGroup = SFXgroup;
         }
     }
 }

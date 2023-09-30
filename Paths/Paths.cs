@@ -41,6 +41,7 @@ public static class Market_Paths
     public static string BufferDatabaseFolder => Path.Combine(ConfigsFolder, "Buffers");
     public static string BufferProfilesFolder => Path.Combine(ConfigsFolder, "BufferProfiles");
     public static string TransmogrificationFolder => Path.Combine(ConfigsFolder, "Transmogrifications");
+    public static string LootboxesFolder => Path.Combine(ConfigsFolder, "Lootboxes");
     public static string LeaderboardAchievementsFolder => Path.Combine(ConfigsFolder, "LeaderboardAchievements");
 
     private static string PlayerTagsFolder => Path.Combine(MainPath, "PlayerTags");
@@ -91,6 +92,8 @@ public static class Market_Paths
                 Directory.CreateDirectory(TransmogrificationFolder);
             if (!Directory.Exists(LeaderboardAchievementsFolder))
                 Directory.CreateDirectory(LeaderboardAchievementsFolder);
+            if (!Directory.Exists(LootboxesFolder))
+                Directory.CreateDirectory(LootboxesFolder);
             
      
             if (!File.Exists(BankerDataJSONFile)) File.Create(BankerDataJSONFile).Dispose();

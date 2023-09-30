@@ -167,6 +167,7 @@ namespace Marketplace
             FoldersToFiles.Add(Market_Paths.ServerInfoProfilesFolder, "SI");
             FoldersToFiles.Add(Market_Paths.GamblerProfilesFolder, "GP");
             FoldersToFiles.Add(Market_Paths.LeaderboardAchievementsFolder, "LA");
+            FoldersToFiles.Add(Market_Paths.LootboxesFolder, "LB");
         }
 
         private static readonly Dictionary<string, Action> FSW_Lookup = new();

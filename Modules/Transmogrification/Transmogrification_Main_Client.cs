@@ -283,8 +283,7 @@ public static class Transmogrification_Main_Client
         }
     }
 
-    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData),
-        typeof(int), typeof(bool), typeof(int))]
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData), typeof(int), typeof(bool), typeof(float))]
     [ClientOnlyPatch]
     private static class ItemDrop_ItemData_Tooltip__Patch_TRANSMOG
     {

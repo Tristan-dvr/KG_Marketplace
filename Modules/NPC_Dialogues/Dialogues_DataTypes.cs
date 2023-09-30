@@ -243,8 +243,7 @@ public static class Dialogues_DataTypes
                                 result += (npc) => { npc.zanim.SetTrigger(split[1]); };
                                 break;
                             case OptionCommand.OpenUI:
-                                result += (npc) => npc.OpenUIForType(
-                                    split.Length > 1 ? split[1] : null, split.Length > 2 ? split[2] : null);
+                                result += (npc) => npc.OpenUIForType(split.Length > 1 ? split[1] : null, split.Length > 2 ? split[2] : null);
                                 break;
                             case OptionCommand.PlaySound:
                                 result += (npc) =>

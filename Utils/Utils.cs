@@ -389,7 +389,7 @@ public static class Utils
 
     public static Sprite TryFindIcon(string name, Sprite defaultSprite = null)
     {
-        if (string.IsNullOrEmpty(name)) return null;
+        if (string.IsNullOrEmpty(name)) return defaultSprite;
         if (AssetStorage.GlobalCachedSprites.TryGetValue(name, out Sprite img))
         {
             return img;
