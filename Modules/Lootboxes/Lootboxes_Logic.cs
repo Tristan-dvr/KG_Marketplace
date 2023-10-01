@@ -9,11 +9,9 @@ public static class Lootboxes_Logic
     public class Lootbox_IDM : ItemData
     {
         [SerializeField] public Lootboxes_DataTypes.Lootbox _data;
-
         protected override bool AllowStackingIdenticalValues { get; set; } = true;
-
-        public string GetName() => _data?.UID.Replace("_", " ") ?? "Lootbox";
-        public string GetIcon() => _data?.Icon;
+        public string GetName() => _data.UID.Replace("_", " ");
+        public string GetIcon() => _data.Icon;
         public string GetDescription() => BuildDescription();
 
         public void Assign(Lootboxes_DataTypes.Lootbox data)
@@ -30,25 +28,36 @@ public static class Lootboxes_Logic
             if (!string.IsNullOrEmpty(_data.AdditionalDescription))
                 sb.AppendLine(_data.AdditionalDescription);
             if (_data.Items.Count == 0) return sb.ToString();
-            sb.AppendLine("\n<color=orange>You have a chance to get:</color>");
+            switch (_data.Type)
+            {
+                case Lootboxes_DataTypes.Lootbox.LBType.One:
+                    sb.AppendLine($"\n<color=orange>Right click to open and get <color=green><b>one random</b></color> item from list:</color>");
+                    break;
+                case Lootboxes_DataTypes.Lootbox.LBType.All:
+                    sb.AppendLine($"\n<color=orange>Right click to open and get <color=green><b>each</b></color> item from list:</color>");
+                    break;
+                case Lootboxes_DataTypes.Lootbox.LBType.AllWithChance or Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip:
+                    sb.AppendLine($"\n<color=orange>Right click to open and get <color=green><b>each (with chance)</b></color> item from list:</color>");
+                    break;
+            }
             foreach (var item in _data.Items)
             {
                 GameObject test = ZNetScene.instance.GetPrefab(item.Prefab);
                 if (!validCheck(test))
                 {
-                    sb.AppendLine($"<color=red>ERROR: {item.Prefab} not found!</color>");
+                    sb.AppendLine($"<color=red>•</color> <color=red>ERROR: {item.Prefab} not found!</color>");
                     continue;
                 }
 
                 ItemDrop idrop = test.GetComponent<ItemDrop>();
+                string chanceStr = _data.Type == Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip ? $" <color=#00ff00>({item.Chance}%)</color>" : "";
                 if (idrop)
                 {
                     string displayLevel = idrop.m_itemData.m_shared.m_maxQuality > 1
                         ? $" <color=#00ff00>({item.Level}★)</color>"
                         : "";
                     string displayAmouny = item.Min == item.Max ? $"{item.Min}" : $"{item.Min}-{item.Max}";
-                    sb.AppendLine(
-                        $"<color=yellow>{displayAmouny}x {idrop.m_itemData.m_shared.m_name.Localize()}{displayLevel}</color>");
+                    sb.AppendLine($"<color=red>•</color> <color=yellow>{displayAmouny}x {idrop.m_itemData.m_shared.m_name.Localize()}{displayLevel}{chanceStr}</color>");
                 }
                 else
                 {
@@ -59,7 +68,7 @@ public static class Lootboxes_Logic
                         ? " (<color=green>Tamed</color>)"
                         : " (<color=red>Hostile</color>)";
                     sb.AppendLine(
-                        $"<color=yellow>{displayAmouny}x {character.m_name.Localize()}{displayLevel}{displayTamed}</color>");
+                        $"<color=red>•</color> <color=yellow>{displayAmouny}x {character.m_name.Localize()}{displayLevel}{displayTamed}{chanceStr}</color>");
                 }
             }
 
@@ -71,29 +80,9 @@ public static class Lootboxes_Logic
             List<Lootboxes_DataTypes.Lootbox.Item> validOnly =
                 _data.Items.Where(i => validCheck(ZNetScene.instance.GetPrefab(i.Prefab))).ToList();
             if (validOnly.Count == 0) return;
-            if (_data.GiveAll)
+            
+            void Process(Lootboxes_DataTypes.Lootbox.Item item)
             {
-                Chat.instance.m_hideTimer = 0f;
-                foreach (var item in validOnly)
-                {
-                    int randomAmount = Random.Range(item.Min, item.Max + 1);
-                    GameObject obj = ZNetScene.instance.GetPrefab(item.Prefab);
-                    Utils.InstantiateItem(obj, randomAmount, item.Level);
-                    string prefabLocalized = obj.GetComponent<ItemDrop>()
-                        ? obj.GetComponent<ItemDrop>().m_itemData.m_shared.m_name.Localize()
-                        : obj.GetComponent<Character>().m_name.Localize();
-                    Chat.instance.AddString($"<color=yellow>You got {randomAmount}x {prefabLocalized}!</color>");
-                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
-                        $"You got {randomAmount}x {prefabLocalized}!");
-                }
-
-                string vfx = _data.OpenVFX;
-                if (vfx != null && ZNetScene.instance.GetPrefab(vfx) is { } vfxPrefab)
-                    Object.Instantiate(vfxPrefab, Player.m_localPlayer.transform.position, Quaternion.identity);
-            }
-            else
-            {
-                Lootboxes_DataTypes.Lootbox.Item item = validOnly[Random.Range(0, validOnly.Count)];
                 int randomAmount = Random.Range(item.Min, item.Max + 1);
                 GameObject obj = ZNetScene.instance.GetPrefab(item.Prefab);
                 Utils.InstantiateItem(obj, randomAmount, item.Level);
@@ -102,12 +91,29 @@ public static class Lootboxes_Logic
                     : obj.GetComponent<Character>().m_name.Localize();
                 Chat.instance.m_hideTimer = 0f;
                 Chat.instance.AddString($"<color=yellow>You got {randomAmount}x {prefabLocalized}!</color>");
-                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
-                    $"You got {randomAmount}x {prefabLocalized}!");
-                string vfx = _data.OpenVFX;
-                if (vfx != null && ZNetScene.instance.GetPrefab(vfx) is { } vfxPrefab)
-                    Object.Instantiate(vfxPrefab, Player.m_localPlayer.transform.position, Quaternion.identity);
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, $"You got {randomAmount}x {prefabLocalized}!");
             }
+            
+            Chat.instance.m_hideTimer = 0f;
+            switch (_data.Type)
+            {
+                case Lootboxes_DataTypes.Lootbox.LBType.One:
+                    Process(validOnly[Random.Range(0, validOnly.Count)]);
+                    break;
+                case Lootboxes_DataTypes.Lootbox.LBType.All:
+                    validOnly.ForEach(Process);
+                    break;
+                case Lootboxes_DataTypes.Lootbox.LBType.AllWithChance or Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip:
+                    foreach (var item in validOnly)
+                    {
+                        if (Random.Range(0, 101) <= item.Chance)
+                            Process(item);
+                    }
+                    break;
+            }
+            string vfx = _data.OpenVFX;
+            if (vfx != null && ZNetScene.instance.GetPrefab(vfx) is { } vfxPrefab)
+                Object.Instantiate(vfxPrefab, Player.m_localPlayer.transform.position, Quaternion.identity);
         }
     }
 

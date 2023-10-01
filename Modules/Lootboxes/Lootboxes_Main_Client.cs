@@ -67,9 +67,10 @@ public static class Lootboxes_Main_Client
         _mapper.Clear();
         foreach (Lootboxes_DataTypes.Lootbox lootbox in Lootboxes_DataTypes.SyncedLootboxData.Value)
         {
-            _mapper[lootbox.UID.GetStableHashCode()] = lootbox;
+            _mapper[lootbox.UID.RemoveRichTextTags().GetStableHashCode()] = lootbox;
         }
         _mapper[LootBox_Base.name.GetStableHashCode()] = Lootbox_Default;
+        Terminal.commands["spawn"].m_tabOptions = null;
     }
     
     [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.GetPrefabNames))]

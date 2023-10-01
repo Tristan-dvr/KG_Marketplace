@@ -23,35 +23,61 @@ public class Lootboxes_Main_Server
             if (profiles[k].StartsWith("["))
             {
                 _currentLootbox = new();
-                string[] profileSplit = profiles[k].Replace("[", "").Replace("]", "").Replace(" ","").Split('=');
-                _currentLootbox.UID = profileSplit[0];
-                _currentLootbox.GiveAll = profileSplit.Length == 2 && profileSplit[1].ToLower() == "all";
+                _currentLootbox.UID = profiles[k].Replace("[", "").Replace("]", "").Replace(" ", "");
             }
             else
             {
                 if (_currentLootbox == null) continue;
                 try
                 {
-                    string[] split = profiles[k].Replace(" ", "").Split(',');
-                    if (split.Length % 3 != 0) continue;
-                    for (int i = 0; i < split.Length; i += 3)
+                    string type = profiles[k].Replace(" ", "").ToLower();
+                    Lootboxes_DataTypes.Lootbox.LBType? toEnum = Enum.TryParse(type, true, out Lootboxes_DataTypes.Lootbox.LBType result) ? result : null;
+                    if (toEnum == null)
                     {
-                        string prefab = split[i];
-                        string range = split[i + 1];
-                        string[] splitRange = range.Split('-');
-                        int min = int.Parse(splitRange[0]);
-                        int max = splitRange.Length == 2 ? int.Parse(splitRange[1]) : min;
-                        int level = int.Parse(split[i + 2]);
-                        _currentLootbox.Items.Add(new(prefab, min, max, level));
+                        Utils.print($"Error while processing Lootboxes in file {fpath}: Unknown type {type}. Lootbox: {_currentLootbox?.UID}");
+                        _currentLootbox = null;
+                        continue;
                     }
+                    _currentLootbox.Type = toEnum.Value;
+                    string[] split = profiles[k+1].Replace(" ", "").Split(',');
+                    if (toEnum is not (Lootboxes_DataTypes.Lootbox.LBType.AllWithChance or Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip))
+                    {
+                        if (split.Length % 3 != 0) continue;
+                        for (int i = 0; i < split.Length; i += 3)
+                        {
+                            string prefab = split[i];
+                            string range = split[i + 1];
+                            string[] splitRange = range.Split('-');
+                            int min = int.Parse(splitRange[0]);
+                            int max = splitRange.Length == 2 ? int.Parse(splitRange[1]) : min;
+                            int level = int.Parse(split[i + 2]);
+                            _currentLootbox.Items.Add(new(prefab, min, max, level, 100));
+                        }
+                    }
+                    else
+                    {
+                        if (split.Length % 4 != 0) continue;
+                        for (int i = 0; i < split.Length; i += 4)
+                        {
+                            string prefab = split[i];
+                            string range = split[i + 1];
+                            string[] splitRange = range.Split('-');
+                            int min = int.Parse(splitRange[0]);
+                            int max = splitRange.Length == 2 ? int.Parse(splitRange[1]) : min;
+                            int level = int.Parse(split[i + 2]);
+                            int chance = int.Parse(split[i + 3]);
+                            _currentLootbox.Items.Add(new(prefab, min, max, level, chance));
+                        }
+                    }
+                  
 
-                    string description = profiles[k + 1];
+                    string description = profiles[k + 2];
                     if (!string.IsNullOrWhiteSpace(description))
                         _currentLootbox.AdditionalDescription = description.Replace(@"\n", "\n");
-                    string icon = profiles[k + 2].Replace(" ", "");
+                    string icon = profiles[k + 3].Replace(" ", "");
                     if (!string.IsNullOrWhiteSpace(icon))
                         _currentLootbox.Icon = icon;
-                    string openVFX = profiles[k + 3].Replace(" ", "");
+                    string openVFX = profiles[k + 4].Replace(" ", "");
                     if (!string.IsNullOrWhiteSpace(openVFX))
                         _currentLootbox.OpenVFX = openVFX;
 
@@ -60,7 +86,8 @@ public class Lootboxes_Main_Server
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Error while processing Lootboxes in file {fpath}: {ex}");
+                    Utils.print($"Error while processing Lootboxes in file {fpath}: {ex}. Lootbox: {_currentLootbox?.UID}");
+                    _currentLootbox = null;
                 }
             }
         }
