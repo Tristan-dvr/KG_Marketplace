@@ -69,7 +69,7 @@ public static class Trader_UI
         ModifierButtons[2] = UI.transform.Find("Canvas/Background/x10");
         ModifierButtons[3] = UI.transform.Find("Canvas/Background/x100");
 
-        for (int i = 0; i < ModifierButtons.Length; i++)
+        for (int i = 0; i < ModifierButtons.Length; ++i)
         {
             int i1 = i;
             ModifierButtons[i].GetComponent<Button>().onClick.AddListener(() =>
@@ -130,7 +130,7 @@ public static class Trader_UI
     private static void SetModifier(Modifier modifier)
     {
         CurrentModifier = modifier;
-        for (int i = 0; i < ModifierButtons.Length; i++)
+        for (int i = 0; i < ModifierButtons.Length; ++i)
         {
             ModifierButtons[i].transform.Find("Image").GetComponent<Image>().color =
                 i == (int)modifier ? Color.green : Color.white;

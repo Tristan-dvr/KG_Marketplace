@@ -60,6 +60,7 @@ public static class KG_Chat
                 ugui.spriteAsset.material.SetTexture(ShaderUtilities.ID_MainTex, tex);
             }
         }
+        Marketplace.Global_FixedUpdator += KGChat_Update;
     }
 
 
@@ -242,20 +243,8 @@ public static class KG_Chat
             Chat.instance.AddString("<color=green>/group | /party to switch to groups chat mode</color>");
 
         Chat.instance.m_input.characterLimit = 128;
-        Marketplace.Global_FixedUpdator += KGChat_Update;
     }
-
-    [HarmonyPatch(typeof(GuiInputField), "Update")]
-    [ClientOnlyPatch]
-    private static class GuiInputField_Update_Patch
-    {
-        [UsedImplicitly]
-        private static bool Prefix()
-        {
-            return !kgChat;
-        }
-    }
-
+    
     private static void KGChat_Update(float dt)
     {
         if (!kgChat || !Chat.instance.m_input.IsActive()) return;
@@ -341,7 +330,7 @@ public static class KG_Chat
         private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> list = new List<CodeInstruction>(instructions);
-            for (int i = 0; i < list.Count; i++)
+            for (int i = 0; i < list.Count; ++i)
             {
                 if (list[i].opcode == OpCodes.Ldc_I4 && ((int)list[i].operand == 323 || (int)list[i].operand == 324))
                 {
@@ -367,7 +356,7 @@ public static class KG_Chat
             List<CodeInstruction> list = new List<CodeInstruction>(instructions);
             MethodInfo methodInfo = AccessTools.DeclaredMethod(typeof(string), "ToUpper", Type.EmptyTypes);
             MethodInfo methodInfo2 = AccessTools.DeclaredMethod(typeof(string), "ToLowerInvariant", Type.EmptyTypes);
-            for (int i = 0; i < list.Count; i++)
+            for (int i = 0; i < list.Count; ++i)
             {
                 if (list[i].opcode == OpCodes.Callvirt &&
                     (ReferenceEquals(list[i].operand, methodInfo) || ReferenceEquals(list[i].operand, methodInfo2)))

@@ -50,7 +50,7 @@ public static class JC_API_Class
 
         foreach (Transform transform in JC_Api)
         {
-            for (int i = 1; i <= 5; ++i)
+            for (int i = 1; i <= 10; ++i)
             {
                 if (transform.Find($"Transmute_Text_{i}") is { } transmute)
                 {

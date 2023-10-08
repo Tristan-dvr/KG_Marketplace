@@ -17,6 +17,7 @@ public static class DistancedUI_DataType
         public List<string> InfoProfiles = new();
         public List<string> BankerProfiles = new();
         public List<string> TransmogrificationProfiles = new();
+        public List<string> DialogueProfiles = new();
 
         public void Serialize(ref ZPackage pkg)
         {
@@ -70,6 +71,12 @@ public static class DistancedUI_DataType
             {
                 pkg.Write(profile ?? "");
             }
+            
+            pkg.Write(DialogueProfiles.Count);
+            foreach (string profile in DialogueProfiles)
+            {
+                pkg.Write(profile ?? "");
+            }
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -78,51 +85,57 @@ public static class DistancedUI_DataType
             MarketplaceEnabled = pkg.ReadBool();
 
             int count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 TraderProfiles.Add(pkg.ReadString());
             }
 
             count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 TeleporterProfiles.Add(pkg.ReadString());
             }
 
             count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 GamblerProfiles.Add(pkg.ReadString());
             }
 
             count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 BufferProfiles.Add(pkg.ReadString());
             }
 
             count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 QuestProfiles.Add(pkg.ReadString());
             }
 
             count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 InfoProfiles.Add(pkg.ReadString());
             }
 
             count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 BankerProfiles.Add(pkg.ReadString());
             }
              
             count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 TransmogrificationProfiles.Add(pkg.ReadString());
+            }
+            
+            count = pkg.ReadInt();
+            for (int i = 0; i < count; ++i)
+            {
+                DialogueProfiles.Add(pkg.ReadString());
             }
         }
     }

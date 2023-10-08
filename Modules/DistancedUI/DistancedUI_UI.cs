@@ -1,6 +1,7 @@
 ﻿using Marketplace.ExternalLoads;
 using Marketplace.Modules.Banker;
 using Marketplace.Modules.Buffer;
+using Marketplace.Modules.Dialogues;
 using Marketplace.Modules.Gambler;
 using Marketplace.Modules.MainMarketplace;
 using Marketplace.Modules.Quests;
@@ -24,7 +25,8 @@ public static class DistancedUI_UI
             Buffer,
             Quests,
             Info,
-            Transmogrification
+            Transmogrification,
+            Dialogues
         }
 
         private static GameObject UI = null!;
@@ -40,8 +42,7 @@ public static class DistancedUI_UI
         private static Image Profiles_Icon = null!;
         private static Text Profiles_Text = null!;
         private static readonly List<Image> Buttons_Images = new();
-
-
+        
         private static readonly Dictionary<NPCtype_Internal, Sprite> Icons = new();
 
         private static readonly Dictionary<NPCtype_Internal, string> Texts = new()
@@ -54,18 +55,19 @@ public static class DistancedUI_UI
             { NPCtype_Internal.Buffer, "$mpasn_Buffer" },
             { NPCtype_Internal.Quests, "$mpasn_Quests" },
             { NPCtype_Internal.Info, "$mpasn_Info" },
-            { NPCtype_Internal.Transmogrification, "$mpasn_Transmog" }
+            { NPCtype_Internal.Transmogrification, "$mpasn_Transmog" },
+            { NPCtype_Internal.Dialogues, "$mpasn_Dialogues" }
         };
 
         public static void Init()
         {
-            UI = UnityEngine.Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("PremiumMemebershipUI"));
+            UI = UnityEngine.Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("MarketplaceDistanedUI"));
             Viewport_Content = UI.transform.Find("Canvas/View_Profiles/CraftView/Scroll View/Viewport/Content");
             View = UI.transform.Find("Canvas/Open/View").gameObject;
             View_Profiles = UI.transform.Find("Canvas/View_Profiles").gameObject;
             Left = UI.transform.Find("Canvas/Open/Left").gameObject;
             Right = UI.transform.Find("Canvas/Open/Right").gameObject;
-            Content_Element = AssetStorage.asset.LoadAsset<GameObject>("PremiumUI_Element");
+            Content_Element = AssetStorage.asset.LoadAsset<GameObject>("MarketplaceDistanedUI_Element");
             UI.transform.Find("Canvas/Open").GetComponent<Button>().onClick.AddListener(ClickView);
             UnityEngine.Object.DontDestroyOnLoad(UI);
             UI.SetActive(false);
@@ -80,6 +82,7 @@ public static class DistancedUI_UI
             Icons[NPCtype_Internal.Quests] = AssetStorage.asset.LoadAsset<Sprite>("quests_pm");
             Icons[NPCtype_Internal.Info] = AssetStorage.asset.LoadAsset<Sprite>("info_pm");
             Icons[NPCtype_Internal.Transmogrification] = AssetStorage.asset.LoadAsset<Sprite>("transmog_pm");
+            Icons[NPCtype_Internal.Dialogues] = AssetStorage.asset.LoadAsset<Sprite>("dialogues_pm");
             UI.transform.Find("Canvas/Open/View/Marketplace").GetComponent<Button>().onClick
                 .AddListener(() => ClickOpen(NPCtype_Internal.Marketplace));
             UI.transform.Find("Canvas/Open/View/Trader").GetComponent<Button>().onClick
@@ -98,6 +101,8 @@ public static class DistancedUI_UI
                 .AddListener(() => ClickOpen(NPCtype_Internal.Info));
             UI.transform.Find("Canvas/Open/View/Transmogrification").GetComponent<Button>().onClick
                 .AddListener(() => ClickOpen(NPCtype_Internal.Transmogrification));
+            UI.transform.Find("Canvas/Open/View/Dialogues").GetComponent<Button>().onClick
+                .AddListener(() => ClickOpen(NPCtype_Internal.Dialogues));
 
             Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Marketplace").GetComponent<Image>());
             Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Trader").GetComponent<Image>());
@@ -108,6 +113,7 @@ public static class DistancedUI_UI
             Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Quests").GetComponent<Image>());
             Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Info").GetComponent<Image>());
             Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Transmogrification").GetComponent<Image>());
+            Buttons_Images.Add(UI.transform.Find("Canvas/Open/View/Dialogues").GetComponent<Image>());
 
             foreach (Image image in Buttons_Images)
             {
@@ -138,6 +144,7 @@ public static class DistancedUI_UI
                 NPCtype_Internal.Quests => DistancedUI_DataType.SyncedDistancedUIData.Value.QuestProfiles,
                 NPCtype_Internal.Info => DistancedUI_DataType.SyncedDistancedUIData.Value.InfoProfiles,
                 NPCtype_Internal.Transmogrification => DistancedUI_DataType.SyncedDistancedUIData.Value.TransmogrificationProfiles,
+                NPCtype_Internal.Dialogues => DistancedUI_DataType.SyncedDistancedUIData.Value.DialogueProfiles,
                 _ => new()
             };
             List<string> syncedSource = type switch
@@ -150,6 +157,7 @@ public static class DistancedUI_UI
                 NPCtype_Internal.Quests => Quests_DataTypes.SyncedQuestProfiles.Value.Keys.ToList(),
                 NPCtype_Internal.Info => ServerInfo_DataTypes.SyncedServerInfoData.Value.Keys.ToList(),
                 NPCtype_Internal.Transmogrification => Transmogrification_DataTypes.SyncedTransmogData.Value.Keys.ToList(),
+                NPCtype_Internal.Dialogues => Dialogues_DataTypes.SyncedDialoguesData.Value.Select(x => x.UID).ToList(),
                 _ => new()
             };
             
@@ -198,6 +206,7 @@ public static class DistancedUI_UI
                 NPCtype_Internal.Quests => DistancedUI_DataType.SyncedDistancedUIData.Value.QuestProfiles,
                 NPCtype_Internal.Info => DistancedUI_DataType.SyncedDistancedUIData.Value.InfoProfiles,
                 NPCtype_Internal.Transmogrification => DistancedUI_DataType.SyncedDistancedUIData.Value.TransmogrificationProfiles,
+                NPCtype_Internal.Dialogues => DistancedUI_DataType.SyncedDistancedUIData.Value.DialogueProfiles,
                 _ => new()
             };
             List<string> syncedSource = type switch
@@ -210,6 +219,7 @@ public static class DistancedUI_UI
                 NPCtype_Internal.Quests => Quests_DataTypes.SyncedQuestProfiles.Value.Keys.ToList(),
                 NPCtype_Internal.Info => ServerInfo_DataTypes.SyncedServerInfoData.Value.Keys.ToList(),
                 NPCtype_Internal.Transmogrification => Transmogrification_DataTypes.SyncedTransmogData.Value.Keys.ToList(),
+                NPCtype_Internal.Dialogues => Dialogues_DataTypes.SyncedDialoguesData.Value.Select(x => x.UID).ToList(),
                 _ => new()
             };
 
@@ -271,6 +281,9 @@ public static class DistancedUI_UI
                 case NPCtype_Internal.Transmogrification:
                     Transmogrification_UI.Show(profile, _NPCname);
                     break;
+                case NPCtype_Internal.Dialogues:
+                    Dialogues_UI.LoadDialogue(null, profile);
+                    break;
             }
         }
 
@@ -318,6 +331,7 @@ public static class DistancedUI_UI
                 Buttons_Images[6].gameObject.SetActive(HasAny(NPCtype_Internal.Quests));
                 Buttons_Images[7].gameObject.SetActive(HasAny(NPCtype_Internal.Info));
                 Buttons_Images[8].gameObject.SetActive(HasAny(NPCtype_Internal.Transmogrification));
+                Buttons_Images[9].gameObject.SetActive(HasAny(NPCtype_Internal.Dialogues));
             }
         }
 

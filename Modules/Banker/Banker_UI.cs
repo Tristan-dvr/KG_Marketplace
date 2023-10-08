@@ -86,7 +86,7 @@ public static class Banker_UI
         CurrentObjects.Clear();
         CurrentValues.Clear();
         if (!Banker_DataTypes.SyncedBankerProfiles.Value.ContainsKey(profile)) return;
-        for (int i = 0; i < Banker_DataTypes.SyncedBankerProfiles.Value[profile].Count; i++)
+        for (int i = 0; i < Banker_DataTypes.SyncedBankerProfiles.Value[profile].Count; ++i)
         {
             int data = Banker_DataTypes.SyncedBankerProfiles.Value[profile][i];
             ItemDrop item = ZNetScene.instance.GetPrefab(data)?.GetComponent<ItemDrop>()!;

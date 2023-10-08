@@ -4,7 +4,7 @@
 ### If you can't use download for some reason here's current Localization content:
 
 
-<details><summary>Localization 9.0.0</summary>
+<details><summary>Localization 9.1.0</summary>
 
 ```yaml
 mpasn_searchbyname: Search by name...
@@ -177,7 +177,7 @@ mpasn_transmog_onehandedweapon: One Handed Weapons
 mpasn_transmog_twohandedweapon: Two Handed Weapons
 mpasn_transmog_bow: Bows
 mpasn_transmog_shield: Shields
-mpasn_transmog_any: Any
+mpasn_transmog_999: Any
 mpasn_transmog_helmet: Helmets
 mpasn_transmog_chest: Chests
 mpasn_transmog_legs: Legs
@@ -185,26 +185,6 @@ mpasn_transmog_shoulder: Capes
 mpasn_transmog_tool: Tools
 mpasn_transmog_utility: Utility
 mpasn_transmog_price: Price
-mpasn_transmog_eff1: Azure Ashes
-mpasn_transmog_eff2: Burning Low
-mpasn_transmog_eff3: Cyan Wrap
-mpasn_transmog_eff4: Ice Age
-mpasn_transmog_eff5: Angel Touch
-mpasn_transmog_eff6: Purple Flame
-mpasn_transmog_eff7: Burning High
-mpasn_transmog_eff8: Turbulence
-mpasn_transmog_eff9: Radiation
-mpasn_transmog_eff10: Loki's Anger
-mpasn_transmog_eff11: Phantom
-mpasn_transmog_eff12: Golden Age
-mpasn_transmog_eff13: Ice Menace
-mpasn_transmog_eff14: Cyan Breathe
-mpasn_transmog_eff15: Lightning Strike
-mpasn_transmog_eff16: Tranquility
-mpasn_transmog_eff17: Magic Arise
-mpasn_transmog_eff18: Water
-mpasn_transmog_eff19: Energy Flow
-mpasn_transmog_eff20: Lightning Menace
 mpasn_transmog_transmogrifiedinfo: Transmogrified into
 mpasn_tooltip_pet: Creature will spawn tamed if it can be
 mpasn_tooltip_epicmmo: Adds <color=yellow>EpicMMO</color> Experience
@@ -259,7 +239,7 @@ mpasn_Leaderboard_Harvested: "Plants\nHarvested"
 mpasn_Leaderboard_ItemsCrafted: "Items\nCrafted"
 mpasn_Leaderboard_AmountOfDeath: "Amount of\nDeaths"
 mpasn_Leaderboard_MapExplored: "Map\nExplored"
-mpasn_LeaderboardAchievements: "'s\nAchievements" 
+mpasn_LeaderboardAchievements: "'s\nAchievements"
 mpasn_needtitlescore: Need Achievement Score
 mpasn_dontneedtitlescore: You have Achievement Score
 mpasn_addedtobank: Added to Bank
@@ -275,5 +255,18 @@ mpasn_trader_sendtobankoff: "Send to Bank\n<color=red>Off</color>"
 mpasn_dropmultiplier: Custom Loot Drop Rates
 mpasn_needmodinstalled: Need Mod Installed
 mpasn_dontneedmodinstalled: Mod Installed
+mpasn_needIronGateStatMore: Need Iron Gate Stat more
+mpasn_needIronGateStatLess: Need Iron Gate Stat less
+mpasn_npcispinned: Show on map
+mpasn_lootbox: Lootbox
+mpasn_noguild: You need to be in guild
+mpasn_hasguild: You can't be in guild
+mpasn_needguildlevelmore: Need guild level more or equal than
+mpasn_needguildlevelless: Need guild level less than
+mpasn_needguildname: Need guild
+mpasn_dontneedguildname: Can't have guild
+mpasn_needguildachievement: Need guild achievement
+mpasn_dontneedguildachievement: Can't have guild achievement
+mpasn_GuildAddLevel: Add Guild Level
 ```
 </details>

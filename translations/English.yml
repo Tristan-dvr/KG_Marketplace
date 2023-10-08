@@ -250,3 +250,13 @@ mpasn_needIronGateStatMore: Need Iron Gate Stat more
 mpasn_needIronGateStatLess: Need Iron Gate Stat less
 mpasn_npcispinned: Show on map
 mpasn_lootbox: Lootbox
+mpasn_noguild: You need to be in guild
+mpasn_hasguild: You can't be in guild
+mpasn_needguildlevelmore: Need guild level more or equal than
+mpasn_needguildlevelless: Need guild level less than
+mpasn_needguildname: Need guild
+mpasn_dontneedguildname: Can't have guild
+mpasn_needguildachievement: Need guild achievement
+mpasn_dontneedguildachievement: Can't have guild achievement
+mpasn_GuildAddLevel: Add Guild Level
+mpasn_Dialogues: Dialogues

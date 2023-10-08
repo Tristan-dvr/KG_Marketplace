@@ -1,7 +1,7 @@
 ﻿using Marketplace.ExternalLoads;
 using Marketplace.Modules.NPC;
 
-namespace Marketplace.Modules.NPC_Dialogues;
+namespace Marketplace.Modules.Dialogues;
 
 public static class Dialogues_UI
 {
@@ -125,10 +125,14 @@ public static class Dialogues_UI
         UI.SetActive(true);
         SmoothAlpha(Fade.Show, 0.5f);
 
-        string name = npc.GetClearNPCName();
-        if (string.IsNullOrWhiteSpace(name))
+        string name = "";
+        if (npc)
         {
-            name = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);
+            name = npc.GetClearNPCName();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = Localization.instance.Localize("$mpasn_" + npc._currentNpcType);
+            }
         }
 
         NPC_Name.text = name;
@@ -177,7 +181,7 @@ public static class Dialogues_UI
             void OnClick()
             {
                 AssetStorage.AUsrc.Play();
-                if (!npc || !Player.m_localPlayer) return;
+                if (!Player.m_localPlayer) return;
                 option.Command?.Invoke(npc);
                 if (!string.IsNullOrWhiteSpace(option.NextUID))
                 {

@@ -39,7 +39,7 @@ public static class Trader_DataTypes
             NeedToKnow = pkg.ReadBool();
             int count = pkg.ReadInt();
             NeededItems = new List<TraderItem>();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 TraderItem item = new TraderItem
                 {
@@ -52,7 +52,7 @@ public static class Trader_DataTypes
 
             count = pkg.ReadInt();
             ResultItems = new List<TraderItem>();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 TraderItem item = new TraderItem
                 {

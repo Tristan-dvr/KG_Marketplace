@@ -55,6 +55,7 @@ public static class TerritorySystem_DataTypes
             pkg.Write(HeightBounds.Item2);
             pkg.Write(Wind);
             pkg.Write(DropMultiplier);
+            pkg.Write(OnlyForGuild ?? "");
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -69,7 +70,7 @@ public static class TerritorySystem_DataTypes
             Name = pkg.ReadString();
             int colorCount = pkg.ReadInt();
             Colors = new List<Color32>();
-            for (int i = 0; i < colorCount; i++)
+            for (int i = 0; i < colorCount; ++i)
             {
                 Colors.Add(new Color32(pkg.ReadByte(), pkg.ReadByte(), pkg.ReadByte(), 255));
             }
@@ -93,6 +94,7 @@ public static class TerritorySystem_DataTypes
             HeightBounds = new Tuple<int, int>(pkg.ReadInt(), pkg.ReadInt());
             Wind = pkg.ReadSingle();
             DropMultiplier = pkg.ReadSingle();
+            OnlyForGuild = pkg.ReadString();
         }
     }
 
@@ -115,7 +117,8 @@ public static class TerritorySystem_DataTypes
         public int Priority;
         public GradientType GradientType = GradientType.LeftRight;
         public float ExponentialValue = 1f;
-        
+        public string OnlyForGuild = null;
+
         public float PeriodicHealValue;
         public float PeriodicDamageValue;
         public float IncreasedPlayerDamageValue;
@@ -128,7 +131,7 @@ public static class TerritorySystem_DataTypes
         public float Wind;
         public float DropMultiplier;
         public PaintType PaintGround;
-        
+
         public Tuple<int, int> HeightBounds = new Tuple<int, int>(-100000, 100000);
 
         public bool DrawOnMap => Colors.Count > 0;
@@ -171,6 +174,7 @@ public static class TerritorySystem_DataTypes
                 case >= 1f:
                     return Colors[Colors.Count - 1];
             }
+
             float intervalSize = 1f / (Colors.Count - 1);
             int index = Mathf.FloorToInt(t / intervalSize);
             float tInInterval = (t - index * intervalSize) / intervalSize;
@@ -244,7 +248,8 @@ public static class TerritorySystem_DataTypes
         public bool IsOwner()
         {
             if (Utils.IsDebug_Strict) return true;
-            IsOwnerCached ??= Owners.Contains(Global_Configs._localUserID) || Owners.Contains("ALL");
+            IsOwnerCached ??= Owners.Contains(Global_Configs._localUserID) || Owners.Contains("ALL") ||
+                              (Guilds.API.GetOwnGuild() != null && Guilds.API.GetOwnGuild().Name == this.OnlyForGuild);
             return IsOwnerCached.Value;
         }
 
@@ -271,9 +276,11 @@ public static class TerritorySystem_DataTypes
             Vector2 p = Pos();
             bool result = Type switch
             {
-                TerritoryType.Square => mouse.x >= p.x - Radius && mouse.x <= p.x + Radius && mouse.y >= p.y - Radius && mouse.y <= p.y + Radius,
+                TerritoryType.Square => mouse.x >= p.x - Radius && mouse.x <= p.x + Radius && mouse.y >= p.y - Radius &&
+                                        mouse.y <= p.y + Radius,
                 TerritoryType.Circle => Vector2.Distance(p, mouse) <= Radius,
-                TerritoryType.Custom => mouse.x >= p.x && mouse.x <= p.x + Xlength && mouse.y >= p.y && mouse.y <= p.y + Ylength,
+                TerritoryType.Custom => mouse.x >= p.x && mouse.x <= p.x + Xlength && mouse.y >= p.y &&
+                                        mouse.y <= p.y + Ylength,
                 _ => Vector2.Distance(p, mouse) <= Radius
             };
             return result && init.y >= HeightBounds.Item1 && init.y <= HeightBounds.Item2;
@@ -288,7 +295,7 @@ public static class TerritorySystem_DataTypes
         public string GetTerritoryFlags()
         {
             string ret = $"";
-            if(HeightBounds.Item1 != int.MinValue && HeightBounds.Item2 != int.MaxValue)
+            if (HeightBounds.Item1 != int.MinValue && HeightBounds.Item2 != int.MaxValue)
                 ret += $"\n(Height Bounds: {HeightBounds.Item1} - {HeightBounds.Item2})\n";
             foreach (TerritoryFlags flag in AllTerritoryFlagsArray)
             {
@@ -427,5 +434,6 @@ public static class TerritorySystem_DataTypes
         DropMultiplier = 1 << 5,
         ForceWind = 1 << 6,
         GodMode = 1 << 7,
+        OnlyForGuild = 1 << 8,
     }
 }

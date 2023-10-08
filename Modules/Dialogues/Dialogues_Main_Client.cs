@@ -1,4 +1,4 @@
-﻿namespace Marketplace.Modules.NPC_Dialogues;
+﻿namespace Marketplace.Modules.Dialogues;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]

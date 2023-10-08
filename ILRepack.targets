@@ -4,10 +4,11 @@
 		<ItemGroup>
 			<InputAssemblies Include="$(TargetPath)"/>
 			<InputAssemblies Include="$(OutputPath)\fastJSON.dll" />
-			<InputAssemblies Include="$(OutputPath)\GroupsAPI.dll" />
 			<InputAssemblies Include="$(OutputPath)\YamlDotNet.dll" />
+			<InputAssemblies Include="$(OutputPath)\GroupsAPI.dll" />
+			<InputAssemblies Include="$(OutputPath)\GuildsAPI.dll" />
 		</ItemGroup>
 		<ILRepack Parallel="true" DebugInfo="true" Internalize="false" InputAssemblies="@(InputAssemblies)" OutputFile="$(TargetPath)"
 				  TargetKind="SameAsPrimaryAssembly" LibraryPath="$(OutputPath)" RepackDropAttribute="RepackDropAttribute"/>
 	</Target>
-</Project>        
+</Project>

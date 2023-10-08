@@ -148,7 +148,7 @@ public static class Gambler_UI
         NeededItemText = parent.Find("Required/Text").GetComponent<Text>();
         RequiredTab = parent.Find("Required");
         int count = 0;
-        for (int i = 0; i < 18; i++)
+        for (int i = 0; i < 18; ++i)
         {
             int deleg = count;
             Transform child = MainTransform.GetChild(i);
@@ -209,7 +209,7 @@ private static void Postfix(ref bool __result)
         RequiredTab.gameObject.SetActive(true);
         Elements.Clear();
         ElementsAlpha.Clear();
-        for (int i = 0; i < Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count(); i++)
+        for (int i = 0; i < Gambler_DataTypes.SyncedGamblerData.Value[CurrentProfile].Data.Count(); ++i)
         {
             Transform child = MainTransform.GetChild(i);
             child.gameObject.SetActive(true);
@@ -352,7 +352,7 @@ private static void Postfix(ref bool __result)
 
         if (main.GetComponent<Character>())
         {
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 Transform transform = p.transform;
                 GameObject monster = UnityEngine.Object.Instantiate(main,

@@ -42,7 +42,7 @@ public static class Quests_Main_Server
     private static void ProcessQuestProfiles(IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
-        for (int i = 0; i < profiles.Count; i++)
+        for (int i = 0; i < profiles.Count; ++i)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
@@ -85,7 +85,7 @@ public static class Quests_Main_Server
         if (profiles.Count == 0) return;
         string dbProfile = null;
         Quests_DataTypes.SpecialQuestTag specialQuestTag = Quests_DataTypes.SpecialQuestTag.None;
-        for (int i = 0; i < profiles.Count; i++)
+        for (int i = 0; i < profiles.Count; ++i)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
@@ -159,7 +159,8 @@ public static class Quests_Main_Server
                         if (rewardTypes[r] 
                             is Quests_DataTypes.QuestRewardType.EpicMMO_EXP
                             or Quests_DataTypes.QuestRewardType.MH_EXP 
-                            or Quests_DataTypes.QuestRewardType.Cozyheim_EXP)
+                            or Quests_DataTypes.QuestRewardType.Cozyheim_EXP
+                            or Quests_DataTypes.QuestRewardType.GuildAddLevel)
                         {
                             RewardPrefabs[r] = "NONE";
                             RewardCounts[r] = int.Parse(RewardSplit[0]);
@@ -213,7 +214,7 @@ public static class Quests_Main_Server
                             TargetCounts[t] = Mathf.Max(1, int.Parse(TargetSplit[1]));
                         }
                     }
-                    string[] Conditions = restrictions.Replace(" ", "").Split('|');
+                    string[] Conditions = restrictions.ReplaceSpacesOutsideQuotes().Split('|');
 
                     Quests_DataTypes.Quest quest = new()
                     {
@@ -293,7 +294,7 @@ public static class Quests_Main_Server
         }
         
         string splitProfile = "default";
-        for (int i = 0; i < profiles.Count; i++)
+        for (int i = 0; i < profiles.Count; ++i)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))

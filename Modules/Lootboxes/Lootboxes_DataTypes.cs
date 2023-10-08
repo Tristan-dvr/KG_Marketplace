@@ -19,6 +19,7 @@ public static class Lootboxes_DataTypes
         public string OpenVFX;
         public string AdditionalDescription;
         public LBType Type;
+        public bool Webhook = false;
         public List<Item> Items = new();
 
         public class Item
@@ -48,6 +49,7 @@ public static class Lootboxes_DataTypes
             pkg.Write(Icon ?? "");
             pkg.Write(OpenVFX ?? "");
             pkg.Write(AdditionalDescription ?? "");
+            pkg.Write(Webhook);
             pkg.Write(Items.Count);
             foreach (var item in Items)
             {
@@ -69,8 +71,9 @@ public static class Lootboxes_DataTypes
                 Icon = pkg.ReadString();
                 OpenVFX = pkg.ReadString();
                 AdditionalDescription = pkg.ReadString();
+                Webhook = pkg.ReadBool();
                 int count = pkg.ReadInt();
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < count; ++i)
                 {
                     Items.Add(new()
                     {

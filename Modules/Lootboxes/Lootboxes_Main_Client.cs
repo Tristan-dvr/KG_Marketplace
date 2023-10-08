@@ -9,14 +9,18 @@ public static class Lootboxes_Main_Client
     public static GameObject LootBox_Base;
     private static Dictionary<int, Lootboxes_DataTypes.Lootbox> _mapper = new();
 
-    private static readonly Lootboxes_DataTypes.Lootbox Lootbox_Default = new() { UID = "Lootbox" };
     private static Sprite Lootbox_DefaultIcon;
-    
+
     [UsedImplicitly]
     private static void OnInit()
     {
         LootBox_Base = AssetStorage.asset.LoadAsset<GameObject>("LootBox_Base");
-        LootBox_Base.GetComponent<ItemDrop>().m_itemData.Data().Add<Lootboxes_Logic.Lootbox_IDM>().Assign(Lootbox_Default);
+        LootBox_Base.GetComponent<ItemDrop>().m_itemData.Data().Add<Lootboxes_Logic.Lootbox_IDM>()
+            .Assign(new()
+            {
+                UID = "Lootbox",
+                AdditionalDescription = "<color=red>This is a default lootbox, you can edit it or delete it.</color>"
+            });
         Lootbox_DefaultIcon = LootBox_Base.GetComponent<ItemDrop>().m_itemData.m_shared.m_icons[0];
         Lootboxes_DataTypes.SyncedLootboxData.ValueChanged += InitLootboxes;
     }
@@ -61,7 +65,7 @@ public static class Lootboxes_Main_Client
             }
         }
     }
-    
+
     private static void InitLootboxes()
     {
         _mapper.Clear();
@@ -69,11 +73,11 @@ public static class Lootboxes_Main_Client
         {
             _mapper[lootbox.UID.RemoveRichTextTags().GetStableHashCode()] = lootbox;
         }
-        _mapper[LootBox_Base.name.GetStableHashCode()] = Lootbox_Default;
+
         Terminal.commands["spawn"].m_tabOptions = null;
     }
-    
-    [HarmonyPatch(typeof(ZNetScene),nameof(ZNetScene.GetPrefabNames))]
+
+    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.GetPrefabNames))]
     [ClientOnlyPatch]
     private static class ZNetScene_GetPrefabNames_Patch
     {
@@ -102,11 +106,11 @@ public static class Lootboxes_Main_Client
                 drop.m_itemData.m_shared.m_name = LB.UID.Replace("_", " ");
                 drop.m_itemData.m_shared.m_icons[0] = Utils.TryFindIcon(LB.Icon, Lootbox_DefaultIcon);
                 hash = LootBox_Base.name.GetStableHashCode();
-            } 
+            }
         }
     }
-    
-    [HarmonyPatch(typeof(ItemDrop.ItemData),nameof(ItemDrop.ItemData.GetIcon))]
+
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetIcon))]
     [ClientOnlyPatch]
     private static class ItemDrop__Patch
     {

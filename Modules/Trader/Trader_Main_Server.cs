@@ -22,7 +22,7 @@ public static class Trader_Main_Server
     {
         string splitProfile = "default";
         bool _NeedToKnow = false;
-        for (int i = 0; i < profiles.Count; i++)
+        for (int i = 0; i < profiles.Count; ++i)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))

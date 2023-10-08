@@ -8,7 +8,7 @@ using Marketplace.Modules.Feedback;
 using Marketplace.Modules.Gambler;
 using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.MainMarketplace;
-using Marketplace.Modules.NPC_Dialogues;
+using Marketplace.Modules.Dialogues;
 using Marketplace.Modules.Quests;
 using Marketplace.Modules.ServerInfo;
 using Marketplace.Modules.Teleporter;
@@ -113,7 +113,6 @@ public static class Market_NPC
         private static void Postfix(ZNetScene __instance)
         {
             __instance.m_namedPrefabs.Add(NPC.name.GetStableHashCode(), NPC);
-            __instance.m_namedPrefabs.Add("MarketPlaceNPCpinned".GetStableHashCode(), NPC);
         }
     }
 
@@ -573,16 +572,18 @@ public static class Market_NPC
             return Regex.Replace(GetNPCName(), @"</?(?!color\b)\w+[^>]*>", "");
         }
 
-        public void OpenUIForType(string type, string profile) =>
-            OpenUIForType(type == null ? null : (NPCType)Enum.Parse(typeof(NPCType), type, true), profile);
-
-        public void OpenUIForType(NPCType? type = null, string profile = null)
+        public void OpenUIForType()
         {
-            if (string.IsNullOrEmpty(profile))
-                profile = znv.m_zdo.GetString("KGnpcProfile", "default");
-            string npcName = znv.m_zdo.GetString("KGnpcNameOverride");
+            OpenUIForType(_currentNpcType, znv.m_zdo.GET_NPC_Profile(), GetClearNPCName());
+        }
+
+        public static void OpenUIForType(string type, string profile, string npcName) =>
+            OpenUIForType((NPCType)Enum.Parse(typeof(NPCType), type, true), profile, npcName);
+
+        public static void OpenUIForType(NPCType? type, string profile, string npcName)
+        {
+            if (type == null || profile == null) return;
             profile = profile!.ToLower();
-            type ??= _currentNpcType;
             switch (type)
             {
                 case NPCType.Marketplace:
@@ -941,7 +942,7 @@ public static class Market_NPC
             GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemHash);
             if (itemPrefab == null) return;
             int childCount = itemPrefab.transform.childCount;
-            for (int i = 0; i < childCount; i++)
+            for (int i = 0; i < childCount; ++i)
             {
                 Transform child = itemPrefab.transform.GetChild(i);
                 if (child.gameObject.name.StartsWith("attach_"))
@@ -1004,7 +1005,7 @@ public static class Market_NPC
             if (itemPrefab == null) return null;
             GameObject childGameObject = null;
             int childCount = itemPrefab.transform.childCount;
-            for (int i = 0; i < childCount; i++)
+            for (int i = 0; i < childCount; ++i)
             {
                 Transform child = itemPrefab.transform.GetChild(i);
                 if (child.gameObject.name is "attach" or "attach_skin")
@@ -1142,7 +1143,7 @@ public static class Market_NPC
                 foreach (Collider inChild in pastOverrideModel.GetComponentsInChildren<Collider>())
                 {
                     inChild.gameObject.layer = LayerMask.NameToLayer("character");
-                    if(inChild.isTrigger) inChild.enabled = false;
+                    if (inChild.isTrigger) inChild.enabled = false;
                 }
 
                 if (!pastOverrideModel.GetComponentInChildren<Collider>())
@@ -1174,7 +1175,7 @@ public static class Market_NPC
 
                 pastOverrideModel.layer = LayerMask.NameToLayer("character");
                 Utils.CopyComponent(col, pastOverrideModel);
-                
+
                 pastOverrideModel.transform.localPosition = Vector3.zero;
                 pastOverrideModel.transform.rotation = transform.rotation;
                 if (overrideHumanoid)
@@ -1308,6 +1309,7 @@ public static class Market_NPC
                 znv.m_zdo.SET_NPC_Type((Marketplace_API.API_NPCType)index);
                 znv.m_zdo.SET_NPC_IsPinned(isPinned);
             }
+
             _currentNpcType = (NPCType)index;
         }
 
@@ -1369,6 +1371,7 @@ public static class Market_NPC
             PeriodicSoundTime = null!;
 
         private static bool playSound = true;
+
         public static void Init()
         {
             UI = Object.Instantiate(AssetStorage.asset.LoadAsset<GameObject>("MarketplaceNPCUI"));
@@ -1385,14 +1388,14 @@ public static class Market_NPC
             _npcPinned = UI.transform.Find("Canvas/MAIN/Pergament/ISPINNED").GetComponent<Toggle>();
             _npcPinned.onValueChanged.AddListener((_) =>
             {
-                if(playSound) AssetStorage.AUsrc.Play();
+                if (playSound) AssetStorage.AUsrc.Play();
             });
             MAIN.SetActive(false);
             FASHION.SetActive(false);
             Localization.instance.Localize(UI.transform);
 
             int childCount = NPCTypeButtons.childCount;
-            for (int i = 0; i < childCount; i++)
+            for (int i = 0; i < childCount; ++i)
             {
                 Transform child = NPCTypeButtons.GetChild(i);
                 int i1 = i;
@@ -1597,7 +1600,7 @@ public static class Market_NPC
         private static void CheckColors()
         {
             int childs = NPCTypeButtons.childCount;
-            for (int i = 0; i < childs; i++)
+            for (int i = 0; i < childs; ++i)
             {
                 Transform child = NPCTypeButtons.GetChild(i);
                 child.GetComponent<Image>().color = i == (int)_currentType ? Color.green : Color.white;

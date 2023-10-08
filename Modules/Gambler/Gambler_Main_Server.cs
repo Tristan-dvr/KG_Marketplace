@@ -48,7 +48,7 @@ public static class Gambler_Main_Server
     {
         string splitProfile = "default";
         int MAXSROLL = 1;
-        for (int i = 0; i < profiles.Count; i++)
+        for (int i = 0; i < profiles.Count; ++i)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))

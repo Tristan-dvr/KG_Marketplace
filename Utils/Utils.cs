@@ -338,7 +338,7 @@ public static class Utils
             }
             else
             {
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < count; ++i)
                 {
                     GameObject go = UnityEngine.Object.Instantiate(prefab,
                         p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
@@ -358,7 +358,7 @@ public static class Utils
 
         if (prefab.GetComponent<Character>())
         {
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 GameObject monster = UnityEngine.Object.Instantiate(prefab,
                     p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
@@ -422,6 +422,24 @@ public static class Utils
         }
 
         return Player.m_localPlayer.m_skills.GetSkillLevel(skill);
+    }
+    
+    public static string ReplaceSpacesOutsideQuotes(this string input)
+    {
+        StringBuilder result = new StringBuilder();
+        bool insideQuotes = false;
+        foreach (char c in input)
+        {
+            if (c == '"')
+            {
+                insideQuotes = !insideQuotes;
+                continue;
+            }
+            if (!insideQuotes && c == ' ')
+                continue;
+            result.Append(c);
+        }
+        return result.ToString();
     }
 
     public static string LocalizeSkill(string name)

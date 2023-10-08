@@ -93,7 +93,7 @@ public static class Marketplace_UI
         OnSort += SortValueList;
         Object.DontDestroyOnLoad(UI);
         string[] EnumNames = Enum.GetNames(typeof(Marketplace_DataTypes.ItemData_ItemCategory));
-        for (int i = 0; i < EnumNames.Length; i++)
+        for (int i = 0; i < EnumNames.Length; ++i)
         {
             int test = i;
             CategoryButtons[i] = UI.transform
@@ -839,7 +839,7 @@ public static class Marketplace_UI
         Transform parent = BUYTAB.transform.Find("Content");
         for (int i = start;
              i < Mathf.Min(ServerMarketSendDataSORTED.Count, MAXITEMSPERPAGE + start);
-             i++)
+             ++i)
         {
             ItemDrop item = ZNetScene.instance.GetPrefab(ServerMarketSendDataSORTED[i].ItemPrefab)
                 ?.GetComponent<ItemDrop>()!;
@@ -897,7 +897,7 @@ public static class Marketplace_UI
         Transform parent = SELLTAB.transform.Find("Content");
         for (int index = 0, i = start;
              i < Mathf.Min(InventorySellDataSORTED.Count, MAXITEMSPERPAGE + start);
-             i++, index++)
+             ++i, ++index)
         {
             ItemDrop item = ZNetScene.instance.GetPrefab(InventorySellDataSORTED[i].ItemPrefab)
                 .GetComponent<ItemDrop>();

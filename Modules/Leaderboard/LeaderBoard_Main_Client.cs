@@ -109,7 +109,7 @@ public static class LeaderBoard_Main_Client
                     new() { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 }, range =>
                     {
                         int localCount = 0;
-                        for (int i = range.Item1; i < range.Item2; i++)
+                        for (int i = range.Item1; i < range.Item2; ++i)
                             if (Minimap.instance.m_explored[i])
                                 ++localCount;
                         Interlocked.Add(ref trueAmount, localCount);

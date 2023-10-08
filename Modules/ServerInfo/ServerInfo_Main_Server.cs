@@ -23,7 +23,7 @@ public static class ServerInfo_Main_Server
          string splitProfile = "default";
         List<ServerInfo_DataTypes.ServerInfoQueue.Info> _infoQueue = new();
         string data = "";
-        for (int i = 0; i < profiles.Count; i++)
+        for (int i = 0; i < profiles.Count; ++i)
         {
             if (profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))

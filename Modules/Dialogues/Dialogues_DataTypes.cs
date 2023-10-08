@@ -1,4 +1,5 @@
-﻿using BepInEx.Bootstrap;
+﻿using API;
+using BepInEx.Bootstrap;
 using Marketplace.ExternalLoads;
 using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.Leaderboard;
@@ -7,7 +8,7 @@ using Marketplace.Modules.Quests;
 using Marketplace.OtherModsAPIs;
 using Random = UnityEngine.Random;
 
-namespace Marketplace.Modules.NPC_Dialogues;
+namespace Marketplace.Modules.Dialogues;
 
 public static class Dialogues_DataTypes
 {
@@ -40,7 +41,8 @@ public static class Dialogues_DataTypes
         PlayAnimation,
         AddCustomValue,
         SetCustomValue,
-        EnterPassword
+        EnterPassword,
+        GuildAddLevel
     }
 
     private const byte reverseFlag = 1 << 7;
@@ -77,13 +79,21 @@ public static class Dialogues_DataTypes
         CustomValueLess = 12 | reverseFlag,
         ModInstalled = 13,
         NotModInstalled = 13 | reverseFlag,
-        IronGateStatMore = 14, 
+        IronGateStatMore = 14,
         IronGateStatLess = 14 | reverseFlag,
-        
-        
+        HasGuild = 15,
+        NotHasGuild = 15 | reverseFlag,
+        HasGuildWithName = 16,
+        NotHasGuildWithName = 16 | reverseFlag,
+        GuildLevelMore = 17,
+        GuildLevelLess = 17 | reverseFlag,
+        GuildHasAchievement = 18,
+        GuildNotHasAchievement = 18 | reverseFlag,
+
         /* Old quest aliases (backwards compat) */
         OtherQuest = 100,
         NotFinished = 101,
+
         Skill = 102
         /* ____________________________________ */
     }
@@ -141,7 +151,7 @@ public static class Dialogues_DataTypes
             BG_ImageLink = pkg.ReadString();
             int optionsLength = pkg.ReadInt();
             Options = new RawPlayerOption[optionsLength];
-            for (int i = 0; i < optionsLength; i++)
+            for (int i = 0; i < optionsLength; ++i)
             {
                 Options[i] = new RawPlayerOption
                 {
@@ -210,11 +220,19 @@ public static class Dialogues_DataTypes
                     {
                         switch (optionCommand)
                         {
+                            case OptionCommand.GuildAddLevel:
+                                result += (_) =>
+                                {
+                                    if (Guilds.API.GetOwnGuild() is not { } g) return;
+                                    g.General.level += int.Parse(split[1]);
+                                    Guilds.API.SaveGuild(g);
+                                };
+                                break;
                             case OptionCommand.EnterPassword:
                                 result += (npc) =>
                                 {
-                                    string title = split[1].Replace("_", " ");
-                                    string password = split[2].Replace("_", " ");
+                                    string title = split[1];
+                                    string password = split[2];
                                     string onSuccess = split[3];
                                     string onFail = split[4];
                                     new DialoguePassword(npc, title, password, onSuccess, onFail);
@@ -240,14 +258,32 @@ public static class Dialogues_DataTypes
                                 };
                                 break;
                             case OptionCommand.PlayAnimation:
-                                result += (npc) => { npc.zanim.SetTrigger(split[1]); };
+                                result += (npc) => { npc?.zanim.SetTrigger(split[1]); };
                                 break;
                             case OptionCommand.OpenUI:
-                                result += (npc) => npc.OpenUIForType(split.Length > 1 ? split[1] : null, split.Length > 2 ? split[2] : null);
+                                result += (npc) =>
+                                {
+                                    string uitype = split.Length > 1 ? split[1] : null;
+                                    string profile = split.Length > 2 ? split[2] : null;
+                                    if (npc)
+                                    {
+                                        if (string.IsNullOrWhiteSpace(uitype))
+                                            uitype = npc._currentNpcType.ToString();
+                                        if (string.IsNullOrWhiteSpace(profile))
+                                            profile = npc.znv.m_zdo.GET_NPC_Profile();
+                                        string npcName = npc.znv.m_zdo.GetString("KGnpcNameOverride");
+                                        Market_NPC.NPCcomponent.OpenUIForType(uitype, profile, npcName);
+                                    }
+                                    else
+                                    {
+                                        Market_NPC.NPCcomponent.OpenUIForType(uitype, profile, "");
+                                    }
+                                };
                                 break;
                             case OptionCommand.PlaySound:
                                 result += (npc) =>
                                 {
+                                    if(!npc) return;
                                     if (AssetStorage.NPC_AudioClips.TryGetValue(split[1],
                                             out AudioClip clip))
                                     {
@@ -289,7 +325,7 @@ public static class Dialogues_DataTypes
                                     Vector3 spawnPos = Player.m_localPlayer.transform.position;
                                     int spawnAmount = int.Parse(split[2]);
                                     int spawnLevel = Mathf.Max(1, int.Parse(split[3]) + 1);
-                                    for (int i = 0; i < spawnAmount; i++)
+                                    for (int i = 0; i < spawnAmount; ++i)
                                     {
                                         float randomX = Random.Range(-15, 15);
                                         float randomZ = Random.Range(-15, 15);
@@ -313,7 +349,7 @@ public static class Dialogues_DataTypes
                                     Vector3 spawnPoint = new Vector3(int.Parse(split[4]), int.Parse(split[5]),
                                         int.Parse(split[6]));
                                     int maxDistance = int.Parse(split[7]);
-                                    for (int i = 0; i < spawnAmount; i++)
+                                    for (int i = 0; i < spawnAmount; ++i)
                                     {
                                         float randomX = Random.Range(-maxDistance, maxDistance);
                                         float randomZ = Random.Range(-maxDistance, maxDistance);
@@ -462,6 +498,79 @@ public static class Dialogues_DataTypes
                                     return true;
                                 };
                                 break;
+                            case OptionCondition.HasGuild:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    reason = $"$mpasn_noguild".Localize();
+                                    type = OptionCondition.HasGuild;
+                                    return Guilds.API.GetOwnGuild() != null;
+                                };
+                                break;
+                            case OptionCondition.NotHasGuild:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    reason = $"$mpasn_hasguild".Localize();
+                                    type = OptionCondition.NotHasGuild;
+                                    return Guilds.API.GetOwnGuild() == null;
+                                };
+                                break;
+                            case OptionCondition.GuildLevelMore:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    type = OptionCondition.GuildLevelMore;
+                                    int amount = int.Parse(split[1]);
+                                    int current = Guilds.API.GetOwnGuild() is { } g ? g.General.level : int.MinValue;
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needguildlevelmore")} <color=#00ff00>{amount}</color>. Current: <color=#00ff00>{current}</color>";
+                                    return current >= amount;
+                                };
+                                break;
+                            case OptionCondition.GuildLevelLess:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    type = OptionCondition.GuildLevelLess;
+                                    int amount = int.Parse(split[1]);
+                                    int current = Guilds.API.GetOwnGuild() is { } g ? g.General.level : int.MaxValue;
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needguildlevelless")} <color=#00ff00>{amount}</color>. Current: <color=#00ff00>{current}</color>";
+                                    return current < amount;
+                                };
+                                break;
+                            case OptionCondition.HasGuildWithName:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    type = OptionCondition.HasGuildWithName;
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needguildname")}: <color=#00ff00>{split[1]}</color>";
+                                    return Guilds.API.GetOwnGuild() is { } g && g.Name == split[1];
+                                };
+                                break;
+                            case OptionCondition.NotHasGuildWithName:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    type = OptionCondition.NotHasGuildWithName;
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_dontneedguildname")}: <color=#00ff00>{split[1]}</color>";
+                                    return Guilds.API.GetOwnGuild() is not { } g || g.Name != split[1];
+                                };
+                                break;
+                            case OptionCondition.GuildHasAchievement:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    type = OptionCondition.GuildHasAchievement;
+                                    reason = $"{Localization.instance.Localize("$mpasn_needguildachievement")}: <color=#00ff00>{split[1]}</color>";
+                                   return Guilds.API.GetOwnGuild() is { } g && g.Achievements.ContainsKey(split[1]);
+                                };
+                                break;
+                            case OptionCondition.GuildNotHasAchievement:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    type = OptionCondition.GuildNotHasAchievement;
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_dontneedguildachievement")}: <color=#00ff00>{split[1]}</color>";
+                                    return Guilds.API.GetOwnGuild() is not { } g || !g.Achievements.ContainsKey(split[1]);
+                                };
+                                break;
                             case OptionCondition.IronGateStatMore:
                                 result += (out string reason, out OptionCondition type) =>
                                 {
@@ -471,7 +580,7 @@ public static class Dialogues_DataTypes
                                     int amount = int.Parse(split[2]);
                                     float current = Game.instance.m_playerProfile.m_playerStats[stat];
                                     reason =
-                                        $"{Localization.instance.Localize("$mpasn_needIronGateStatMore")}: <color=#00ff00>{stat.ToString().BigLettersToSpaces()} x{amount}. Current: {(int)current}</color>";
+                                        $"{Localization.instance.Localize("$mpasn_needIronGateStatMore")}: <color=#00ff00>{stat.ToString().BigLettersToSpaces()} x{amount}</color>. Current: <color=#00ff00>{(int)current}</color>";
                                     return current >= amount;
                                 };
                                 break;
@@ -484,7 +593,7 @@ public static class Dialogues_DataTypes
                                     int amount = int.Parse(split[2]);
                                     float current = Game.instance.m_playerProfile.m_playerStats[stat];
                                     reason =
-                                        $"{Localization.instance.Localize("$mpasn_needIronGateStatLess")}: <color=#00ff00>{stat.ToString().BigLettersToSpaces()} x{amount}. Current: {(int)current}</color>";
+                                        $"{Localization.instance.Localize("$mpasn_needIronGateStatLess")}: <color=#00ff00>{stat.ToString().BigLettersToSpaces()} x{amount}</color>. <color=#00ff00>Current: {(int)current}</color>";
                                     return current < amount;
                                 };
                                 break;
@@ -514,7 +623,7 @@ public static class Dialogues_DataTypes
                                     type = OptionCondition.CustomValueMore;
                                     string key = split[1];
                                     reason =
-                                        $"{Localization.instance.Localize("$mpasn_needcustomvalue")}: <color=#00ff00>{split[1].Replace("_", " ")}</color>";
+                                        $"{Localization.instance.Localize("$mpasn_needcustomvalue")}: <color=#00ff00>{split[1]}</color>";
                                     return Player.m_localPlayer.GetCustomValue(key) >= int.Parse(split[2]);
                                 };
                                 break;
@@ -524,7 +633,7 @@ public static class Dialogues_DataTypes
                                     type = OptionCondition.CustomValueLess;
                                     string key = split[1];
                                     reason =
-                                        $"{Localization.instance.Localize("$mpasn_dontneedcustomvalue")}: <color=#00ff00>{split[1].Replace("_", " ")}</color>";
+                                        $"{Localization.instance.Localize("$mpasn_dontneedcustomvalue")}: <color=#00ff00>{split[1]}</color>";
                                     return Player.m_localPlayer.GetCustomValue(key) < int.Parse(split[2]);
                                 };
                                 break;
@@ -817,8 +926,8 @@ public static class Dialogues_DataTypes
                     Text = raw.Options[i].Text,
                     Icon = Utils.TryFindIcon(raw.Options[i].Icon),
                     NextUID = raw.Options[i].NextUID,
-                    Command = ParseCommands(raw.Options[i].Commands),
                     Condition = ParseConditions(raw.Options[i].Conditions),
+                    Command = ParseCommands(raw.Options[i].Commands),
                     AlwaysVisible = raw.Options[i].AlwaysVisible,
                     Color = raw.Options[i].Color
                 };
@@ -852,7 +961,6 @@ public static class Dialogues_DataTypes
 
         public void SetText(string text)
         {
-            if (!_npc) return;
             if (text == _password)
             {
                 if (!string.IsNullOrEmpty(_onSuccess))

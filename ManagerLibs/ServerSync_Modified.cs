@@ -1472,7 +1472,7 @@ public class VersionCheck
         if (failedChecks.Length > 0)
         {
             string error = string.Join("\n", failedChecks.Select(check => check.Error()));
-            __instance.m_connectionFailedError.text += "\n" + error;
+            __instance.m_connectionFailedError.text += "\n" + error; 
         }
 
         foreach (KeyValuePair<string, string> kv in notProcessedNames.OrderBy(kv => kv.Key))

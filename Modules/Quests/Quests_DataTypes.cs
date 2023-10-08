@@ -2,7 +2,7 @@
 using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.Leaderboard;
 using Marketplace.Modules.NPC;
-using Marketplace.Modules.NPC_Dialogues;
+using Marketplace.Modules.Dialogues;
 using Marketplace.OtherModsAPIs;
 
 namespace Marketplace.Modules.Quests;
@@ -71,7 +71,8 @@ public static class Quests_DataTypes
         MH_EXP,
         Cozyheim_EXP,
         SetCustomValue,
-        AddCustomValue
+        AddCustomValue,
+        GuildAddLevel
     }
 
 
@@ -118,7 +119,7 @@ public static class Quests_DataTypes
             pkg.Write(Name ?? "");
             pkg.Write(Description ?? "");
             pkg.Write(TargetAmount);
-            for (int i = 0; i < TargetAmount; i++)
+            for (int i = 0; i < TargetAmount; ++i)
             {
                 pkg.Write(TargetPrefab[i] ?? "");
                 pkg.Write(TargetCount[i]);
@@ -126,7 +127,7 @@ public static class Quests_DataTypes
             }
 
             pkg.Write(RewardsAmount);
-            for (int i = 0; i < RewardsAmount; i++)
+            for (int i = 0; i < RewardsAmount; ++i)
             {
                 pkg.Write((int)RewardType[i]);
                 pkg.Write(RewardPrefab[i] ?? "");
@@ -135,7 +136,7 @@ public static class Quests_DataTypes
             }
 
             pkg.Write(Conditions.Length);
-            for (int i = 0; i < Conditions.Length; i++)
+            for (int i = 0; i < Conditions.Length; ++i)
             {
                 pkg.Write(Conditions[i] ?? "");
             }
@@ -156,7 +157,7 @@ public static class Quests_DataTypes
             TargetPrefab = new string[TargetAmount];
             TargetCount = new int[TargetAmount];
             TargetLevel = new int[TargetAmount];
-            for (int i = 0; i < TargetAmount; i++)
+            for (int i = 0; i < TargetAmount; ++i)
             {
                 TargetPrefab[i] = pkg.ReadString();
                 TargetCount[i] = pkg.ReadInt();
@@ -168,7 +169,7 @@ public static class Quests_DataTypes
             RewardPrefab = new string[RewardsAmount];
             RewardCount = new int[RewardsAmount];
             RewardLevel = new int[RewardsAmount];
-            for (int i = 0; i < RewardsAmount; i++)
+            for (int i = 0; i < RewardsAmount; ++i)
             {
                 RewardType[i] = (QuestRewardType)pkg.ReadInt();
                 RewardPrefab[i] = pkg.ReadString();
@@ -178,7 +179,7 @@ public static class Quests_DataTypes
 
             int conditionsAmount = pkg.ReadInt();
             Conditions = new string[conditionsAmount];
-            for (int i = 0; i < conditionsAmount; i++)
+            for (int i = 0; i < conditionsAmount; ++i)
             {
                 Conditions[i] = pkg.ReadString();
             }
@@ -234,7 +235,7 @@ public static class Quests_DataTypes
             result.AppendLine($"Quest Target Level: {TargetLevel}");
             result.AppendLine($"Quest Cooldown (Ingame Days): {Cooldown}");
             result.AppendLine("Quest Rewards:");
-            for (int i = 0; i < RewardsAmount; i++)
+            for (int i = 0; i < RewardsAmount; ++i)
             {
                 result.AppendLine(
                     $"{i + 1}) Quest Reward Type: {RewardType[i]} | Quest Reward Prefab: {RewardPrefab[i]} | Quest Reward Amount: {RewardCount[i]} | Quest Reward Level: {RewardLevel[i]}");
@@ -424,7 +425,7 @@ public static class Quests_DataTypes
             AcceptedQuests[UID].ScoreArray = new int[AcceptedQuests[UID].TargetAmount];
 
             string[] split = score.Split(',');
-            for (int i = 0; i < split.Length; i++)
+            for (int i = 0; i < split.Length; ++i)
             {
                 if (i >= AcceptedQuests[UID].ScoreArray.Length) break;
                 AcceptedQuests[UID].ScoreArray[i] = Convert.ToInt32(split[i]);
@@ -506,7 +507,16 @@ public static class Quests_DataTypes
                     MH_API.AddEXP(quest.RewardCount[i]);
                     continue;
                 }
-                
+
+                if (quest.RewardType[i] is QuestRewardType.GuildAddLevel)
+                {
+                    if (Guilds.API.GetOwnGuild() is { } g)
+                    {
+                        g.General.level += quest.RewardCount[i];
+                        Guilds.API.SaveGuild(g);
+                    }
+                    continue;
+                }
 
                 if (quest.RewardType[i] is QuestRewardType.Item or QuestRewardType.Pet)
                 {
@@ -982,7 +992,7 @@ public static class Quests_DataTypes
                         if (!spawn || !spawn.GetComponent<Character>()) continue;
                         int spawnAmount = int.Parse(split[1]);
                         int spawnLevel = Mathf.Max(1, int.Parse(split[2]) + 1);
-                        for (int i = 0; i < spawnAmount; i++)
+                        for (int i = 0; i < spawnAmount; ++i)
                         {
                             float randomX = UnityEngine.Random.Range(-15, 15);
                             float randomZ = UnityEngine.Random.Range(-15, 15);

@@ -16,7 +16,8 @@ public static class DiscordStuff
     {
         Marketplace,
         Gambler,
-        Quest
+        Quest,
+        Lootboxes
     }
 
     private static ConfigFile DiscordConfig = null!;
@@ -37,7 +38,8 @@ public static class DiscordStuff
         {
             [Webhooks.Marketplace] = DiscordConfig.Bind("Webhook Links", "Marketplace Webhook Link", "LINK HERE"),
             [Webhooks.Gambler] = DiscordConfig.Bind("Webhook Links", "Gambler Webhook Link", "LINK HERE"),
-            [Webhooks.Quest] = DiscordConfig.Bind("Webhook Links", "Quest Webhook Link", "LINK HERE")
+            [Webhooks.Quest] = DiscordConfig.Bind("Webhook Links", "Quest Webhook Link", "LINK HERE"),
+            [Webhooks.Lootboxes] = DiscordConfig.Bind("Webhook Links", "Lootboxes Webhook Link", "LINK HERE")
         };
         WebhookMessages = new Dictionary<Webhooks, ConfigEntry<string>>
         {
@@ -46,14 +48,17 @@ public static class DiscordStuff
             [Webhooks.Gambler] =
                 DiscordConfig.Bind("Webhook Messages", "Gambler Webhook Message", "**{0}** won **x{1} {2}**!"),
             [Webhooks.Quest] =
-                DiscordConfig.Bind("Webhook Messages", "Quest Webhook Message", "**{0}** finished quest **{1}**")
+                DiscordConfig.Bind("Webhook Messages", "Quest Webhook Message", "**{0}** finished quest **{1}**"),
+            [Webhooks.Lootboxes] =
+                DiscordConfig.Bind("Webhook Messages", "Lootboxes Webhook Message", "**{0}** opened **{1}** and got: **{2}**")
         };
         LocalizedWebhookTitles = new Dictionary<Webhooks, ConfigEntry<string>>
         {
             [Webhooks.Marketplace] =
                 DiscordConfig.Bind("Webhook Titles", "Marketplace Webhook Title", "Marketplace Message"),
             [Webhooks.Gambler] = DiscordConfig.Bind("Webhook Titles", "Gambler Webhook Title", "Gambler Message"),
-            [Webhooks.Quest] = DiscordConfig.Bind("Webhook Titles", "Quest Webhook Title", "Quest Message")
+            [Webhooks.Quest] = DiscordConfig.Bind("Webhook Titles", "Quest Webhook Title", "Quest Message"),
+            [Webhooks.Lootboxes] = DiscordConfig.Bind("Webhook Titles", "Lootboxes Webhook Title", "Lootboxes Message")
         };
     }
 
@@ -99,6 +104,9 @@ public static class DiscordStuff
                 break;
             case Webhooks.Quest:
                 text = string.Format(WebhookMessages[type].Value, playername, pkg.ReadString());
+                break;
+            case Webhooks.Lootboxes:
+                text = string.Format(WebhookMessages[type].Value, playername, pkg.ReadString(), Localization.instance.Localize(pkg.ReadString()));
                 break;
             default:
                 text = "No Data";

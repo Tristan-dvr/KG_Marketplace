@@ -49,7 +49,7 @@ public static class FixPossibleErrors
             if (__instance.m_visibleIconTypes.Length < 200)
             {
                 __instance.m_visibleIconTypes = new bool[200];
-                for (int i = 0; i < __instance.m_visibleIconTypes.Length; i++)
+                for (int i = 0; i < __instance.m_visibleIconTypes.Length; ++i)
                     __instance.m_visibleIconTypes[i] = true;
             }
         }

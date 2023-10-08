@@ -19,6 +19,7 @@ public static class DistanceUI_Main_Server
     private static ConfigEntry<string> QuestProfiles_DistancedUI = null!;
     private static ConfigEntry<string> InfoProfiles_DistancedUI = null!;
     private static ConfigEntry<string> TransmogrificationProfiles_DistancedUI = null!;
+    private static ConfigEntry<string> Dialogues_DistancedUI = null!;
 
     [UsedImplicitly]
     private static void OnInit()
@@ -28,22 +29,15 @@ public static class DistanceUI_Main_Server
             "Enable or disable dystem");
         CanUseMarketplace_DistancedUI =
             DistancedUI_Config.Bind("DistancedUI", "CanUseMarketplace", true, "Can use the marketplace?");
-        TraderProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "TraderProfiles",
-            "Profiles here with ,", "Trader profiles");
-        TeleporterProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "TeleporterProfiles",
-            "Profiles here with ,", "Teleporter profiles");
-        GamblerProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "GamblerProfiles",
-            "Profiles here with ,", "Gambler profiles");
-        BufferProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "BufferProfiles",
-            "Profiles here with ,", "Buffer profiles");
-        BankerProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "BankerProfiles",
-            "Profiles here with ,", "Banker profiles");
-        QuestProfiles_DistancedUI =
-            DistancedUI_Config.Bind("DistancedUI", "QuestProfiles", "Profiles here with ,", "Quest profiles");
-        InfoProfiles_DistancedUI =
-            DistancedUI_Config.Bind("DistancedUI", "InfoProfiles", "Profiles here with ,", "Info profiles");
-        TransmogrificationProfiles_DistancedUI = 
-            DistancedUI_Config.Bind("DistancedUI", "TransmogrificationProfiles", "Profiles here with ,", "Transmogrification profiles");
+        TraderProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "TraderProfiles", "Profiles here with ,", "Trader profiles");
+        TeleporterProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "TeleporterProfiles", "Profiles here with ,", "Teleporter profiles");
+        GamblerProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "GamblerProfiles", "Profiles here with ,", "Gambler profiles");
+        BufferProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "BufferProfiles", "Profiles here with ,", "Buffer profiles");
+        BankerProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "BankerProfiles", "Profiles here with ,", "Banker profiles");
+        QuestProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "QuestProfiles", "Profiles here with ,", "Quest profiles");
+        InfoProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "InfoProfiles", "Profiles here with ,", "Info profiles");
+        TransmogrificationProfiles_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "TransmogrificationProfiles", "Profiles here with ,", "Transmogrification profiles");
+        Dialogues_DistancedUI = DistancedUI_Config.Bind("DistancedUI", "Dialogues", "Profiles here with ,", "Dialogues profiles");
 
         ReadDistancedUIData();
     }
@@ -62,7 +56,8 @@ public static class DistanceUI_Main_Server
             BufferProfiles = BufferProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
             QuestProfiles = QuestProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
             InfoProfiles = InfoProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
-            TransmogrificationProfiles = TransmogrificationProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList()
+            TransmogrificationProfiles = TransmogrificationProfiles_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList(),
+            DialogueProfiles = Dialogues_DistancedUI.Value.Split(',').Select(d => d.ToLower().Trim()).ToList()
         };
     }
 

@@ -107,7 +107,7 @@ public static class Leaderboard_DataTypes
             Harvested = pkg.ReadInt();
             int count = pkg.ReadInt();
             Achievements = new();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 Achievements.Add(pkg.ReadInt());
             }

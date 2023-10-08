@@ -40,7 +40,7 @@ public static class ServerInfo_UI
         Transform origText = Content.Find("Text");
         Transform origImage = Content.Find("Image");
 
-        for (int i = 2; i < Content.childCount; i++)
+        for (int i = 2; i < Content.childCount; ++i)
             UnityEngine.Object.Destroy(Content.GetChild(i).gameObject);
 
         foreach (ServerInfo_DataTypes.ServerInfoQueue.Info q in ServerInfo_DataTypes.SyncedServerInfoData.Value[CurrentProfile].infoQueue)
@@ -71,7 +71,7 @@ public static class ServerInfo_UI
 
     public static void Hide()
     {
-        for (int i = 2; i < Content.childCount; i++)
+        for (int i = 2; i < Content.childCount; ++i)
             UnityEngine.Object.Destroy(Content.GetChild(i).gameObject);
         UI.SetActive(false);
     }

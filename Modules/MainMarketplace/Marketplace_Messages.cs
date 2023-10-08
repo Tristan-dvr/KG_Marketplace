@@ -119,7 +119,7 @@ public static class Marketplace_Messages
         normalField.fontSize = (int)(15 * _mult1);
         for (int i = 35 * _currentPage;
              i < Mathf.Clamp(Messenger.ClientPlayerMessages.Count, 0, 35 * (1 + _currentPage));
-             i++)
+             ++i)
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label($"<color=red>[{i + 1}]</color>" + Messenger.ClientPlayerMessages[i], normalField);
@@ -216,7 +216,7 @@ public static class Marketplace_Messages
 
         private static void SaveMsg()
         {
-            for (int i = 0; i < PlayerMessages.Count; i++)
+            for (int i = 0; i < PlayerMessages.Count; ++i)
             {
                 KeyValuePair<string, string> key = PlayerMessages.ElementAt(i);
                 if (key.Value.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).Length > 175)

@@ -138,8 +138,7 @@ public static class Quest_ProgressionHook
             Quests_DataTypes.Quest.TryAddRewardPickup(prefab);
             GameEvents.OnHarvest?.Invoke(prefab);
         }
-
-
+        
         private static void QuestKillEvent(long sender, string prefab, int level, Vector3 pos, bool ownerRPC)
         {
             if (!Player.m_localPlayer) return;
@@ -154,7 +153,6 @@ public static class Quest_ProgressionHook
             Quests_DataTypes.Quest.TryAddRewardKill(prefab, level);
         }
     }
-
 
     [HarmonyPatch(typeof(Player), nameof(Player.OnInventoryChanged))]
     [ClientOnlyPatch]

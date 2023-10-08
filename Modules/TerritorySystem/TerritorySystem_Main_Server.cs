@@ -23,7 +23,7 @@ public static class TerritorySystem_Main_Server
     {
         string splitProfile = "default";
         int Priority = 1;
-        for (int i = 0; i < profiles.Count; i++)
+        for (int i = 0; i < profiles.Count; ++i)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
@@ -139,19 +139,8 @@ public static class TerritorySystem_Main_Server
                     TerritorySystem_DataTypes.TerritoryFlags flags = TerritorySystem_DataTypes.TerritoryFlags.None;
                     TerritorySystem_DataTypes.AdditionalTerritoryFlags additionalflags =
                         TerritorySystem_DataTypes.AdditionalTerritoryFlags.None;
-                    float PeriodicHealValue = 0;
-                    float PeriodicDamageValue = 0;
-                    float IncreasedPlayerDamageValue = 0;
-                    float IncreasedMonsterDamageValue = 0;
-                    string CustomEnvironment = "";
-                    float MoveSpeedMultiplier = 0;
-                    float OverrideHeight = 0;
-                    int overrideBiome = 0;
-                    int AddMonsterLevel = 0;
-                    float DropMultiplier = 0;
-                    float Wind = 0;
                     TerritorySystem_DataTypes.PaintType PaintGround = TerritorySystem_DataTypes.PaintType.Paved;
-                    string[] splitFlags = profiles[i + 3].Replace(" ", "").Split(',');
+                    string[] splitFlags = profiles[i + 3].ReplaceSpacesOutsideQuotes().Split(',');
                     foreach (string flag in splitFlags)
                     {
                         string customData = "";
@@ -170,10 +159,13 @@ public static class TerritorySystem_Main_Server
                             switch (testAdditionalFlag)
                             {
                                 case TerritorySystem_DataTypes.AdditionalTerritoryFlags.ForceWind:
-                                    Wind = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                    newTerritory.Wind = Convert.ToSingle(customData, new CultureInfo("en-US"));
                                     break;
                                 case TerritorySystem_DataTypes.AdditionalTerritoryFlags.DropMultiplier:
-                                    DropMultiplier = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                    newTerritory.DropMultiplier = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                    break;
+                                case TerritorySystem_DataTypes.AdditionalTerritoryFlags.OnlyForGuild:
+                                    newTerritory.OnlyForGuild = customData;
                                     break;
                             }
                             continue;
@@ -185,34 +177,34 @@ public static class TerritorySystem_Main_Server
                         switch (testFlag)
                         {
                             case TerritorySystem_DataTypes.TerritoryFlags.CustomEnvironment:
-                                CustomEnvironment = customData;
+                                newTerritory.CustomEnvironment = customData;
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.PeriodicDamage:
-                                PeriodicDamageValue = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                newTerritory.PeriodicDamageValue = Convert.ToSingle(customData, new CultureInfo("en-US"));
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.PeriodicHealALL:
                             case TerritorySystem_DataTypes.TerritoryFlags.PeriodicHeal:
-                                PeriodicHealValue = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                newTerritory.PeriodicHealValue = Convert.ToSingle(customData, new CultureInfo("en-US"));
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.IncreasedMonsterDamage:
-                                IncreasedMonsterDamageValue = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                newTerritory.IncreasedMonsterDamageValue = Convert.ToSingle(customData, new CultureInfo("en-US"));
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.IncreasedPlayerDamage:
-                                IncreasedPlayerDamageValue = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                newTerritory.IncreasedPlayerDamageValue = Convert.ToSingle(customData, new CultureInfo("en-US"));
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.MoveSpeedMultiplier:
-                                MoveSpeedMultiplier = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                newTerritory.MoveSpeedMultiplier = Convert.ToSingle(customData, new CultureInfo("en-US"));
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.ForceGroundHeight
                                 or TerritorySystem_DataTypes.TerritoryFlags.AddGroundHeight
                                 or TerritorySystem_DataTypes.TerritoryFlags.LimitZoneHeight:
-                                OverrideHeight = Convert.ToSingle(customData, new CultureInfo("en-US"));
+                                newTerritory.OverridenHeight = Convert.ToSingle(customData, new CultureInfo("en-US"));
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.ForceBiome:
-                                overrideBiome = Convert.ToInt32(customData, new CultureInfo("en-US"));
+                                newTerritory.OverridenBiome = Convert.ToInt32(customData, new CultureInfo("en-US"));
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.MonstersAddStars:
-                                AddMonsterLevel = Convert.ToInt32(customData, new CultureInfo("en-US"));
+                                newTerritory.AddMonsterLevel = Convert.ToInt32(customData, new CultureInfo("en-US"));
                                 break;
                             case TerritorySystem_DataTypes.TerritoryFlags.CustomPaint:
                                 PaintGround =
@@ -221,24 +213,9 @@ public static class TerritorySystem_Main_Server
                                 break;
                         }
                     }
-
                     string Owners = string.IsNullOrEmpty(profiles[i + 4]) ? "None" : profiles[i + 4].Replace(" ", "");
                     newTerritory.Flags = flags;
                     newTerritory.AdditionalFlags = additionalflags;
-                    newTerritory.CustomEnvironment = CustomEnvironment;
-                    newTerritory.PeriodicDamageValue = PeriodicDamageValue;
-                    newTerritory.PeriodicHealValue = PeriodicHealValue;
-                    newTerritory.IncreasedMonsterDamageValue = IncreasedMonsterDamageValue;
-                    newTerritory.IncreasedPlayerDamageValue = IncreasedPlayerDamageValue;
-                    newTerritory.MoveSpeedMultiplier = MoveSpeedMultiplier;
-                    newTerritory.Owners = Owners;
-                    newTerritory.Priority = Priority;
-                    newTerritory.OverridenBiome = overrideBiome;
-                    newTerritory.OverridenHeight = OverrideHeight;
-                    newTerritory.AddMonsterLevel = AddMonsterLevel;
-                    newTerritory.PaintGround = PaintGround;
-                    newTerritory.Wind = Wind;
-                    newTerritory.DropMultiplier = DropMultiplier;
                     TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Add(newTerritory);
                 }
                 catch (Exception ex)

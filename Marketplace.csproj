@@ -60,26 +60,19 @@
           <HintPath>Resources\fastJSON.dll</HintPath>
         </Reference>
         <Reference Include="Groups">
-          <HintPath>Libs\Groups.dll</HintPath>
+          <HintPath>Libs\GroupsAPI.dll</HintPath>
         </Reference>
-        <Reference Include="ItemManager">
-          <HintPath>Libs\ItemManager.dll</HintPath>
+        <Reference Include="Guilds">
+          <HintPath>Libs\GuildsAPI.dll</HintPath>
         </Reference>
         <Reference Include="Jewelcrafting">
           <HintPath>Libs\Jewelcrafting.dll</HintPath>
         </Reference>
-        <Reference Include="Microsoft.CSharp" />
-        <Reference Include="Microsoft.VisualStudio.Setup.Configuration.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>packages\Microsoft.VisualStudio.Setup.Configuration.Interop.3.2.2146\lib\net35\Microsoft.VisualStudio.Setup.Configuration.Interop.dll</HintPath>
+        <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
         </Reference>
         <Reference Include="Mono.Cecil">
           <HintPath>Libs\Mono.Cecil.dll</HintPath>
-        </Reference>
-        <Reference Include="Mono.Posix">
-          <HintPath>Libs\Mono.Posix.dll</HintPath>
-        </Reference>
-        <Reference Include="Mono.Security"> 
-          <HintPath>Libs\Mono.Security.dll</HintPath>
         </Reference>
         <Reference Include="MonoMod.Utils">
           <HintPath>Libs\MonoMod.Utils.dll</HintPath>
@@ -89,44 +82,76 @@
           <HintPath>..\..\SteamLibrary\steamapps\common\Valheim\unstripped_corlib\netstandard.dll</HintPath>
         </Reference>
         <Reference Include="System" />
-        <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-          <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-        </Reference>
-        <Reference Include="System.Collections.Immutable, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>packages\System.Collections.Immutable.7.0.0\lib\net462\System.Collections.Immutable.dll</HintPath>
+        <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
         </Reference>
         <Reference Include="System.Configuration" />
-        <Reference Include="System.Configuration.ConfigurationManager, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-          <HintPath>packages\System.Configuration.ConfigurationManager.7.0.0\lib\net462\System.Configuration.ConfigurationManager.dll</HintPath>
+        <Reference Include="System.Console, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
         </Reference>
         <Reference Include="System.Core" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Data.OracleClient" />
-        <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-          <HintPath>packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+        <Reference Include="System.Diagnostics.Tracing, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Diagnostics.Tracing.4.3.0\lib\net462\System.Diagnostics.Tracing.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Globalization.Calendars, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Globalization.Calendars.4.3.0\lib\net46\System.Globalization.Calendars.dll</HintPath>
+        </Reference>
+        <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+        </Reference>
+        <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+          <HintPath>packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+        </Reference>
+        <Reference Include="System.IO.Compression.ZipFile, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+          <HintPath>packages\System.IO.Compression.ZipFile.4.3.0\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
+        </Reference>
+        <Reference Include="System.IO.FileSystem, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
         </Reference>
         <Reference Include="System.Net" />
-        <Reference Include="System.Numerics" />
-        <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+        <Reference Include="System.Net.Http, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Net.Http.4.3.0\lib\net46\System.Net.Http.dll</HintPath>
         </Reference>
-        <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+        <Reference Include="System.Net.Sockets, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Net.Sockets.4.3.0\lib\net46\System.Net.Sockets.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Numerics" />
+        <Reference Include="System.Reflection, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Runtime.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Runtime.Extensions.4.3.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Runtime.InteropServices, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Runtime.InteropServices.4.3.0\lib\net462\System.Runtime.InteropServices.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
         </Reference>
         <Reference Include="System.Security" />
-        <Reference Include="System.Security.AccessControl, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>packages\System.Security.AccessControl.6.0.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+        <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
         </Reference>
-        <Reference Include="System.Security.Permissions, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-          <HintPath>packages\System.Security.Permissions.7.0.0\lib\net462\System.Security.Permissions.dll</HintPath>
+        <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
         </Reference>
-        <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+        <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
         </Reference>
-        <Reference Include="System.ServiceProcess" />
-        <Reference Include="System.Transactions" />
+        <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+        </Reference>
         <Reference Include="System.Xaml" />
         <Reference Include="System.Xml" />
+        <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
+        </Reference>
         <Reference Include="ui_lib">
           <HintPath>Libs\ui_lib.dll</HintPath>
         </Reference>
@@ -136,14 +161,8 @@
         <Reference Include="UnityEngine">
           <HintPath>Libs\UnityEngine.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.AccessibilityModule">
-          <HintPath>Libs\UnityEngine.AccessibilityModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.AIModule">
           <HintPath>Libs\UnityEngine.AIModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.AndroidJNIModule">
-          <HintPath>Libs\UnityEngine.AndroidJNIModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.AnimationModule">
           <HintPath>Libs\UnityEngine.AnimationModule.dll</HintPath>
@@ -157,35 +176,8 @@
         <Reference Include="UnityEngine.ClothModule">
           <HintPath>Libs\UnityEngine.ClothModule.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.ClusterInputModule">
-          <HintPath>Libs\UnityEngine.ClusterInputModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.ClusterRendererModule">
-          <HintPath>Libs\UnityEngine.ClusterRendererModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.CoreModule">
           <HintPath>Libs\UnityEngine.CoreModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.CrashReportingModule">
-          <HintPath>Libs\UnityEngine.CrashReportingModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.DirectorModule">
-          <HintPath>Libs\UnityEngine.DirectorModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.DSPGraphModule">
-          <HintPath>Libs\UnityEngine.DSPGraphModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.GameCenterModule">
-          <HintPath>Libs\UnityEngine.GameCenterModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.GIModule">
-          <HintPath>Libs\UnityEngine.GIModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.GridModule">
-          <HintPath>Libs\UnityEngine.GridModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.HotReloadModule">
-          <HintPath>Libs\UnityEngine.HotReloadModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.ImageConversionModule">
           <HintPath>Libs\UnityEngine.ImageConversionModule.dll</HintPath>
@@ -196,20 +188,8 @@
         <Reference Include="UnityEngine.InputLegacyModule">
           <HintPath>Libs\UnityEngine.InputLegacyModule.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.InputModule">
-          <HintPath>Libs\UnityEngine.InputModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.JSONSerializeModule">
-          <HintPath>Libs\UnityEngine.JSONSerializeModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.LocalizationModule">
-          <HintPath>Libs\UnityEngine.LocalizationModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.ParticleSystemModule">
           <HintPath>Libs\UnityEngine.ParticleSystemModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.PerformanceReportingModule">
-          <HintPath>Libs\UnityEngine.PerformanceReportingModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.Physics2DModule">
           <HintPath>Libs\UnityEngine.Physics2DModule.dll</HintPath>
@@ -217,38 +197,14 @@
         <Reference Include="UnityEngine.PhysicsModule">
           <HintPath>Libs\UnityEngine.PhysicsModule.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.ProfilerModule">
-          <HintPath>Libs\UnityEngine.ProfilerModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
-          <HintPath>Libs\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.ScreenCaptureModule">
           <HintPath>Libs\UnityEngine.ScreenCaptureModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.SharedInternalsModule">
           <HintPath>Libs\UnityEngine.SharedInternalsModule.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.SpriteMaskModule">
-          <HintPath>Libs\UnityEngine.SpriteMaskModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.SpriteShapeModule">
           <HintPath>Libs\UnityEngine.SpriteShapeModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.StreamingModule">
-          <HintPath>Libs\UnityEngine.StreamingModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.SubstanceModule">
-          <HintPath>Libs\UnityEngine.SubstanceModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.SubsystemsModule">
-          <HintPath>Libs\UnityEngine.SubsystemsModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.TerrainModule">
-          <HintPath>Libs\UnityEngine.TerrainModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.TerrainPhysicsModule">
-          <HintPath>Libs\UnityEngine.TerrainPhysicsModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.TextCoreModule">
           <HintPath>Libs\UnityEngine.TextCoreModule.dll</HintPath>
@@ -259,41 +215,11 @@
         <Reference Include="UnityEngine.TilemapModule">
           <HintPath>Libs\UnityEngine.TilemapModule.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.TLSModule">
-          <HintPath>Libs\UnityEngine.TLSModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.UI">
           <HintPath>Libs\UnityEngine.UI.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.UIElementsModule">
-          <HintPath>Libs\UnityEngine.UIElementsModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.UIElementsNativeModule">
-          <HintPath>Libs\UnityEngine.UIElementsNativeModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.UIModule">
           <HintPath>Libs\UnityEngine.UIModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.UmbraModule">
-          <HintPath>Libs\UnityEngine.UmbraModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.UNETModule">
-          <HintPath>Libs\UnityEngine.UNETModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.UnityAnalyticsModule">
-          <HintPath>Libs\UnityEngine.UnityAnalyticsModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.UnityConnectModule">
-          <HintPath>Libs\UnityEngine.UnityConnectModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.UnityCurlModule">
-          <HintPath>Libs\UnityEngine.UnityCurlModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.UnityTestProtocolModule">
-          <HintPath>Libs\UnityEngine.UnityTestProtocolModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
-          <HintPath>Libs\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestAudioModule">
           <HintPath>Libs\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
@@ -303,30 +229,6 @@
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestTextureModule">
           <HintPath>Libs\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-          <HintPath>Libs\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.VehiclesModule">
-          <HintPath>Libs\UnityEngine.VehiclesModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.VFXModule">
-          <HintPath>Libs\UnityEngine.VFXModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.VideoModule">
-          <HintPath>Libs\UnityEngine.VideoModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.VirtualTexturingModule">
-          <HintPath>Libs\UnityEngine.VirtualTexturingModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.VRModule">
-          <HintPath>Libs\UnityEngine.VRModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.WindModule">
-          <HintPath>Libs\UnityEngine.WindModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.XRModule">
-          <HintPath>Libs\UnityEngine.XRModule.dll</HintPath>
         </Reference>
         <Reference Include="WindowsBase" />
         <Reference Include="YamlDotNet, Version=13.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
@@ -396,10 +298,10 @@
         <Compile Include="Modules\MainMarketplace\Marketplace_UI.cs" />
         <Compile Include="Modules\NPC\NPC.cs" />
         <Compile Include="Modules\NPC\NPC_MapPins.cs" />
-        <Compile Include="Modules\NPC_Dialogues\Dialogues_DataTypes.cs" />
-        <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Client.cs" />
-        <Compile Include="Modules\NPC_Dialogues\Dialogues_Main_Server.cs" />
-        <Compile Include="Modules\NPC_Dialogues\Dialogues_UI.cs" />
+        <Compile Include="Modules\Dialogues\Dialogues_DataTypes.cs" />
+        <Compile Include="Modules\Dialogues\Dialogues_Main_Client.cs" />
+        <Compile Include="Modules\Dialogues\Dialogues_Main_Server.cs" />
+        <Compile Include="Modules\Dialogues\Dialogues_UI.cs" />
         <Compile Include="Modules\PlayersTag\PlayersTag_DataTypes.cs" />
         <Compile Include="Modules\PlayersTag\PlayerTags_Main_Server.cs" />
         <Compile Include="Modules\PlayersTag\PlayerTag_Main_Client.cs" />

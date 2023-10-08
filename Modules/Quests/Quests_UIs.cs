@@ -1,6 +1,6 @@
 ﻿using Marketplace.ExternalLoads;
 using Marketplace.Modules.Global_Options;
-using Marketplace.Modules.NPC_Dialogues;
+using Marketplace.Modules.Dialogues;
 using UnityEngine.EventSystems;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
@@ -265,6 +265,19 @@ private static void Postfix(InventoryGui __instance)
                         rewardImage.sprite = Utils.TryFindIcon(quest.RewardPrefab[i], AssetStorage.CustomValue_Icon);
                         tooltip.m_topic = Localization.instance.Localize("$mpasn_CustomValue");
                         tooltip.m_text = $"{Localization.instance.Localize("$mpasn_CustomValue")} {quest.GetLocalizedReward(i)} {(quest.RewardCount[i] > 0 ? "+" : "-")}{quest.RewardCount[i]}";
+                        break;
+                    case Quests_DataTypes.QuestRewardType.GuildAddLevel:
+                        Sprite guildIcon = null;
+                        if (Type.GetType("Guilds.Interface, Guilds") is {} gIcons)
+                        {
+                            FieldInfo GuildIcons = AccessTools.Field(gIcons, "GuildIcons");
+                            MethodInfo dictionaryGetter = AccessTools.Method(GuildIcons.FieldType, "get_Item");
+                            int guildIconID = Guilds.API.GetOwnGuild() is {} g ? g.General.icon : 1;
+                            guildIcon = (Sprite)dictionaryGetter.Invoke(GuildIcons.GetValue(null), new object[] { guildIconID });
+                        }
+                        rewardImage.sprite = guildIcon;
+                        tooltip.m_topic = Localization.instance.Localize("$mpasn_GuildAddLevel");
+                        tooltip.m_text = $"+{quest.RewardCount[i]}";
                         break;
                 }
             }

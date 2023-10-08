@@ -37,7 +37,7 @@ public static class ServerInfo_DataTypes
         public void Deserialize(ref ZPackage pkg)
         {
             int count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 Info info = new()
                 {

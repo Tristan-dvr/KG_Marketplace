@@ -89,7 +89,7 @@ public static class MarketplaceHammer
     [UsedImplicitly]
     private static void OnInit()
     {
-        _category = PieceManager.PiecePrefabManager.GetCategory("<color=cyan><b>Marketplace</b></color>");
+        _category = PieceManager.PiecePrefabManager.GetCategory("<color=#00FFFF><b>Marketplace</b></color>");
         INACTIVE.SetActive(false);
         CopyFrom = AssetStorage.asset.LoadAsset<GameObject>("MarketplaceHammerCopyFrom");
         Reload();

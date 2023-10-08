@@ -1,6 +1,6 @@
 ﻿using Marketplace.Paths;
 
-namespace Marketplace.Modules.NPC_Dialogues;
+namespace Marketplace.Modules.Dialogues;
 
 [UsedImplicitly]
 [Market_Autoload(Market_Autoload.Type.Server, Market_Autoload.Priority.Normal, "OnInit",
@@ -29,7 +29,7 @@ public class Dialogues_Main_Server
     {
         Dialogues_DataTypes.RawDialogue dialogue = null;
         List<Dialogues_DataTypes.RawDialogue.RawPlayerOption> options = null;
-        for (int i = 0; i < profiles.Count; i++)
+        for (int i = 0; i < profiles.Count; ++i)
         {
             try
             {
@@ -79,13 +79,13 @@ public class Dialogues_Main_Server
                                     option.NextUID = enumCheck[1].Replace(" ", "").ToLower();
                                     break;
                                 case InputType.Command:
-                                    commands.Add(enumCheck[1].Replace(" ", ""));
+                                    commands.Add(enumCheck[1].ReplaceSpacesOutsideQuotes());
+                                    break;
+                                case InputType.Condition:
+                                    conditions.Add(enumCheck[1].ReplaceSpacesOutsideQuotes());
                                     break;
                                 case InputType.Icon:
                                     option.Icon = enumCheck[1].Replace(" ", "");
-                                    break;
-                                case InputType.Condition:
-                                    conditions.Add(enumCheck[1].Replace(" ", ""));
                                     break;
                                 case InputType.AlwaysVisible:
                                     option.AlwaysVisible = bool.Parse(enumCheck[1].Replace(" ", ""));

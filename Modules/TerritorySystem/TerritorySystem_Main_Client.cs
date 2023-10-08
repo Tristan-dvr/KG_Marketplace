@@ -298,15 +298,14 @@ public static class TerritorySystem_Main_Client
         {
             if ((DateTime.Now - LastTimeTerritoryMessage).TotalSeconds <= 5) return;
             LastTimeTerritoryMessage = DateTime.Now;
-            GameObject Prefab = UnityEngine.Object.Instantiate(MessageHud.instance.m_biomeFoundPrefab,
-                MessageHud.instance.transform);
+            GameObject Prefab = UnityEngine.Object.Instantiate(MessageHud.instance.m_biomeFoundPrefab, MessageHud.instance.transform);
             RectTransform Rect = Prefab.GetComponent<RectTransform>();
             Rect.anchorMin = new Vector2(0.5f, 1f);
             Rect.anchorMax = new Vector2(0.5f, 1f);
             Rect.anchoredPosition = new Vector2(0, -200f);
             TimedDestruction timed = Prefab.AddComponent<TimedDestruction>();
             Prefab.transform.GetChild(0).GetComponent<Animator>().speed = 2f;
-            global::Utils.FindChild(Prefab.transform, "Title").GetComponent<Text>().text = rawName;
+            global::Utils.FindChild(Prefab.transform, "Title").GetComponent<TMP_Text>().text = rawName;
             timed.m_timeout = 2f;
             timed.Trigger();
         }
@@ -488,7 +487,7 @@ public static class TerritorySystem_Main_Client
             m_worldPos = pos,
             m_gui = UnityEngine.Object.Instantiate(DamageText.instance.m_worldTextBase, DamageText.instance.transform)
         };
-        worldTextInstance.m_textField = worldTextInstance.m_gui.GetComponent<Text>();
+        worldTextInstance.m_textField = worldTextInstance.m_gui.GetComponent<TMP_Text>();
         DamageText.instance.m_worldTexts.Add(worldTextInstance);
         worldTextInstance.m_textField.color = Color.cyan;
         worldTextInstance.m_textField.fontSize = 24;

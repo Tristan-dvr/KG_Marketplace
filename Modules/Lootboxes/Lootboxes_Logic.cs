@@ -31,13 +31,13 @@ public static class Lootboxes_Logic
             switch (_data.Type)
             {
                 case Lootboxes_DataTypes.Lootbox.LBType.One:
-                    sb.AppendLine($"\n<color=orange>Right click to open and get <color=green><b>one random</b></color> item from list:</color>");
+                    sb.AppendLine($"\n<color=orange>Right click to open and get <b><color=green>one random</color></b> item from list:</color>");
                     break;
                 case Lootboxes_DataTypes.Lootbox.LBType.All:
-                    sb.AppendLine($"\n<color=orange>Right click to open and get <color=green><b>each</b></color> item from list:</color>");
+                    sb.AppendLine($"\n<color=orange>Right click to open and get <b><color=green>each</color></b> item from list:</color>");
                     break;
                 case Lootboxes_DataTypes.Lootbox.LBType.AllWithChance or Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip:
-                    sb.AppendLine($"\n<color=orange>Right click to open and get <color=green><b>each (with chance)</b></color> item from list:</color>");
+                    sb.AppendLine($"\n<color=orange>Right click to open and get <b><color=green>each (with chance)</color></b> item from list:</color>");
                     break;
             }
             foreach (var item in _data.Items)
@@ -50,19 +50,19 @@ public static class Lootboxes_Logic
                 }
 
                 ItemDrop idrop = test.GetComponent<ItemDrop>();
-                string chanceStr = _data.Type == Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip ? $" <color=#00ff00>({item.Chance}%)</color>" : "";
+                string chanceStr = _data.Type == Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip ? $" <color=#AF0000>({item.Chance}%)</color>" : "";
                 if (idrop)
                 {
                     string displayLevel = idrop.m_itemData.m_shared.m_maxQuality > 1
-                        ? $" <color=#00ff00>({item.Level}★)</color>"
+                        ? $" (<color=#00ff00>{item.Level} lvl</color>)"
                         : "";
-                    string displayAmouny = item.Min == item.Max ? $"{item.Min}" : $"{item.Min}-{item.Max}";
-                    sb.AppendLine($"<color=red>•</color> <color=yellow>{displayAmouny}x {idrop.m_itemData.m_shared.m_name.Localize()}{displayLevel}{chanceStr}</color>");
+                    string displayAmount = item.Min == item.Max ? $"{item.Min}" : $"{item.Min}-{item.Max}";
+                    sb.AppendLine($"<color=red>•</color> <color=yellow>{displayAmount}x {idrop.m_itemData.m_shared.m_name.Localize()}{displayLevel}{chanceStr}</color>");
                 }
                 else
                 {
                     Character character = test.GetComponent<Character>();
-                    string displayLevel = $" <color=#00ff00>({item.Level - 1}★)</color>";
+                    string displayLevel = $" (<color=#00ff00>{item.Level - 1} lvl</color>)";
                     string displayAmouny = item.Min == item.Max ? $"{item.Min}" : $"{item.Min}-{item.Max}";
                     string displayTamed = character.GetComponent<Tameable>()
                         ? " (<color=green>Tamed</color>)"
@@ -71,7 +71,6 @@ public static class Lootboxes_Logic
                         $"<color=red>•</color> <color=yellow>{displayAmouny}x {character.m_name.Localize()}{displayLevel}{displayTamed}{chanceStr}</color>");
                 }
             }
-
             return sb.ToString();
         }
 
@@ -80,7 +79,8 @@ public static class Lootboxes_Logic
             List<Lootboxes_DataTypes.Lootbox.Item> validOnly =
                 _data.Items.Where(i => validCheck(ZNetScene.instance.GetPrefab(i.Prefab))).ToList();
             if (validOnly.Count == 0) return;
-            
+
+            string outStr = "";
             void Process(Lootboxes_DataTypes.Lootbox.Item item)
             {
                 int randomAmount = Random.Range(item.Min, item.Max + 1);
@@ -90,8 +90,7 @@ public static class Lootboxes_Logic
                     ? obj.GetComponent<ItemDrop>().m_itemData.m_shared.m_name.Localize()
                     : obj.GetComponent<Character>().m_name.Localize();
                 Chat.instance.m_hideTimer = 0f;
-                Chat.instance.AddString($"<color=yellow>You got {randomAmount}x {prefabLocalized}!</color>");
-                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, $"You got {randomAmount}x {prefabLocalized}!");
+                outStr += $"x{randomAmount} {prefabLocalized}, ";
             }
             
             Chat.instance.m_hideTimer = 0f;
@@ -114,11 +113,22 @@ public static class Lootboxes_Logic
             string vfx = _data.OpenVFX;
             if (vfx != null && ZNetScene.instance.GetPrefab(vfx) is { } vfxPrefab)
                 Object.Instantiate(vfxPrefab, Player.m_localPlayer.transform.position, Quaternion.identity);
+            if(outStr.Length > 2) outStr = outStr.Remove(outStr.Length - 2);
+            Chat.instance.AddString($"<color=green>{this._data.UID.Replace("_"," ")}: " + outStr + "</color>");
+
+            if (_data.Webhook)
+            {
+                ZPackage pkg = new();
+                pkg.Write((int)DiscordStuff.DiscordStuff.Webhooks.Lootboxes);
+                pkg.Write(Player.m_localPlayer.GetPlayerName());
+                pkg.Write(this._data.UID.Replace("_", " "));
+                pkg.Write(outStr);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(), "KGmarket CustomWebhooks", pkg);
+            }
         }
     }
 
-    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData),
-        typeof(int), typeof(bool), typeof(float))]
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData), typeof(int), typeof(bool), typeof(float))]
     [ClientOnlyPatch]
     private static class ItemDrop__Patch
     {

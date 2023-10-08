@@ -106,9 +106,6 @@ public struct Requirement
 
 public struct SpecialProperties
 {
-    [Description("Admins should be the only ones that can build this piece.")]
-    public bool AdminOnly;
-
     [Description("Turns off generating a config for this build piece.")]
     public bool NoConfig;
 }
@@ -952,7 +949,7 @@ public class LocalizeKey
         }
         else if (lang == "English" && !Localization.instance.m_translations.ContainsKey(Key))
         {
-            Localization.instance.AddWord(Key, value);
+            Localization.instance.AddWord(Key, value); 
         }
 
         return this;
@@ -1011,208 +1008,6 @@ public static class LocalizationCache
     }
 }
 
-public class AdminSyncing
-{
-    private static bool isServer;
-    internal static bool registeredOnClient;
-
-    [HarmonyPriority(Priority.VeryHigh)]
-    internal static void AdminStatusSync(ZNet __instance)
-    {
-        isServer = __instance.IsServer();
-        if (BuildPiece._plugin is not null)
-        {
-            if (isServer)
-            {
-                ZRoutedRpc.instance.Register<ZPackage>(BuildPiece._plugin.Info.Metadata.Name + " PMAdminStatusSync", RPC_AdminPieceAddRemove);
-            }
-            else if (!registeredOnClient)
-            {
-                ZRoutedRpc.instance.Register<ZPackage>(BuildPiece._plugin.Info.Metadata.Name + " PMAdminStatusSync", RPC_AdminPieceAddRemove);
-                registeredOnClient = true;
-            }
-        }
-
-        IEnumerator WatchAdminListChanges()
-        {
-            List<string> currentList = new(ZNet.instance.m_adminList.GetList());
-            for (;;)
-            {
-                yield return new WaitForSeconds(30);
-                if (!ZNet.instance.m_adminList.GetList().SequenceEqual(currentList))
-                {
-                    currentList = new List<string>(ZNet.instance.m_adminList.GetList());
-                    List<ZNetPeer> adminPeer = ZNet.instance.GetPeers().Where(p =>
-                            ZNet.instance.ListContainsId(ZNet.instance.m_adminList, p.m_rpc.GetSocket().GetHostName()))
-                        .ToList();
-                    List<ZNetPeer> nonAdminPeer = ZNet.instance.GetPeers().Except(adminPeer).ToList();
-                    SendAdmin(nonAdminPeer, false);
-                    SendAdmin(adminPeer, true);
-
-                    void SendAdmin(List<ZNetPeer> peers, bool isAdmin)
-                    {
-                        ZPackage package = new();
-                        package.Write(isAdmin);
-                        ZNet.instance.StartCoroutine(sendZPackage(peers, package));
-                    }
-                }
-            }
-        }
-
-        if (isServer)
-        {
-            ZNet.instance.StartCoroutine(WatchAdminListChanges());
-        }
-    }
-
-    private static IEnumerator sendZPackage(List<ZNetPeer> peers, ZPackage package)
-    {
-        if (!ZNet.instance)
-        {
-            yield break;
-        }
-
-        const int compressMinSize = 10000;
-
-        if (package.GetArray() is { LongLength: > compressMinSize } rawData)
-        {
-            ZPackage compressedPackage = new();
-            compressedPackage.Write(4);
-            MemoryStream output = new();
-            using (DeflateStream deflateStream = new(output, System.IO.Compression.CompressionLevel.Optimal))
-            {
-                deflateStream.Write(rawData, 0, rawData.Length);
-            }
-
-            compressedPackage.Write(output.ToArray());
-            package = compressedPackage;
-        }
-
-        List<IEnumerator<bool>> writers =
-            peers.Where(peer => peer.IsReady()).Select(p => TellPeerAdminStatus(p, package)).ToList();
-        writers.RemoveAll(writer => !writer.MoveNext());
-        while (writers.Count > 0)
-        {
-            yield return null;
-            writers.RemoveAll(writer => !writer.MoveNext());
-        }
-    }
-
-    private static IEnumerator<bool> TellPeerAdminStatus(ZNetPeer peer, ZPackage package)
-    {
-        if (ZRoutedRpc.instance is not { } rpc)
-        {
-            yield break;
-        }
-
-        SendPackage(package);
-
-        void SendPackage(ZPackage pkg)
-        {
-            string method = BuildPiece._plugin?.Info.Metadata.Name + " PMAdminStatusSync";
-            if (isServer)
-            {
-                peer.m_rpc.Invoke(method, pkg);
-            }
-            else
-            {
-                rpc.InvokeRoutedRPC(peer.m_server ? 0 : peer.m_uid, method, pkg);
-            }
-        }
-    }
-
-    internal static void RPC_AdminPieceAddRemove(long sender, ZPackage package)
-    {
-        ZNetPeer? currentPeer = ZNet.instance.GetPeer(sender);
-        bool admin = false;
-        try
-        {
-            admin = package.ReadBool();
-        }
-        catch
-        {
-            // ignore
-        }
-
-        if (isServer)
-        {
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody,
-                BuildPiece._plugin?.Info.Metadata.Name + " PMAdminStatusSync", new ZPackage());
-            if (ZNet.instance.ListContainsId(ZNet.instance.m_adminList, currentPeer.m_rpc.GetSocket().GetHostName()))
-            {
-                ZPackage pkg = new();
-                pkg.Write(true);
-                currentPeer.m_rpc.Invoke(BuildPiece._plugin?.Info.Metadata.Name + " PMAdminStatusSync", pkg);
-            }
-        }
-        else
-        {
-            // Remove everything they shouldn't be able to build by disabling and removing.
-            foreach (BuildPiece piece in BuildPiece.registeredPieces)
-            {
-                if (!piece.SpecialProperties.AdminOnly) continue;
-                Piece piecePrefab = piece.Prefab.GetComponent<Piece>();
-                string pieceName = piecePrefab.m_name;
-                string localizedName = Localization.instance.Localize(pieceName).Trim();
-                if (!ObjectDB.instance || ObjectDB.instance.GetItemPrefab("Wood") == null) continue;
-                foreach (Piece instantiatedPiece in UnityEngine.Object.FindObjectsOfType<Piece>())
-                {
-                    if (admin)
-                    {
-                        if (instantiatedPiece.m_name == pieceName)
-                        {
-                            instantiatedPiece.m_enabled = true;
-                        }
-                    }
-                    else
-                    {
-                        if (instantiatedPiece.m_name == pieceName)
-                        {
-                            instantiatedPiece.m_enabled = false;
-                        }
-                    }
-                }
-
-                List<GameObject>? hammerPieces = ObjectDB.instance.GetItemPrefab("Hammer").GetComponent<ItemDrop>()
-                    .m_itemData.m_shared.m_buildPieces
-                    .m_pieces;
-                if (admin)
-                {
-                    if (!hammerPieces.Contains(ZNetScene.instance.GetPrefab(piecePrefab.name)))
-                        hammerPieces.Add(ZNetScene.instance.GetPrefab(piecePrefab.name));
-                }
-                else
-                {
-                    if (hammerPieces.Contains(ZNetScene.instance.GetPrefab(piecePrefab.name)))
-                        hammerPieces.Remove(ZNetScene.instance.GetPrefab(piecePrefab.name));
-                }
-            }
-        }
-    }
-}
-
-[HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection))]
-class RegisterClientRPCPatch
-{
-    private static void Postfix(ZNet __instance, ZNetPeer peer)
-    {
-        if (!__instance.IsServer())
-        {
-            peer.m_rpc.Register<ZPackage>(BuildPiece._plugin?.Info.Metadata.Name + " PMAdminStatusSync",
-                RPC_InitialAdminSync);
-        }
-        else
-        {
-            ZPackage packge = new();
-            packge.Write(__instance.ListContainsId(__instance.m_adminList, peer.m_rpc.GetSocket().GetHostName()));
-
-            peer.m_rpc.Invoke(BuildPiece._plugin?.Info.Metadata.Name + " PMAdminStatusSync", packge);
-        }
-    }
-
-    private static void RPC_InitialAdminSync(ZRpc rpc, ZPackage package) =>
-        AdminSyncing.RPC_AdminPieceAddRemove(0, package);
-}
 
 public static class PiecePrefabManager
 {
@@ -1225,7 +1020,6 @@ public static class PiecePrefabManager
         harmony.Patch(AccessTools.DeclaredMethod(typeof(ObjectDB), nameof(ObjectDB.Awake)), postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(PiecePrefabManager), nameof(Patch_ObjectDBInit))));
         harmony.Patch(AccessTools.DeclaredMethod(typeof(ObjectDB), nameof(ObjectDB.Awake)), postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(BuildPiece), nameof(BuildPiece.Patch_ObjectDBInit))));
         harmony.Patch(AccessTools.DeclaredMethod(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(PiecePrefabManager), nameof(Patch_ObjectDBInit))));
-        harmony.Patch(AccessTools.DeclaredMethod(typeof(ZNet), nameof(ZNet.Awake)), postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(AdminSyncing), nameof(AdminSyncing.AdminStatusSync))));
         harmony.Patch(AccessTools.DeclaredMethod(typeof(ZNetScene), nameof(ZNetScene.Awake)), new HarmonyMethod(AccessTools.DeclaredMethod(typeof(PiecePrefabManager), nameof(Patch_ZNetSceneAwake))));
         harmony.Patch(AccessTools.DeclaredMethod(typeof(ZNetScene), nameof(ZNetScene.Awake)), postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(PiecePrefabManager), nameof(RefFixPatch_ZNetSceneAwake))));
 
@@ -1326,7 +1120,7 @@ public static class PiecePrefabManager
 
         Dictionary<Piece.PieceCategory, string> map = new Dictionary<Piece.PieceCategory, string>();
 
-        for (int i = 0; i < values.Length; i++)
+        for (int i = 0; i < values.Length; ++i)
         {
             map[(Piece.PieceCategory)values.GetValue(i)] = names[i];
         }
@@ -1474,13 +1268,14 @@ public static class PiecePrefabManager
     
     private static IEnumerator RepositionCategories_Routine(PieceTable pieceTable)
     {
+        yield return null;
+        if(!Player.m_localPlayer.m_buildPieces) yield break;
         RectTransform firstTab = (RectTransform)Hud.instance.m_pieceCategoryTabs[0].transform;
         RectTransform categoryRoot = (RectTransform)Hud.instance.m_pieceCategoryRoot.transform;
         RectTransform selectionWindow = (RectTransform)Hud.instance.m_pieceSelectionWindow.transform;
 
         const int verticalSpacing = 1;
         Vector2 tabSize = firstTab.rect.size;
-        yield return null;
         HashSet<Piece.PieceCategory> visibleCategories = CategoriesInPieceTable(pieceTable);
         Dictionary<Piece.PieceCategory, string> categories = GetPieceCategoriesMap();
 
@@ -1534,7 +1329,7 @@ public static class PiecePrefabManager
             Debug.LogWarning("RefreshCategories: Could not find background image");
         }
 
-        if ((int)Player.m_localPlayer.m_buildPieces.m_selectedCategory >= Hud.instance.m_buildCategoryNames.Count)
+        if ((int)Player.m_localPlayer.m_buildPieces?.m_selectedCategory >= Hud.instance.m_buildCategoryNames.Count)
         {
             Player.m_localPlayer.m_buildPieces.SetCategory((int)visibleCategories.First());
         }
@@ -1617,7 +1412,7 @@ public static class PiecePrefabManager
         if (__instance.m_availablePieces.Count > 0)
         {
             int missing = MaxCategory() - __instance.m_availablePieces.Count;
-            for (int i = 0; i < missing; i++)
+            for (int i = 0; i < missing; ++i)
             {
                 __instance.m_availablePieces.Add(new List<Piece>());
             }

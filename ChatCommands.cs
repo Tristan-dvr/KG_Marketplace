@@ -135,7 +135,7 @@ public static class ChatCommands
                 {
                     if (!Utils.IsDebug_Marketplace) return;
                     string playerName = "";
-                    for (int i = 1; i < args.Args.Length; i++)
+                    for (int i = 1; i < args.Args.Length; ++i)
                     {
                         playerName += args.Args[i] + " ";
                     }
@@ -167,7 +167,7 @@ public static class ChatCommands
                 {
                     if (!Utils.IsDebug_Marketplace) return;
                     string playerName = "";
-                    for (int i = 1; i < args.Args.Length - 1; i++)
+                    for (int i = 1; i < args.Args.Length - 1; ++i)
                     {
                         playerName += args.Args[i] + " ";
                     }

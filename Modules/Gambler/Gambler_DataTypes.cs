@@ -30,7 +30,7 @@ public static class Gambler_DataTypes
         {
             MAXROLLS = pkg.ReadInt();
             int count = pkg.ReadInt();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 Data.Add(new Item
                 {

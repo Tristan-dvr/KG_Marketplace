@@ -200,7 +200,7 @@ public static class CommandExecution
                     }
                     else
                     {
-                        for (int i = 0; i < count; i++)
+                        for (int i = 0; i < count; ++i)
                         {
                             float value = UnityEngine.Random.Range(-1f, 1f);
                             float value2 = UnityEngine.Random.Range(-1f, 1f);
@@ -238,7 +238,7 @@ public static class CommandExecution
                 (go.GetComponent<ItemDrop>() || go.GetComponent<Character>() ||
                  go.GetComponent<Piece>()))
             {
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < count; ++i)
                 {
                     float value = UnityEngine.Random.Range(-3f, 3f);
                     float value2 = UnityEngine.Random.Range(-3f, 3f);

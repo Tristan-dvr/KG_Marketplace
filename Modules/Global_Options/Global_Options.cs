@@ -116,10 +116,10 @@ public static class Global_Configs
             _rebuildHeightmap = pkg.ReadBool();
             int count = pkg.ReadInt();
             _overrideDebug.Clear();
-            for (int i = 0; i < count; i++) _overrideDebug.Add(pkg.ReadString());
+            for (int i = 0; i < count; ++i) _overrideDebug.Add(pkg.ReadString());
             _blockedChatUsers.Clear();
             count = pkg.ReadInt();
-            for (int i = 0; i < count; i++) _blockedChatUsers.Add(pkg.ReadString());
+            for (int i = 0; i < count; ++i) _blockedChatUsers.Add(pkg.ReadString());
         }
     }
 

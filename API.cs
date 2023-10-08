@@ -193,7 +193,7 @@ public static class Marketplace_API
     public static void SET_NPC_IsPinned(this ZDO zdo, bool pinned) => zdo.Set("KGmarketPinned", pinned);
     
     public static API_NPCType GET_NPC_Type(this ZDO zdo) => (API_NPCType)zdo.GetInt("KGmarketNPC"); 
-    public static string GET_NPC_Profile(this ZDO zdo) => zdo.GetString("KGnpcProfile");
+    public static string GET_NPC_Profile(this ZDO zdo) => zdo.GetString("KGnpcProfile", "default");
     public static string GET_NPC_Model(this ZDO zdo) => zdo.GetString("KGnpcModelOverride");
     public static string GET_NPC_Name(this ZDO zdo) => zdo.GetString("KGnpcNameOverride");
     public static string GET_NPC_Dialogue(this ZDO zdo) => zdo.GetString("KGnpcDialogue");

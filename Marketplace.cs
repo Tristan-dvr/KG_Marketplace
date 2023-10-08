@@ -7,6 +7,7 @@ namespace Marketplace
 {
     [BepInPlugin(GUID, PluginName, PluginVersion)]
     [BepInDependency("org.bepinex.plugins.groups", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("org.bepinex.plugins.guilds", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("org.bepinex.plugins.jewelcrafting", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("Soulcatcher", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInIncompatibility("org.bepinex.plugins.valheim_plus")]
@@ -14,14 +15,14 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        public const string PluginVersion = "9.0.15";
+        public const string PluginVersion = "9.1.0";
         internal static Marketplace _thistype = null!;
         private static readonly Harmony _harmony = new(GUID);
         private static FileSystemWatcher FSW = null!; 
         public static Action<float> Global_Updator;
         public static Action<float> Global_FixedUpdator;
         public static Action Global_OnGUI_Updator;
-        public static Action Global_Start; 
+        public static Action Global_Start;
         public static Type TempJewelcraftingType;
         public static Type TempProfessionsType;
 
@@ -49,7 +50,6 @@ namespace Marketplace
                     : WorkingAs.Client;
             Utils.print($"Marketplace Working As: {WorkingAsType}");
             _thistype = this;
-            Type.GetType("Groups.Initializer, kg.Marketplace")!.GetMethod("Init")!.Invoke(null, null); 
             HarmonyLib.Tools.Logger.ChannelFilter = HarmonyLib.Tools.Logger.LogChannel.Error;
             Localizer.Load();
             TempJewelcraftingType = Type.GetType("Jewelcrafting.Jewelcrafting, Jewelcrafting")!;
@@ -61,7 +61,7 @@ namespace Marketplace
                 DateTimeMilliseconds = false,
                 UseUTCDateTime = true,
                 UseOptimizedDatasetSchema = true,
-                UseValuesOfEnums = true,
+                UseValuesOfEnums = true, 
             };
             IEnumerable<KeyValuePair<Market_Autoload, Type>> toAutoload = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => t.GetCustomAttribute<Market_Autoload>() != null)
@@ -71,13 +71,13 @@ namespace Marketplace
                     WorkingAs.Client => x.Key.type != Market_Autoload.Type.Server,
                     WorkingAs.Server => x.Key.type != Market_Autoload.Type.Client,
                     _ => true
-                });
+                }); 
             foreach (KeyValuePair<Market_Autoload, Type> autoload in toAutoload)
             {
                 if (autoload.Key.OnWatcherNames != null && autoload.Key.OnWatcherMethods != null &&
                     autoload.Key.OnWatcherNames.Length == autoload.Key.OnWatcherMethods.Length)
                 {
-                    for (int i = 0; i < autoload.Key.OnWatcherNames.Length; i++)
+                    for (int i = 0; i < autoload.Key.OnWatcherNames.Length; ++i)
                     {
                         MethodInfo configWatcherMethod = autoload.Value.GetMethod(autoload.Key.OnWatcherMethods[i],
                             BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public);
@@ -107,7 +107,7 @@ namespace Marketplace
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Autoload exception on method {method}\n:{ex}", ConsoleColor.Red);
+                    Utils.print($"Autoload exception on method {method}. Class {autoload.Value}\n:{ex}", ConsoleColor.Red);
                 }
             }
 
@@ -122,7 +122,7 @@ namespace Marketplace
                 .Where(t => t.GetCustomAttribute<ConditionalPatch>() is not { } cond || cond.Check(t))
                 .Do(type => _harmony.CreateClassProcessor(type).Patch());
         }
-
+        
         private void Update() => Global_Updator?.Invoke(Time.deltaTime);
         private void OnGUI() => Global_OnGUI_Updator?.Invoke();
         private void FixedUpdate() => Global_FixedUpdator?.Invoke(Time.fixedDeltaTime);
@@ -171,7 +171,7 @@ namespace Marketplace
         }
 
         private static readonly Dictionary<string, Action> FSW_Lookup = new();
-        private static readonly Dictionary<string, DateTime> LastConfigChangeTime = new();
+        private static readonly Dictionary<string, DateTime> LastConfigChangeTime = new(); 
 
         private static void MarketplaceConfigChanged(object sender, FileSystemEventArgs e)
         {

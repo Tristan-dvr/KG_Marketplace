@@ -16,7 +16,7 @@ public static class Teleporter_Main_Server
     private static void ProcessTeleporterProfiles(string fPath, IReadOnlyList<string> profiles)
     {
         string splitProfile = "default";
-        for (int i = 0; i < profiles.Count; i++)
+        for (int i = 0; i < profiles.Count; ++i)
         {
             if (string.IsNullOrWhiteSpace(profiles[i]) || profiles[i].StartsWith("#")) continue;
             if (profiles[i].StartsWith("["))
