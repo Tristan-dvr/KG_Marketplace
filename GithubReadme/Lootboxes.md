@@ -1,5 +1,7 @@
 ﻿This is the template for creating lootboxes. Navigate to `config\Marketplace\Configs\Lootboxes` and create a cfg file (name it whatever you want) for example: `Loot.cfg`
 
+Lootboxes are "fake copies" or items that you can add to Quests / Dialogues / Traders and so on... or just manually spawn them via `spawn PREFAB` command
+
 This is data layout for lootboxes if you're not using WithChance type:
 
 <details><summary>.cfg file templates</summary>

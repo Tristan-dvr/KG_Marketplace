@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Emit;
 using System.Threading.Tasks;
+using Guilds;
 using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.Teleporter;
 
@@ -39,8 +40,17 @@ public static class TerritorySystem_Main_Client
         }
 
         TerritorySystem_DataTypes.SyncedTerritoriesData.ValueChanged += OnTerritoryUpdate;
-        Marketplace.Global_FixedUpdator += TerritoryFixedUpdate;
+        Marketplace.Global_FixedUpdator += TerritoryFixedUpdate; 
         Marketplace.Global_FixedUpdator += HeightmapRebuild;
+        
+        Guilds.API.RegisterOnGuildJoined(guildsAPI_CacheClear); 
+        Guilds.API.RegisterOnGuildLeft(guildsAPI_CacheClear);
+        
+    }
+    
+    static void guildsAPI_CacheClear(Guilds.Guild guild, Guilds.PlayerReference playerReference)
+    {
+        TerritorySystem_DataTypes.SyncedTerritoriesData.Value.ForEach(t => t.ClearOwnerCache());
     }
 
     private static void TerritoryFixedUpdate(float dt)

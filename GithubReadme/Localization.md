@@ -269,5 +269,10 @@ mpasn_needguildachievement: Need guild achievement
 mpasn_dontneedguildachievement: Can't have guild achievement
 mpasn_GuildAddLevel: Add Guild Level
 mpasn_Dialogues: Dialogues
+mpasn_onlyforguildterritory: Guild Territory
+mpasn_nothinglootbox: Nothing :(
+mpasn_lootboxone: <color=orange>Right click to open and get <b><color=green>one random</color></b> item from list:</color>
+mpasn_lootboxall: <color=orange>Right click to open and get <b><color=green>each</color></b> item from list:</color>
+mpasn_lootboxallwithchance: <color=orange>Right click to open and get <b><color=green>each (with chance)</color></b> item from list:</color>
 ```
 </details>

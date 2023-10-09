@@ -252,6 +252,8 @@ public static class TerritorySystem_DataTypes
                               (Guilds.API.GetOwnGuild() != null && Guilds.API.GetOwnGuild().Name == this.OnlyForGuild);
             return IsOwnerCached.Value;
         }
+        
+        public void ClearOwnerCache() => IsOwnerCached = null;
 
         public bool IsInside2D(Vector2 mouse)
         {
@@ -381,6 +383,7 @@ public static class TerritorySystem_DataTypes
         { AdditionalTerritoryFlags.InfiniteStamina, "\n<color=#00FFFF>$mpasn_infinitestamina</color>" },
         { AdditionalTerritoryFlags.NoMist, "\n<color=#00FFFF>$mpasn_nomistlandsmist</color>" },
         { AdditionalTerritoryFlags.DropMultiplier, "\n<color=#00FFFF>$mpasn_dropmultiplier</color>" },
+        { AdditionalTerritoryFlags.OnlyForGuild , "\n<color=#00FFFF>$mpasn_onlyforguildterritory</color>" },
     };
 
 

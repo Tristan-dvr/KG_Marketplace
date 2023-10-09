@@ -6,6 +6,7 @@ using Marketplace.Modules.Leaderboard;
 using Marketplace.Modules.NPC;
 using Marketplace.Modules.Quests;
 using Marketplace.OtherModsAPIs;
+using YamlDotNet.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Marketplace.Modules.Dialogues;
@@ -100,20 +101,20 @@ public static class Dialogues_DataTypes
 
     public class RawDialogue : ISerializableParameter
     {
-        public string UID;
-        public string Text;
-        public string BG_ImageLink;
-        public RawPlayerOption[] Options = Array.Empty<RawPlayerOption>();
+        [YamlMember(Alias = "Name")] public string UID;
+        [YamlMember(Alias = "Text")] public string Text;
+        [YamlMember(Alias = "Background Image Link")] public string BG_ImageLink;
+        [YamlMember(Alias = "Options")] public RawPlayerOption[] Options = Array.Empty<RawPlayerOption>();
 
         public class RawPlayerOption
         {
             public string Text;
             public string Icon;
-            public string NextUID;
+            [YamlMember(Alias = "TransitionTo")] public string NextUID;
             public string[] Commands = Array.Empty<string>();
             public string[] Conditions = Array.Empty<string>();
             public bool AlwaysVisible = true;
-            public Color Color = Color.white;
+            public Color32 Color = new Color32(255,255,255,255);
         }
 
         public void Serialize(ref ZPackage pkg)
@@ -623,7 +624,7 @@ public static class Dialogues_DataTypes
                                     type = OptionCondition.CustomValueMore;
                                     string key = split[1];
                                     reason =
-                                        $"{Localization.instance.Localize("$mpasn_needcustomvalue")}: <color=#00ff00>{split[1]}</color>";
+                                        $"{Localization.instance.Localize("$mpasn_needcustomvalue")}: <color=#00ff00>{split[1]}. Current: {Player.m_localPlayer.GetCustomValue(key)}</color>";
                                     return Player.m_localPlayer.GetCustomValue(key) >= int.Parse(split[2]);
                                 };
                                 break;
@@ -633,7 +634,7 @@ public static class Dialogues_DataTypes
                                     type = OptionCondition.CustomValueLess;
                                     string key = split[1];
                                     reason =
-                                        $"{Localization.instance.Localize("$mpasn_dontneedcustomvalue")}: <color=#00ff00>{split[1]}</color>";
+                                        $"{Localization.instance.Localize("$mpasn_dontneedcustomvalue")}: <color=#00ff00>{split[1]}. Current: {Player.m_localPlayer.GetCustomValue(key)}</color>";
                                     return Player.m_localPlayer.GetCustomValue(key) < int.Parse(split[2]);
                                 };
                                 break;

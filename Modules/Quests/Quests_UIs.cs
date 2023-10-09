@@ -267,15 +267,7 @@ private static void Postfix(InventoryGui __instance)
                         tooltip.m_text = $"{Localization.instance.Localize("$mpasn_CustomValue")} {quest.GetLocalizedReward(i)} {(quest.RewardCount[i] > 0 ? "+" : "-")}{quest.RewardCount[i]}";
                         break;
                     case Quests_DataTypes.QuestRewardType.GuildAddLevel:
-                        Sprite guildIcon = null;
-                        if (Type.GetType("Guilds.Interface, Guilds") is {} gIcons)
-                        {
-                            FieldInfo GuildIcons = AccessTools.Field(gIcons, "GuildIcons");
-                            MethodInfo dictionaryGetter = AccessTools.Method(GuildIcons.FieldType, "get_Item");
-                            int guildIconID = Guilds.API.GetOwnGuild() is {} g ? g.General.icon : 1;
-                            guildIcon = (Sprite)dictionaryGetter.Invoke(GuildIcons.GetValue(null), new object[] { guildIconID });
-                        }
-                        rewardImage.sprite = guildIcon;
+                        rewardImage.sprite = Guilds.API.GetOwnGuild() is { } g ? Guilds.API.GetGuildIcon(g) : null;
                         tooltip.m_topic = Localization.instance.Localize("$mpasn_GuildAddLevel");
                         tooltip.m_text = $"+{quest.RewardCount[i]}";
                         break;

@@ -53,29 +53,7 @@ Quest rewards type:
 
 Quest Requirements Types:
 ```
-1) Skill - example: Skill: Run, 10. Will make so that only if you have skill Run at least 10 levels you can accept this quest
-2) OtherQuest - example: OtherQuest: MyQuestID123. Will make so that only if you have completed quest with ID MyQuestID123 you can accept this quest
-3) GlobalKey - example: GlobalKey: defeated_gdking. Will make so that quest is only acceptable if yagluth was killed on server
-4) EpicMMO_Level - example: EpicMMO_Level: 20. Will make so that quest is only acceptable if player has at least 20 EpicMMO levels (other mod API)
-5) HasItem - example: HasItem: SwordIron. Will make so that quest is only acceptable if player has at least 1 SwordIron in inventory
-6) NotFinished - example: NotFinished: MyQuestID123. Will make so that quest is only acceptable if player has NOT finished quest with ID MyQuestID123
-7) MH_Level - example: MH_Level: 20. Will make so that quest is only acceptable if player has at least 20 MagicHeim levels (other mod API)
-8) Time - example: Time: 60. Will time limit quest completion to 60 seconds. If player won't complete quest in 60 seconds it will fail
-9) HasAchievement - example: HasAchievement: MyAchievementID123. Will make so that quest is only acceptable if player has achievement with ID MyAchievementID123
-10) CustomValueMore - example: CustomValueMore: MyCustomValue, 100. Will make so that quest is only acceptable if CustomValue with name MyCustomValue is more or equal to 100
-11) CustomValueLess - example: CustomValueLess: MyCustomValue, 100. Will make so that quest is only acceptable if CustomValue with name MyCustomValue is less than 100
-12) ModInstalled - example: ModInstalled: org.bepinex.plugins.jewelcrafting. Will make so that quest is only acceptable if Jewelcrafting is installed on server
-13) NotModInstalled - example: NotModInstalled: org.bepinex.plugins.jewelcrafting. Will make so that quest is only acceptable if Jewelcrafting is NOT installed on server
-14) IronGateStatMore - example: IronGateStatMore: BossKills, Value. Will make so that quest is only acceptable if IronGateStat with name BossKills is more or equal to Value
-15) IronGateStatLess - example: IronGateStatLess: BossKills, Value. Will make so that quest is only acceptable if IronGateStat with name BossKills is less than Value
-16) HasGuild - example: HasGuild. Will make so that quest is only acceptable if player has guild
-17) NotHasGuild - example: NotHasGuild. Will make so that quest is only acceptable if player has NO guild
-18) HasGuildWithName - example: HasGuildWithName: MyGuildName. Will make so that quest is only acceptable if player has guild with name MyGuildName
-19) NotHasGuildWithName - example: NotHasGuildWithName: MyGuildName. Will make so that quest is only acceptable if player has NO guild with name MyGuildName
-20) GuildLevelMore - example: GuildLevelMore: 20. Will make so that quest is only acceptable if player has guild with level more or equal to 20
-21) GuildLevelLess - example: GuildLevelLess: 20. Will make so that quest is only acceptable if player has guild with level less than 20
-22) GuildHasAchievement - example: GuildHasAchievement: MyAchievementID123. Will make so that quest is only acceptable if player's guild has achievement with ID MyAchievementID123
-23) GuildNotHasAchievement - example: GuildNotHasAchievement: MyAchievementID123. Will make so that quest is only acceptable if player's guild has NO achievement with ID MyAchievementID123
+Quests using absolutely same conditions / requirements as Dialogues. Dialogues guides is more complete so head towards there: https://kg-dev.xyz/#Dialogues
 ```
 
 Please note that Quest Targets, Quest Rewards and Quest Requirements may be multiple in one quest. You can add them as much as you want with | symbol. Example:

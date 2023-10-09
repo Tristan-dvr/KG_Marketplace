@@ -30,6 +30,7 @@ public static class TerritorySystem_Main_Server
             {
                 string[] split = profiles[i].Replace("[", "").Replace("]", "").Split('@');
                 splitProfile = split[0];
+                Priority = 1;
                 if (split.Length == 2)
                 {
                     Priority = int.Parse(split[1]);
@@ -42,7 +43,8 @@ public static class TerritorySystem_Main_Server
                     if (i + 4 > profiles.Count) break;
                     TerritorySystem_DataTypes.Territory newTerritory = new()
                     {
-                        Name = splitProfile
+                        Name = splitProfile,
+                        Priority = Priority
                     };
                     if (!(Enum.TryParse(profiles[i], true,  out TerritorySystem_DataTypes.TerritoryType type) &&
                           Enum.IsDefined(typeof(TerritorySystem_DataTypes.TerritoryType), type))) continue;

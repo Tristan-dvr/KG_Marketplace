@@ -1,4 +1,8 @@
-﻿using Marketplace.Paths;
+﻿using Marketplace.Modules.Lootboxes;
+using Marketplace.Paths;
+using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
+using YamlDotNet.Serialization;
 
 namespace Marketplace.Modules.Dialogues;
 
@@ -118,7 +122,7 @@ public class Dialogues_Main_Server
             Dialogues_DataTypes.SyncedDialoguesData.Value.Add(dialogue);
         }
     }
-
+    
     private static void ReadDialoguesData()
     {
         Dialogues_DataTypes.SyncedDialoguesData.Value.Clear();
@@ -129,7 +133,7 @@ public class Dialogues_Main_Server
             IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessDialogueProfiles(file, profiles);
         }
-
+        
         Dialogues_DataTypes.SyncedDialoguesData.Update();
     }
 

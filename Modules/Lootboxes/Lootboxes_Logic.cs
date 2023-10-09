@@ -31,13 +31,13 @@ public static class Lootboxes_Logic
             switch (_data.Type)
             {
                 case Lootboxes_DataTypes.Lootbox.LBType.One:
-                    sb.AppendLine($"\n<color=orange>Right click to open and get <b><color=green>one random</color></b> item from list:</color>");
+                    sb.AppendLine("\n$mpasn_lootboxone".Localize());
                     break;
                 case Lootboxes_DataTypes.Lootbox.LBType.All:
-                    sb.AppendLine($"\n<color=orange>Right click to open and get <b><color=green>each</color></b> item from list:</color>");
+                    sb.AppendLine("\n$mpasn_lootboxall".Localize());
                     break;
                 case Lootboxes_DataTypes.Lootbox.LBType.AllWithChance or Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip:
-                    sb.AppendLine($"\n<color=orange>Right click to open and get <b><color=green>each (with chance)</color></b> item from list:</color>");
+                    sb.AppendLine("\n$mpasn_lootboxallwithchance".Localize());
                     break;
             }
             foreach (var item in _data.Items)
@@ -64,11 +64,8 @@ public static class Lootboxes_Logic
                     Character character = test.GetComponent<Character>();
                     string displayLevel = $" (<color=#00ff00>{item.Level - 1} lvl</color>)";
                     string displayAmouny = item.Min == item.Max ? $"{item.Min}" : $"{item.Min}-{item.Max}";
-                    string displayTamed = character.GetComponent<Tameable>()
-                        ? " (<color=green>Tamed</color>)"
-                        : " (<color=red>Hostile</color>)";
                     sb.AppendLine(
-                        $"<color=red>•</color> <color=yellow>{displayAmouny}x {character.m_name.Localize()}{displayLevel}{displayTamed}{chanceStr}</color>");
+                        $"<color=red>•</color> <color=yellow>{displayAmouny}x {character.m_name.Localize()}{displayLevel}{chanceStr}</color>");
                 }
             }
             return sb.ToString();
@@ -86,11 +83,11 @@ public static class Lootboxes_Logic
                 int randomAmount = Random.Range(item.Min, item.Max + 1);
                 GameObject obj = ZNetScene.instance.GetPrefab(item.Prefab);
                 Utils.InstantiateItem(obj, randomAmount, item.Level);
-                string prefabLocalized = obj.GetComponent<ItemDrop>()
-                    ? obj.GetComponent<ItemDrop>().m_itemData.m_shared.m_name.Localize()
-                    : obj.GetComponent<Character>().m_name.Localize();
+                string itemname = obj.GetComponent<ItemDrop>()
+                    ? obj.GetComponent<ItemDrop>().m_itemData.m_shared.m_name
+                    : obj.GetComponent<Character>().m_name;
                 Chat.instance.m_hideTimer = 0f;
-                outStr += $"x{randomAmount} {prefabLocalized}, ";
+                outStr += $"x{randomAmount} {itemname}, ";
             }
             
             Chat.instance.m_hideTimer = 0f;
@@ -116,7 +113,7 @@ public static class Lootboxes_Logic
             if (outStr.Length > 2)
                 outStr = outStr.Remove(outStr.Length - 2);
             else
-                outStr = "Nothing :(";
+                outStr = "$mpasn_nothinglootbox".Localize();
             
             Chat.instance.AddString($"<color=green>{this._data.UID.Replace("_"," ")}: " + outStr + "</color>");
 
