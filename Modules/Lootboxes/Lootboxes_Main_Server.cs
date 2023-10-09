@@ -1,5 +1,6 @@
 ﻿using Jewelcrafting;
 using Marketplace.Paths;
+using YamlDotNet.Serialization;
 
 namespace Marketplace.Modules.Lootboxes;
 
@@ -48,8 +49,9 @@ public class Lootboxes_Main_Server
 
                     _currentLootbox.Type = toEnum.Value;
                     string[] split = profiles[k + 1].Replace(" ", "").Split(',');
-                    bool needChance = toEnum is Lootboxes_DataTypes.Lootbox.LBType.AllWithChance or Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip;
-                    int needChanceVal =  needChance ? 4 : 3;
+                    bool needChance = toEnum is Lootboxes_DataTypes.Lootbox.LBType.AllWithChance
+                        or Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip;
+                    int needChanceVal = needChance ? 4 : 3;
                     if (split.Length % needChanceVal != 0) continue;
                     for (int i = 0; i < split.Length; i += needChanceVal)
                     {
@@ -62,7 +64,7 @@ public class Lootboxes_Main_Server
                         int chance = needChance ? int.Parse(split[i + 3]) : 100;
                         _currentLootbox.Items.Add(new(prefab, min, max, level, chance));
                     }
-                    
+
                     string description = profiles[k + 2];
                     if (!string.IsNullOrWhiteSpace(description))
                         _currentLootbox.AdditionalDescription = description.Replace(@"\n", "\n");
@@ -86,6 +88,25 @@ public class Lootboxes_Main_Server
         }
     }
 
+    private static void ProcessLootboxesProfiles_YAML(string fpath, string text)
+    {
+        try
+        {
+            List<Lootboxes_DataTypes.Lootbox> lootboxes = new DeserializerBuilder().Build().Deserialize<List<Lootboxes_DataTypes.Lootbox>>(text);
+            if (lootboxes == null) return;
+            foreach (Lootboxes_DataTypes.Lootbox lootbox in lootboxes)
+            {
+                if (lootbox.Items.Count == 0) continue;
+                lootbox.UID = lootbox.UID.Replace(" ", "_");
+                Lootboxes_DataTypes.SyncedLootboxData.Value.Add(lootbox);
+            }
+        }
+        catch (Exception ex)
+        {
+            Utils.print($"Error while processing Lootboxes (YAML) in file {fpath}: {ex}");
+        }
+    }
+
     private static void ReadLootboxesData()
     {
         Lootboxes_DataTypes.SyncedLootboxData.Value.Clear();
@@ -97,7 +118,15 @@ public class Lootboxes_Main_Server
             ProcessLootboxesProfiles(file, profiles);
         }
 
-        Lootboxes_DataTypes.SyncedLootboxData.Value.RemoveAll(item => item.Items.Count == 0);
+        string[] ymlFiles = Directory.GetFiles(folder, "*.yml", SearchOption.AllDirectories)
+            .Concat(Directory.GetFiles(folder, "*.yaml", SearchOption.AllDirectories)).ToArray();
+        foreach (string file in ymlFiles)
+        {
+            string text = File.ReadAllText(file);
+            ProcessLootboxesProfiles_YAML(file, text);
+        }
+        
+        Lootboxes_DataTypes.SyncedLootboxData.Value.RemoveAll(lootbox => lootbox.Items.Count == 0);
         Lootboxes_DataTypes.SyncedLootboxData.Update();
     }
 

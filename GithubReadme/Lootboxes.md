@@ -2,6 +2,9 @@
 
 This is data layout for lootboxes if you're not using WithChance type:
 
+<details><summary>.cfg file templates</summary>
+
+
 ```
 [UID (no spaces, use _ if you want to use space)]
 TYPE (One, All, AllWithChance, AllWithChanceShowTooltip)
@@ -53,6 +56,85 @@ Test your skills
 chest_hildir3
 sfx_spawn
 ```
+
+</details>
+
+Also you can use .yml or .yaml files for lootboxes. This is layout:
+
+```yaml
+- Name: lootbox1
+  Icon: Default
+  OpenVFX: fx_Potion_frostresist
+  Description: Test your skills
+  Lootbox Type: One
+  Send Webhook: false
+  Item List:
+  - Prefab: Wood
+    Min: 1
+    Max: 100
+    Level: 1
+    Chance: 100
+  - Prefab: SwordIron
+    Min: 1
+    Max: 1
+    Level: 4
+    Chance: 100
+
+- Name: lootbox2
+  Icon: chest_hildir1
+  OpenVFX: none
+  Description: Test your skills
+  Lootbox Type: All
+  Send Webhook: false
+  Item List:
+  - Prefab: Wood
+    Min: 1
+    Max: 100
+    Level: 1
+    Chance: 100
+  - Prefab: SwordIron
+    Min: 1
+    Max: 1
+    Level: 4
+    Chance: 100
+
+- Name: lootbox3
+  Icon: chest_hildir2
+  OpenVFX: vfx_spawn
+  Description: Test your skills
+  Lootbox Type: AllWithChance
+  Send Webhook: false
+  Item List:
+  - Prefab: Wood
+    Min: 1
+    Max: 100
+    Level: 1
+    Chance: 50
+  - Prefab: SwordIron
+    Min: 1
+    Max: 1
+    Level: 4
+    Chance: 20
+    
+- Name: lootbox4
+  Icon: chest_hildir3
+  OpenVFX: sfx_spawn
+  Description: Test your skills
+  Lootbox Type: AllWithChanceShowTooltip
+  Send Webhook: false
+  Item List:
+  - Prefab: Wood
+    Min: 1
+    Max: 100
+    Level: 1
+    Chance: 50
+  - Prefab: SwordIron
+    Min: 1
+    Max: 1
+    Level: 4
+    Chance: 20
+```
+
 <p align="center"><img src="https://imgur.com/bMLxbbj.png" width="350" height="300"></a><img src="https://imgur.com/13t1jox.png" width="350" height="300"></a></p>
 <p align="center"><img src="https://imgur.com/mvuxsHB.png" width="350" height="300"></a><img src="https://imgur.com/dOExsJH.png" width="350" height="300"></a></p>
 

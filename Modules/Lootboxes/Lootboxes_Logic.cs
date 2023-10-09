@@ -50,7 +50,7 @@ public static class Lootboxes_Logic
                 }
 
                 ItemDrop idrop = test.GetComponent<ItemDrop>();
-                string chanceStr = _data.Type == Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip ? $" <color=#AF0000>({item.Chance}%)</color>" : "";
+                string chanceStr = _data.Type == Lootboxes_DataTypes.Lootbox.LBType.AllWithChanceShowTooltip ? $" (<color=#00FFFF>{item.Chance}%</color>)" : "";
                 if (idrop)
                 {
                     string displayLevel = idrop.m_itemData.m_shared.m_maxQuality > 1

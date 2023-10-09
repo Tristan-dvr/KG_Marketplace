@@ -1,4 +1,6 @@
-﻿namespace Marketplace.Modules.Lootboxes;
+﻿using YamlDotNet.Serialization;
+
+namespace Marketplace.Modules.Lootboxes;
 
 public static class Lootboxes_DataTypes
 {
@@ -11,13 +13,13 @@ public static class Lootboxes_DataTypes
     {
         public enum LBType { One, All, AllWithChance, AllWithChanceShowTooltip }
         
-        public string UID;
+        [YamlMember(Alias = "Name")] public string UID;
         public string Icon;
         public string OpenVFX;
-        public string AdditionalDescription;
-        public LBType Type;
-        public bool Webhook = false;
-        public List<Item> Items = new();
+        [YamlMember(Alias = "Description")] public string AdditionalDescription;
+        [YamlMember(Alias = "Lootbox Type")] public LBType Type;
+        [YamlMember(Alias = "Send Webhook")] public bool Webhook = false;
+        [YamlMember(Alias = "Item List")] public List<Item> Items = new();
 
         public class Item
         {
