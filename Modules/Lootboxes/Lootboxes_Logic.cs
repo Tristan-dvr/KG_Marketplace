@@ -110,10 +110,14 @@ public static class Lootboxes_Logic
                     }
                     break;
             }
-            string vfx = _data.OpenVFX;
-            if (vfx != null && ZNetScene.instance.GetPrefab(vfx) is { } vfxPrefab)
+            if (_data.OpenVFX != null && ZNetScene.instance.GetPrefab(_data.OpenVFX) is { } vfxPrefab && vfxPrefab.GetComponent<TimedDestruction>())
                 Object.Instantiate(vfxPrefab, Player.m_localPlayer.transform.position, Quaternion.identity);
-            if(outStr.Length > 2) outStr = outStr.Remove(outStr.Length - 2);
+            
+            if (outStr.Length > 2)
+                outStr = outStr.Remove(outStr.Length - 2);
+            else
+                outStr = "Nothing :(";
+            
             Chat.instance.AddString($"<color=green>{this._data.UID.Replace("_"," ")}: " + outStr + "</color>");
 
             if (_data.Webhook)

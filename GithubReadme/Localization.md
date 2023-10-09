@@ -268,5 +268,6 @@ mpasn_dontneedguildname: Can't have guild
 mpasn_needguildachievement: Need guild achievement
 mpasn_dontneedguildachievement: Can't have guild achievement
 mpasn_GuildAddLevel: Add Guild Level
+mpasn_Dialogues: Dialogues
 ```
 </details>

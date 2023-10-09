@@ -104,7 +104,9 @@ public static class Lootboxes_Main_Client
                 ItemDrop drop = LootBox_Base.GetComponent<ItemDrop>();
                 drop.m_itemData.Data().Get<Lootboxes_Logic.Lootbox_IDM>().Assign(LB);
                 drop.m_itemData.m_shared.m_name = LB.UID.Replace("_", " ");
-                drop.m_itemData.m_shared.m_icons[0] = Utils.TryFindIcon(LB.Icon, Lootbox_DefaultIcon);
+                drop.m_itemData.m_shared.m_icons[0] = LB.Icon != LootBox_Base.name
+                    ? Utils.TryFindIcon(LB.Icon, Lootbox_DefaultIcon)
+                    : Lootbox_DefaultIcon;
                 hash = LootBox_Base.name.GetStableHashCode();
             }
         }

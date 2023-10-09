@@ -48,6 +48,7 @@ Quest rewards type:
 8) Cozyheim_EXP - a reward where the Target is amount of exp. Example Cozyheim_EXP: 100. Will give +100 exp of Cozyheim experience to player who finished a quest
 9) SetCustomValue - a reward where the Target is a CustomValue name. Example SetCustomValue: MyCustomValue, 100. Will set CustomValue with name MyCustomValue to 100
 10) AddCustomValue - a reward where the Target is a CustomValue name. Example AddCustomValue: MyCustomValue, 100. Will add 100 to CustomValue with name MyCustomValue
+11) GuildAddLevel - a reward where the Target is amount of guild level. Example GuildAddLevel: 10. Will add 10 guild levels to player's guild
 ```
 
 Quest Requirements Types:
@@ -63,6 +64,18 @@ Quest Requirements Types:
 9) HasAchievement - example: HasAchievement: MyAchievementID123. Will make so that quest is only acceptable if player has achievement with ID MyAchievementID123
 10) CustomValueMore - example: CustomValueMore: MyCustomValue, 100. Will make so that quest is only acceptable if CustomValue with name MyCustomValue is more or equal to 100
 11) CustomValueLess - example: CustomValueLess: MyCustomValue, 100. Will make so that quest is only acceptable if CustomValue with name MyCustomValue is less than 100
+12) ModInstalled - example: ModInstalled: org.bepinex.plugins.jewelcrafting. Will make so that quest is only acceptable if Jewelcrafting is installed on server
+13) NotModInstalled - example: NotModInstalled: org.bepinex.plugins.jewelcrafting. Will make so that quest is only acceptable if Jewelcrafting is NOT installed on server
+14) IronGateStatMore - example: IronGateStatMore: BossKills, Value. Will make so that quest is only acceptable if IronGateStat with name BossKills is more or equal to Value
+15) IronGateStatLess - example: IronGateStatLess: BossKills, Value. Will make so that quest is only acceptable if IronGateStat with name BossKills is less than Value
+16) HasGuild - example: HasGuild. Will make so that quest is only acceptable if player has guild
+17) NotHasGuild - example: NotHasGuild. Will make so that quest is only acceptable if player has NO guild
+18) HasGuildWithName - example: HasGuildWithName: MyGuildName. Will make so that quest is only acceptable if player has guild with name MyGuildName
+19) NotHasGuildWithName - example: NotHasGuildWithName: MyGuildName. Will make so that quest is only acceptable if player has NO guild with name MyGuildName
+20) GuildLevelMore - example: GuildLevelMore: 20. Will make so that quest is only acceptable if player has guild with level more or equal to 20
+21) GuildLevelLess - example: GuildLevelLess: 20. Will make so that quest is only acceptable if player has guild with level less than 20
+22) GuildHasAchievement - example: GuildHasAchievement: MyAchievementID123. Will make so that quest is only acceptable if player's guild has achievement with ID MyAchievementID123
+23) GuildNotHasAchievement - example: GuildNotHasAchievement: MyAchievementID123. Will make so that quest is only acceptable if player's guild has NO achievement with ID MyAchievementID123
 ```
 
 Please note that Quest Targets, Quest Rewards and Quest Requirements may be multiple in one quest. You can add them as much as you want with | symbol. Example:

@@ -9,10 +9,7 @@ public static class Lootboxes_DataTypes
     
     public class Lootbox : ISerializableParameter
     {
-        public enum LBType
-        {
-            One, All, AllWithChance, AllWithChanceShowTooltip
-        }
+        public enum LBType { One, All, AllWithChance, AllWithChanceShowTooltip }
         
         public string UID;
         public string Icon;

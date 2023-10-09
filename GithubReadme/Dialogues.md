@@ -150,6 +150,161 @@ The following conditions can be used in the `NpcDialogues.cfg` file:
      - **Usage**: `NotModInstalled, ModName`
      - **Description**: Checks if the specified mod is not installed.
 
+- 'IronGateStatMore'
+     - **Usage**: `IronGateStatMore, Stat, Value`
+     - **Description**: Checks if the player's IronGate stat is greater than or equal to the minimum value.
+
+- 'IronGateStatLess'
+     - **Usage**: `IronGateStatLess, Stat, Value`
+     - **Description**: Checks if the player's IronGate stat is less than value.
+
+<details>
+<summary>All IronGateStats</summary>
+
+```cs
+public enum PlayerStatType
+{
+	Deaths,
+	CraftsOrUpgrades,
+	Builds,
+	Jumps,
+	Cheats,
+	EnemyHits,
+	EnemyKills,
+	EnemyKillsLastHits,
+	PlayerHits,
+	PlayerKills,
+	HitsTakenEnemies,
+	HitsTakenPlayers,
+	ItemsPickedUp,
+	Crafts,
+	Upgrades,
+	PortalsUsed,
+	DistanceTraveled,
+	DistanceWalk,
+	DistanceRun,
+	DistanceSail,
+	DistanceAir,
+	TimeInBase,
+	TimeOutOfBase,
+	Sleep,
+	ItemStandUses,
+	ArmorStandUses,
+	WorldLoads,
+	TreeChops,
+	Tree,
+	TreeTier0,
+	TreeTier1,
+	TreeTier2,
+	TreeTier3,
+	TreeTier4,
+	TreeTier5,
+	LogChops,
+	Logs,
+	MineHits,
+	Mines,
+	MineTier0,
+	MineTier1,
+	MineTier2,
+	MineTier3,
+	MineTier4,
+	MineTier5,
+	RavenHits,
+	RavenTalk,
+	RavenAppear,
+	CreatureTamed,
+	FoodEaten,
+	SkeletonSummons,
+	ArrowsShot,
+	TombstonesOpenedOwn,
+	TombstonesOpenedOther,
+	TombstonesFit,
+	DeathByUndefined,
+	DeathByEnemyHit,
+	DeathByPlayerHit,
+	DeathByFall,
+	DeathByDrowning,
+	DeathByBurning,
+	DeathByFreezing,
+	DeathByPoisoned,
+	DeathBySmoke,
+	DeathByWater,
+	DeathByEdgeOfWorld,
+	DeathByImpact,
+	DeathByCart,
+	DeathByTree,
+	DeathBySelf,
+	DeathByStructural,
+	DeathByTurret,
+	DeathByBoat,
+	DeathByStalagtite,
+	DoorsOpened,
+	DoorsClosed,
+	BeesHarvested,
+	SapHarvested,
+	TurretAmmoAdded,
+	TurretTrophySet,
+	TrapArmed,
+	TrapTriggered,
+	PlaceStacks,
+	PortalDungeonIn,
+	PortalDungeonOut,
+	BossKills,
+	BossLastHits,
+	SetGuardianPower,
+	SetPowerEikthyr,
+	SetPowerElder,
+	SetPowerBonemass,
+	SetPowerModer,
+	SetPowerYagluth,
+	SetPowerQueen,
+	SetPowerAshlands,
+	SetPowerDeepNorth,
+	UseGuardianPower,
+	UsePowerEikthyr,
+	UsePowerElder,
+	UsePowerBonemass,
+	UsePowerModer,
+	UsePowerYagluth,
+	UsePowerQueen,
+	UsePowerAshlands,
+	UsePowerDeepNorth,
+	Count
+}
+```
+</details>
+
+- `HasGuild`
+     - **Usage**: `HasGuild`
+     - **Description**: Checks if the player has a guild.
+     - 
+- `NotHasGuild`
+     - **Usage**: `NotHasGuild`
+     - **Description**: Checks if the player does not have a guild.
+
+- `HasGuildWithName`
+     - **Usage**: `HasGuildWithName, GuildName`
+     - **Description**: Checks if the player has a guild with the specified name.
+
+- `NotHasGuildWithName`
+     - **Usage**: `NotHasGuildWithName, GuildName`
+     - **Description**: Checks if the player does not have a guild with the specified name.
+
+- `GuildLevelMore`
+     - **Usage**: `GuildLevelMore, MinLevel`
+     - **Description**: Checks if the player's guild level is greater than or equal to the minimum level.
+
+- `GuildLevelLess`
+     - **Usage**: `GuildLevelLess, MaxLevel`
+     - **Description**: Checks if the player's guild level is less than maximum level.
+
+- `GuildHasAchievement`
+     - **Usage**: `GuildHasAchievement, AchievementUID`
+     - **Description**: Checks if the player's guild has the specified achievement.
+
+- `GuildNotHasAchievement`
+     - **Usage**: `GuildNotHasAchievement, AchievementUID`
+     - **Description**: Checks if the player's guild does not have the specified achievement.
 
 Please note that you can use these conditions within the player options of your dialogue entries to control the availability and visibility of options based on specific game conditions or player states.
 
@@ -247,6 +402,10 @@ The following commands can be used in the `NpcDialogues.cfg` file:
 - `EnterPassword`: Opens a password input dialog.
     - **Usage**: `EnterPassword, Title, Password, DialogueOpen On Success, DialogueOpen On Failure`
     - **Description**: Opens a password input dialog with the specified title and password. If the player enters the correct password, the specified dialogue will be opened. Otherwise, the specified dialogue will be opened.
+
+- 'GuildAddLevel': Adds a level to the player's guild.
+    - **Usage**: `GuildAddLevel, Value`
+    - **Description**: Adds the specified amount of levels to the player's guild.
 
 Please note that you can use these commands within the player options of your dialogue entries to trigger specific actions or behaviors based on the player's choices.
 

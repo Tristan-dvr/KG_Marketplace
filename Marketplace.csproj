@@ -342,6 +342,7 @@
       <Content Include="GithubReadme\Gambler.md" />
       <Content Include="GithubReadme\InstallationAndConfigs.md" />
       <Content Include="GithubReadme\Localization.md" />
+      <Content Include="GithubReadme\Lootboxes.md" />
       <Content Include="GithubReadme\MainInfo.md" />
       <Content Include="GithubReadme\Marketplace.md" />
       <Content Include="GithubReadme\node use.bat" />
