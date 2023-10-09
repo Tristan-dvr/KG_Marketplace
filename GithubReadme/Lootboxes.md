@@ -61,6 +61,8 @@ sfx_spawn
 
 Also you can use .yml or .yaml files for lootboxes. This is layout:
 
+<details><summary>.yml file template</summary>
+
 ```yaml
 - Name: lootbox1
   Icon: Default
@@ -135,6 +137,8 @@ Also you can use .yml or .yaml files for lootboxes. This is layout:
     Chance: 20
 ```
 
+</details>
+
 <p align="center"><img src="https://imgur.com/bMLxbbj.png" width="350" height="300"></a><img src="https://imgur.com/13t1jox.png" width="350" height="300"></a></p>
 <p align="center"><img src="https://imgur.com/mvuxsHB.png" width="350" height="300"></a><img src="https://imgur.com/dOExsJH.png" width="350" height="300"></a></p>
 
@@ -150,6 +154,8 @@ AllItems Test
 Default
 None
 ```
+
+If you're using .yml file you need to add `Send Webhook: true` to your lootbox.
 
 Result:
 

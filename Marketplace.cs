@@ -18,7 +18,6 @@ namespace Marketplace
         public const string PluginVersion = "9.1.0";
         internal static Marketplace _thistype = null!;
         private static readonly Harmony _harmony = new(GUID);
-        private static FileSystemWatcher FSW = null!; 
         public static Action<float> Global_Updator;
         public static Action<float> Global_FixedUpdator;
         public static Action Global_OnGUI_Updator;
@@ -134,7 +133,7 @@ namespace Marketplace
             FillFolderRoutes();
             try
             {
-                FSW = new FileSystemWatcher(folderPath)
+                FileSystemWatcher cfgWatcher = new FileSystemWatcher(folderPath)
                 {
                     Filter = "*.cfg",
                     EnableRaisingEvents = true,
@@ -142,7 +141,25 @@ namespace Marketplace
                     SynchronizingObject = ThreadingHelper.SynchronizingObject,
                     NotifyFilter = NotifyFilters.LastWrite
                 };
-                FSW.Changed += MarketplaceConfigChanged;
+                cfgWatcher.Changed += MarketplaceConfigChanged;
+                FileSystemWatcher ymlWatcher = new FileSystemWatcher(folderPath)
+                {
+                    Filter = "*.yml",
+                    EnableRaisingEvents = true,
+                    IncludeSubdirectories = true,
+                    SynchronizingObject = ThreadingHelper.SynchronizingObject,
+                    NotifyFilter = NotifyFilters.LastWrite
+                };
+                ymlWatcher.Changed += MarketplaceConfigChanged;
+                FileSystemWatcher yamlWatcher = new FileSystemWatcher(folderPath)
+                {
+                    Filter = "*.yaml",
+                    EnableRaisingEvents = true,
+                    IncludeSubdirectories = true,
+                    SynchronizingObject = ThreadingHelper.SynchronizingObject,
+                    NotifyFilter = NotifyFilters.LastWrite
+                };
+                yamlWatcher.Changed += MarketplaceConfigChanged;
             }
             catch (Exception ex)
             {
