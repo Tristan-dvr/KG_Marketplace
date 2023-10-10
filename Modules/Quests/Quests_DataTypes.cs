@@ -285,7 +285,7 @@ public static class Quests_DataTypes
             }
             
             if (STOP) return false;
-            Condition = Dialogues_DataTypes.Dialogue.ParseConditions(Conditions);
+            Condition = Dialogues_DataTypes.Dialogue.ParseConditions(Conditions, true);
             LocalizedReward = new string[RewardsAmount];
             LocalizedTarget = new string[TargetAmount];
             for (int i = 0; i < RewardsAmount; ++i)

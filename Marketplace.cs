@@ -15,7 +15,7 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        public const string PluginVersion = "9.1.0";
+        public const string PluginVersion = "9.1.2"; 
         internal static Marketplace _thistype = null!;
         private static readonly Harmony _harmony = new(GUID);
         public static Action<float> Global_Updator;

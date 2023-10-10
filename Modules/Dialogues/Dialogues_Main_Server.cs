@@ -133,7 +133,7 @@ public class Dialogues_Main_Server
             IReadOnlyList<string> profiles = File.ReadAllLines(file).ToList();
             ProcessDialogueProfiles(file, profiles);
         }
-        
+       
         Dialogues_DataTypes.SyncedDialoguesData.Update();
     }
 

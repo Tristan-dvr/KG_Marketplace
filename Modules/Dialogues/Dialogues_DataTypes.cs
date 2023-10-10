@@ -103,7 +103,10 @@ public static class Dialogues_DataTypes
     {
         [YamlMember(Alias = "Name")] public string UID;
         [YamlMember(Alias = "Text")] public string Text;
-        [YamlMember(Alias = "Background Image Link")] public string BG_ImageLink;
+
+        [YamlMember(Alias = "Background Image Link")]
+        public string BG_ImageLink;
+
         [YamlMember(Alias = "Options")] public RawPlayerOption[] Options = Array.Empty<RawPlayerOption>();
 
         public class RawPlayerOption
@@ -114,7 +117,7 @@ public static class Dialogues_DataTypes
             public string[] Commands = Array.Empty<string>();
             public string[] Conditions = Array.Empty<string>();
             public bool AlwaysVisible = true;
-            public Color32 Color = new Color32(255,255,255,255);
+            public Color32 Color = new Color32(255, 255, 255, 255);
         }
 
         public void Serialize(ref ZPackage pkg)
@@ -284,7 +287,7 @@ public static class Dialogues_DataTypes
                             case OptionCommand.PlaySound:
                                 result += (npc) =>
                                 {
-                                    if(!npc) return;
+                                    if (!npc) return;
                                     if (AssetStorage.NPC_AudioClips.TryGetValue(split[1],
                                             out AudioClip clip))
                                     {
@@ -470,12 +473,13 @@ public static class Dialogues_DataTypes
         }
 
 
-        public static Dialogue_Condition ParseConditions(IEnumerable<string> conditions)
+        public static Dialogue_Condition ParseConditions(IEnumerable<string> conditions, bool isQuest = false)
         {
             Dialogue_Condition result = null;
             if (conditions == null) return null;
             foreach (string condition in conditions)
             {
+                if (string.IsNullOrWhiteSpace(condition)) continue;
                 try
                 {
                     string[] split = condition.Replace(":", ",").Split(',');
@@ -559,8 +563,9 @@ public static class Dialogues_DataTypes
                                 result += (out string reason, out OptionCondition type) =>
                                 {
                                     type = OptionCondition.GuildHasAchievement;
-                                    reason = $"{Localization.instance.Localize("$mpasn_needguildachievement")}: <color=#00ff00>{split[1]}</color>";
-                                   return Guilds.API.GetOwnGuild() is { } g && g.Achievements.ContainsKey(split[1]);
+                                    reason =
+                                        $"{Localization.instance.Localize("$mpasn_needguildachievement")}: <color=#00ff00>{split[1]}</color>";
+                                    return Guilds.API.GetOwnGuild() is { } g && g.Achievements.ContainsKey(split[1]);
                                 };
                                 break;
                             case OptionCondition.GuildNotHasAchievement:
@@ -569,7 +574,8 @@ public static class Dialogues_DataTypes
                                     type = OptionCondition.GuildNotHasAchievement;
                                     reason =
                                         $"{Localization.instance.Localize("$mpasn_dontneedguildachievement")}: <color=#00ff00>{split[1]}</color>";
-                                    return Guilds.API.GetOwnGuild() is not { } g || !g.Achievements.ContainsKey(split[1]);
+                                    return Guilds.API.GetOwnGuild() is not { } g ||
+                                           !g.Achievements.ContainsKey(split[1]);
                                 };
                                 break;
                             case OptionCondition.IronGateStatMore:
@@ -904,7 +910,8 @@ public static class Dialogues_DataTypes
                 }
                 catch (Exception ex)
                 {
-                    Utils.print($"Error while parsing dialogue condition ({condition}):\n{ex}");
+                    Utils.print(
+                        $"Error while parsing {(isQuest ? "Quest" : "Dialogue")} condition ({condition}):\n{ex}");
                 }
             }
 
