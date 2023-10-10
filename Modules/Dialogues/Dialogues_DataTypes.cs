@@ -90,6 +90,8 @@ public static class Dialogues_DataTypes
         GuildLevelLess = 17 | reverseFlag,
         GuildHasAchievement = 18,
         GuildNotHasAchievement = 18 | reverseFlag,
+        MHLevelMore = 19,
+        MHLevelLess = 19 | reverseFlag,
 
         /* Old quest aliases (backwards compat) */
         OtherQuest = 100,
@@ -501,6 +503,26 @@ public static class Dialogues_DataTypes
                                     reason = "";
                                     type = OptionCondition.None;
                                     return true;
+                                };
+                                break;
+                            case OptionCondition.MHLevelMore:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    type = OptionCondition.MHLevelMore;
+                                    int amount = int.Parse(split[1]);
+                                    int current = MH_API.GetLevel();
+                                    reason = $"{Localization.instance.Localize("$mpasn_needmhlevel")} <color=#00ff00>{amount}</color>. Current: <color=#00ff00>{current}</color>";
+                                    return current >= amount;
+                                };
+                                break;
+                            case OptionCondition.MHLevelLess:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    type = OptionCondition.MHLevelLess;
+                                    int amount = int.Parse(split[1]);
+                                    int current = MH_API.GetLevel();
+                                    reason = $"{Localization.instance.Localize("$mpasn_needmhlevel")} <color=#00ff00>{amount}</color>. Current: <color=#00ff00>{current}</color>";
+                                    return current < amount;
                                 };
                                 break;
                             case OptionCondition.HasGuild:

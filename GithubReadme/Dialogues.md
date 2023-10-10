@@ -150,13 +150,21 @@ The following conditions can be used in the `NpcDialogues.cfg` file:
      - **Usage**: `NotModInstalled, ModName`
      - **Description**: Checks if the specified mod is not installed.
 
-- 'IronGateStatMore'
+- `IronGateStatMore`
      - **Usage**: `IronGateStatMore, Stat, Value`
      - **Description**: Checks if the player's IronGate stat is greater than or equal to the minimum value.
 
-- 'IronGateStatLess'
+- `IronGateStatLess`
      - **Usage**: `IronGateStatLess, Stat, Value`
      - **Description**: Checks if the player's IronGate stat is less than value.
+
+- `MHLevelMore`
+     - **Usage**: `MH_Level_More, MinLevel`
+     - **Description**: Checks if the player's MagicHeim level is greater than or equal to the minimum level.
+
+- `MHLevelLess`
+     - **Usage**: `MH_Level_Less, MaxLevel`
+     - **Description**: Checks if the player's MagicHeim level is less than maximum level.
 
 <details>
 <summary>All IronGateStats</summary>
