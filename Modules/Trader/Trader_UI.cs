@@ -87,9 +87,10 @@ public static class Trader_UI
             UI.transform.Find("Canvas/Background/ToBank/Image/img").GetComponent<Image>().color =
                 ToBank ? Enabled : Disabled;
             ResetBankText();
+            Reload();
         });
         UI.transform.Find("Canvas/Background/FromBank").GetComponent<Button>().onClick.AddListener(() =>
-        {
+        { 
             AssetStorage.AUsrc.Play();
             FromBank = !FromBank;
             UI.transform.Find("Canvas/Background/FromBank/Image/img").GetComponent<Image>().color =
@@ -434,7 +435,7 @@ public static class Trader_UI
     private static void ResetBankText()
     {
         FromBankText.text =
-            $"Send to Bank: {(ToBank ? "<color=green>ON</color>" : "<color=red>OFF</color>")}\nPay from Bank: {(FromBank ? "<color=green>ON</color>" : "<color=red>OFF</color>")}";
+            $"Pay from Bank: {(FromBank ? "<color=green>ON</color>" : "<color=red>OFF</color>")}\nSend to Bank: {(ToBank ? "<color=green>ON</color>" : "<color=red>OFF</color>")}";
     }
 
     public static void Show(string profile, string _npcName)

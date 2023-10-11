@@ -215,7 +215,7 @@ public static class TerritorySystem_Main_Server
                                 break;
                         }
                     }
-                    string Owners = string.IsNullOrEmpty(profiles[i + 4]) ? "None" : profiles[i + 4].Replace(" ", "");
+                    newTerritory.Owners = string.IsNullOrEmpty(profiles[i + 4]) ? "None" : profiles[i + 4].Replace(" ", "");
                     newTerritory.Flags = flags;
                     newTerritory.AdditionalFlags = additionalflags;
                     TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Add(newTerritory);
