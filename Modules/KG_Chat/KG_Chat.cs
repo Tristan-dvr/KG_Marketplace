@@ -294,7 +294,7 @@ public static class KG_Chat
                 origFont = __instance.m_output.font;
                 origFont2 = __instance.m_input.textComponent.font;
             }
-            else
+            else 
             {
                 __instance.m_worldTextBase = origStuff[0];
                 __instance.m_npcTextBase = origStuff[1];
@@ -305,6 +305,7 @@ public static class KG_Chat
                 __instance.m_input.fontAsset = origFont2;
                 __instance.m_input.gameObject.SetActive(false);
                 __instance.m_input.OnInputSubmit.AddListener((_) => __instance.SendInput());
+                if(__instance.m_search) __instance.m_search.font = origFont;
             }
         }
     }
@@ -349,7 +350,7 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class Chat_Patches2
     {
-        [HarmonyTranspiler]
+        [HarmonyTranspiler] 
         [UsedImplicitly]
         private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
         {

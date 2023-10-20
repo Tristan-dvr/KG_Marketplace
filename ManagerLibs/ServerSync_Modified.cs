@@ -364,6 +364,8 @@ public class ConfigSync
 
             byte packageFlags = package.ReadByte();
 
+            Utils.print($"Started processing configs...");
+            
             if ((packageFlags & FRAGMENTED_CONFIG) != 0)
             {
                 long uniqueIdentifier = package.ReadLong();
@@ -455,6 +457,7 @@ public class ConfigSync
         }
         finally
         {
+            Utils.print($"Finished processing configs...");
             ProcessingServerUpdate = false;
         }
     }
