@@ -265,3 +265,6 @@ mpasn_nothinglootbox: Nothing :(
 mpasn_lootboxone: <color=orange>Right click to open and get <b><color=green>one random</color></b> item from list:</color>
 mpasn_lootboxall: <color=orange>Right click to open and get <b><color=green>each</color></b> item from list:</color>
 mpasn_lootboxallwithchance: <color=orange>Right click to open and get <b><color=green>each (with chance)</color></b> item from list:</color>
+mpasn_onlyforvip: Only for <color=#32CD32>VIP</color> users
+mpasn_notforvip: Not for <color=#32CD32>VIP</color> users
+mpasn_Battlepass_EXP: Battlepass EXP

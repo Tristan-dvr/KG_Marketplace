@@ -1212,17 +1212,28 @@ public static class Marketplace_UI
         OnSort();
         if (!Global_Configs.SyncedGlobalOptions.Value._blockedPlayerList.Contains(Global_Configs._localUserID))
         {
-            UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
-                Global_Configs._localUserID +
-                $"\n\t    <size=35>({Localization.instance.Localize("$mpasn_allowed")})</size>";
-            UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().color =
-                new Color(0.8352942f, 0.8196079f, 0.7254902f);
+            if (Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Configs._localUserID))
+            {
+                UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
+                    Global_Configs._localUserID + "\n\t    <size=35>(VIP)</size>";
+                UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().color =
+                    new Color(0, 1, 0);
+            }
+            else
+            {
+                UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
+                    Global_Configs._localUserID +
+                    $"\n\t    <size=35>({Localization.instance.Localize("$mpasn_allowed")})</size>";
+                UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().color =
+                    new Color(0.8352942f, 0.8196079f, 0.7254902f);
+            }
         }
         else
         {
-            UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().text =
-                Global_Configs._localUserID +
-                $"\n\t    <size=35>({Localization.instance.Localize("$mpasn_banned")})</size>";
+            UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/MarketLimit/Text").GetComponent<Text>().text =
+                Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(Global_Configs._localUserID)
+                    ? $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Configs.SyncedGlobalOptions.Value._itemMarketLimit}\n<color=#00ff00>{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Configs.SyncedGlobalOptions.Value._vipmarketTaxes}%</color>"
+                    : $"{Localization.instance.Localize("$mpasn_slotlimit")}\n{Global_Configs.SyncedGlobalOptions.Value._itemMarketLimit}\n{Localization.instance.Localize("$mpasn_taxes")}:\n{Global_Configs.SyncedGlobalOptions.Value._marketTaxes}%";
             UI.transform.Find("Canvas/BACKGROUND/MainButtonsTab/Steam/Text").GetComponent<Text>().color =
                 Color.red;
         }

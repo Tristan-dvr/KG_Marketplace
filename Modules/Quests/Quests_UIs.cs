@@ -271,6 +271,11 @@ private static void Postfix(InventoryGui __instance)
                         tooltip.m_topic = Localization.instance.Localize("$mpasn_GuildAddLevel");
                         tooltip.m_text = $"+{quest.RewardCount[i]}";
                         break;
+                    case Quests_DataTypes.QuestRewardType.Battlepass_EXP:
+                        rewardImage.sprite = AssetStorage.Battlepass_Exp;
+                        tooltip.m_topic = Localization.instance.Localize("$mpasn_Battlepass_EXP");
+                        tooltip.m_text = $"+{quest.RewardCount[i]}";
+                        break;
                 }
             }
 
@@ -385,6 +390,8 @@ private static void Postfix(InventoryGui __instance)
 
                     if (!canTake && Global_Configs.SyncedGlobalOptions.Value._hideOtherQuestRequirementQuests &&
                         type is Dialogues_DataTypes.OptionCondition.QuestFinished) continue;
+                    
+                    if (!canTake && type is Dialogues_DataTypes.OptionCondition.IsVIP) continue;
 
                     if (Quests_DataTypes.Quest.IsOnCooldown(profileID, out int cd) && cd > 5000) continue;
                     GameObject newGo = UnityEngine.Object.Instantiate(QuestGO, MainTransform);

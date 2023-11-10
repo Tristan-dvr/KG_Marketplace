@@ -160,7 +160,8 @@ public static class Quests_Main_Server
                             is Quests_DataTypes.QuestRewardType.EpicMMO_EXP
                             or Quests_DataTypes.QuestRewardType.MH_EXP 
                             or Quests_DataTypes.QuestRewardType.Cozyheim_EXP
-                            or Quests_DataTypes.QuestRewardType.GuildAddLevel)
+                            or Quests_DataTypes.QuestRewardType.GuildAddLevel
+                            or Quests_DataTypes.QuestRewardType.Battlepass_EXP)
                         {
                             RewardPrefabs[r] = "NONE";
                             RewardCounts[r] = int.Parse(RewardSplit[0]);

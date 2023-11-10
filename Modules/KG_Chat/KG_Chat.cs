@@ -25,11 +25,29 @@ public static class KG_Chat
     private static Scrollbar kgChat_Scrollbar = null!;
     private static readonly List<ContentSizeFitter> fitters = new();
 
+    [Flags]
+    public enum ChatFilter
+    {
+        None = 0,
+        Normal = 1,
+        Shout = 2,
+        Whisper = 4,
+        All = Normal | Shout | Whisper
+    }
+
+    public static bool HasFlagFast(this ChatFilter flags, ChatFilter flag) => (flags & flag) != 0;
+
+    private static ConfigEntry<bool> HideFloatingText = null!;
+    private static ConfigEntry<ChatFilter> ChatFilterMode = null!;
+
     [UsedImplicitly]
     private static void OnInit()
     {
         kgchat_Fontsize = Marketplace._thistype.Config.Bind("KG Chat", "Font Size", 18, "KG Chat Font Size");
         useTypeSound = Marketplace._thistype.Config.Bind("KG Chat", "Use Type Sound", false, "Use KG Chat Type Sound");
+        HideFloatingText =
+            Marketplace._thistype.Config.Bind("KG Chat", "Hide Floating Text", true, "Hide Floating Text");
+        ChatFilterMode = Marketplace._thistype.Config.Bind("KG Chat", "Chat Filter", ChatFilter.All, "Chat Filter");
         kgchat_Transparency = Marketplace._thistype.Config.Bind("KG Chat", "Transparency",
             ChatController.Transparency.Two, "KG Chat Transparency");
         original_KG_Chat = AssetStorage.asset.LoadAsset<GameObject>("Marketplace_KGChat");
@@ -38,7 +56,8 @@ public static class KG_Chat
 
         string spritesheetPath_Original =
             Path.Combine(BepInEx.Paths.ConfigPath, "Marketplace_KGChat_Emojis", "spritesheet_original.png");
-        string spritesheetPath_New = Path.Combine(BepInEx.Paths.ConfigPath, "Marketplace_KGChat_Emojis", "spritesheet.png");
+        string spritesheetPath_New =
+            Path.Combine(BepInEx.Paths.ConfigPath, "Marketplace_KGChat_Emojis", "spritesheet.png");
         if (!Directory.Exists(Path.GetDirectoryName(spritesheetPath_Original)))
             Directory.CreateDirectory(Path.GetDirectoryName(spritesheetPath_Original)!);
 
@@ -60,6 +79,7 @@ public static class KG_Chat
                 ugui.spriteAsset.material.SetTexture(ShaderUtilities.ID_MainTex, tex);
             }
         }
+
         Marketplace.Global_FixedUpdator += KGChat_Update;
     }
 
@@ -244,7 +264,7 @@ public static class KG_Chat
 
         Chat.instance.m_input.characterLimit = 128;
     }
-    
+
     private static void KGChat_Update(float dt)
     {
         if (!kgChat || !Chat.instance.m_input.IsActive()) return;
@@ -294,7 +314,7 @@ public static class KG_Chat
                 origFont = __instance.m_output.font;
                 origFont2 = __instance.m_input.textComponent.font;
             }
-            else 
+            else
             {
                 __instance.m_worldTextBase = origStuff[0];
                 __instance.m_npcTextBase = origStuff[1];
@@ -305,7 +325,6 @@ public static class KG_Chat
                 __instance.m_input.fontAsset = origFont2;
                 __instance.m_input.gameObject.SetActive(false);
                 __instance.m_input.OnInputSubmit.AddListener((_) => __instance.SendInput());
-                if(__instance.m_search) __instance.m_search.font = origFont;
             }
         }
     }
@@ -350,7 +369,7 @@ public static class KG_Chat
     [ClientOnlyPatch]
     private static class Chat_Patches2
     {
-        [HarmonyTranspiler] 
+        [HarmonyTranspiler]
         [UsedImplicitly]
         private static IEnumerable<CodeInstruction> Code(IEnumerable<CodeInstruction> instructions)
         {
@@ -569,8 +588,12 @@ public static class KG_Chat
             };
         }
 
-        [UsedImplicitly] private static void Postfix() => ResetScroll();
-        [UsedImplicitly] private static bool Prefix() => !Global_Configs.SyncedGlobalOptions.Value._blockedChatUsers.Contains(Global_Configs._localUserID);
+        [UsedImplicitly]
+        private static void Postfix() => ResetScroll();
+
+        [UsedImplicitly]
+        private static bool Prefix() =>
+            !Global_Configs.SyncedGlobalOptions.Value._blockedChatUsers.Contains(Global_Configs._localUserID);
 
         [HarmonyTranspiler]
         [UsedImplicitly]
@@ -637,12 +660,33 @@ public static class KG_Chat
     private static class Chat_AddInworldText_Patch
     {
         [UsedImplicitly]
-        private static void Prefix(ref string text)
+        private static bool Prefix(ref string text)
         {
-            if (!kgChat) return;
+            if (!kgChat) return true;
+            if (kgChat && HideFloatingText.Value) return false;
             text = Regex.Replace(text, @"<sprite=\d+>", "");
+            return true;
         }
     }
+
+    [HarmonyPatch(typeof(Chat), nameof(Chat.OnNewChatMessage))]
+    [ClientOnlyPatch]
+    private static class Chat_OnNewChatMessage_Patch
+    {
+        [UsedImplicitly]
+        private static bool Prefix(Chat __instance, Talker.Type type)
+        {
+            if (!kgChat) return true;
+            switch (type)
+            {
+                case Talker.Type.Normal when !ChatFilterMode.Value.HasFlagFast(ChatFilter.Normal):
+                case Talker.Type.Shout when !ChatFilterMode.Value.HasFlagFast(ChatFilter.Shout):
+                case Talker.Type.Whisper when !ChatFilterMode.Value.HasFlagFast(ChatFilter.Whisper):
+                    return false;
+            }
+            return true;
+        }
+    } 
 
     [HarmonyPatch(typeof(Chat), nameof(Chat.isAllowedCommand))]
     [ClientOnlyPatch]
@@ -650,5 +694,24 @@ public static class KG_Chat
     {
         [UsedImplicitly]
         private static void Postfix(ref bool __result) => __result |= (kgChat && Utils.IsDebug_Strict);
+    }
+    
+    [HarmonyPatch(typeof(Terminal),nameof(Terminal.InitTerminal))]
+    private static class Terminal_InitTerminal_Patch
+    {
+        [UsedImplicitly]
+        private static void Postfix(Terminal __instance)
+        {
+            new Terminal.ConsoleCommand("chatfilter", "Add / Remove chat filter", (args) =>
+            {
+                string argument = args.Args[1];
+                if (!Enum.TryParse(argument, true, out ChatFilter filter))
+                    return;
+                ChatFilterMode.Value ^= filter;
+                Marketplace._thistype.Config.Save();
+                Chat.instance.m_hideTimer = 0f;
+                args.Context.AddString($"<color=green>Chat Filter: {ChatFilterMode.Value}</color>");
+            });
+        }
     }
 }

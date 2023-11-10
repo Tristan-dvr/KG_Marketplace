@@ -19,6 +19,7 @@ public static class AssetStorage
     public static Sprite NPC_MapControl = null!;
     public static Sprite EpicMMO_Exp = null!;
     public static Sprite Cozyheim_Exp = null!;
+    public static Sprite Battlepass_Exp = null!;
     public static Sprite MH_Exp_Icon = null!;
     public static Sprite NullSprite = null!;
     public static Sprite CustomValue_Icon = null!;
@@ -52,6 +53,7 @@ public static class AssetStorage
         PlaceholderMonsterIcon = asset.LoadAsset<Sprite>("placeholdermonster_icon");
         PortalIconDefault = asset.LoadAsset<Sprite>("default_portal_icon");
         NPC_MapControl = asset.LoadAsset<Sprite>("NPC_MapControl");
+        Battlepass_Exp = asset.LoadAsset<Sprite>("battlepass_icon");
 
         GlobalCachedSprites["teleporter_default"] = PortalIconDefault;
 

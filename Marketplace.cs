@@ -15,7 +15,7 @@ namespace Marketplace
     {
         private const string GUID = "MarketplaceAndServerNPCs";
         private const string PluginName = "MarketplaceAndServerNPCs";
-        public const string PluginVersion = "9.1.4";
+        public const string PluginVersion = "9.1.5";
         internal static Marketplace _thistype = null!;
         private static readonly Harmony _harmony = new(GUID);
         public static Action<float> Global_Updator;
@@ -178,12 +178,12 @@ namespace Marketplace
             FoldersToFiles.Add(Market_Paths.BankerProfilesFolder, "BA");
             FoldersToFiles.Add(Market_Paths.TeleportHubProfilesFolder,"TE");
             FoldersToFiles.Add(Market_Paths.TraderProfilesFolder, "TR");
-            FoldersToFiles.Add(Market_Paths.TransmogrificationFolder, "TM");
+            FoldersToFiles.Add(Market_Paths.TransmogrificationFolder, "TM");  
             FoldersToFiles.Add(Market_Paths.BufferDatabaseFolder, "BD");
-            FoldersToFiles.Add(Market_Paths.BufferProfilesFolder, "BP");
+            FoldersToFiles.Add(Market_Paths.BufferProfilesFolder, "BP"); 
             FoldersToFiles.Add(Market_Paths.ServerInfoProfilesFolder, "SI");
             FoldersToFiles.Add(Market_Paths.GamblerProfilesFolder, "GP");
-            FoldersToFiles.Add(Market_Paths.LeaderboardAchievementsFolder, "LA");
+            FoldersToFiles.Add(Market_Paths.LeaderboardAchievementsFolder, "LA"); 
             FoldersToFiles.Add(Market_Paths.LootboxesFolder, "LB");
         }
 

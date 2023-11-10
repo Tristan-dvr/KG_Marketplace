@@ -1,8 +1,10 @@
-﻿using System.IO.Compression;
+﻿using System.Diagnostics;
+using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using BepInEx.Configuration;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
+using Debug = UnityEngine.Debug;
 
 namespace Marketplace;
 
@@ -338,6 +340,7 @@ public class ConfigSync
 
     private void RPC_ConfigSync(long sender, ZPackage package)
     {
+        Stopwatch watch = new Stopwatch();
         try
         {
             if (isServer && IsLocked)
@@ -365,6 +368,7 @@ public class ConfigSync
             byte packageFlags = package.ReadByte();
 
             Utils.print($"Started processing configs...");
+            watch.Start();
             
             if ((packageFlags & FRAGMENTED_CONFIG) != 0)
             {
@@ -457,7 +461,9 @@ public class ConfigSync
         }
         finally
         {
-            Utils.print($"Finished processing configs...");
+            watch.Stop();
+            Utils.print($"Config processing took {watch.ElapsedMilliseconds}ms");
+            
             ProcessingServerUpdate = false;
         }
     }

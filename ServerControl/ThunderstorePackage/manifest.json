@@ -1,7 +1,7 @@
 {
     "name": "Server_Control",
-    "version_number": "1.1.0",
-    "website_url": "https://kg-dev.xyz/servercontrol/",
+    "version_number": "1.1.2",
+    "website_url": "https://kg.sayless.eu/servercontrol/",
     "description": "RCON-alike mod that allows you to control your server from Web without need of opening port",
     "dependencies": [
        "denikson-BepInExPack_Valheim-5.4.2105"

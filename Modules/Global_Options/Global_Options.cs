@@ -64,6 +64,8 @@ public static class Global_Configs
         public string _pieceSaverRecipe = "";
         public bool _useLeaderboard;
         public bool _rebuildHeightmap;
+        public string _vipPlayerList = "";
+        public int _vipmarketTaxes;
         public HashSet<string> _overrideDebug = new();
         public HashSet<string> _blockedChatUsers = new();
 
@@ -92,6 +94,8 @@ public static class Global_Configs
             foreach (string s in _overrideDebug) pkg.Write(s);
             pkg.Write(_blockedChatUsers.Count);
             foreach (string s in _blockedChatUsers) pkg.Write(s);
+            pkg.Write(_vipmarketTaxes);
+            pkg.Write(_vipPlayerList);
         }
 
         public void Deserialize(ref ZPackage pkg)
@@ -120,6 +124,8 @@ public static class Global_Configs
             _blockedChatUsers.Clear();
             count = pkg.ReadInt();
             for (int i = 0; i < count; ++i) _blockedChatUsers.Add(pkg.ReadString());
+            _vipmarketTaxes = pkg.ReadInt();
+            _vipPlayerList = pkg.ReadString();
         }
     }
 
@@ -131,6 +137,7 @@ public static class Global_Configs
     public static bool EnableTraderLog;
     public static bool EnableTransmogLog;
     public static string BankerInterestItems = "All";
+    public static float BankerVIPIncomeMultiplier;
 
 
     private static ConfigFile _config = null!;
@@ -163,6 +170,7 @@ public static class Global_Configs
         BankerIncomeMultiplier = SearchOption("BankerIncomeMultiplier", 0f, "Banker Income Multiplier (per time)");
         WebHookLink = SearchOption("FeedbackWebhookLink", "webhook link", "Feedback Webhook Link");
         BankerInterestItems = SearchOption("BankerInterestItems", "All", "Banker Interest Items").Replace(" ","");
+        BankerVIPIncomeMultiplier = SearchOption("BankerVIPIncomeMultiplier", 0f, "VIP Banker Income Multiplier");
 
         SyncedGlobalOptions.Value._itemMarketLimit =
             SearchOption("ItemMarketLimit", 15, "Limit amount of slots player can sell in marketpalce");
@@ -195,6 +203,10 @@ public static class Global_Configs
             .Split(new []{','}, StringSplitOptions.RemoveEmptyEntries).Where(s => long.TryParse(s, out _)).Select(s => s.Trim()).ToList());
         SyncedGlobalOptions.Value._blockedChatUsers = new(SearchOption("BlockedChatUsers", "Steam IDs here", "Blocked Chat Users")
             .Split(new []{','}, StringSplitOptions.RemoveEmptyEntries).Where(s => long.TryParse(s, out _)).Select(s => s.Trim()).ToList());
+        SyncedGlobalOptions.Value._vipmarketTaxes = SearchOption("VIPplayersTaxes", 0, "VIP Player Market Taxes");
+        SyncedGlobalOptions.Value._vipmarketTaxes = Mathf.Clamp(SyncedGlobalOptions.Value._vipmarketTaxes, 0, 100);
+        SyncedGlobalOptions.Value._vipPlayerList = SearchOption("VIPplayersList", "User IDs", "Marketplace VIP Players List ");
+        
         SyncedGlobalOptions.Update();
     }
 

@@ -75,16 +75,16 @@ public static class Lootboxes_Main_Client
         }
 
         Terminal.commands["spawn"].m_tabOptions = null;
-    }
+    } 
 
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.GetPrefabNames))]
     [ClientOnlyPatch]
-    private static class ZNetScene_GetPrefabNames_Patch
+    private static class ZNetScene_GetPrefabNames_Patch 
     {
         [UsedImplicitly]
         private static void Postfix(ref List<string> __result)
         {
-            foreach (Lootboxes_DataTypes.Lootbox lootbox in Lootboxes_DataTypes.SyncedLootboxData.Value)
+            foreach (Lootboxes_DataTypes.Lootbox lootbox in Lootboxes_DataTypes.SyncedLootboxData.Value) 
             {
                 if (!__result.Contains(lootbox.UID))
                     __result.Add(lootbox.UID);
@@ -120,7 +120,7 @@ public static class Lootboxes_Main_Client
         private static void Postfix(ItemDrop.ItemData __instance, ref Sprite __result)
         {
             if (__instance.Data().Get<Lootboxes_Logic.Lootbox_IDM>() is { } idm)
-                __result = Utils.TryFindIcon(idm.GetIcon(), Lootbox_DefaultIcon);
+                __result = idm.GetIcon() == LootBox_Base.name ? Lootbox_DefaultIcon : Utils.TryFindIcon(idm.GetIcon(), Lootbox_DefaultIcon);
         }
     }
 

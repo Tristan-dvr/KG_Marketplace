@@ -134,7 +134,7 @@ public static class Gambler_UI
         SOUNDEFFECT2 = AssetStorage.asset.LoadAsset<AudioClip>("BURSTGAMBLE");
         SOUNDEFFECT3 = AssetStorage.asset.LoadAsset<AudioClip>("GAMBLERDONE");
         QuestionMarkIcon = AssetStorage.asset.LoadAsset<Sprite>("qCS 2");
-        CurrentStatus = Status.Idle;
+        CurrentStatus = Status.Idle; 
         Shuffling[0] = false;
         Shuffling[1] = false;
         ALLELEMENTS.Clear();

@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Emit;
 using System.Threading.Tasks;
+using BepInEx.Configuration;
 using Guilds;
 using Marketplace.Modules.Global_Options;
 using Marketplace.Modules.Teleporter;
@@ -26,8 +27,14 @@ public static class TerritorySystem_Main_Client
     private static float ZoneTick;
     private static DateTime LastNoAccessMesssage;
 
+    private static ConfigEntry<bool> UseMapDraw;
+    public static ConfigEntry<bool> AlwaysShowZoneVisualizer;
+
+    [UsedImplicitly]
     private static void OnInit()
     {
+        UseMapDraw = Marketplace._thistype.Config.Bind("Territories", "Use Map Draw", true);
+        AlwaysShowZoneVisualizer = Marketplace._thistype.Config.Bind("Territories", "Always Show Zone Visualizer", false);
         foreach (TerritorySystem_DataTypes.TerritoryFlags flag in TerritorySystem_DataTypes.AllTerritoryFlagsArray)
         {
             TerritoriesByFlags[flag] = new List<TerritorySystem_DataTypes.Territory>();
@@ -40,14 +47,13 @@ public static class TerritorySystem_Main_Client
         }
 
         TerritorySystem_DataTypes.SyncedTerritoriesData.ValueChanged += OnTerritoryUpdate;
-        Marketplace.Global_FixedUpdator += TerritoryFixedUpdate; 
+        Marketplace.Global_FixedUpdator += TerritoryFixedUpdate;
         Marketplace.Global_FixedUpdator += HeightmapRebuild;
-        
-        Guilds.API.RegisterOnGuildJoined(guildsAPI_CacheClear); 
+
+        Guilds.API.RegisterOnGuildJoined(guildsAPI_CacheClear);
         Guilds.API.RegisterOnGuildLeft(guildsAPI_CacheClear);
-        
     }
-    
+
     static void guildsAPI_CacheClear(Guilds.Guild guild, Guilds.PlayerReference playerReference)
     {
         TerritorySystem_DataTypes.SyncedTerritoriesData.Value.ForEach(t => t.ClearOwnerCache());
@@ -265,7 +271,7 @@ public static class TerritorySystem_Main_Client
                     ? Input.mousePosition
                     : new Vector3(Screen.width / 2, Screen.height / 2));
                 bool found = false;
-                foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes 
+                foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes
                              .SyncedTerritoriesData
                              .Value)
                 {
@@ -308,7 +314,8 @@ public static class TerritorySystem_Main_Client
         {
             if ((DateTime.Now - LastTimeTerritoryMessage).TotalSeconds <= 5) return;
             LastTimeTerritoryMessage = DateTime.Now;
-            GameObject Prefab = UnityEngine.Object.Instantiate(MessageHud.instance.m_biomeFoundPrefab, MessageHud.instance.transform);
+            GameObject Prefab = UnityEngine.Object.Instantiate(MessageHud.instance.m_biomeFoundPrefab,
+                MessageHud.instance.transform);
             RectTransform Rect = Prefab.GetComponent<RectTransform>();
             Rect.anchorMin = new Vector2(0.5f, 1f);
             Rect.anchorMax = new Vector2(0.5f, 1f);
@@ -357,6 +364,7 @@ public static class TerritorySystem_Main_Client
 
     private static async void DoMapMagic()
     {
+        if (!UseMapDraw.Value) return;
         if (originalMapColors == null || TerritorySystem_DataTypes.SyncedTerritoriesData.Value == null ||
             TerritorySystem_DataTypes.SyncedTerritoriesData.Value.Count == 0) return;
         MapMagicCounter++;
@@ -813,8 +821,9 @@ public static class TerritorySystem_Main_Client
         {
             if (__instance == Player.m_localPlayer && CurrentTerritory != null)
                 if (CurrentTerritory.AdditionalFlags.HasFlagFast(TerritorySystem_DataTypes.AdditionalTerritoryFlags
-                        .GodMode)) return false;
-            
+                        .GodMode))
+                    return false;
+
             return true;
         }
     }

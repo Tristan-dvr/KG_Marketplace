@@ -19,7 +19,7 @@ public static class ZoneVisualizer
 
     public static void OnMapChange()
     {
-        if (Visualizers.Count > 0)
+        if (Visualizers.Count > 0 || TerritorySystem_Main_Client.AlwaysShowZoneVisualizer.Value)
         {
             On();
         }

@@ -72,7 +72,8 @@ public static class Quests_DataTypes
         Cozyheim_EXP,
         SetCustomValue,
         AddCustomValue,
-        GuildAddLevel
+        GuildAddLevel,
+        Battlepass_EXP
     }
 
 
@@ -515,6 +516,18 @@ public static class Quests_DataTypes
                         g.General.level += quest.RewardCount[i];
                         Guilds.API.SaveGuild(g);
                     }
+                    continue;
+                }
+
+                if (quest.RewardType[i] is QuestRewardType.Battlepass_EXP)
+                {
+                    const string key = "[kg.BP]bp";
+                    if(!Player.m_localPlayer.m_customData.TryGetValue(key, out var bp_data)) return;
+                    string[] bpSplit = bp_data.Split('|');
+                    int exp = Convert.ToInt32(bpSplit[1]);
+                    exp += quest.RewardCount[i];
+                    bpSplit[1] = exp.ToString();
+                    Player.m_localPlayer.m_customData[key] = $"{bpSplit[0]}|{bpSplit[1]}|{bpSplit[2]}|{bpSplit[3]}";
                     continue;
                 }
 
@@ -965,7 +978,7 @@ public static class Quests_DataTypes
         IEnumerable<QuestEvent> search = events.Where(x => x.cond == type);
         if (!search.Any()) return;
         foreach (QuestEvent quest in search)
-        {
+        { 
             QuestEventAction action = quest.action;
             string[] split = quest.args.Split(',');
             try

@@ -1,7 +1,7 @@
 ## RCON-alike mod that allows you to control your server from Web without need of opening port.
 
 
-### Control Site (instruction left top corner): https://kg-dev.xyz/servercontrol/
+### Control Site (instruction left top corner): https://kg.sayless.eu/servercontrol/
 
 
 <details><summary>Screenshots</summary>

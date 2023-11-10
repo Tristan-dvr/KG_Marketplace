@@ -6,6 +6,7 @@ namespace Marketplace.Modules.Trader;
 [Market_Autoload(Market_Autoload.Type.Client, Market_Autoload.Priority.Normal)]
 public static class Trader_Main_Client
 {
+    [UsedImplicitly]
     private static void OnInit()
     {
         Trader_UI.Init();

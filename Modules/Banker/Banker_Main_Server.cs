@@ -86,7 +86,9 @@ public static class Banker_Main_Server
                     new(Global_Configs.BankerInterestItems.Split(',').Select(i => i.GetStableHashCode()));
                 foreach (string id in BankerServerSideData.Keys)
                 {
-                    float multiplier = Global_Configs.BankerIncomeMultiplier;
+                    float multiplier = Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(id)
+                        ? Global_Configs.BankerVIPIncomeMultiplier
+                        : Global_Configs.BankerIncomeMultiplier;
                     if (multiplier > 0)
                     {
                         foreach (int item in new List<int>(BankerServerSideData[id].Keys))

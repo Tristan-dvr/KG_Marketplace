@@ -13,29 +13,28 @@ using HarmonyLib;
 using UnityEngine;
 
 namespace kg.ServerControl
-{
-    [BepInPlugin(GUID, GUID, VERSION)]
-    public class ServerControl : BaseUnityPlugin
+{ 
+    [BepInPlugin(GUID, GUID, VERSION)] 
+    public class ServerControl : BaseUnityPlugin 
     {
         private const string GUID = "kg.ServerControl_WEB";
-        private const string VERSION = "1.1.0";
-        private const string POST_REQUEST = "https://kg-dev.xyz/API/RCON.php";
+        private const string VERSION = "1.1.1";
+        private const string POST_REQUEST = "https://kg.sayless.eu/API/RCON.php";
         private readonly ConcurrentQueue<ToInvoke> _queue = new ConcurrentQueue<ToInvoke>();
         private ConfigEntry<string> IDENTIFIER;
         private ConfigEntry<int> SECONDS_BETWEEN_REQUESTS;
         private FileSystemWatcher FSW;
 
-        private enum Result : byte
+        private enum Result : byte 
         {
             Pending = 0,
             Sent = 1,
-            Success = 2,
+            Success = 2, 
             Failed = 3,
             Timeout = 4
         }
-
-        [Serializable]
-        [StructLayout(LayoutKind.Sequential)]
+        
+        [StructLayout(LayoutKind.Sequential)] 
         private struct ToInvoke
         {
             public long ID;
@@ -47,8 +46,7 @@ namespace kg.ServerControl
                 return $"UID: {ID}, Action: {Command}, Args: {Arguments}";
             }
         }
-
-        [Serializable]
+        
         [StructLayout(LayoutKind.Sequential)]
         private struct Response
         {
@@ -164,8 +162,7 @@ namespace kg.ServerControl
                 Task.Run(async () =>
                 {
                     HttpClient client = new HttpClient();
-                    HttpResponseMessage response =
-                        await client.GetAsync(POST_REQUEST + "?id=" + IDENTIFIER.Value + "&type=valheim");
+                    HttpResponseMessage response = await client.GetAsync(POST_REQUEST + "?id=" + IDENTIFIER.Value + "&type=valheim");
                     string responseString = await response.Content.ReadAsStringAsync();
                     try
                     {
@@ -173,7 +170,7 @@ namespace kg.ServerControl
                     }
                     catch (Exception ex)
                     {
-                        //print($"Error while parsing response: {ex}", ConsoleColor.Red);
+                        print($"Error while parsing response: {ex}", ConsoleColor.Red);
                     }
                 });
             }

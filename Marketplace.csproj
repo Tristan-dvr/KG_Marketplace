@@ -9,7 +9,7 @@
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>Marketplace</RootNamespace>
         <AssemblyName>kg.Marketplace</AssemblyName>
-        <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <LangVersion>preview</LangVersion>
         <Nullable>disable</Nullable>
@@ -24,7 +24,6 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <DocumentationFile></DocumentationFile>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
@@ -161,9 +160,6 @@
         <Reference Include="UnityEngine">
           <HintPath>Libs\UnityEngine.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.AIModule">
-          <HintPath>Libs\UnityEngine.AIModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.AnimationModule">
           <HintPath>Libs\UnityEngine.AnimationModule.dll</HintPath>
         </Reference>
@@ -191,35 +187,20 @@
         <Reference Include="UnityEngine.ParticleSystemModule">
           <HintPath>Libs\UnityEngine.ParticleSystemModule.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.Physics2DModule">
-          <HintPath>Libs\UnityEngine.Physics2DModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.PhysicsModule">
           <HintPath>Libs\UnityEngine.PhysicsModule.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.ScreenCaptureModule">
-          <HintPath>Libs\UnityEngine.ScreenCaptureModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.SharedInternalsModule">
-          <HintPath>Libs\UnityEngine.SharedInternalsModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.SpriteShapeModule">
-          <HintPath>Libs\UnityEngine.SpriteShapeModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.TextCoreModule">
-          <HintPath>Libs\UnityEngine.TextCoreModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.TextRenderingModule">
           <HintPath>Libs\UnityEngine.TextRenderingModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.TilemapModule">
-          <HintPath>Libs\UnityEngine.TilemapModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.UI">
           <HintPath>Libs\UnityEngine.UI.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.UIModule">
           <HintPath>Libs\UnityEngine.UIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+          <HintPath>Libs\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestAudioModule">
           <HintPath>Libs\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
@@ -229,6 +210,9 @@
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestTextureModule">
           <HintPath>Libs\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+          <HintPath>Libs\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
         </Reference>
         <Reference Include="WindowsBase" />
         <Reference Include="YamlDotNet, Version=13.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">

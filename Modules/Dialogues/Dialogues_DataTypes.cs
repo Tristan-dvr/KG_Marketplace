@@ -30,6 +30,7 @@ public static class Dialogues_DataTypes
         GiveItem,
         RemoveItem,
         Spawn,
+        SpawnRaw,
         SpawnXYZ,
         Teleport,
         Damage,
@@ -43,7 +44,8 @@ public static class Dialogues_DataTypes
         AddCustomValue,
         SetCustomValue,
         EnterPassword,
-        GuildAddLevel
+        GuildAddLevel,
+        Battlepass_EXP,
     }
 
     private const byte reverseFlag = 1 << 7;
@@ -92,6 +94,8 @@ public static class Dialogues_DataTypes
         GuildNotHasAchievement = 18 | reverseFlag,
         MHLevelMore = 19,
         MHLevelLess = 19 | reverseFlag,
+        IsVIP = 20,
+        NotIsVIP = 20 | reverseFlag,
 
         /* Old quest aliases (backwards compat) */
         OtherQuest = 100,
@@ -308,6 +312,18 @@ public static class Dialogues_DataTypes
                                     Quests_UIs.AcceptedQuestsUI.CheckQuests();
                                 };
                                 break;
+                            case OptionCommand.Battlepass_EXP:
+                                result += (_) =>
+                                {
+                                    const string key = "[kg.BP]bp";
+                                    if(!Player.m_localPlayer.m_customData.TryGetValue(key, out var bp_data)) return;
+                                    string[] bpSplit = bp_data.Split('|');
+                                    int exp = Convert.ToInt32(bpSplit[1]);
+                                    exp += int.Parse(split[1]);
+                                    bpSplit[1] = exp.ToString();
+                                    Player.m_localPlayer.m_customData[key] = $"{bpSplit[0]}|{bpSplit[1]}|{bpSplit[2]}|{bpSplit[3]}";
+                                };
+                                break;
                             case OptionCommand.GiveItem:
                                 result += (_) =>
                                 {
@@ -334,13 +350,31 @@ public static class Dialogues_DataTypes
                                     for (int i = 0; i < spawnAmount; ++i)
                                     {
                                         float randomX = Random.Range(-15, 15);
-                                        float randomZ = Random.Range(-15, 15);
+                                        float randomZ = Random.Range(-15, 15); 
                                         Vector3 randomPos = new Vector3(spawnPos.x + randomX, spawnPos.y,
                                             spawnPos.z + randomZ);
                                         Utils.CustomFindFloor(randomPos, out randomPos.y, 3f);
                                         GameObject newSpawn =
                                             UnityEngine.Object.Instantiate(spawn, randomPos, Quaternion.identity);
                                         newSpawn.GetComponent<Character>().SetLevel(spawnLevel);
+                                    }
+                                };
+                                break;
+                            case OptionCommand.SpawnRaw:
+                                result += (_) =>
+                                {
+                                    string spawnPrefab = split[1];
+                                    GameObject spawn = ZNetScene.instance.GetPrefab(spawnPrefab);
+                                    if (!spawn) return;
+                                    int spawnAmount = int.Parse(split[2]);
+                                    Vector3 spawnPoint = new Vector3(int.Parse(split[3]), int.Parse(split[4]), int.Parse(split[5]));
+                                    int maxDistance = int.Parse(split[6]);
+                                    for (int i = 0; i < spawnAmount; ++i)
+                                    {
+                                        float randomX = Random.Range(-maxDistance, maxDistance);
+                                        float randomZ = Random.Range(-maxDistance, maxDistance);
+                                        Vector3 randomPos = new Vector3(spawnPoint.x + randomX, spawnPoint.y, spawnPoint.z + randomZ);
+                                        GameObject newSpawn = UnityEngine.Object.Instantiate(spawn, randomPos, Quaternion.identity);
                                     }
                                 };
                                 break;
@@ -503,6 +537,26 @@ public static class Dialogues_DataTypes
                                     reason = "";
                                     type = OptionCondition.None;
                                     return true;
+                                };
+                                break;
+                            case OptionCondition.IsVIP:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    type = OptionCondition.IsVIP;
+                                    reason = $"{Localization.instance.Localize("$mpasn_onlyforvip")}";
+                                    return Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(
+                                        Global_Configs
+                                            ._localUserID);
+                                };
+                                break;
+                            case OptionCondition.NotIsVIP:
+                                result += (out string reason, out OptionCondition type) =>
+                                {
+                                    type = OptionCondition.NotIsVIP;
+                                    reason = $"{Localization.instance.Localize("$mpasn_notforvip")}";
+                                    return !Global_Configs.SyncedGlobalOptions.Value._vipPlayerList.Contains(
+                                        Global_Configs
+                                            ._localUserID);
                                 };
                                 break;
                             case OptionCondition.MHLevelMore:

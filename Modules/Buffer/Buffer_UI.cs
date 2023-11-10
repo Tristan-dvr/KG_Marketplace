@@ -212,7 +212,7 @@ private static void Postfix(ZNetScene __instance)
     private static class BufferUIFix
     {
         [UsedImplicitly]
-private static void Postfix(ref bool __result)
+        private static void Postfix(ref bool __result)
         {
             if (IsVisible()) __result = true;
         }

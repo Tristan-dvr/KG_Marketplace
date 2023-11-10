@@ -39,7 +39,11 @@ public static class GameEvents
     private static class Player_OnDeath_Patch
     {
         [UsedImplicitly]
-        private static void Prefix() => OnPlayerDeath?.Invoke();
+        private static void Prefix(Player __instance)
+        {
+            if (Player.m_localPlayer != __instance) return;
+            OnPlayerDeath?.Invoke();
+        }
     }
     
     [HarmonyPatch(typeof(Character),nameof(Character.ApplyDamage))]

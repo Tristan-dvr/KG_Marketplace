@@ -22,10 +22,10 @@ public static class ChatCommands
                 AssetStorage.ReloadSounds();
                 args.Context.AddString("Reloading sounds...");
             });
-            
+             
             new Terminal.ConsoleCommand("mreloadimages", "Reloads all sounds", (args) =>
             {
-                AssetStorage.ReloadImages();
+                AssetStorage.ReloadImages(); 
                 args.Context.AddString("Reloading images...");
             });
             

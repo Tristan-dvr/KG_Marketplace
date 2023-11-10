@@ -68,12 +68,10 @@ public static class FixPossibleErrors
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> code)
         {
             CodeMatcher matcher = new CodeMatcher(code);
-            MethodInfo target = AccessTools.Method(typeof(ZInput), nameof(ZInput.GetAxis), new[] { typeof(string) });
-            matcher.MatchForward(false, new CodeMatch(OpCodes.Ldstr, "Mouse ScrollWheel"),
-                new CodeMatch(OpCodes.Call, target), new CodeMatch(OpCodes.Stloc_2));
-            if (matcher.IsInvalid)
-                return code;
-            matcher.Advance(3);
+            MethodInfo target = AccessTools.Method(typeof(ZInput), nameof(ZInput.GetMouseScrollWheel));
+            matcher.MatchForward(false, new CodeMatch(OpCodes.Call, target), new CodeMatch(OpCodes.Stloc_2));
+            if (matcher.IsInvalid) return code;
+            matcher.Advance(2);
             matcher.Insert(new CodeInstruction(OpCodes.Ldloca_S, 2),
                 new CodeInstruction(OpCodes.Call,
                     AccessTools.Method(typeof(GameCamera_UpdateCamera_Patch), nameof(Nullify))));
