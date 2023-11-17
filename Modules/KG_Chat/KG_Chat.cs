@@ -660,10 +660,10 @@ public static class KG_Chat
     private static class Chat_AddInworldText_Patch
     {
         [UsedImplicitly]
-        private static bool Prefix(ref string text)
+        private static bool Prefix(ref string text,  Talker.Type type)
         {
             if (!kgChat) return true;
-            if (kgChat && HideFloatingText.Value) return false;
+            if (kgChat && HideFloatingText.Value && type is not Talker.Type.Ping) return false;
             text = Regex.Replace(text, @"<sprite=\d+>", "");
             return true;
         }

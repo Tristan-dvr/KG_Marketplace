@@ -373,7 +373,7 @@ public static class TerritorySystem_Main_Client
         {
             Color[] mapColors = new Color[originalMapColors.Length];
             Color[] heightColors = new Color[originalHeightColors.Length];
-            int segments = Environment.ProcessorCount;
+            int segments = Environment.ProcessorCount; 
             await Task.Run(() =>
             {
                 Array.Copy(originalMapColors, mapColors, originalMapColors.Length);

@@ -329,6 +329,7 @@ public static class Utils
                 ItemDrop itemDrop = go.GetComponent<ItemDrop>();
                 itemDrop.m_itemData.m_quality = level;
                 itemDrop.m_itemData.m_stack = count;
+                itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
                 itemDrop.Save();
                 if (p.m_inventory.CanAddItem(go))
                 {
@@ -344,6 +345,7 @@ public static class Utils
                         p.transform.position + p.transform.forward * 1.5f + Vector3.up * 1.5f, Quaternion.identity);
                     ItemDrop itemDrop = go.GetComponent<ItemDrop>();
                     itemDrop.m_itemData.m_quality = level;
+                    itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
                     itemDrop.Save();
                     if (p.m_inventory.CanAddItem(go))
                     {

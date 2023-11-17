@@ -35,6 +35,8 @@ public static class ZoneVisualizer
 
         foreach (TerritorySystem_DataTypes.Territory territory in TerritorySystem_DataTypes.SyncedTerritoriesData.Value)
         {
+            if(territory.Colors.Count == 0) continue;
+            
             GameObject visualizer = Object.Instantiate(territory.Type is TerritorySystem_DataTypes.TerritoryType.Circle
                 ? ZoneVisualizer_Circle
                 : ZoneVisualizer_Square);

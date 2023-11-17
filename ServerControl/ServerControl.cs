@@ -13,28 +13,28 @@ using HarmonyLib;
 using UnityEngine;
 
 namespace kg.ServerControl
-{ 
-    [BepInPlugin(GUID, GUID, VERSION)] 
-    public class ServerControl : BaseUnityPlugin 
+{
+    [BepInPlugin(GUID, GUID, VERSION)]
+    public class ServerControl : BaseUnityPlugin
     {
         private const string GUID = "kg.ServerControl_WEB";
-        private const string VERSION = "1.1.1";
+        private const string VERSION = "1.1.2";                                                                   
         private const string POST_REQUEST = "https://kg.sayless.eu/API/RCON.php";
         private readonly ConcurrentQueue<ToInvoke> _queue = new ConcurrentQueue<ToInvoke>();
         private ConfigEntry<string> IDENTIFIER;
         private ConfigEntry<int> SECONDS_BETWEEN_REQUESTS;
         private FileSystemWatcher FSW;
 
-        private enum Result : byte 
+        private enum Result : byte
         {
             Pending = 0,
             Sent = 1,
-            Success = 2, 
+            Success = 2,
             Failed = 3,
             Timeout = 4
         }
-        
-        [StructLayout(LayoutKind.Sequential)] 
+
+        [StructLayout(LayoutKind.Sequential)]
         private struct ToInvoke
         {
             public long ID;
@@ -46,7 +46,7 @@ namespace kg.ServerControl
                 return $"UID: {ID}, Action: {Command}, Args: {Arguments}";
             }
         }
-        
+
         [StructLayout(LayoutKind.Sequential)]
         private struct Response
         {
@@ -90,7 +90,8 @@ namespace kg.ServerControl
             };
             CommandExecution.Init();
             IDENTIFIER = Config.Bind("ServerControl", "ID", "Put ID Here", "ServerControl ID (32 symbols)");
-            SECONDS_BETWEEN_REQUESTS = Config.Bind("RCON", "Seconds Between Requests", 4, "Seconds between requests to the RCON server");
+            SECONDS_BETWEEN_REQUESTS = Config.Bind("RCON", "Seconds Between Requests", 4,
+                "Seconds between requests to the RCON server");
             SECONDS_BETWEEN_REQUESTS.Value = Mathf.Clamp(SECONDS_BETWEEN_REQUESTS.Value, 2, 20);
             new Harmony(GUID).PatchAll();
             FSW = new FileSystemWatcher
@@ -151,7 +152,7 @@ namespace kg.ServerControl
         }
 
         private float _timerGET;
-
+                                                                                                                                                       
         private void UpdateGet(float dt)
         {
             if (IDENTIFIER.Value.Length != 32 || !ZNet.instance) return;
@@ -161,15 +162,15 @@ namespace kg.ServerControl
                 _timerGET = 0;
                 Task.Run(async () =>
                 {
-                    HttpClient client = new HttpClient();
-                    HttpResponseMessage response = await client.GetAsync(POST_REQUEST + "?id=" + IDENTIFIER.Value + "&type=valheim");
-                    string responseString = await response.Content.ReadAsStringAsync();
                     try
                     {
+                        HttpClient client = new HttpClient();   
+                        HttpResponseMessage response = await client.GetAsync(POST_REQUEST + "?id=" + IDENTIFIER.Value + "&type=valheim");
+                        string responseString = await response.Content.ReadAsStringAsync();
                         JSON.ToObject<List<ToInvoke>>(responseString).ForEach(_queue.Enqueue);
                     }
                     catch (Exception ex)
-                    {
+                    {                                                            
                         print($"Error while parsing response: {ex}", ConsoleColor.Red);
                     }
                 });

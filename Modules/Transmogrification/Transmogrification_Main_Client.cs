@@ -227,9 +227,13 @@ public static class Transmogrification_Main_Client
     [ClientOnlyPatch]
     public static class InventoryGrid_Awake_Patch
     {
+        private static bool FirstInit;
+        
         public static void Postfix(InventoryGrid __instance)
         {
+            if(FirstInit) return;
             if (!__instance.m_elementPrefab) return;
+            FirstInit = true;
             Transform transform = __instance.m_elementPrefab.transform;
             GameObject newIcon = UnityEngine.Object.Instantiate(Transmog_UI_Icon_Part);
             newIcon!.transform.SetParent(transform);
@@ -238,22 +242,13 @@ public static class Transmogrification_Main_Client
             newIcon.gameObject.SetActive(false);
         }
     }
-
-    [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
-    [ClientOnlyPatch]
-    private static class Game_Awake_Patch_Transmog
-    {
-        private static void Postfix()
-        {
-            HotkeyBar_UpdateIcons_Patch.FirstInit = false;
-        }
-    }
+    
 
     [HarmonyPatch(typeof(HotkeyBar), nameof(HotkeyBar.UpdateIcons))]
     [ClientOnlyPatch]
     private static class HotkeyBar_UpdateIcons_Patch
     {
-        public static bool FirstInit;
+        private static bool FirstInit;
 
         public static void Postfix(HotkeyBar __instance)
         {
